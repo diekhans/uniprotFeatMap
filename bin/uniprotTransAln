@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+
+from os import path as osp
+import glob
+import argparse
+import pipettor
+from decoratorFuncs import getDoneFile, runIfNotDone
+import decoratorConf
+from pycbio.sys import fileOps
+from pycbio.distrib.parasol import Para
+
+def parseArgs():
+    desc = """Align uniprot to transcript with BLAST and convert to PSL.
+    program can rerun to finish up after manual parasol recovery.
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("protFa",
+                        help="protein FASTA")
+    parser.add_argument("transFa",
+                        help="transcript FASTA")
+    parser.add_argument("protTransPsl",
+                        help="alignments, sorted by transcript")
+    parser.add_argument("workDir",
+                        help="temporary directory used by parasol run")
+    return parser.parse_args()
+
+def editFasta(inFa, outFa):
+    """
+    decompress and split fasta headers
+    >ENST00000641515.2|ENSG00000186092.7|OTTHUMG00000001094.4|OTTHUMT00000003223.4|OR4F5-201|OR4F5|2618|UTR5:1-60|CDS:61-1041|UTR3:1042-2618|
+    """
+    with fileOps.opengz(inFa) as inFh:
+        with open(outFa, 'w') as outFh:
+            for line in inFh:
+                print(line.replace('|', ' ').strip(), file=outFh)
+
+def buildTargetTranscripts(transFa, transDbFa):
+    fileOps.ensureFileDir(transDbFa)
+    editFasta(transFa, transDbFa)
+    pipettor.run([osp.join(decoratorConf.blastDir, "formatDb"), "-i", transDbFa, "-p", "F"])
+
+def getProtSplitPrefix(protSplitDir):
+    return osp.join(protSplitDir, "prot.")
+
+def listProtSplitFas(protSplitDir):
+    return glob.glob(getProtSplitPrefix(protSplitDir) + "*")
+
+def buildTargetQueryProts(protFa, protSplitDir):
+    fileOps.ensureDir(protSplitDir)
+    pipettor.run(["faSplit", "about", protFa, 2500, getProtSplitPrefix(protSplitDir)])
+
+def makeJobFile(protSplitDir, alignDir, workDir):
+    jobFile = osp.join(workDir, "para.batch")
+    runBlast = osp.join(osp.dirname(__file__), "runBlast")
+    with open(jobFile, 'w') as fh:
+        for protFa in listProtSplitFas(protSplitDir):
+            outPsl = osp.join(alignDir, osp.basename(protFa) + ".psl")
+            print(runBlast, protFa, f"{{check out exist {outPsl}}}", file=fh)
+    return jobFile
+
+def runBatch(protSplitDir, alignDir, workDir):
+    jobFile = makeJobFile(protSplitDir, alignDir, workDir)
+    paraDir = osp.abspath(osp.join(workDir, "batch"))
+    para = Para(decoratorConf.paraHost, jobFile, paraDir=paraDir)
+    try:
+        para.make()
+    except pipettor.exceptions.ProcessException as ex:
+        raise Exception(f"batch failed, correct problem, re-run with -batch={paraDir}\n"
+                        "then touch " + getDoneFile(alignDir)) from ex
+
+def combineAligns(alignDir, protTransPsl):
+    "concatenate and sort by tName (transcript))"
+    with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
+        pipettor.run([["find", alignDir, "-name=*.psl", "-print0"],
+                      ["sort", "-k14,14", "--files0-from=-"]], stdout=tmpPsl)
+
+def uniprotTransAln(protFa, transFa, protTransPsl, workDir):
+    transDbFa = osp.join(workDir, "transDb", "transDb.fa")
+    if runIfNotDone(transDbFa, transDbFa):
+        buildTargetTranscripts(transFa, transDbFa)
+
+    protSplitDir = osp.join(workDir, "protSplit")
+    if runIfNotDone(protFa, protSplitDir):
+        buildTargetQueryProts(protFa, protSplitDir)
+
+    alignDir = osp.join(workDir, "aligns")
+    if runIfNotDone(alignDir, protSplitDir):
+        runBatch(protSplitDir, alignDir, workDir)
+
+    combineAligns(alignDir, protTransPsl)
+
+def main(opts):
+    uniprotTransAln(opts.protFa, opts.transFa, opts.protTransPsl, opts.workDir)
+
+main(parseArgs())
