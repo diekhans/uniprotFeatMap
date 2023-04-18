@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import sys
 from os import path as osp
 import glob
 import argparse
@@ -24,6 +25,9 @@ def parseArgs():
                         help="temporary directory used by parasol run")
     return parser.parse_args()
 
+def prLog(msg):
+    print(msg, file=sys.stderr, flush=True)
+
 def editFasta(inFa, outFa):
     """
     decompress and split fasta headers
@@ -35,33 +39,39 @@ def editFasta(inFa, outFa):
                 print(line.replace('|', ' ').strip(), file=outFh)
 
 def buildTargetTranscripts(transFa, transDbFa):
+    prLog("building target transcript database")
     fileOps.ensureFileDir(transDbFa)
     editFasta(transFa, transDbFa)
-    pipettor.run([osp.join(decoratorConf.blastDir, "formatDb"), "-i", transDbFa, "-p", "F"])
+    pipettor.run([osp.join(decoratorConf.blastDir, "formatdb"), "-i", transDbFa, "-p", "F"])
 
 def getProtSplitPrefix(protSplitDir):
-    return osp.join(protSplitDir, "prot.")
+    return osp.join(protSplitDir, "prot")
 
 def listProtSplitFas(protSplitDir):
     return glob.glob(getProtSplitPrefix(protSplitDir) + "*")
 
 def buildTargetQueryProts(protFa, protSplitDir):
+    prLog("split query proteins")
     fileOps.ensureDir(protSplitDir)
     pipettor.run(["faSplit", "about", protFa, 2500, getProtSplitPrefix(protSplitDir)])
 
-def makeJobFile(protSplitDir, alignDir, workDir):
-    jobFile = osp.join(workDir, "para.batch")
+def makeJobFile(protSplitDir, transDbFa, alignDir, workDir):
+    jobFile = osp.join(workDir, "jobs.para")
     runBlast = osp.join(osp.dirname(__file__), "runBlast")
     with open(jobFile, 'w') as fh:
         for protFa in listProtSplitFas(protSplitDir):
             outPsl = osp.join(alignDir, osp.basename(protFa) + ".psl")
-            print(runBlast, protFa, f"{{check out exist {outPsl}}}", file=fh)
+            print(runBlast, transDbFa, protFa, f"{{check out exists {outPsl}}}", file=fh)
+    if osp.getsize(jobFile) == 0:
+        raise Exception(f"empty job file create: {jobFile}")
     return jobFile
 
-def runBatch(protSplitDir, alignDir, workDir):
-    jobFile = makeJobFile(protSplitDir, alignDir, workDir)
+def runBatch(protSplitDir, transDbFa, alignDir, workDir):
+    prLog("running BLAST batch")
+    jobFile = makeJobFile(protSplitDir, transDbFa, alignDir, workDir)
     paraDir = osp.abspath(osp.join(workDir, "batch"))
     para = Para(decoratorConf.paraHost, jobFile, paraDir=paraDir)
+    para.free()
     try:
         para.make()
     except pipettor.exceptions.ProcessException as ex:
@@ -70,24 +80,32 @@ def runBatch(protSplitDir, alignDir, workDir):
 
 def combineAligns(alignDir, protTransPsl):
     "concatenate and sort by tName (transcript))"
+    prLog("combining alignments")
     with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
-        pipettor.run([["find", alignDir, "-name=*.psl", "-print0"],
+        pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
                       ["sort", "-k14,14", "--files0-from=-"]], stdout=tmpPsl)
 
 def uniprotTransAln(protFa, transFa, protTransPsl, workDir):
-    transDbFa = osp.join(workDir, "transDb", "transDb.fa")
-    if runIfNotDone(transDbFa, transDbFa):
-        buildTargetTranscripts(transFa, transDbFa)
+    transDbDir = osp.join(workDir, "transDb")
+    transDbFa = osp.join(transDbDir, "transDb.fa")
+    with runIfNotDone(transDbDir, depends=transFa) as do:
+        if do:
+            buildTargetTranscripts(transFa, transDbFa)
 
     protSplitDir = osp.join(workDir, "protSplit")
-    if runIfNotDone(protFa, protSplitDir):
-        buildTargetQueryProts(protFa, protSplitDir)
+    with runIfNotDone(protSplitDir, depends=protFa) as do:
+        if do:
+            buildTargetQueryProts(protFa, protSplitDir)
 
     alignDir = osp.join(workDir, "aligns")
-    if runIfNotDone(alignDir, protSplitDir):
-        runBatch(protSplitDir, alignDir, workDir)
+    with runIfNotDone(alignDir, doneDepends=[transDbDir, protSplitDir]) as do:
+        if do:
+            runBatch(protSplitDir, transDbFa, alignDir, workDir)
 
-    combineAligns(alignDir, protTransPsl)
+    with runIfNotDone(protTransPsl, doneDepends=alignDir) as do:
+        if do:
+            combineAligns(alignDir, protTransPsl)
+    prLog("finished")
 
 def main(opts):
     uniprotTransAln(opts.protFa, opts.transFa, opts.protTransPsl, opts.workDir)
