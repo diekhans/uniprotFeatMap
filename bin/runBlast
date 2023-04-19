@@ -19,5 +19,5 @@ outPslTmp=$outPsl.$(hostname).$$.tmp
 
 ${blastAll} -p tblastn -F F -d $targetDb -i $queryFa | \
     blastToPsl /dev/stdin /dev/stdout | \
-    tawk '$9 == "++"' > $outPslTmp 
+    tawk '$9 == "++"' > $outPslTmp
 mv -f $outPslTmp $outPsl

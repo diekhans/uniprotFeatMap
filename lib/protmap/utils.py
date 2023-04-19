@@ -1,5 +1,5 @@
 """
-Library of common functions and other definitions for building domain decorators.
+Library of common functions and other definitions
 """
 
 from os import path as osp

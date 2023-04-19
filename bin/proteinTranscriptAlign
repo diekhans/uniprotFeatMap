@@ -5,10 +5,13 @@ from os import path as osp
 import glob
 import argparse
 import pipettor
-from decoratorFuncs import getDoneFile, runIfNotDone, runIfOutOfDate
-import decoratorConf
 from pycbio.sys import fileOps
 from pycbio.distrib.parasol import Para
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+
+from protmap.utils import getDoneFile, runIfNotDone, runIfOutOfDate
+from protmap import conf
 
 def parseArgs():
     desc = """Align uniprot to transcript with BLAST and convert to PSL.
@@ -30,7 +33,7 @@ def prLog(msg):
 
 def editFasta(inFa, outFa):
     """
-    decompress and split fasta headers
+    decompress and split GENCODE FASTA headers like
     >ENST00000641515.2|ENSG00000186092.7|OTTHUMG00000001094.4|OTTHUMT00000003223.4|OR4F5-201|OR4F5|2618|UTR5:1-60|CDS:61-1041|UTR3:1042-2618|
     """
     with fileOps.opengz(inFa) as inFh:
@@ -45,7 +48,7 @@ def buildTargetTranscripts(transFa, transDbFa, workDir):
     editFasta(transFa, transDbFa)
 
     logFile = osp.join(workDir, "formatdb.log")
-    pipettor.run([osp.join(decoratorConf.blastDir, "formatdb"),
+    pipettor.run([osp.join(conf.blastDir, "formatdb"),
                   "-l", logFile, "-i", transDbFa, "-p", "F"])
 
 def getProtSplitPrefix(protSplitDir):
@@ -74,7 +77,7 @@ def runBatch(protSplitDir, transDbFa, alignDir, workDir):
     prLog("running BLAST batch")
     jobFile = makeJobFile(protSplitDir, transDbFa, alignDir, workDir)
     paraDir = osp.abspath(osp.join(workDir, "batch"))
-    para = Para(decoratorConf.paraHost, jobFile, paraDir=paraDir)
+    para = Para(conf.paraHost, jobFile, paraDir=paraDir)
     para.free()
     try:
         para.make()
@@ -86,15 +89,15 @@ def combineAligns(alignDir, protTransPsl):
     "concatenate and sort by tName (transcript))"
     prLog("combining alignments")
     # discard not within the configure minimum identity and coverage.  Batch
-    # programs discards PSLS that are not ++ alignments
+    # program discards PSLs that are not ++ alignments
     pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
                   ["sort", "-k14,14", "--files0-from=-"],
                   ["pslCDnaFilter", "-verbose=0",
-                   "-minCover=" + str(decoratorConf.minCover),
-                   "-minId=" + str(decoratorConf.minId),
+                   "-minCover=" + str(conf.protAlnMinCover),
+                   "-minId=" + str(conf.protAlnMinId),
                    "/dev/stdin", "/dev/stdout"]], stdout=protTransPsl)
 
-def uniprotTransAln(protFa, transFa, protTransPsl, workDir):
+def proteinTranscriptAlign(protFa, transFa, protTransPsl, workDir):
     transDbDir = osp.join(workDir, "transDb")
     transDbFa = osp.join(transDbDir, "transDb.fa")
     with runIfNotDone(transDbDir, depends=transFa) as do:
@@ -118,6 +121,6 @@ def uniprotTransAln(protFa, transFa, protTransPsl, workDir):
     prLog("finished")
 
 def main(opts):
-    uniprotTransAln(opts.protFa, opts.transFa, opts.protTransPsl, opts.workDir)
+    proteinTranscriptAlign(opts.protFa, opts.transFa, opts.protTransPsl, opts.workDir)
 
 main(parseArgs())

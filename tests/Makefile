@@ -1,4 +1,4 @@
-uniprotTransAln = ../bin/uniprotTransAln 
+proteinTranscriptAlign = ../bin/proteinTranscriptAlign 
 
 
 all:
@@ -15,7 +15,7 @@ fulltest: test testRunBlastJobs
 
 testRunBlastJobs: mkout
 	rm -rf output/$@.psl output/$@.work
-	${uniprotTransAln} input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
+	${proteinTranscriptAlign} input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 
 mkout:
