@@ -5,7 +5,7 @@ from os import path as osp
 import glob
 import argparse
 import pipettor
-from decoratorFuncs import getDoneFile, runIfNotDone
+from decoratorFuncs import getDoneFile, runIfNotDone, runIfOutOfDate
 import decoratorConf
 from pycbio.sys import fileOps
 from pycbio.distrib.parasol import Para
@@ -38,11 +38,15 @@ def editFasta(inFa, outFa):
             for line in inFh:
                 print(line.replace('|', ' ').strip(), file=outFh)
 
-def buildTargetTranscripts(transFa, transDbFa):
+def buildTargetTranscripts(transFa, transDbFa, workDir):
     prLog("building target transcript database")
+    fileOps.ensureDir(workDir)
     fileOps.ensureFileDir(transDbFa)
     editFasta(transFa, transDbFa)
-    pipettor.run([osp.join(decoratorConf.blastDir, "formatdb"), "-i", transDbFa, "-p", "F"])
+
+    logFile = osp.join(workDir, "formatdb.log")
+    pipettor.run([osp.join(decoratorConf.blastDir, "formatdb"),
+                  "-l", logFile, "-i", transDbFa, "-p", "F"])
 
 def getProtSplitPrefix(protSplitDir):
     return osp.join(protSplitDir, "prot")
@@ -81,16 +85,21 @@ def runBatch(protSplitDir, transDbFa, alignDir, workDir):
 def combineAligns(alignDir, protTransPsl):
     "concatenate and sort by tName (transcript))"
     prLog("combining alignments")
-    with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
-        pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
-                      ["sort", "-k14,14", "--files0-from=-"]], stdout=tmpPsl)
+    # discard not within the configure minimum identity and coverage.  Batch
+    # programs discards PSLS that are not ++ alignments
+    pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
+                  ["sort", "-k14,14", "--files0-from=-"],
+                  ["pslCDnaFilter", "-verbose=0",
+                   "-minCover=" + str(decoratorConf.minCover),
+                   "-minId=" + str(decoratorConf.minId),
+                   "/dev/stdin", "/dev/stdout"]], stdout=protTransPsl)
 
 def uniprotTransAln(protFa, transFa, protTransPsl, workDir):
     transDbDir = osp.join(workDir, "transDb")
     transDbFa = osp.join(transDbDir, "transDb.fa")
     with runIfNotDone(transDbDir, depends=transFa) as do:
         if do:
-            buildTargetTranscripts(transFa, transDbFa)
+            buildTargetTranscripts(transFa, transDbFa, workDir)
 
     protSplitDir = osp.join(workDir, "protSplit")
     with runIfNotDone(protSplitDir, depends=protFa) as do:
@@ -102,9 +111,10 @@ def uniprotTransAln(protFa, transFa, protTransPsl, workDir):
         if do:
             runBatch(protSplitDir, transDbFa, alignDir, workDir)
 
-    with runIfNotDone(protTransPsl, doneDepends=alignDir) as do:
+    with runIfOutOfDate(protTransPsl, doneDepends=alignDir) as do:
         if do:
-            combineAligns(alignDir, protTransPsl)
+            with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
+                combineAligns(alignDir, tmpPsl)
     prLog("finished")
 
 def main(opts):

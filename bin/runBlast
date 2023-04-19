@@ -17,5 +17,7 @@ outPsl="$3"
 mkdir -p $(dirname ${outPsl})
 outPslTmp=$outPsl.$(hostname).$$.tmp
 
-${blastAll} -p tblastn -F F -d $targetDb -i $queryFa | blastToPsl stdin $outPslTmp
+${blastAll} -p tblastn -F F -d $targetDb -i $queryFa | \
+    blastToPsl /dev/stdin /dev/stdout | \
+    tawk '$9 == "++"' > $outPslTmp 
 mv -f $outPslTmp $outPsl

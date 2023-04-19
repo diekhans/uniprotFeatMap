@@ -6,3 +6,13 @@ configuration for decorator build.
 blastDir = "/cluster/bin/blast/x86_64/blast-2.2.16/bin"
 
 paraHost = "ku"
+
+##
+# initial filtering of alignments
+##
+
+# want to allow for alignments to other isoforms, so let a lot pass
+minCover = 0.25
+
+# stricter filter keeps if from being too far off
+minId = 0.80
