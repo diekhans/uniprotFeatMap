@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+
+import sys
+from os import path as osp
+import argparse
+from collections import defaultdict
+import pandas as pd
+from pycbio.sys import fileOps
+from pycbio.hgdata.psl import Psl, PslReader
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+
+# Algorithm:
+#   - start with alignments of uniprot proteins to GENCODE coding transcript,
+#     already filtered for ++ strand and minimal coverage of protein
+#   - goal to find the best alignment for each transcript:
+#     - for each transcript id, if the uniprot entry is part with it by id,
+#       us the best covering align of the protein.
+#     -
+
+def parseArgs():
+    desc = """Filter alignments to pair protein and transcript alignments
+
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("gencodeMetaTsv",
+                        help="GENCODE metadata in TSV format from UCSC table")
+    parser.add_argument("uniprotMetaTsv",
+                        help="Uniprot metadata in TSV format")
+    parser.add_argument("protTransPsl",
+                        help="protein to transcript alignment PSL")
+    parser.add_argument("protTransPairedPsl",
+                        help="filtered alignments")
+    return parser.parse_args()
+
+def prWarn(*args):
+    print("WARNING:", *args, file=sys.stderr, flush=True)
+
+def dropVersion(ident):
+    return ident.split('.')[0]
+
+def splitMetaList(val):
+    """ split strings like: ENST00000369413.8|ENST00000528909.1"""
+    return val.split('|')
+
+def splitDropVersion(idents):
+    return [dropVersion(id) for id in splitMetaList(idents)]
+
+class GencodeMetadata:
+    def __init__(self, gencodeMetaTsv):
+        self.df = pd.read_table(gencodeMetaTsv)
+        self.df.set_index('transcriptId', inplace=True)
+
+class UniprotMeta:
+    "hold dataframe and indexes"
+    def __init__(self, uniprotMetaTsv):
+        self.df = pd.read_table(uniprotMetaTsv)
+        self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
+        self.df['ensemblTransAccs'] = self.df.ensemblTrans.apply(splitDropVersion)
+        self.byGeneAccDf = self.df.explode('ensemblGeneAccs')
+        self.byGeneAccDf.rename(columns={'ensemblGeneAccs': 'ensemblGeneAcc'}, inplace=True)
+        self.byTranscriptAccDf = self.df.explode('ensemblTransAccs')
+        self.byTranscriptAccDf.rename(columns={'ensemblTransAccs': 'ensemblTransAcc'}, inplace=True)
+
+    def getTransMeta(self, transId):
+        protMeta = self.byTranscriptAccDf[self.byTranscriptAccDf.ensemblTransAcc == dropVersion(transId)]
+        if len(protMeta) == 0:
+            return None
+        if len(protMeta) > 1:
+            raise Exception(f"excepted no more than protein for transcript {transId}, found: {protMeta.acc}")
+        return protMeta.iloc[0]
+
+def loadProtTransPsl(protTransPsl):
+    alignsByTrans = defaultdict(list)  # by stable trans id
+    for psl in PslReader(protTransPsl):
+        alignsByTrans[dropVersion(psl.tName)].append(psl)
+    alignsByTrans.default_factory = None
+    return alignsByTrans
+
+def pairTransByUniprotId(uniprotMeta, transId, aligns):
+    protMeta = uniprotMeta.getTransMeta(transId)
+    if protMeta is None:
+        return None
+    protAcc = protMeta.mainIsoAcc
+    protAligns = [psl for psl in aligns if psl.qName == protAcc]
+    if len(protAligns) == 0:
+        prWarn(f"no alignments found for '{protAcc}' to matched transcript '{transId}'")
+        return None
+    # most coverage of query
+    return sorted(protAligns, key=lambda psl: -psl.queryAligned())[0]
+
+def pairByUniprotId(uniprotMeta, alignsByTrans):
+    protTransPaired = []
+    transIds = list(alignsByTrans.keys())  # copy due to modification
+    for transId in transIds:
+        selectedAln = pairTransByUniprotId(uniprotMeta, transId, alignsByTrans[transId])
+        if selectedAln is not None:
+            protTransPaired.append(selectedAln)
+            del alignsByTrans[transId]
+    return protTransPaired
+
+def writePairedPsl(fh, protTransPaired):
+    for psl in sorted(protTransPaired, key=Psl.targetKey):
+        psl.write(fh)
+
+def proteinTranscriptAlign(gencodeMetaTsv, uniprotMetaTsv, protTransPsl, protTransPairedPsl):
+    gencodeMeta = GencodeMetadata(gencodeMetaTsv)
+    uniprotMeta = UniprotMeta(uniprotMetaTsv)
+    alignsByTrans = loadProtTransPsl(protTransPsl)
+
+    # alignsByTrans is cleared as alignments add to protTransPaired
+    protTransPaired = []
+    protTransPaired += pairByUniprotId(uniprotMeta, alignsByTrans)
+
+    with fileOps.opengz(protTransPairedPsl, 'w') as fh:
+        writePairedPsl(fh, protTransPaired)
+
+def main(opts):
+    proteinTranscriptAlign(opts.gencodeMetaTsv, opts.uniprotMetaTsv, opts.protTransPsl, opts.protTransPairedPsl)
+
+main(parseArgs())
