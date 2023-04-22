@@ -10,6 +10,10 @@ from pycbio.hgdata.psl import Psl, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 
+# Terminology
+#    xxxId is id with version
+#    xxxAcc is id without version
+#
 # Algorithm:
 #   - start with alignments of uniprot proteins to GENCODE coding transcript,
 #     already filtered for ++ strand and minimal coverage of protein
@@ -49,12 +53,23 @@ def splitDropVersion(idents):
 class GencodeMetadata:
     def __init__(self, gencodeMetaTsv):
         self.df = pd.read_table(gencodeMetaTsv)
-        self.df.set_index('transcriptId', inplace=True)
+
+    def getTrans(self, transId):
+        transes = self.df[self.df.transcriptId == transId]
+        if len(transes) == 0:
+            raise Exception(f"can't find GENCODE metadata for '{transId}'")
+        return transes.iloc[0]
+
+    def getGeneId(self, transId):
+        return self.getTrans(transId).geneId
+
+    def getGeneName(self, transId):
+        return self.getTrans(transId).geneName
 
 class UniprotMeta:
-    "hold dataframe and indexes"
     def __init__(self, uniprotMetaTsv):
         self.df = pd.read_table(uniprotMetaTsv)
+        # index by gene and transcript ids
         self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
         self.df['ensemblTransAccs'] = self.df.ensemblTrans.apply(splitDropVersion)
         self.byGeneAccDf = self.df.explode('ensemblGeneAccs')
@@ -62,38 +77,78 @@ class UniprotMeta:
         self.byTranscriptAccDf = self.df.explode('ensemblTransAccs')
         self.byTranscriptAccDf.rename(columns={'ensemblTransAccs': 'ensemblTransAcc'}, inplace=True)
 
-    def getTransMeta(self, transId):
-        protMeta = self.byTranscriptAccDf[self.byTranscriptAccDf.ensemblTransAcc == dropVersion(transId)]
-        if len(protMeta) == 0:
+    def getTransMeta(self, transAcc):
+        protMetas = self.byTranscriptAccDf[self.byTranscriptAccDf.ensemblTransAcc == transAcc]
+        if len(protMetas) == 0:
             return None
-        if len(protMeta) > 1:
-            raise Exception(f"excepted no more than protein for transcript {transId}, found: {protMeta.acc}")
-        return protMeta.iloc[0]
+        if len(protMetas) > 1:
+            raise Exception(f"excepted no more than protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
+        return protMetas.iloc[0]
+
+    def getGeneAccMetas(self, geneAcc):
+        protMetas = self.byGeneAccDf[self.byGeneAccDf.ensemblGeneAcc == geneAcc]
+        if len(protMetas) == 0:
+            return None
+        return protMetas
+
+    def getGeneNameMetas(self, geneName):
+        protMetas = self.byGeneAccDf[self.byGeneAccDf.geneName == geneName]
+        if len(protMetas) == 0:
+            return None
+        return protMetas
 
 def loadProtTransPsl(protTransPsl):
     alignsByTrans = defaultdict(list)  # by stable trans id
     for psl in PslReader(protTransPsl):
-        alignsByTrans[dropVersion(psl.tName)].append(psl)
+        alignsByTrans[psl.tName].append(psl)
     alignsByTrans.default_factory = None
     return alignsByTrans
 
-def pairTransByUniprotId(uniprotMeta, transId, aligns):
-    protMeta = uniprotMeta.getTransMeta(transId)
-    if protMeta is None:
-        return None
-    protAcc = protMeta.mainIsoAcc
-    protAligns = [psl for psl in aligns if psl.qName == protAcc]
+def selectAlignByProtAccs(aligns, protAccs):
+    protAligns = [psl for psl in aligns if psl.qName in protAccs]
     if len(protAligns) == 0:
-        prWarn(f"no alignments found for '{protAcc}' to matched transcript '{transId}'")
         return None
     # most coverage of query
     return sorted(protAligns, key=lambda psl: -psl.queryAligned())[0]
 
-def pairByUniprotId(uniprotMeta, alignsByTrans):
+###
+# functions that are applied to get the best matching alignment based
+# on various ways to obtain proteins associated with a transcript.
+###
+
+def pairTransByUniprotTransId(gencodeMeta, uniprotMeta, transId, aligns):
+    protMeta = uniprotMeta.getTransMeta(dropVersion(transId))
+    if protMeta is None:
+        return None
+    protAlign = selectAlignByProtAccs(aligns, [protMeta.mainIsoAcc])
+    if protAlign is None:
+        prWarn(f"no alignments found for '{protMeta.mainIsoAcc}' to matched transcript '{transId}'")
+    return protAlign
+
+def pairTransByUniprotGeneId(gencodeMeta, uniprotMeta, transId, aligns):
+    geneId = gencodeMeta.getGeneId(transId)
+    protMetas = uniprotMeta.getGeneAccMetas(dropVersion(geneId))
+    if protMetas is None:
+        return None
+    return selectAlignByProtAccs(aligns, frozenset(protMetas.mainIsoAcc))
+
+def pairTransByUniprotGeneName(gencodeMeta, uniprotMeta, transId, aligns):
+    geneName = gencodeMeta.getGeneName(transId)
+    protMetas = uniprotMeta.getGeneNameMetas(geneName)
+    if protMetas is None:
+        return None
+    return selectAlignByProtAccs(aligns, frozenset(protMetas.mainIsoAcc))
+
+def selectUniprotTransPairs(gencodeMeta, uniprotMeta, selectFunc, alignsByTrans):
+    """Select alignments base on a function that pairs a protein to a
+    transcript by some criteria.  Call this function in order of most strict to least
+    strict functions.  Only one alignment is kept per transcript.  The
+    alignments are remove from alignsByTrans as the are select and return.
+    """
     protTransPaired = []
     transIds = list(alignsByTrans.keys())  # copy due to modification
     for transId in transIds:
-        selectedAln = pairTransByUniprotId(uniprotMeta, transId, alignsByTrans[transId])
+        selectedAln = selectFunc(gencodeMeta, uniprotMeta, transId, alignsByTrans[transId])
         if selectedAln is not None:
             protTransPaired.append(selectedAln)
             del alignsByTrans[transId]
@@ -109,8 +164,9 @@ def proteinTranscriptAlign(gencodeMetaTsv, uniprotMetaTsv, protTransPsl, protTra
     alignsByTrans = loadProtTransPsl(protTransPsl)
 
     # alignsByTrans is cleared as alignments add to protTransPaired
-    protTransPaired = []
-    protTransPaired += pairByUniprotId(uniprotMeta, alignsByTrans)
+    protTransPaired = selectUniprotTransPairs(gencodeMeta, uniprotMeta, pairTransByUniprotTransId, alignsByTrans)
+    protTransPaired += selectUniprotTransPairs(gencodeMeta, uniprotMeta, pairTransByUniprotGeneId, alignsByTrans)
+    protTransPaired += selectUniprotTransPairs(gencodeMeta, uniprotMeta, pairTransByUniprotGeneName, alignsByTrans)
 
     with fileOps.opengz(protTransPairedPsl, 'w') as fh:
         writePairedPsl(fh, protTransPaired)
