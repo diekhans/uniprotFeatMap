@@ -1,0 +1,1286 @@
+acc	mainIsoAcc	varId	featType	shortFeatType	begin	end	origAa	mutAa	dbSnpId	disRelated	disease	disCode	pmid	longName	shortName	syns	subCellLoc	comment
+P14060	P14060		initiator methionine	init Met	1	2				notDisRelated			2779585					Removed
+P14060	P14060	PRO_0000087774	chain	chain	2	374				noEvidence				3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 1	3-beta-HSD I	3-beta-HSD I; 3BH; HSDB3A; Steroid Delta-isomerase; Trophoblast antigen FDO161G; Delta-5-3-ketosteroid isomerase; Dihydrotestosterone oxidoreductase; 3-beta-hydroxysteroid 3-dehydrogenase; 3-beta-hydroxy-5-ene steroid dehydrogenase; 3-beta-hydroxy-Delta(5)-steroid dehydrogenase; 3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type I		
+P14060	P14060		transmembrane region	transmem	288	309				notDisRelated								Helical
+P14060	P14060		active site	enzyme act site	159	160				notDisRelated								Proton donor
+P14060	P14060		binding site	bind	10	16				notDisRelated								
+P14060	P14060		binding site	bind	155	156				notDisRelated								
+P14060	P14060		binding site	bind	159	160				notDisRelated								
+P14060	P14060	VAR_048096	sequence variant	variant	54	55	T	I	rs3088283	noEvidence								
+P14060	P14060	VAR_048097	sequence variant	variant	71	72	R	I	rs4986952	noEvidence								
+P14060	P14060	VAR_014174	sequence variant	variant	79	80	I	V	rs6201	notDisRelated			10391209					
+P14060	P14060	VAR_048098	sequence variant	variant	90	91	G	S	rs6684974	noEvidence								
+P14060	P14060	VAR_014175	sequence variant	variant	286	287	F	L	rs6205	notDisRelated			10391209					
+P14060	P14060	VAR_000005	sequence variant	variant	367	368	T	N	rs1047303	notDisRelated			15489334,2243100					
+P26439	P26439-1	PRO_0000087775	chain	chain	1	373				noEvidence				3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 2	3-beta-HSD II	3-beta-HSD II; HSDB3B; 3-beta-HSD adrenal and gonadal type; 3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type II; 1; 2		
+P26439	P26439-1		transmembrane region	transmem	287	308				notDisRelated								Helical
+P26439	P26439-1		active site	enzyme act site	154	155				notDisRelated								Proton acceptor
+P26439	P26439-1		binding site	bind	158	159				notDisRelated								
+P26439	P26439-1	VSP_037399	splice variant	splicing	103	223	GTQLLLEACVQASVPVFIYTSSIEVAGPNSYKEIIQNGHEEEPLENTWPTPYPYSKKLAEKAVLAANGWNLKNGDTLYTCALRPTYIYGEGGPFLSASINEALNNNGILSSVGKFSTVNP	ELQNKIKLTVLEGDILDEPFLKRACQDVSVVIHTACIIDVFGVTHRQSIMNVNVKGRVAWGGDKARWGNEDQKEGQEGKRSLSIEHLLCSGPSDFADHYQLGELKAAIFSFIDEKTRTEQ		notDisRelated			17974005					In isoform 2.
+P26439	P26439-1	VSP_037400	splice variant	splicing	223	373				notDisRelated			17974005					In isoform 2.
+P26439	P26439-1	VAR_010517	sequence variant	variant	10	11	A	E	rs28934880	disRelated	Adrenal hyperplasia 2	AH2	10599696,10843183					activity abolished
+P26439	P26439-1	VAR_010518	sequence variant	variant	10	11	A	V	rs28934880	disRelated	Adrenal hyperplasia 2	AH2	10599696					nonsalt-wasting form
+P26439	P26439-1	VAR_010519	sequence variant	variant	15	16	G	D		disRelated	Adrenal hyperplasia 2	AH2	10599696,7893703					activity abolished
+P26439	P26439-1	VAR_048099	sequence variant	variant	74	75	D	N	rs4986954	noEvidence								
+P26439	P26439-1	VAR_070028	sequence variant	variant	82	83	A	P		disRelated	Adrenal hyperplasia 2	AH2	22579964					
+P26439	P26439-1	VAR_010520	sequence variant	variant	82	83	A	T	rs757033996	disRelated	Adrenal hyperplasia 2	AH2	10599696,8185809					
+P26439	P26439-1	VAR_014818	sequence variant	variant	94	95	E	Q	rs6211	notDisRelated			17974005					
+P26439	P26439-1	VAR_010521	sequence variant	variant	100	101	N	S	rs1388517943	disRelated	Adrenal hyperplasia 2	AH2	10599696,7608265					nonsalt-wasting form
+P26439	P26439-1	VAR_010522	sequence variant	variant	108	109	L	W		disRelated	Adrenal hyperplasia 2	AH2	10599696,7833923					activity abolished
+P26439	P26439-1	VAR_010523	sequence variant	variant	129	130	G	R	rs587628683	disRelated	Adrenal hyperplasia 2	AH2	10599696,10651755,7962268					nonsalt-wasting form
+P26439	P26439-1	VAR_000006	sequence variant	variant	142	143	E	K	rs80358219	disRelated	Adrenal hyperplasia 2	AH2	10599696,12050213,8316254					activity abolished
+P26439	P26439-1	VAR_010524	sequence variant	variant	155	156	P	L	rs779418168	disRelated	Adrenal hyperplasia 2	AH2	10599696					nonsalt-wasting form
+P26439	P26439-1	VAR_010525	sequence variant	variant	167	168	A	V	rs35486059	disRelated	Adrenal hyperplasia 2	AH2	10599696					late onset; almost normal activity
+P26439	P26439-1	VAR_010526	sequence variant	variant	173	174	L	R	rs762479018	disRelated	Adrenal hyperplasia 2	AH2	10599696,8060486					nonsalt-wasting form
+P26439	P26439-1	VAR_010527	sequence variant	variant	186	187	P	L		disRelated	Adrenal hyperplasia 2	AH2	10599696,7833923					activity abolished
+P26439	P26439-1	VAR_000007	sequence variant	variant	205	206	L	P		disRelated	Adrenal hyperplasia 2	AH2	10599696,7633426					
+P26439	P26439-1	VAR_010528	sequence variant	variant	213	214	S	G	rs759422374	disRelated	Adrenal hyperplasia 2	AH2	10599696					late onset; partial loss of activity
+P26439	P26439-1	VAR_010529	sequence variant	variant	216	217	K	E		disRelated	Adrenal hyperplasia 2	AH2	10599696					late onset; partial loss of activity
+P26439	P26439-1	VAR_010530	sequence variant	variant	222	223	P	H		disRelated	Adrenal hyperplasia 2	AH2	10599696					nonsalt-wasting form; activity abolished
+P26439	P26439-1	VAR_010531	sequence variant	variant	222	223	P	Q	rs765547422	disRelated	Adrenal hyperplasia 2	AH2	10599696,10651755					activity abolished
+P26439	P26439-1	VAR_015411	sequence variant	variant	222	223	P	T	rs80358220	disRelated	Adrenal hyperplasia 2	AH2	12050213					
+P26439	P26439-1	VAR_010532	sequence variant	variant	231	239				disRelated	Adrenal hyperplasia 2	AH2						activity abolished
+P26439	P26439-1	VAR_010533	sequence variant	variant	236	237	L	S	rs35887327	disRelated	Adrenal hyperplasia 2	AH2	10599696,9719627					mild; 100% of activity
+P26439	P26439-1	VAR_000008	sequence variant	variant	245	246	A	P		disRelated	Adrenal hyperplasia 2	AH2	10599696,8316254					loss of 88% of activity
+P26439	P26439-1	VAR_083841	sequence variant	variant	250	251	G	V		disRelated	Adrenal hyperplasia 2	AH2	25322271					nonsalt-wasting form; loss of 75% of enzymatic activity for the conversion of pregnenolone to progesterone and dehydroepiandrosterone to androstenedione; no effect on endoplasmic reticulum location
+P26439	P26439-1	VAR_000009	sequence variant	variant	253	254	Y	N	rs1399005702	disRelated	Adrenal hyperplasia 2	AH2	10599696,8316254					activity abolished
+P26439	P26439-1	VAR_000010	sequence variant	variant	254	255	Y	D	rs1411029929	disRelated	Adrenal hyperplasia 2	AH2	10599696,8126127					activity abolished
+P26439	P26439-1	VAR_010534	sequence variant	variant	259	260	T	M	rs80358221	disRelated	Adrenal hyperplasia 2	AH2	10599696,10651755					activity abolished
+P26439	P26439-1	VAR_000011	sequence variant	variant	259	260	T	R		disRelated	Adrenal hyperplasia 2	AH2	10599696,7633460					activity abolished
+P26439	P26439-1	VAR_010535	sequence variant	variant	294	295	G	V		disRelated	Adrenal hyperplasia 2	AH2	10599696					nonsalt-wasting form; activity abolished
+P26439	P26439-1	VAR_065665	sequence variant	variant	341	342	P	L	rs121964897	disRelated	Adrenal hyperplasia 2	AH2	18252794					strongly reduced activity
+P26439	P26439-1		sequence conflict	conflict	52	54	RT	KI		notDisRelated								In Ref. 8; AAD14329.
+P26439	P26439-1		sequence conflict	conflict	92	95	HRE	RRQ		notDisRelated								In Ref. 8; AAD14329.
+P26439	P26439-1		sequence conflict	conflict	232	233	H	L		notDisRelated								In Ref. 4; BAD96717.
+Q9BXI3	Q9BXI3	PRO_0000144795	chain	chain	1	369				noEvidence				Cytosolic 5'-nucleotidase 1A	cN1A	cN1A; cN-I; cN-IA; 5'-deoxynucleotidase; Cytosolic 5'-nucleotidase IA		
+Q9BXI3	Q9BXI3		region of interest	interest	1	23				notDisRelated								Disordered
+Q9BXI3	Q9BXI3		active site	enzyme act site	211	212				notDisRelated								Nucleophile
+Q9BXI3	Q9BXI3		sequence conflict	conflict	9	12				notDisRelated								In Ref. 2; AAK30000.
+Q96P26	Q96P26-1	PRO_0000144796	chain	chain	1	611				noEvidence				Cytosolic 5'-nucleotidase 1B	cN1B	cN1B; cN-IB; ORFFKSG85; AIRP; Cytosolic 5'-nucleotidase IB; Autoimmune infertility-related protein; 1; 2; 3; 4; CN-Ib alpha		
+Q96P26	Q96P26-1		region of interest	interest	1	35				notDisRelated								Disordered
+Q96P26	Q96P26-1		region of interest	interest	101	278				notDisRelated								Disordered
+Q96P26	Q96P26-1		compositionally biased region	biased	12	35				notDisRelated								Basic and acidic residues
+Q96P26	Q96P26-1		compositionally biased region	biased	101	172				notDisRelated								Polar residues
+Q96P26	Q96P26-1		compositionally biased region	biased	172	202				notDisRelated								Pro residues
+Q96P26	Q96P26-1		compositionally biased region	biased	231	267				notDisRelated								Polar residues
+Q96P26	Q96P26-1		active site	enzyme act site	467	468				notDisRelated								Nucleophile
+Q96P26	Q96P26-1	VSP_010202	splice variant	splicing	1	209				notDisRelated			14702039					In isoform 3.
+Q96P26	Q96P26-1	VSP_010201	splice variant	splicing	41	101				notDisRelated			15489334					In isoform 2.
+Q96P26	Q96P26-1	VSP_010203	splice variant	splicing	596	611	LGSIAAYGFNKKFSS	KSLGWMS		notDisRelated			14702039					In isoform 4.
+Q96P26	Q96P26-1		sequence conflict	conflict	173	174	G	R		notDisRelated								In Ref. 2; AAL11910.
+Q96P26	Q96P26-1		sequence conflict	conflict	287	288	R	K		notDisRelated								In Ref. 1; AAK39108.
+Q96P26	Q96P26-1		sequence conflict	conflict	297	298	S	W		notDisRelated								In Ref. 1; AAK39108.
+Q96P26	Q96P26-1		sequence conflict	conflict	351	352	P	Q		notDisRelated								In Ref. 2; AAL11910.
+Q96P26	Q96P26-1		sequence conflict	conflict	362	363	V	I		notDisRelated								In Ref. 3; BAC04174.
+Q96P26	Q96P26-1		sequence conflict	conflict	528	529	L	P		notDisRelated								In Ref. 8; CAC44363.
+Q96P26	Q96P26-1		sequence conflict	conflict	552	553	L	F		notDisRelated								In Ref. 1; AAK39108.
+Q9H0P0	Q9H0P0-4	PRO_0000064387	chain	chain	1	337				noEvidence				Cytosolic 5'-nucleotidase 3A	PN-I	PN-I; P5N-1; cN-III; P5'N-1; 7-methylguanosine nucleotidase; ORFHSPC233; P5N1; NT5C3; UMPH1; p36; Cytosolic 5'-nucleotidase 3; Pyrimidine 5'-nucleotidase 1; Cytosolic 5'-nucleotidase III; Uridine 5'-monophosphate hydrolase 1; 7-methylguanosine phosphate-specific 5'-nucleotidase; 2; 1; 3; 4; p36; P5N-I; P5N-R		
+Q9H0P0	Q9H0P0-4		active site	enzyme act site	88	89				notDisRelated			17405878					Nucleophile
+Q9H0P0	Q9H0P0-4		active site	enzyme act site	90	91				notDisRelated			17405878					Proton donor
+Q9H0P0	Q9H0P0-4		binding site	bind	88	89				notDisRelated			17405878					
+Q9H0P0	Q9H0P0-4		binding site	bind	90	91				notDisRelated			17405878					
+Q9H0P0	Q9H0P0-4		binding site	bind	135	136				notDisRelated								
+Q9H0P0	Q9H0P0-4		binding site	bind	135	136				notDisRelated								
+Q9H0P0	Q9H0P0-4		binding site	bind	156	157				notDisRelated								
+Q9H0P0	Q9H0P0-4		binding site	bind	203	205				notDisRelated			17405878					
+Q9H0P0	Q9H0P0-4		binding site	bind	252	253				notDisRelated								
+Q9H0P0	Q9H0P0-4		binding site	bind	277	278				notDisRelated			17405878					
+Q9H0P0	Q9H0P0-4		modified residue	phos	278	279				notDisRelated								Phosphoserine
+Q9H0P0	Q9H0P0-4	VSP_015624	splice variant	splicing	1	52				notDisRelated			15238149					In isoform 4.
+Q9H0P0	Q9H0P0-4	VSP_021565	splice variant	splicing	1	51	MRAPSMDRAAVARVGAVASASVCALVAGVVLAQYIFTLKRKTGRKTKIIE	MTNQESAVHVK		notDisRelated			11369620,15489334					In isoform 1.
+Q9H0P0	Q9H0P0-4	VSP_015623	splice variant	splicing	1	51				notDisRelated			11369620,14702039					In isoform 3.
+Q9H0P0	Q9H0P0-4	VAR_073160	sequence variant	variant	95	96	R	G	rs766577643	disRelated	P5N deficiency	P5ND	25153905					
+Q9H0P0	Q9H0P0-4	VAR_073161	sequence variant	variant	113	114	C	R		disRelated	P5N deficiency	P5ND	18499901					reduced catalytic activity especially towards UMP
+Q9H0P0	Q9H0P0-4	VAR_023511	sequence variant	variant	137	138	D	V	rs104894025	disRelated	P5N deficiency	P5ND	11369620,15604219					reduced catalytic activity
+Q9H0P0	Q9H0P0-4	VAR_023512	sequence variant	variant	181	182	L	P		disRelated	P5N deficiency	P5ND	15238149,15604219,16461318					reduced catalytic activity in vitro; reduced protein stability in vivo, probably through increased proteasomal degradation
+Q9H0P0	Q9H0P0-4	VAR_073162	sequence variant	variant	207	208	G	R		disRelated	P5N deficiency	P5ND	16461318,18499901					reduced catalytic activity especially towards UMP
+Q9H0P0	Q9H0P0-4	VAR_023513	sequence variant	variant	229	230	N	S	rs104894028	disRelated	P5N deficiency	P5ND	12930399,15604219,15968458					almost complete loss of catalytic activity
+Q9H0P0	Q9H0P0-4	VAR_023514	sequence variant	variant	280	281	G	R	rs104894029	disRelated	P5N deficiency	P5ND	15238149,15604219,15968458					greatly reduced catalytic activity
+Q9H0P0	Q9H0P0-4	VAR_073163	sequence variant	variant	297	298	I	T		disRelated	P5N deficiency	P5ND	16461318,18499901					
+Q9H0P0	Q9H0P0-4		mutagenesis site	mutagen	88	89	D	N		disRelated			15968458					Loss of nucleotidase and phosphotransferase activity.
+Q9H0P0	Q9H0P0-4		mutagenesis site	mutagen	89	90	F	A		disRelated			15968458					Almost complete loss of nucleotidase and phosphotransferase activity.
+Q9H0P0	Q9H0P0-4		mutagenesis site	mutagen	90	91	D	N		disRelated			15968458					Loss of nucleotidase and phosphotransferase activity.
+Q9H0P0	Q9H0P0-4		mutagenesis site	mutagen	135	136	E	D		disRelated			15968458					No effect on nucleotidase activity. Almost complete loss of phosphotransferase activity.
+Q9H0P0	Q9H0P0-4		mutagenesis site	mutagen	232	233	D	N		disRelated			15968458					No effect on nucleotidase and phosphotransferase activity.
+Q9H0P0	Q9H0P0-4		mutagenesis site	mutagen	233	234	F	A		disRelated			15968458					Almost complete loss of nucleotidase and phosphotransferase activity.
+Q9H0P0	Q9H0P0-4		mutagenesis site	mutagen	234	235	D	N		disRelated			15968458					No effect on nucleotidase and phosphotransferase activity.
+Q9H0P0	Q9H0P0-4		sequence conflict	conflict	95	96	R	K		notDisRelated								In Ref. 10; AA sequence.
+Q9H0P0	Q9H0P0-4		sequence conflict	conflict	144	145	E	Q		notDisRelated								In Ref. 10; AA sequence.
+Q9H0P0	Q9H0P0-4		sequence conflict	conflict	329	330	N	R		notDisRelated								In Ref. 10; AA sequence.
+Q9H0P0	Q9H0P0-4		helix	helix	65	79				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	80	83				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	83	88				notDisRelated								
+Q9H0P0	Q9H0P0-4		turn	turn	90	93				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	96	99				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	106	112				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	118	136				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	138	141				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	142	164				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	167	170				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	170	176				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	185	195				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	199	207				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	207	217				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	224	230				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	231	234				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	237	243				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	252	259				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	260	265				notDisRelated								
+Q9H0P0	Q9H0P0-4		turn	turn	265	269				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	271	280				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	280	284				notDisRelated								
+Q9H0P0	Q9H0P0-4		turn	turn	284	288				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	292	301				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	304	313				notDisRelated								
+Q9H0P0	Q9H0P0-4		strand	beta	315	321				notDisRelated								
+Q9H0P0	Q9H0P0-4		helix	helix	326	336				notDisRelated								
+Q969T7	Q969T7-1	PRO_0000328948	chain	chain	1	301				noEvidence				7-methylguanosine phosphate-specific 5'-nucleotidase	7-methylguanosine nucleotidase	7-methylguanosine nucleotidase; cN-III-like protein; NT5C3L; Cytosolic 5'-nucleotidase 3B; N(7)-methylguanylate 5'-phosphatase; Cytosolic 5'-nucleotidase III-like protein; 1; 2		
+Q969T7	Q969T7-1		active site	enzyme act site	41	42				notDisRelated								Nucleophile
+Q969T7	Q969T7-1		active site	enzyme act site	43	44				notDisRelated								Proton donor
+Q969T7	Q969T7-1		binding site	bind	41	42				notDisRelated								
+Q969T7	Q969T7-1		binding site	bind	43	44				notDisRelated								
+Q969T7	Q969T7-1		binding site	bind	88	89				notDisRelated								
+Q969T7	Q969T7-1		binding site	bind	88	89				notDisRelated								
+Q969T7	Q969T7-1		binding site	bind	156	158				notDisRelated								
+Q969T7	Q969T7-1		binding site	bind	205	206				notDisRelated								
+Q969T7	Q969T7-1		binding site	bind	230	231				notDisRelated								
+Q969T7	Q969T7-1		modified residue	acetyl	256	257				notDisRelated								N6-acetyllysine
+Q969T7	Q969T7-1	VSP_046297	splice variant	splicing	1	9				notDisRelated			15489334					In isoform 2.
+Q969T7	Q969T7-1	VAR_042582	sequence variant	variant	209	210	A	V	rs1046403	notDisRelated			15489334					
+Q969T7	Q969T7-1	VAR_042583	sequence variant	variant	213	214	S	C	rs1046404	notDisRelated			15489334					
+Q969T7	Q969T7-1		helix	helix	1	4				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	7	10				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	18	32				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	33	36				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	36	42				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	42	47				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	49	52				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	59	62				notDisRelated								
+Q969T7	Q969T7-1		turn	turn	62	66				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	71	89				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	95	115				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	121	130				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	138	148				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	152	160				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	160	170				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	177	187				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	190	198				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	207	210				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	224	233				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	233	237				notDisRelated								
+Q969T7	Q969T7-1		turn	turn	237	241				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	246	254				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	257	268				notDisRelated								
+Q969T7	Q969T7-1		strand	beta	269	275				notDisRelated								
+Q969T7	Q969T7-1		helix	helix	279	290				notDisRelated								
+O95336	O95336		initiator methionine	init Met	1	2				notDisRelated								Removed
+O95336	O95336	PRO_0000090078	chain	chain	2	259				noEvidence				6-phosphogluconolactonase	6PGL	6PGL		
+O95336	O95336		modified residue	acetyl	2	3				notDisRelated								N-acetylalanine
+O95336	O95336		modified residue	phos	49	50				notDisRelated								Phosphoserine
+O95336	O95336		modified residue	acetyl	180	181				notDisRelated								N6-acetyllysine
+P20848	P20848		signal peptide	signal pep	1	22				notDisRelated								
+P20848	P20848	PRO_0000032410	chain	chain	22	422				noEvidence				Alpha-1-antitrypsin-related protein	ATR	ATR; PIL; ARGS; SERPINA2P; Serpin A2; Protease inhibitor 1-like		
+P20848	P20848		site	site	385	387				notDisRelated								Reactive bond
+P20848	P20848		glycosylation site	glyco	56	57				notDisRelated								N-linked (GlcNAc...) asparagine
+P20848	P20848		glycosylation site	glyco	110	111				notDisRelated								N-linked (GlcNAc...) asparagine
+P20848	P20848		glycosylation site	glyco	148	149				notDisRelated								N-linked (GlcNAc...) asparagine
+P20848	P20848		glycosylation site	glyco	274	275				notDisRelated								N-linked (GlcNAc...) asparagine
+P20848	P20848	VAR_070190	sequence variant	variant	330	331	L	P		notDisRelated	V1,V3	V1 and V3	23826168					
+P20848	P20848	VAR_070191	sequence variant	variant	342	343	E	K		notDisRelated	V1	V1	23826168					
+P20848	P20848		sequence conflict	conflict	9	10	I	V		notDisRelated								In Ref. 1; AAA51544 and 2; AGI62067.
+P20848	P20848		sequence conflict	conflict	29	30	E	G		notDisRelated								In Ref. 1; AAA51544.
+P20848	P20848		sequence conflict	conflict	67	77	ELADLSQTSN	SWLIYHNQH		notDisRelated								In Ref. 1; AAA51544.
+P20848	P20848		sequence conflict	conflict	89	90	A	R		notDisRelated								In Ref. 1; AAA51544.
+P20848	P20848		sequence conflict	conflict	229	230	H	R		notDisRelated								In Ref. 1; AAA51544 and 2; AGI62067.
+P20848	P20848		sequence conflict	conflict	403	405	DD	EY		notDisRelated								In Ref. 1; AAA51544.
+P01009	P01009-1		signal peptide	signal pep	1	25				notDisRelated			1906855					
+P01009	P01009-1	PRO_0000032377	chain	chain	25	419				notDisRelated			6093867	Alpha-1-antitrypsin	ORFPRO0684	ORFPRO0684; ORFPRO2209; PI; AAT; Serpin A1; Alpha-1-antiproteinase; Alpha-1 protease inhibitor; 1; 2; 3		
+P01009	P01009-1	PRO_0000364030	peptide	peptide	375	419				noEvidence				Short peptide from AAT	SPAAT			Reversible chymotrypsin inhibitor. It also inhibits elastase, but not trypsin. Its major physiological function is the protection of the lower respiratory tract against proteolytic destruction by human leukocyte elastase (HLE).
+P01009	P01009-1		region of interest	interest	368	393				noEvidence								RCL
+P01009	P01009-1		site	site	352	354				notDisRelated			3533918					Microbial infection) Cleavage; by Staphylococcus aureus aureolysin/Aur
+P01009	P01009-1		site	site	354	356				notDisRelated			3533918					Microbial infection) Cleavage; by Staphylococcus aureus serine and cysteine proteinases
+P01009	P01009-1		site	site	382	384				noEvidence								Reactive bond
+P01009	P01009-1		modified residue	phos	38	39				notDisRelated			26091039					Phosphoserine; by FAM20C
+P01009	P01009-1		modified residue	modif	256	257				noEvidence								S-cysteinyl cysteine
+P01009	P01009-1		modified residue	phos	383	384				notDisRelated								Phosphoserine
+P01009	P01009-1		glycosylation site	glyco	70	71				notDisRelated			12754519,14760718,15084671,16263699,16335952,16622833,19159218,19838169,22171320					N-linked (GlcNAc...) (complex) asparagine
+P01009	P01009-1		glycosylation site	glyco	107	108				notDisRelated			16335952,16622833,19139490,19159218,19838169					N-linked (GlcNAc...) (complex) asparagine
+P01009	P01009-1		glycosylation site	glyco	271	272				notDisRelated			12754519,14760718,15084671,16335952,16622833,19139490,19159218,19838169,22171320					N-linked (GlcNAc...) (complex) asparagine
+P01009	P01009-1	VSP_028890	splice variant	splicing	307	419				notDisRelated								In isoform 3.
+P01009	P01009-1	VSP_028889	splice variant	splicing	356	419	AVHKAVLTIDEKGTEAAGAMFLEAIPMSIPPEVKFNKPFVFLMIEQNTKSPLFMGKVVNPTQK	VRSP		notDisRelated								In isoform 2.
+P01009	P01009-1	VAR_006978	sequence variant	variant	4	5	S	L		disRelated	Z-Wrexham	Z-Wrexham	2227940					
+P01009	P01009-1	VAR_006979	sequence variant	variant	26	27	D	A	rs199422212	notDisRelated	V-Munich	V-Munich	2316526					
+P01009	P01009-1	VAR_051938	sequence variant	variant	37	38	T	A	rs11558262	noEvidence								
+P01009	P01009-1	VAR_006980	sequence variant	variant	58	59	A	T	rs149319176	notDisRelated	M5-Karlsruhe	M5-Karlsruhe	7977369					
+P01009	P01009-1	VAR_006981	sequence variant	variant	63	64	R	C	rs28931570	notDisRelated	I	I	2606478					
+P01009	P01009-1	VAR_006982	sequence variant	variant	65	66	L	P	rs28931569	notDisRelated	M-Procida	M-Procida	3262617					
+P01009	P01009-1	VAR_006983	sequence variant	variant	69	70	S	F	rs199687431	notDisRelated	M6-Bonn	M6-Bonn	7977369					
+P01009	P01009-1	VAR_006984	sequence variant	variant	75	76				notDisRelated	M-Malton, M-Nichinan,M-Palermo	M-Malton, M-Nichinan and M-Palermo	2309708,2606478,2786335,7977369					associated with very low serum levels of AAT; homozygosity for allele M-Malton may be associated with a risk for chronic emphysema or infantile liver cirrhosis
+P01009	P01009-1	VAR_006985	sequence variant	variant	77	78	S	F	rs55819880	disRelated	S-Iiyama	S-Iiyama	1905728					
+P01009	P01009-1	VAR_006986	sequence variant	variant	84	85	A	T	rs111850950	notDisRelated	M6-Passau	M6-Passau	7977369					
+P01009	P01009-1	VAR_006987	sequence variant	variant	91	92	G	E	rs28931568	notDisRelated	M-Mineral springs	M-Mineral springs	1967187					causes reduced AAT secretion
+P01009	P01009-1	VAR_006988	sequence variant	variant	92	93	T	I	rs1490133295	disRelated	QO-Lisbon	QO-Lisbon						deficient AAT with very low serum levels
+P01009	P01009-1	VAR_011620	sequence variant	variant	109	110	T	M	rs199422213	notDisRelated	Z-Bristol	Z-Bristol	9459000					deficient AA; disrupts the N-glycosylation site N-107
+P01009	P01009-1	VAR_006989	sequence variant	variant	112	113	P	T	rs886044322	notDisRelated	M5-Berlin	M5-Berlin	7977369					
+P01009	P01009-1	VAR_006990	sequence variant	variant	116	117	I	N	rs28931572	notDisRelated	QO-Ludwigshafen	QO-Ludwigshafen	2254451					
+P01009	P01009-1	VAR_006991	sequence variant	variant	125	126	R	H	rs709932	disRelated	M2	M2						associated with D-400
+P01009	P01009-1	VAR_006992	sequence variant	variant	139	140	G	S	rs11558261	disRelated	QO-Newport	QO-Newport	2227940					
+P01009	P01009-1	VAR_006993	sequence variant	variant	172	173	G	R	rs112030253	notDisRelated	V,M-Nichinan	V and M-Nichinan	7977369					
+P01009	P01009-1	VAR_006994	sequence variant	variant	172	173	G	W	rs112030253	notDisRelated	M2-Obernburg	M2-Obernburg	7977369					
+P01009	P01009-1	VAR_006995	sequence variant	variant	180	181	Q	E	rs864622051	notDisRelated	L-Frankfurt	L-Frankfurt	7977369					
+P01009	P01009-1	VAR_036746	sequence variant	variant	190	199	QGKIVDLVK	GFQNAILVR		disRelated	Aberrant form	Aberrant form						
+P01009	P01009-1	VAR_006996	sequence variant	variant	228	229	E	K	rs199422208	disRelated	X	X						
+P01009	P01009-1	VAR_006997	sequence variant	variant	237	238	V	A	rs6647	notDisRelated	M1A,Z	M1A and Z	17650587,23826168					associated with K-366 in Z
+P01009	P01009-1	VAR_006998	sequence variant	variant	247	248	R	C	rs28929470	notDisRelated	F	F	2035534					
+P01009	P01009-1	VAR_006999	sequence variant	variant	280	281	D	V	rs121912714	notDisRelated	P-Duarte/P-Cardiff/P-Lowell	P-Duarte/P-Cardiff/P-Lowell	10651487,2606478,8364590					associated with H-415 in Y-Barcelona
+P01009	P01009-1	VAR_007000	sequence variant	variant	288	289	E	V	rs17580	notDisRelated	S,T	S and T	23826168					
+P01009	P01009-1	VAR_009216	sequence variant	variant	305	306				notDisRelated	Basque	Basque	10612848					
+P01009	P01009-1	VAR_007001	sequence variant	variant	354	355	S	F	rs201788603	notDisRelated	S-Munich	S-Munich	7977369					
+P01009	P01009-1	VAR_007002	sequence variant	variant	360	361	A	T	rs1802959	disRelated	W-Bethesda	W-Bethesda	2390072					
+P01009	P01009-1	VAR_007003	sequence variant	variant	365	366	D	N	rs143370956	notDisRelated	P-St.Albans/P-Donauwoerth	P-St.Albans/P-Donauwoerth	7977369					
+P01009	P01009-1	VAR_007004	sequence variant	variant	366	367	E	K	rs28929474	notDisRelated	Z/Z-Augsburg/Z-Tun	Z/Z-Augsburg/Z-Tun	2339709,23826168					associated with A-237 in Z
+P01009	P01009-1	VAR_007005	sequence variant	variant	382	383	M	R	rs121912713	notDisRelated	Pittsburgh	Pittsburgh	12860985,26797521,6604220					has antithrombin activity; inhibits factor VIIa activity; causes fatal bleeding diathesis
+P01009	P01009-1	VAR_007006	sequence variant	variant	386	387	P	H	rs569384943	notDisRelated	Sao Tome	Sao Tome						
+P01009	P01009-1	VAR_007007	sequence variant	variant	386	387	P	T	rs12233	notDisRelated	L-Offenbach	L-Offenbach	7977369					
+P01009	P01009-1	VAR_007008	sequence variant	variant	387	388	E	K	rs121912712	disRelated	Christchurch	Christchurch						
+P01009	P01009-1	VAR_007009	sequence variant	variant	393	394	P	L	rs199422209	notDisRelated	M-Heerlen	M-Heerlen	2784123					
+P01009	P01009-1	VAR_007010	sequence variant	variant	400	401	E	D	rs1303	notDisRelated	M2,M3	M2 and M3	17650587,2394452					associated with H-125 in M2
+P01009	P01009-1	VAR_007011	sequence variant	variant	415	416	P	H		notDisRelated	Y-Barcelona	Y-Barcelona	10651487					associated with V-280
+P01009	P01009-1		mutagenesis site	mutagen	382	383	M	V		notDisRelated			6387509					Oxidation-resistant inhibitor of therapeutic importance.
+P01009	P01009-1		sequence conflict	conflict	12	13				notDisRelated								In Ref. 4; AAA51546.
+P01009	P01009-1		sequence conflict	conflict	23	24	L	P		notDisRelated								In Ref. 11; BAG38005.
+P01009	P01009-1		sequence conflict	conflict	26	27	D	H		notDisRelated								In Ref. 18; AA sequence.
+P01009	P01009-1		sequence conflict	conflict	39	40	H	L		notDisRelated								In Ref. 18; AA sequence.
+P01009	P01009-1		sequence conflict	conflict	61	62	L	P		notDisRelated								In Ref. 9; AAF29581.
+P01009	P01009-1		sequence conflict	conflict	96	97	T	A		notDisRelated								In Ref. 7; ABG73380.
+P01009	P01009-1		sequence conflict	conflict	139	141	GN	DG		notDisRelated								In Ref. 1; AAB59375.
+P01009	P01009-1		sequence conflict	conflict	174	175	T	H		notDisRelated								In Ref. 4; AAA51546.
+P01009	P01009-1		sequence conflict	conflict	229	230	E	D		notDisRelated								In Ref. 4; AAA51546.
+P01009	P01009-1		sequence conflict	conflict	273	274	T	N		notDisRelated								In Ref. 1; AAB59375.
+P01009	P01009-1		sequence conflict	conflict	280	281	D	G		notDisRelated								In Ref. 7; ABG73380.
+P01009	P01009-1		sequence conflict	conflict	326	327	V	I		notDisRelated								In Ref. 3; CAA25838.
+P01009	P01009-1		sequence conflict	conflict	410	411	G	L		notDisRelated								In Ref. 24; AA sequence.
+P01009	P01009-1		sequence conflict	conflict	414	415	N	S		notDisRelated								In Ref. 24; AA sequence.
+P01009	P01009-1		turn	turn	48	51				notDisRelated								
+P01009	P01009-1		helix	helix	51	69				notDisRelated								
+P01009	P01009-1		strand	beta	70	73				notDisRelated								
+P01009	P01009-1		strand	beta	74	77				notDisRelated								
+P01009	P01009-1		helix	helix	78	90				notDisRelated								
+P01009	P01009-1		helix	helix	94	104				notDisRelated								
+P01009	P01009-1		turn	turn	108	111				notDisRelated								
+P01009	P01009-1		helix	helix	113	128				notDisRelated								
+P01009	P01009-1		helix	helix	130	134				notDisRelated								
+P01009	P01009-1		strand	beta	135	146				notDisRelated								
+P01009	P01009-1		strand	beta	146	149				notDisRelated								
+P01009	P01009-1		helix	helix	152	163				notDisRelated								
+P01009	P01009-1		strand	beta	164	170				notDisRelated								
+P01009	P01009-1		strand	beta	171	174				notDisRelated								
+P01009	P01009-1		helix	helix	174	189				notDisRelated								
+P01009	P01009-1		turn	turn	189	192				notDisRelated								
+P01009	P01009-1		strand	beta	206	221				notDisRelated								
+P01009	P01009-1		helix	helix	224	227				notDisRelated								
+P01009	P01009-1		strand	beta	228	236				notDisRelated								
+P01009	P01009-1		strand	beta	238	257				notDisRelated								
+P01009	P01009-1		turn	turn	257	261				notDisRelated								
+P01009	P01009-1		strand	beta	261	280				notDisRelated								
+P01009	P01009-1		strand	beta	280	283				notDisRelated								
+P01009	P01009-1		helix	helix	284	291				notDisRelated								
+P01009	P01009-1		helix	helix	293	302				notDisRelated								
+P01009	P01009-1		strand	beta	306	314				notDisRelated								
+P01009	P01009-1		strand	beta	315	323				notDisRelated								
+P01009	P01009-1		helix	helix	324	330				notDisRelated								
+P01009	P01009-1		helix	helix	334	337				notDisRelated								
+P01009	P01009-1		turn	turn	337	340				notDisRelated								
+P01009	P01009-1		turn	turn	343	346				notDisRelated								
+P01009	P01009-1		strand	beta	347	350				notDisRelated								
+P01009	P01009-1		strand	beta	351	365				notDisRelated								
+P01009	P01009-1		strand	beta	366	382				notDisRelated								
+P01009	P01009-1		strand	beta	387	390				notDisRelated								
+P01009	P01009-1		strand	beta	394	401				notDisRelated								
+P01009	P01009-1		turn	turn	401	404				notDisRelated								
+P01009	P01009-1		strand	beta	406	415				notDisRelated								
+A8K2U0	A8K2U0-1		signal peptide	signal pep	1	18				notDisRelated								
+A8K2U0	A8K2U0-1	PRO_0000318074	chain	chain	18	1455				notDisRelated				Alpha-2-macroglobulin-like protein 1	CPAMD9	CPAMD9; C3 and PZP-like alpha-2-macroglobulin domain-containing protein 9; 1; 2		
+A8K2U0	A8K2U0-1		region of interest	interest	695	727				notDisRelated								Bait region
+A8K2U0	A8K2U0-1		glycosylation site	glyco	120	121				notDisRelated								N-linked (GlcNAc...) asparagine
+A8K2U0	A8K2U0-1		glycosylation site	glyco	281	282				notDisRelated								N-linked (GlcNAc...) asparagine
+A8K2U0	A8K2U0-1		glycosylation site	glyco	409	410				notDisRelated								N-linked (GlcNAc...) asparagine
+A8K2U0	A8K2U0-1		glycosylation site	glyco	857	858				notDisRelated								N-linked (GlcNAc...) asparagine
+A8K2U0	A8K2U0-1		glycosylation site	glyco	1020	1021				notDisRelated								N-linked (GlcNAc...) asparagine
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	40	79				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	241	292				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	259	280				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	464	558				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	589	770				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	819	848				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	845	882				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	919	1308				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	1075	1124				notDisRelated								
+A8K2U0	A8K2U0-1		disulfide bond	disulf bond	1338	1454				notDisRelated								
+A8K2U0	A8K2U0-1		cross-link	cross-link	970	974				notDisRelated								Isoglutamyl cysteine thioester (Cys-Gln
+A8K2U0	A8K2U0-1	VSP_057135	splice variant	splicing	2	493				notDisRelated			14702039					In isoform 2.
+A8K2U0	A8K2U0-1	VAR_055463	sequence variant	variant	207	208	G	R	rs11047499	noEvidence								
+A8K2U0	A8K2U0-1	VAR_081009	sequence variant	variant	255	1455				disRelated			26121085					Risk factor for otitis media
+A8K2U0	A8K2U0-1	VAR_081010	sequence variant	variant	296	297	V	A	rs192888493	disRelated			26121085					
+A8K2U0	A8K2U0-1	VAR_081011	sequence variant	variant	356	357	P	R	rs863224953	disRelated			26121085					May be a risk factor for otitis media
+A8K2U0	A8K2U0-1	VAR_059083	sequence variant	variant	850	851	D	E	rs1860926	notDisRelated			14702039,17974005					
+A8K2U0	A8K2U0-1	VAR_081012	sequence variant	variant	893	1455				disRelated			26121085					Risk factor for otitis media
+A8K2U0	A8K2U0-1	VAR_055464	sequence variant	variant	970	971	C	Y	rs1558526	noEvidence								
+A8K2U0	A8K2U0-1	VAR_081013	sequence variant	variant	972	1455				disRelated			26121085					Risk factor for otitis media
+A8K2U0	A8K2U0-1	VAR_081014	sequence variant	variant	1001	1002	R	W	rs201725377	disRelated			26121085					May be a risk factor for otitis media
+A8K2U0	A8K2U0-1	VAR_071854	sequence variant	variant	1122	1123	R	W	rs1860967	notDisRelated			14702039,17974005					
+A8K2U0	A8K2U0-1	VAR_055465	sequence variant	variant	1131	1132	T	M	rs7959680	noEvidence								
+A8K2U0	A8K2U0-1	VAR_059084	sequence variant	variant	1229	1230	H	R	rs10219561	notDisRelated			14702039,17974005					
+A8K2U0	A8K2U0-1	VAR_071855	sequence variant	variant	1257	1258	M	V	rs7308811	notDisRelated			14702039,17974005					
+A8K2U0	A8K2U0-1	VAR_071856	sequence variant	variant	1312	1313	T	M	rs201083574	notDisRelated			14702039					
+A8K2U0	A8K2U0-1	VAR_055466	sequence variant	variant	1412	1413	T	A	rs7315591	noEvidence								
+A8K2U0	A8K2U0-1	VAR_081015	sequence variant	variant	1431	1432	A	V	rs863224955	disRelated			26121085					
+A8K2U0	A8K2U0-1		sequence conflict	conflict	733	734	F	L		notDisRelated								In Ref. 1; BAC85654/BAF83044.
+A8K2U0	A8K2U0-1		sequence conflict	conflict	748	749	G	E		notDisRelated								In Ref. 2; AL832139.
+A8K2U0	A8K2U0-1		sequence conflict	conflict	1150	1151	M	I		notDisRelated								In Ref. 1; BAF83044.
+A8K2U0	A8K2U0-1		sequence conflict	conflict	1248	1249	L	P		notDisRelated								In Ref. 1; BAC85654.
+A8K2U0	A8K2U0-1		sequence conflict	conflict	1452	1453	P	L		notDisRelated								In Ref. 2; AL832139.
+A7E2S9	A7E2S9-1	PRO_0000341256	chain	chain	1	259				noEvidence				Putative ankyrin repeat domain-containing protein 30B-like	NCRNA00164	NCRNA00164; 1; 2		
+A7E2S9	A7E2S9-1		repeat	repeat	71	101				noEvidence								ANK 1
+A7E2S9	A7E2S9-1		repeat	repeat	104	134				noEvidence								ANK 2
+A7E2S9	A7E2S9-1		repeat	repeat	137	167				noEvidence								ANK 3
+A7E2S9	A7E2S9-1		repeat	repeat	170	200				noEvidence								ANK 4
+A7E2S9	A7E2S9-1		region of interest	interest	1	22				notDisRelated								Disordered
+A7E2S9	A7E2S9-1		region of interest	interest	216	259				notDisRelated								Disordered
+A7E2S9	A7E2S9-1		compositionally biased region	biased	216	232				notDisRelated								Polar residues
+A7E2S9	A7E2S9-1	VSP_039808	splice variant	splicing	206	259	VHQQLLEYKQKISKNSQNSNPEGTSEGTPDEAAPLAERTPDTAESLVERTPDE	TALMLAICHGSSEIVGKLLQQNVDICAEATCGMIAERYAVACGFNL		notDisRelated			15489334					In isoform 2.
+P29274	P29274	PRO_0000068999	chain	chain	1	413				noEvidence				Adenosine receptor A2a	ADORA2	ADORA2		
+P29274	P29274		topological domain	topo	1	8				notDisRelated			18832607					Extracellular
+P29274	P29274		transmembrane region	transmem	8	33				noEvidence								Helical; Name=1
+P29274	P29274		topological domain	topo	33	43				notDisRelated			18832607					Cytoplasmic
+P29274	P29274		transmembrane region	transmem	43	67				noEvidence								Helical; Name=2
+P29274	P29274		topological domain	topo	67	78				notDisRelated			18832607					Extracellular
+P29274	P29274		transmembrane region	transmem	78	101				noEvidence								Helical; Name=3
+P29274	P29274		topological domain	topo	101	121				notDisRelated			18832607					Cytoplasmic
+P29274	P29274		transmembrane region	transmem	121	144				noEvidence								Helical; Name=4
+P29274	P29274		topological domain	topo	144	174				notDisRelated			18832607					Extracellular
+P29274	P29274		transmembrane region	transmem	174	199				noEvidence								Helical; Name=5
+P29274	P29274		topological domain	topo	199	235				notDisRelated			18832607					Cytoplasmic
+P29274	P29274		transmembrane region	transmem	235	259				noEvidence								Helical; Name=6
+P29274	P29274		topological domain	topo	259	267				notDisRelated			18832607					Extracellular
+P29274	P29274		transmembrane region	transmem	267	291				noEvidence								Helical; Name=7
+P29274	P29274		topological domain	topo	291	413				notDisRelated			18832607					Cytoplasmic
+P29274	P29274		region of interest	interest	391	413				notDisRelated								Disordered
+P29274	P29274		binding site	bind	169	170				notDisRelated			21593763					
+P29274	P29274		binding site	bind	253	254				notDisRelated			21593763					
+P29274	P29274		binding site	bind	277	278				notDisRelated			21593763					
+P29274	P29274		binding site	bind	278	279				notDisRelated			21593763					
+P29274	P29274		glycosylation site	glyco	154	155				notDisRelated								N-linked (GlcNAc...) asparagine
+P29274	P29274		disulfide bond	disulf bond	71	160				notDisRelated			18832607					
+P29274	P29274		disulfide bond	disulf bond	74	147				notDisRelated			18832607					
+P29274	P29274		disulfide bond	disulf bond	77	167				notDisRelated			18832607					
+P29274	P29274		disulfide bond	disulf bond	259	263				notDisRelated			18832607					
+P29274	P29274	VAR_011835	sequence variant	variant	50	51	A	V	rs4530	notDisRelated			10391209					
+P29274	P29274	VAR_011836	sequence variant	variant	300	301	R	H	rs4990	noEvidence								
+P29274	P29274	VAR_003451	sequence variant	variant	392	393	G	R	rs1277013918	noEvidence								
+P29274	P29274		helix	helix	2	34				notDisRelated								
+P29274	P29274		helix	helix	35	38				notDisRelated								
+P29274	P29274		helix	helix	40	58				notDisRelated								
+P29274	P29274		helix	helix	59	68				notDisRelated								
+P29274	P29274		strand	beta	71	74				notDisRelated								
+P29274	P29274		helix	helix	74	108				notDisRelated								
+P29274	P29274		helix	helix	109	116				notDisRelated								
+P29274	P29274		helix	helix	118	137				notDisRelated								
+P29274	P29274		helix	helix	138	142				notDisRelated								
+P29274	P29274		strand	beta	144	149				notDisRelated								
+P29274	P29274		helix	helix	151	158				notDisRelated								
+P29274	P29274		strand	beta	163	166				notDisRelated								
+P29274	P29274		helix	helix	168	172				notDisRelated								
+P29274	P29274		helix	helix	174	180				notDisRelated								
+P29274	P29274		helix	helix	182	186				notDisRelated								
+P29274	P29274		helix	helix	187	209				notDisRelated								
+P29274	P29274		strand	beta	213	217				notDisRelated								
+P29274	P29274		helix	helix	219	259				notDisRelated								
+P29274	P29274		strand	beta	260	263				notDisRelated								
+P29274	P29274		helix	helix	267	292				notDisRelated								
+P29274	P29274		helix	helix	293	304				notDisRelated								
+P29274	P29274		turn	turn	304	308				notDisRelated								
+P29274	P29274		turn	turn	308	311				notDisRelated								
+P29274	P29274		helix	helix	312	318				notDisRelated								
+P29275	P29275	PRO_0000069003	chain	chain	1	333				noEvidence				Adenosine receptor A2b				
+P29275	P29275		topological domain	topo	1	9				notDisRelated								Extracellular
+P29275	P29275		transmembrane region	transmem	9	34				notDisRelated								Helical; Name=1
+P29275	P29275		topological domain	topo	34	44				notDisRelated								Cytoplasmic
+P29275	P29275		transmembrane region	transmem	44	68				notDisRelated								Helical; Name=2
+P29275	P29275		topological domain	topo	68	79				notDisRelated								Extracellular
+P29275	P29275		transmembrane region	transmem	79	102				notDisRelated								Helical; Name=3
+P29275	P29275		topological domain	topo	102	122				notDisRelated								Cytoplasmic
+P29275	P29275		transmembrane region	transmem	122	145				notDisRelated								Helical; Name=4
+P29275	P29275		topological domain	topo	145	179				notDisRelated								Extracellular
+P29275	P29275		transmembrane region	transmem	179	204				notDisRelated								Helical; Name=5
+P29275	P29275		topological domain	topo	204	236				notDisRelated								Cytoplasmic
+P29275	P29275		transmembrane region	transmem	236	260				notDisRelated								Helical; Name=6
+P29275	P29275		topological domain	topo	260	268				notDisRelated								Extracellular
+P29275	P29275		transmembrane region	transmem	268	292				notDisRelated								Helical; Name=7
+P29275	P29275		topological domain	topo	292	333				notDisRelated								Cytoplasmic
+P29275	P29275		binding site	bind	174	175				notDisRelated								
+P29275	P29275		binding site	bind	254	255				notDisRelated								
+P29275	P29275		binding site	bind	279	280				notDisRelated								
+P29275	P29275		binding site	bind	280	281				notDisRelated								
+P29275	P29275		lipid moiety-binding region	lipid	311	312				notDisRelated								S-palmitoyl cysteine
+P29275	P29275		glycosylation site	glyco	153	154				notDisRelated								N-linked (GlcNAc...) asparagine
+P29275	P29275		glycosylation site	glyco	163	164				notDisRelated								N-linked (GlcNAc...) asparagine
+P29275	P29275		disulfide bond	disulf bond	78	172				notDisRelated								
+P0DMS8	P0DMS8-1	PRO_0000069010	chain	chain	1	319				noEvidence				Adenosine receptor A3	2	2; 1; 3; A3AR; A3AR i2; A3AR i1; A3AR i3; TMIGD3 i1; TMIGD3 i3		
+P0DMS8	P0DMS8-1		topological domain	topo	1	15				notDisRelated								Extracellular
+P0DMS8	P0DMS8-1		transmembrane region	transmem	15	38				notDisRelated								Helical; Name=1
+P0DMS8	P0DMS8-1		topological domain	topo	38	49				notDisRelated								Cytoplasmic
+P0DMS8	P0DMS8-1		transmembrane region	transmem	49	73				notDisRelated								Helical; Name=2
+P0DMS8	P0DMS8-1		topological domain	topo	73	85				notDisRelated								Extracellular
+P0DMS8	P0DMS8-1		transmembrane region	transmem	85	107				notDisRelated								Helical; Name=3
+P0DMS8	P0DMS8-1		topological domain	topo	107	127				notDisRelated								Cytoplasmic
+P0DMS8	P0DMS8-1		transmembrane region	transmem	127	149				notDisRelated								Helical; Name=4
+P0DMS8	P0DMS8-1		topological domain	topo	149	178				notDisRelated								Extracellular
+P0DMS8	P0DMS8-1		transmembrane region	transmem	178	199				notDisRelated								Helical; Name=5
+P0DMS8	P0DMS8-1		topological domain	topo	199	232				notDisRelated								Cytoplasmic
+P0DMS8	P0DMS8-1		transmembrane region	transmem	232	256				notDisRelated								Helical; Name=6
+P0DMS8	P0DMS8-1		topological domain	topo	256	262				notDisRelated								Extracellular
+P0DMS8	P0DMS8-1		transmembrane region	transmem	262	285				notDisRelated								Helical; Name=7
+P0DMS8	P0DMS8-1		topological domain	topo	285	319				notDisRelated								Cytoplasmic
+P0DMS8	P0DMS8-1		lipid moiety-binding region	lipid	303	304				notDisRelated								S-palmitoyl cysteine
+P0DMS8	P0DMS8-1		glycosylation site	glyco	3	4				notDisRelated								N-linked (GlcNAc...) asparagine
+P0DMS8	P0DMS8-1		glycosylation site	glyco	4	5				notDisRelated								N-linked (GlcNAc...) asparagine
+P0DMS8	P0DMS8-1		glycosylation site	glyco	12	13				notDisRelated								N-linked (GlcNAc...) asparagine
+P0DMS8	P0DMS8-1		disulfide bond	disulf bond	83	167				notDisRelated								
+P0DMS8	P0DMS8-1	VAR_035755	sequence variant	variant	105	106	A	T	rs746154553	notDisRelated	a colorectal cancer sample	a colorectal cancer sample	16959974					somatic mutation
+P0DMS8	P0DMS8-1	VAR_049366	sequence variant	variant	248	249	I	L	rs35511654	notDisRelated								
+P0DMS8	P0DMS8-1	VAR_049367	sequence variant	variant	266	267	M	K	rs2800889	noEvidence								
+P0DMS8	P0DMS8-1		sequence conflict	conflict	7	8	A	T		notDisRelated								In Ref. 1; AAA16365.
+P0DMS8	P0DMS8-1		sequence conflict	conflict	175	176	D	V		notDisRelated								In Ref. 8; AAG35155.
+Q6PD74	Q6PD74-1	PRO_0000058134	chain	chain	1	316				noEvidence				Alpha- and gamma-adaptin-binding protein p34	1	1; 2		
+Q6PD74	Q6PD74-1		region of interest	interest	197	235				notDisRelated								Disordered
+Q6PD74	Q6PD74-1		compositionally biased region	biased	220	235				notDisRelated								Polar residues
+Q6PD74	Q6PD74-1		modified residue	phos	310	311				notDisRelated								Phosphoserine
+Q6PD74	Q6PD74-1		modified residue	phos	311	312				notDisRelated								Phosphoserine
+Q6PD74	Q6PD74-1	VSP_054597	splice variant	splicing	1	110				notDisRelated			14702039					In isoform 2.
+Q6PD74	Q6PD74-1	VAR_021533	sequence variant	variant	132	133	I	L	rs7173826	notDisRelated			11230166,14702039					
+Q6PD74	Q6PD74-1		sequence conflict	conflict	26	27	I	T		notDisRelated								In Ref. 1; CAB66649 and 3; CAG38571.
+Q6PD74	Q6PD74-1		sequence conflict	conflict	77	78	V	A		notDisRelated								In Ref. 3; CAG38571.
+Q6PD74	Q6PD74-1		sequence conflict	conflict	88	89	Q	R		notDisRelated								In Ref. 1; CAB66649 and 3; CAG38571.
+Q6PD74	Q6PD74-1		sequence conflict	conflict	131	132	C	S		notDisRelated								In Ref. 1; CAB66649 and 3; CAG38571.
+Q6PD74	Q6PD74-1		sequence conflict	conflict	265	266	L	P		notDisRelated								In Ref. 1; CAB66649 and 3; CAG38571.
+Q6PD74	Q6PD74-1		sequence conflict	conflict	313	314	E	G		notDisRelated								In Ref. 1; CAB66649 and 3; CAG38571.
+Q8N139	Q8N139-1	PRO_0000250672	chain	chain	1	1618				noEvidence				ATP-binding cassette sub-family A member 6	1	1; 2; 3; ABCA6delta-139		
+Q8N139	Q8N139-1		transmembrane region	transmem	31	52				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	222	243				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	268	289				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	297	318				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	327	348				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	355	376				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	397	418				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	854	875				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	1007	1028				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	1062	1083				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	1094	1115				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	1127	1148				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	1150	1171				notDisRelated								Helical
+Q8N139	Q8N139-1		transmembrane region	transmem	1194	1215				notDisRelated								Helical
+Q8N139	Q8N139-1		domain	domain	478	714				notDisRelated								ABC transporter 1
+Q8N139	Q8N139-1		domain	domain	1288	1514				notDisRelated								ABC transporter 2
+Q8N139	Q8N139-1		binding site	bind	514	522				notDisRelated								
+Q8N139	Q8N139-1		binding site	bind	1320	1328				notDisRelated								
+Q8N139	Q8N139-1		glycosylation site	glyco	84	85				notDisRelated								N-linked (GlcNAc...) asparagine
+Q8N139	Q8N139-1		glycosylation site	glyco	109	110				notDisRelated								N-linked (GlcNAc...) asparagine
+Q8N139	Q8N139-1		glycosylation site	glyco	940	941				notDisRelated			19159218					N-linked (GlcNAc...) asparagine
+Q8N139	Q8N139-1	VSP_020695	splice variant	splicing	154	186	AHCWDGYGEFSCTLTKYWNRGFVALQTAINTA	GDFPYQISLWNFSCFQHKEQRRLGNRDAFNDT		notDisRelated			15489334					In isoform 3.
+Q8N139	Q8N139-1	VSP_020696	splice variant	splicing	186	1618				notDisRelated			15489334					In isoform 3.
+Q8N139	Q8N139-1	VSP_020697	splice variant	splicing	636	638	LL	EK		notDisRelated								In isoform 2.
+Q8N139	Q8N139-1	VSP_020698	splice variant	splicing	638	1618				notDisRelated								In isoform 2.
+Q8N139	Q8N139-1	VAR_027576	sequence variant	variant	282	283	V	I	rs4968839	notDisRelated								
+Q8N139	Q8N139-1	VAR_027577	sequence variant	variant	610	611	N	Y	rs9282554	noEvidence								
+Q8N139	Q8N139-1	VAR_027578	sequence variant	variant	698	699	M	I	rs9282553	noEvidence								
+Q8N139	Q8N139-1	VAR_027579	sequence variant	variant	875	876	M	I	rs7212506	notDisRelated								
+Q8N139	Q8N139-1	VAR_027580	sequence variant	variant	1322	1323	N	S	rs2302134	notDisRelated			14702039					
+Q8N139	Q8N139-1		sequence conflict	conflict	51	52	M	L		notDisRelated								In Ref. 3; AAH70125.
+Q8N139	Q8N139-1		sequence conflict	conflict	147	148	L	R		notDisRelated								In Ref. 3; AAH70125.
+Q8N139	Q8N139-1		sequence conflict	conflict	812	813	E	G		notDisRelated								In Ref. 4; BAC04994.
+Q8N139	Q8N139-1		sequence conflict	conflict	875	877	MY	IH		notDisRelated								In Ref. 4; BAC04994.
+Q8IZY2	Q8IZY2-1	PRO_0000250674	chain	chain	1	2147				noEvidence				Phospholipid-transporting ATPase ABCA7	ABCA-SSN	ABCA-SSN; Autoantigen SS-N; Macrophage ABC transporter; ATP-binding cassette sub-family A member 7; 1; 2; Type 1; Type 2		
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	22	43				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		topological domain	topo	43	550				notDisRelated								Extracellular
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	550	571				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	593	614				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	626	647				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	655	676				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	687	708				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	727	748				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	849	870				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	1243	1264				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		topological domain	topo	1264	1538				notDisRelated								Extracellular
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	1538	1559				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	1584	1605				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	1621	1642				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	1649	1670				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	1683	1704				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		transmembrane region	transmem	1729	1750				notDisRelated								Helical
+Q8IZY2	Q8IZY2-1		domain	domain	807	1039				notDisRelated								ABC transporter 1
+Q8IZY2	Q8IZY2-1		domain	domain	1793	2026				notDisRelated								ABC transporter 2
+Q8IZY2	Q8IZY2-1		region of interest	interest	1048	1073				notDisRelated								Disordered
+Q8IZY2	Q8IZY2-1		region of interest	interest	1185	1210				notDisRelated								Disordered
+Q8IZY2	Q8IZY2-1		region of interest	interest	2104	2147				notDisRelated								Disordered
+Q8IZY2	Q8IZY2-1		compositionally biased region	biased	1048	1067				notDisRelated								Basic and acidic residues
+Q8IZY2	Q8IZY2-1		binding site	bind	841	849				notDisRelated								
+Q8IZY2	Q8IZY2-1		binding site	bind	1827	1835				notDisRelated								
+Q8IZY2	Q8IZY2-1		glycosylation site	glyco	312	313				notDisRelated								N-linked (GlcNAc...) asparagine
+Q8IZY2	Q8IZY2-1		disulfide bond	disulf bond	75	226				notDisRelated								
+Q8IZY2	Q8IZY2-1		disulfide bond	disulf bond	1345	1360				notDisRelated								
+Q8IZY2	Q8IZY2-1	VSP_020701	splice variant	splicing	1	139				notDisRelated			11355874					In isoform 2.
+Q8IZY2	Q8IZY2-1	VSP_020702	splice variant	splicing	139	167	AQPQPTKQSPLEPPMLDVAELLTSLLRT	MVCLGTGQSAGPLVSVQNHCPPCGLSPQ		notDisRelated			11355874					In isoform 2.
+Q8IZY2	Q8IZY2-1	VAR_027581	sequence variant	variant	188	189	E	G	rs3764645	notDisRelated			11435699,12111378					
+Q8IZY2	Q8IZY2-1	VAR_027582	sequence variant	variant	319	320	T	A	rs3752232	notDisRelated			12111378					
+Q8IZY2	Q8IZY2-1	VAR_027583	sequence variant	variant	395	396	H	R	rs3764647	notDisRelated			12111378					
+Q8IZY2	Q8IZY2-1	VAR_027584	sequence variant	variant	463	464	R	H	rs3752233	notDisRelated			12111378					
+Q8IZY2	Q8IZY2-1	VAR_060985	sequence variant	variant	676	677	A	T	rs59851484	noEvidence								
+Q8IZY2	Q8IZY2-1	VAR_027585	sequence variant	variant	718	719	N	T	rs3752239	notDisRelated			12111378					
+Q8IZY2	Q8IZY2-1	VAR_081204	sequence variant	variant	880	881	R	Q	rs143718918	disRelated	Alzheimer disease 9	AD9	29577078					
+Q8IZY2	Q8IZY2-1	VAR_027586	sequence variant	variant	1349	1350	R	Q	rs3745842	notDisRelated			10873640,11355874,12111378					
+Q8IZY2	Q8IZY2-1	VAR_027587	sequence variant	variant	1527	1528	G	A	rs3752246	notDisRelated			10873640,11095984,11355874,11435699					
+Q8IZY2	Q8IZY2-1	VAR_027588	sequence variant	variant	1686	1687	Q	R	rs4147918	notDisRelated			12111378					
+Q8IZY2	Q8IZY2-1	VAR_027589	sequence variant	variant	2045	2046	A	S	rs4147934	notDisRelated			10873640,11355874,11435699,12111378					
+Q8IZY2	Q8IZY2-1		sequence conflict	conflict	1503	1504	P	R		notDisRelated								In Ref. 1; AAF85794 and 3; BAB62294.
+Q8IZY2	Q8IZY2-1		sequence conflict	conflict	1525	1526	S	F		notDisRelated								In Ref. 1; AAF85794, 2; AAN04657 and 3; BAB62294.
+O94911	O94911-3	PRO_0000250677	chain	chain	1	1622				noEvidence				ABC-type organic anion transporter ABCA8	KIAA0822	KIAA0822; ATP-binding cassette sub-family A member 8; 3; 1; 2		
+O94911	O94911-3		transmembrane region	transmem	30	51				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	220	241				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	268	289				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	299	320				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	327	348				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	359	380				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	397	418				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	864	885				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	1019	1040				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	1070	1091				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	1106	1127				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	1136	1157				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	1161	1182				notDisRelated								Helical
+O94911	O94911-3		transmembrane region	transmem	1197	1218				notDisRelated								Helical
+O94911	O94911-3		domain	domain	480	716				notDisRelated								ABC transporter 1
+O94911	O94911-3		domain	domain	1285	1519				notDisRelated								ABC transporter 2
+O94911	O94911-3		binding site	bind	516	524				notDisRelated								
+O94911	O94911-3		binding site	bind	1323	1331				notDisRelated								
+O94911	O94911-3		glycosylation site	glyco	71	72				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	84	85				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	194	195				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	243	244				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	484	485				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	555	556				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	616	617				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	724	725				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	797	798				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	919	920				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	948	949				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	967	968				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	1270	1271				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	1308	1309				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	1373	1374				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3		glycosylation site	glyco	1435	1436				notDisRelated								N-linked (GlcNAc...) asparagine
+O94911	O94911-3	VSP_060911	splice variant	splicing	267	1622				noEvidence								In isoform 2.
+O94911	O94911-3	VSP_060912	splice variant	splicing	598	638				noEvidence								In isoform 1.
+O94911	O94911-3	VAR_027590	sequence variant	variant	256	257	T	A	rs16973446	noEvidence								
+O94911	O94911-3	VAR_027591	sequence variant	variant	331	332	G	S	rs4147979	notDisRelated			12111378					
+O94911	O94911-3	VAR_048130	sequence variant	variant	416	417	A	V	rs35621847	notDisRelated			15489334					
+O94911	O94911-3	VAR_027592	sequence variant	variant	489	490	Y	F	rs12150510	noEvidence								
+O94911	O94911-3	VAR_084139	sequence variant	variant	649	650	P	R	rs144777539	notDisRelated			28882873					Affects localization at the plasma membrane; loss of cholesterol efflux to APOA1
+O94911	O94911-3	VAR_048131	sequence variant	variant	659	660	L	R	rs35844316	noEvidence								
+O94911	O94911-3	VAR_027593	sequence variant	variant	720	721	C	G	rs16973424	noEvidence								
+O94911	O94911-3	VAR_084140	sequence variant	variant	781	1622				notDisRelated			28882873					Loss of expression; loss of cholesterol efflux to APOA1
+O94911	O94911-3	VAR_048132	sequence variant	variant	1470	1471	G	S	rs35403175	noEvidence								
+Q8IUA7	Q8IUA7-1	PRO_0000250680	chain	chain	1	1625				noEvidence				ATP-binding cassette sub-family A member 9	1	1; 2; 3; 4; 5; ABCA9delta+55; ABCA9delta+73; ABCA9delta-95		
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	31	52				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	221	244				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	269	290				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	300	321				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	329	350				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	354	375				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	398	419				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	864	885				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	1026	1047				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	1065	1086				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	1108	1129				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	1136	1157				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	1163	1184				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		transmembrane region	transmem	1200	1221				notDisRelated								Helical
+Q8IUA7	Q8IUA7-1		domain	domain	481	717				notDisRelated								ABC transporter 1
+Q8IUA7	Q8IUA7-1		domain	domain	1288	1522				notDisRelated								ABC transporter 2
+Q8IUA7	Q8IUA7-1		binding site	bind	517	525				notDisRelated								
+Q8IUA7	Q8IUA7-1		binding site	bind	1326	1334				notDisRelated								
+Q8IUA7	Q8IUA7-1		glycosylation site	glyco	120	121				notDisRelated								N-linked (GlcNAc...) asparagine
+Q8IUA7	Q8IUA7-1		glycosylation site	glyco	195	196				notDisRelated								N-linked (GlcNAc...) asparagine
+Q8IUA7	Q8IUA7-1		glycosylation site	glyco	949	950				notDisRelated			19159218					N-linked (GlcNAc...) asparagine
+Q8IUA7	Q8IUA7-1	VSP_020705	splice variant	splicing	267	1625				notDisRelated								In isoform 2.
+Q8IUA7	Q8IUA7-1	VSP_020706	splice variant	splicing	268	1625				notDisRelated			15489334					In isoform 5.
+Q8IUA7	Q8IUA7-1	VSP_020707	splice variant	splicing	1429	1430	L	VRAGLVVALQVP		notDisRelated								In isoform 3.
+Q8IUA7	Q8IUA7-1	VSP_020708	splice variant	splicing	1429	1430	L	AGDSGHL		notDisRelated								In isoform 4.
+Q8IUA7	Q8IUA7-1	VSP_020709	splice variant	splicing	1430	1625				notDisRelated								In isoform 3 and isoform 4.
+Q8IUA7	Q8IUA7-1	VAR_027594	sequence variant	variant	353	354	R	H	rs1860447	notDisRelated			14702039					
+Q8IUA7	Q8IUA7-1	VAR_027595	sequence variant	variant	785	786	N	S	rs17684521	noEvidence								
+Q8IUA7	Q8IUA7-1	VAR_027596	sequence variant	variant	1306	1307	K	T	rs2302294	notDisRelated								
+Q8IUA7	Q8IUA7-1	VAR_027597	sequence variant	variant	1356	1357	G	S	rs9916254	noEvidence								
+Q8IUA7	Q8IUA7-1		sequence conflict	conflict	1430	1431	C	R		notDisRelated								In Ref. 1; AAK30024.
+Q8WWZ4	Q8WWZ4-1	PRO_0000253572	chain	chain	1	1544				noEvidence				ATP-binding cassette sub-family A member 10	1	1; 2; 3; 4; 5; ABCA10delta+82; ABCA10delta-104; ABCA10delta-176		
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	83	104				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	135	156				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	185	206				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	210	231				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	240	261				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	264	285				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	310	331				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	774	795				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	890	911				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	926	947				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	985	1006				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	1014	1035				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	1046	1067				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	1073	1094				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		transmembrane region	transmem	1113	1134				notDisRelated								Helical
+Q8WWZ4	Q8WWZ4-1		domain	domain	391	627				notDisRelated								ABC transporter 1
+Q8WWZ4	Q8WWZ4-1		domain	domain	1206	1441				notDisRelated								ABC transporter 2
+Q8WWZ4	Q8WWZ4-1		region of interest	interest	1153	1178				notDisRelated								Disordered
+Q8WWZ4	Q8WWZ4-1		binding site	bind	427	435				notDisRelated								
+Q8WWZ4	Q8WWZ4-1		binding site	bind	1239	1247				notDisRelated								
+Q8WWZ4	Q8WWZ4-1	VSP_021061	splice variant	splicing	1	24				notDisRelated								In isoform 2.
+Q8WWZ4	Q8WWZ4-1	VSP_021062	splice variant	splicing	67	68	E	GHNKSFCNGGVDISYWNKYEDTTFHF		notDisRelated								In isoform 3.
+Q8WWZ4	Q8WWZ4-1	VSP_021063	splice variant	splicing	68	1544				notDisRelated								In isoform 3.
+Q8WWZ4	Q8WWZ4-1	VSP_021064	splice variant	splicing	413	453	IFFDIYEGQITAILGHNGAGKSTLLNILSGLSVSTEGSAT	SEERLCPAAHRLRCGERLCPAAHHLGCEERPCPAATPSGN		notDisRelated			17974005					In isoform 5.
+Q8WWZ4	Q8WWZ4-1	VSP_021065	splice variant	splicing	450	451	S	KKNYNGIRHAKHSRHYC		notDisRelated								In isoform 4.
+Q8WWZ4	Q8WWZ4-1	VSP_021066	splice variant	splicing	451	1544				notDisRelated								In isoform 4.
+Q8WWZ4	Q8WWZ4-1	VSP_021067	splice variant	splicing	453	1544				notDisRelated			17974005					In isoform 5.
+Q8WWZ4	Q8WWZ4-1	VAR_028384	sequence variant	variant	203	204	P	S	rs9909216	notDisRelated			12821155,17974005					
+Q8WWZ4	Q8WWZ4-1	VAR_028385	sequence variant	variant	287	288	I	V	rs11657804	notDisRelated			12821155,17974005					
+Q8WWZ4	Q8WWZ4-1	VAR_028386	sequence variant	variant	916	917	M	T	rs4968849	notDisRelated								
+Q8WWZ4	Q8WWZ4-1	VAR_055469	sequence variant	variant	1322	1323	R	W	rs10491178	noEvidence								
+Q8WWZ4	Q8WWZ4-1		sequence conflict	conflict	140	141	C	Y		notDisRelated								In Ref. 3; CAD89903.
+Q8WWZ4	Q8WWZ4-1		sequence conflict	conflict	159	160	R	G		notDisRelated								In Ref. 3; CAD89903.
+Q8WWZ4	Q8WWZ4-1		sequence conflict	conflict	187	188	F	S		notDisRelated								In Ref. 3; CAD89903.
+Q8WWZ4	Q8WWZ4-1		sequence conflict	conflict	324	325	L	S		notDisRelated								In Ref. 3; CAD89903.
+Q8WWZ4	Q8WWZ4-1		sequence conflict	conflict	364	365	F	L		notDisRelated								In Ref. 3; CAD89903.
+Q8WWZ4	Q8WWZ4-1		sequence conflict	conflict	1216	1217	R	I		notDisRelated								In Ref. 2; AAO72160/AAO72161 and 4; AAH51320.
+Q86UK0	Q86UK0-1	PRO_0000093300	chain	chain	1	2596				noEvidence				Glucosylceramide transporter ABCA12	ATP-binding cassette 12	ATP-binding cassette 12; ABC12; ATP-binding cassette transporter 12; ATP-binding cassette sub-family A member 12; 1; 2		
+Q86UK0	Q86UK0-1		transmembrane region	transmem	23	44				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1065	1086				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1112	1133				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1145	1166				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1174	1195				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1200	1221				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1250	1271				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1747	1768				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	1979	2000				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	2035	2056				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	2072	2093				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	2103	2124				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	2187	2208				notDisRelated								Helical
+Q86UK0	Q86UK0-1		transmembrane region	transmem	2270	2291				notDisRelated								Helical
+Q86UK0	Q86UK0-1		domain	domain	1346	1578				notDisRelated								ABC transporter 1
+Q86UK0	Q86UK0-1		domain	domain	2254	2490				notDisRelated								ABC transporter 2
+Q86UK0	Q86UK0-1		region of interest	interest	2571	2596				notDisRelated								Disordered
+Q86UK0	Q86UK0-1		binding site	bind	1378	1386				notDisRelated								
+Q86UK0	Q86UK0-1		binding site	bind	2290	2298				notDisRelated								
+Q86UK0	Q86UK0-1		glycosylation site	glyco	156	157				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	174	175				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	214	215				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	275	276				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	333	334				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	367	368				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	383	384				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	412	413				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	435	436				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	528	529				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	543	544				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	577	578				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	608	609				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	623	624				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	648	649				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	752	753				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	826	827				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	920	921				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	963	964				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1170	1171				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1524	1525				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1663	1664				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1704	1705				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1769	1770				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1819	1820				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1835	1836				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1876	1877				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1921	1922				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	1952	1953				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	2178	2179				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	2208	2209				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	2223	2224				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	2318	2319				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	2542	2543				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1		glycosylation site	glyco	2547	2548				notDisRelated								N-linked (GlcNAc...) asparagine
+Q86UK0	Q86UK0-1	VSP_011283	splice variant	splicing	1	319				notDisRelated								In isoform 2.
+Q86UK0	Q86UK0-1	VSP_011284	splice variant	splicing	319	329	LLYTLDSPAQ	MFTYIKIITS		notDisRelated								In isoform 2.
+Q86UK0	Q86UK0-1	VAR_055473	sequence variant	variant	199	200	W	C	rs16853238	noEvidence								
+Q86UK0	Q86UK0-1	VAR_055474	sequence variant	variant	237	238	N	H	rs11890512	noEvidence								
+Q86UK0	Q86UK0-1	VAR_055475	sequence variant	variant	274	275	Q	R	rs11890468	noEvidence								
+Q86UK0	Q86UK0-1	VAR_055476	sequence variant	variant	287	288	R	G	rs11891778	noEvidence								
+Q86UK0	Q86UK0-1	VAR_067075	sequence variant	variant	345	346	T	P	rs1295935868	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	17508018					skin phenotype consistent with non-bullous congenital ichthyosiform erythroderma
+Q86UK0	Q86UK0-1	VAR_067076	sequence variant	variant	387	388	S	N	rs746315995	disRelated	Ichthyosis, congenital, autosomal recessive 4B	ARCI4B	16675967					
+Q86UK0	Q86UK0-1	VAR_084428	sequence variant	variant	434	2596				disRelated	Ichthyosis, congenital, autosomal recessive 4B	ARCI4B	16007253					
+Q86UK0	Q86UK0-1	VAR_019597	sequence variant	variant	459	460	S	T	rs113112835	noEvidence								
+Q86UK0	Q86UK0-1	VAR_062663	sequence variant	variant	476	477	A	V	rs370640837	notDisRelated	a pancreatic ductal adenocarcinoma sample	a pancreatic ductal adenocarcinoma sample	18772397					somatic mutation
+Q86UK0	Q86UK0-1	VAR_027444	sequence variant	variant	550	551	E	G	rs16853149	noEvidence								
+Q86UK0	Q86UK0-1	VAR_027445	sequence variant	variant	777	778	S	T	rs7560008	notDisRelated			12697999					
+Q86UK0	Q86UK0-1	VAR_067077	sequence variant	variant	1136	1137	G	D		disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	18284401					skin phenotype consistent with non-bullous congenital ichthyosiform erythroderma
+Q86UK0	Q86UK0-1	VAR_067078	sequence variant	variant	1179	1180	G	R	rs267606622	disRelated	Ichthyosis, congenital, autosomal recessive 4B	ARCI4B	16902423					
+Q86UK0	Q86UK0-1	VAR_067079	sequence variant	variant	1235	1236	W	S		disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	19262603					skin phenotype consistent with non-bullous congenital ichthyosiform erythroderma
+Q86UK0	Q86UK0-1	VAR_027446	sequence variant	variant	1251	1252	G	D	rs13414448	noEvidence								
+Q86UK0	Q86UK0-1	VAR_019598	sequence variant	variant	1380	1381	N	S	rs28940269	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	12915478					
+Q86UK0	Q86UK0-1	VAR_019599	sequence variant	variant	1381	1382	G	E	rs28940268	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	12915478					
+Q86UK0	Q86UK0-1	VAR_084429	sequence variant	variant	1385	1386				disRelated	Ichthyosis, congenital, autosomal recessive 4B	ARCI4B	16007253					unknown pathological significance
+Q86UK0	Q86UK0-1	VAR_067080	sequence variant	variant	1494	1495	I	T	rs1263698595	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	17508018					skin phenotype consistent with non-bullous congenital ichthyosiform erythroderma
+Q86UK0	Q86UK0-1	VAR_019600	sequence variant	variant	1514	1515	R	H	rs28940270	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	12915478,19262603					
+Q86UK0	Q86UK0-1	VAR_019601	sequence variant	variant	1539	1540	E	K	rs28940271	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	12915478					
+Q86UK0	Q86UK0-1	VAR_027447	sequence variant	variant	1546	1547	R	C	rs13401480	noEvidence								
+Q86UK0	Q86UK0-1	VAR_067081	sequence variant	variant	1559	1560	G	V	rs1457513156	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	22257947					skin phenotype consistent with non-bullous congenital ichthyosiform erythroderma
+Q86UK0	Q86UK0-1	VAR_019602	sequence variant	variant	1651	1652	G	S	rs28940568	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	12915478					
+Q86UK0	Q86UK0-1	VAR_067082	sequence variant	variant	1798	1799	P	L	rs181314573	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	19262603					skin phenotype consistent with non-bullous congenital ichthyosiform erythroderma
+Q86UK0	Q86UK0-1	VAR_084430	sequence variant	variant	1950	2596				disRelated	Ichthyosis, congenital, autosomal recessive 4B	ARCI4B	16007253					unknown pathological significance
+Q86UK0	Q86UK0-1	VAR_067083	sequence variant	variant	1980	1981	T	K	rs763858530	disRelated	Ichthyosis, congenital, autosomal recessive 4A	ARCI4A	19262603					skin phenotype consistent with non-bullous congenital ichthyosiform erythroderma
+Q86UK0	Q86UK0-1	VAR_027448	sequence variant	variant	2064	2065	E	K	rs1213011	noEvidence								
+Q86UK0	Q86UK0-1	VAR_027449	sequence variant	variant	2365	2366	D	N	rs726070	notDisRelated			15756637					
+Q86UK0	Q86UK0-1		sequence conflict	conflict	651	652	Y	D		notDisRelated								In Ref. 1; AAP21093.
+Q86UK0	Q86UK0-1		sequence conflict	conflict	811	812	Y	H		notDisRelated								In Ref. 1; AAP21093.
+Q86UK0	Q86UK0-1		sequence conflict	conflict	826	827	N	D		notDisRelated								In Ref. 2; AAK54355.
+Q86UK0	Q86UK0-1		sequence conflict	conflict	2079	2080	Y	H		notDisRelated								In Ref. 1; AAP21093.
+Q86UQ4	Q86UQ4-1	PRO_0000253573	chain	chain	1	5059				noEvidence				ATP-binding cassette sub-family A member 13	1	1; 2; 3; 4; 5; 6; 7		
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	23	44				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	3568	3589				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	3607	3628				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	3648	3669				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	3679	3700				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	3709	3730				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	3752	3773				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	4226	4247				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	4458	4479				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	4504	4525				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	4536	4557				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	4568	4589				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	4607	4628				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		transmembrane region	transmem	4651	4672				notDisRelated								Helical
+Q86UQ4	Q86UQ4-1		domain	domain	3842	4075				notDisRelated								ABC transporter 1
+Q86UQ4	Q86UQ4-1		domain	domain	4718	4957				notDisRelated								ABC transporter 2
+Q86UQ4	Q86UQ4-1		binding site	bind	3875	3883				notDisRelated								
+Q86UQ4	Q86UQ4-1		binding site	bind	4754	4762				notDisRelated								
+Q86UQ4	Q86UQ4-1	VSP_054633	splice variant	splicing	1	2737				notDisRelated			23266639					In isoform 5, isoform 6 and isoform 7.
+Q86UQ4	Q86UQ4-1	VSP_021068	splice variant	splicing	1	2299				notDisRelated								In isoform 3.
+Q86UQ4	Q86UQ4-1	VSP_021069	splice variant	splicing	300	318	IPTDTSLEKMVCSVLSST	VHMLDCFSHRWAFPGDWI		notDisRelated			14702039					In isoform 2.
+Q86UQ4	Q86UQ4-1	VSP_021070	splice variant	splicing	318	5059				notDisRelated			14702039					In isoform 2.
+Q86UQ4	Q86UQ4-1	VSP_054634	splice variant	splicing	4271	4272	F	FS		notDisRelated			23266639					In isoform 4, isoform 5, isoform 6 and isoform 7.
+Q86UQ4	Q86UQ4-1	VSP_054635	splice variant	splicing	4478	4509				notDisRelated			23266639					In isoform 7.
+Q86UQ4	Q86UQ4-1	VSP_054636	splice variant	splicing	4947	5059	FGDGYTVKVWLCKEANQHCTVSDHLKLYFPGIQFKGQHLNLLEYHVPKRWGCLADLFKVIENNKTFLNIKHYSINQTTLEQVFINFASEQQQTLQSTLDPSTDSHHTHHLPI	KLNKTN		notDisRelated			23266639					In isoform 6.
+Q86UQ4	Q86UQ4-1	VAR_059087	sequence variant	variant	506	507	P	L	rs1880738	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059088	sequence variant	variant	555	556	R	H	rs2361519	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059089	sequence variant	variant	767	768	I	S	rs17712293	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059090	sequence variant	variant	799	800	E	K	rs17547816	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059091	sequence variant	variant	1434	1435	I	V	rs17132195	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_055470	sequence variant	variant	1508	1509	T	I	rs6583483	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059092	sequence variant	variant	1540	1541	F	L	rs17712299	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059093	sequence variant	variant	1889	1890	I	K	rs17132197	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059094	sequence variant	variant	2033	2034	N	D	rs17661364	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059095	sequence variant	variant	2154	2155	S	L	rs17092911	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059096	sequence variant	variant	2178	2179	A	E	rs1880736	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059097	sequence variant	variant	2212	2213	L	S	rs17132198	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059098	sequence variant	variant	2436	2437	K	R	rs17132206	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059099	sequence variant	variant	2537	2538	S	A	rs17132208	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059100	sequence variant	variant	2674	2675	R	W	rs2222648	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059101	sequence variant	variant	3142	3143	A	V	rs3931814	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059102	sequence variant	variant	3851	3852	Y	F	rs17132289	notDisRelated								
+Q86UQ4	Q86UQ4-1	VAR_059103	sequence variant	variant	4277	4278	N	D	rs4917152	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059104	sequence variant	variant	4302	4303	Q	R	rs4917153	noEvidence								
+Q86UQ4	Q86UQ4-1	VAR_059105	sequence variant	variant	4335	4336	P	A	rs17132370	noEvidence								
+Q86UQ4	Q86UQ4-1		sequence conflict	conflict	1416	1417	H	R		notDisRelated								In Ref. 1; AAP13576.
+Q86UQ4	Q86UQ4-1		sequence conflict	conflict	2718	2719	P	L		notDisRelated								In Ref. 1; AAP13576.
+Q86UQ4	Q86UQ4-1		sequence conflict	conflict	2831	2832	L	R		notDisRelated								In Ref. 1; AAP13576.
+Q86UQ4	Q86UQ4-1		sequence conflict	conflict	2870	2871	K	E		notDisRelated								In Ref. 1; AAP13576.
+Q86UQ4	Q86UQ4-1		sequence conflict	conflict	3057	3058	T	A		notDisRelated								In Ref. 5; AAO59914.
+Q86UQ4	Q86UQ4-1		sequence conflict	conflict	4446	4447	K	E		notDisRelated								In Ref. 1; AAP13576 and 5; AAO59914.
+Q86UQ4	Q86UQ4-1		sequence conflict	conflict	4584	4585	L	P		notDisRelated								In Ref. 1; AAP13576.
+P00519	P00519-1	PRO_0000088050	chain	chain	1	1131				noEvidence				Tyrosine-protein kinase ABL1	ABL	ABL; JTK7; p150; Proto-oncogene c-Abl; Abelson tyrosine-protein kinase 1; Abelson murine leukemia viral oncogene homolog 1; IA; IB		
+P00519	P00519-1		domain	domain	61	122				notDisRelated								SH3
+P00519	P00519-1		domain	domain	127	218				notDisRelated								SH2
+P00519	P00519-1		domain	domain	242	494				notDisRelated								Protein kinase
+P00519	P00519-1		region of interest	interest	1	61				noEvidence								CAP
+P00519	P00519-1		region of interest	interest	518	997				notDisRelated								Disordered
+P00519	P00519-1		region of interest	interest	869	969				notDisRelated								DNA-binding
+P00519	P00519-1		region of interest	interest	953	1131				noEvidence								F-actin-binding
+P00519	P00519-1		short sequence motif	motif	381	406				noEvidence								Kinase activation loop
+P00519	P00519-1		short sequence motif	motif	605	610				notDisRelated								Nuclear localization signal 1
+P00519	P00519-1		short sequence motif	motif	709	716				notDisRelated								Nuclear localization signal 2
+P00519	P00519-1		short sequence motif	motif	762	770				notDisRelated								Nuclear localization signal 3
+P00519	P00519-1		short sequence motif	motif	1090	1101				notDisRelated								Nuclear export signal
+P00519	P00519-1		compositionally biased region	biased	533	550				notDisRelated								Basic and acidic residues
+P00519	P00519-1		compositionally biased region	biased	579	602				notDisRelated								Basic and acidic residues
+P00519	P00519-1		compositionally biased region	biased	622	639				notDisRelated								Basic and acidic residues
+P00519	P00519-1		compositionally biased region	biased	685	704				notDisRelated								Polar residues
+P00519	P00519-1		compositionally biased region	biased	735	754				notDisRelated								Polar residues
+P00519	P00519-1		compositionally biased region	biased	758	773				notDisRelated								Basic and acidic residues
+P00519	P00519-1		compositionally biased region	biased	870	895				notDisRelated								Basic and acidic residues
+P00519	P00519-1		active site	enzyme act site	363	364				notDisRelated								Proton acceptor
+P00519	P00519-1		binding site	bind	248	257				noEvidence								
+P00519	P00519-1		binding site	bind	271	272				noEvidence								
+P00519	P00519-1		binding site	bind	316	323				noEvidence								
+P00519	P00519-1		site	site	26	28				disRelated			15361874,3021337					Breakpoint for translocation to form BCR-ABL and NUP214-ABL1 fusion proteins
+P00519	P00519-1		modified residue	phos	50	51				notDisRelated			16543148					Phosphoserine
+P00519	P00519-1		modified residue	phos	70	71				notDisRelated			16912036,18775435					Phosphotyrosine; by autocatalysis
+P00519	P00519-1		modified residue	phos	115	116				notDisRelated			16912036					Phosphotyrosine
+P00519	P00519-1		modified residue	phos	128	129				notDisRelated			16912036					Phosphotyrosine
+P00519	P00519-1		modified residue	phos	139	140				notDisRelated			16912036					Phosphotyrosine
+P00519	P00519-1		modified residue	phos	172	173				notDisRelated			16912036					Phosphotyrosine
+P00519	P00519-1		modified residue	phos	185	186				notDisRelated			16912036					Phosphotyrosine
+P00519	P00519-1		modified residue	phos	215	216				notDisRelated			16912036					Phosphotyrosine
+P00519	P00519-1		modified residue	phos	226	227				notDisRelated			16912036					Phosphotyrosine; by autocatalysis
+P00519	P00519-1		modified residue	phos	229	230				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	253	254				notDisRelated								Phosphotyrosine
+P00519	P00519-1		modified residue	phos	257	258				notDisRelated								Phosphotyrosine
+P00519	P00519-1		modified residue	phos	393	394				notDisRelated			16912036					Phosphotyrosine; by autocatalysis and SRC-type Tyr-kinases
+P00519	P00519-1		modified residue	phos	413	414				notDisRelated								Phosphotyrosine
+P00519	P00519-1		modified residue	phos	446	447				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	559	560				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	569	570				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	618	619				notDisRelated			18161990					Phosphoserine; by PAK2
+P00519	P00519-1		modified residue	phos	619	620				notDisRelated			18161990					Phosphoserine; by PAK2
+P00519	P00519-1		modified residue	phos	620	621				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	659	660				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	683	684				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	acetyl	711	712				notDisRelated			16648821					N6-acetyllysine; by EP300
+P00519	P00519-1		modified residue	phos	718	719				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	735	736				notDisRelated			15696159					Phosphothreonine
+P00519	P00519-1		modified residue	phos	751	752				notDisRelated								Phosphothreonine
+P00519	P00519-1		modified residue	phos	781	782				notDisRelated								Phosphothreonine
+P00519	P00519-1		modified residue	phos	814	815				notDisRelated								Phosphothreonine
+P00519	P00519-1		modified residue	phos	823	824				notDisRelated								Phosphothreonine
+P00519	P00519-1		modified residue	phos	844	845				notDisRelated								Phosphothreonine
+P00519	P00519-1		modified residue	phos	852	853				notDisRelated								Phosphothreonine
+P00519	P00519-1		modified residue	phos	855	856				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	917	918				notDisRelated								Phosphoserine
+P00519	P00519-1		modified residue	phos	977	978				notDisRelated								Phosphoserine
+P00519	P00519-1	VSP_004957	splice variant	splicing	1	27	MLEICLKLVGCKSKKGLSSSSSCYLE	MGQQPGKVLGDQRRPSLPALHFIKGAGKKESSRHGGPHCNVFVEH		notDisRelated			15489334					In isoform IB.
+P00519	P00519-1	VAR_032676	sequence variant	variant	47	48	R	G		notDisRelated	a lung large cell carcinoma sample	a lung large cell carcinoma sample	17344846					somatic mutation
+P00519	P00519-1	VAR_051692	sequence variant	variant	140	141	L	P	rs1064152	disRelated			3021337					
+P00519	P00519-1	VAR_032677	sequence variant	variant	166	167	R	K		notDisRelated	a melanoma sample	a melanoma sample	17344846					somatic mutation
+P00519	P00519-1	VAR_079482	sequence variant	variant	226	227	Y	C	rs1060499547	disRelated	Congenital heart defects and skeletal malformations syndrome	CHDSKM	28288113					increases kinase activity; no effect on protein levels
+P00519	P00519-1	VAR_051693	sequence variant	variant	247	248	K	R	rs34549764	noEvidence								
+P00519	P00519-1	VAR_079483	sequence variant	variant	337	338	A	T	rs1060499548	disRelated	Congenital heart defects and skeletal malformations syndrome	CHDSKM	28288113					increases kinase activity; no effect on protein levels
+P00519	P00519-1	VAR_025043	sequence variant	variant	706	707	G	V	rs34634745	notDisRelated			17344846					
+P00519	P00519-1	VAR_032678	sequence variant	variant	810	811	P	L	rs2229071	notDisRelated			17344846					
+P00519	P00519-1	VAR_025044	sequence variant	variant	852	853	T	P	rs1588283506	notDisRelated								
+P00519	P00519-1	VAR_025045	sequence variant	variant	900	901	P	S	rs35266696	notDisRelated								
+P00519	P00519-1	VAR_051694	sequence variant	variant	968	969	S	P	rs1064165	noEvidence								
+P00519	P00519-1	VAR_025046	sequence variant	variant	972	973	S	L	rs2229067	notDisRelated			17344846					
+P00519	P00519-1		mutagenesis site	mutagen	735	736	T	A		notDisRelated			15696159					Abolishes phosphorylation. Loss of binding YWHAS and YWHAZ. Localizes to the nucleus. No effect on kinase activity.
+P00519	P00519-1		sequence conflict	conflict	159	160	G	S		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	424	426	AF	GK		notDisRelated								In Ref. 9.
+P00519	P00519-1		sequence conflict	conflict	445	446	L	R		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	459	460	E	K		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	520	521	S	T		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	719	720	A	V		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	837	838	G	E		notDisRelated								In Ref. 2; CAA34438.
+P00519	P00519-1		sequence conflict	conflict	837	838	G	W		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	863	864	G	R		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	894	895	R	K		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	917	920	SPS	RPG		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	952	953	G	A		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	967	969	QS	HP		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	982	983	P	PL		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	1022	1023				notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	1045	1046	R	G		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		sequence conflict	conflict	1103	1104	T	S		notDisRelated								In Ref. 1; AAA51561.
+P00519	P00519-1		strand	beta	26	33				notDisRelated								
+P00519	P00519-1		strand	beta	39	45				notDisRelated								
+P00519	P00519-1		turn	turn	45	48				notDisRelated								
+P00519	P00519-1		helix	helix	49	54				notDisRelated								
+P00519	P00519-1		helix	helix	58	61				notDisRelated								
+P00519	P00519-1		strand	beta	65	71				notDisRelated								
+P00519	P00519-1		strand	beta	76	80				notDisRelated								
+P00519	P00519-1		strand	beta	87	94				notDisRelated								
+P00519	P00519-1		strand	beta	97	105				notDisRelated								
+P00519	P00519-1		strand	beta	107	113				notDisRelated								
+P00519	P00519-1		helix	helix	113	116				notDisRelated								
+P00519	P00519-1		strand	beta	116	119				notDisRelated								
+P00519	P00519-1		helix	helix	122	125				notDisRelated								
+P00519	P00519-1		strand	beta	128	132				notDisRelated								
+P00519	P00519-1		helix	helix	134	141				notDisRelated								
+P00519	P00519-1		turn	turn	141	144				notDisRelated								
+P00519	P00519-1		strand	beta	148	154				notDisRelated								
+P00519	P00519-1		strand	beta	155	158				notDisRelated								
+P00519	P00519-1		strand	beta	161	168				notDisRelated								
+P00519	P00519-1		strand	beta	170	176				notDisRelated								
+P00519	P00519-1		strand	beta	177	180				notDisRelated								
+P00519	P00519-1		turn	turn	180	183				notDisRelated								
+P00519	P00519-1		strand	beta	184	188				notDisRelated								
+P00519	P00519-1		strand	beta	190	195				notDisRelated								
+P00519	P00519-1		helix	helix	195	203				notDisRelated								
+P00519	P00519-1		strand	beta	209	212				notDisRelated								
+P00519	P00519-1		strand	beta	226	229				notDisRelated								
+P00519	P00519-1		strand	beta	229	232				notDisRelated								
+P00519	P00519-1		turn	turn	233	236				notDisRelated								
+P00519	P00519-1		helix	helix	239	242				notDisRelated								
+P00519	P00519-1		strand	beta	242	248				notDisRelated								
+P00519	P00519-1		helix	helix	248	252				notDisRelated								
+P00519	P00519-1		strand	beta	254	262				notDisRelated								
+P00519	P00519-1		helix	helix	262	265				notDisRelated								
+P00519	P00519-1		strand	beta	266	272				notDisRelated								
+P00519	P00519-1		turn	turn	275	278				notDisRelated								
+P00519	P00519-1		helix	helix	280	291				notDisRelated								
+P00519	P00519-1		strand	beta	301	306				notDisRelated								
+P00519	P00519-1		strand	beta	307	311				notDisRelated								
+P00519	P00519-1		strand	beta	312	317				notDisRelated								
+P00519	P00519-1		strand	beta	319	323				notDisRelated								
+P00519	P00519-1		helix	helix	323	330				notDisRelated								
+P00519	P00519-1		turn	turn	332	335				notDisRelated								
+P00519	P00519-1		helix	helix	337	357				notDisRelated								
+P00519	P00519-1		strand	beta	359	362				notDisRelated								
+P00519	P00519-1		helix	helix	366	369				notDisRelated								
+P00519	P00519-1		strand	beta	369	372				notDisRelated								
+P00519	P00519-1		helix	helix	373	376				notDisRelated								
+P00519	P00519-1		strand	beta	377	380				notDisRelated								
+P00519	P00519-1		helix	helix	381	384				notDisRelated								
+P00519	P00519-1		helix	helix	384	388				notDisRelated								
+P00519	P00519-1		helix	helix	390	393				notDisRelated								
+P00519	P00519-1		strand	beta	393	397				notDisRelated								
+P00519	P00519-1		strand	beta	399	402				notDisRelated								
+P00519	P00519-1		helix	helix	403	406				notDisRelated								
+P00519	P00519-1		helix	helix	408	414				notDisRelated								
+P00519	P00519-1		helix	helix	418	434				notDisRelated								
+P00519	P00519-1		helix	helix	445	448				notDisRelated								
+P00519	P00519-1		helix	helix	448	454				notDisRelated								
+P00519	P00519-1		helix	helix	466	476				notDisRelated								
+P00519	P00519-1		helix	helix	480	483				notDisRelated								
+P00519	P00519-1		helix	helix	486	497				notDisRelated								
+P00519	P00519-1		strand	beta	498	501				notDisRelated								
+P00519	P00519-1		helix	helix	503	507				notDisRelated								
+P00519	P00519-1		turn	turn	510	513				notDisRelated								
+P00519	P00519-1		helix	helix	1029	1046				notDisRelated								
+P00519	P00519-1		turn	turn	1046	1049				notDisRelated								
+P00519	P00519-1		helix	helix	1053	1071				notDisRelated								
+P00519	P00519-1		helix	helix	1071	1074				notDisRelated								
+P00519	P00519-1		helix	helix	1080	1098				notDisRelated								
+P00519	P00519-1		strand	beta	1101	1105				notDisRelated								
+P00519	P00519-1		strand	beta	1106	1109				notDisRelated								
+P00519	P00519-1		helix	helix	1115	1129				notDisRelated								
+P00519	P00519-1		lipid moiety-binding region	lipid	2	3				notDisRelated								N-myristoyl glycine
+P42684	P42684-1		initiator methionine	init Met	1	2				noEvidence								Removed
+P42684	P42684-1	PRO_0000088052	chain	chain	2	1183				noEvidence				Tyrosine-protein kinase ABL2	ARG	ARG; ABLL; Tyrosine-protein kinase ARG; Abelson-related gene protein; Abelson tyrosine-protein kinase 2; Abelson murine leukemia viral oncogene homolog 2; 1; 2; 3; 4; 5; 6; 7; 8; IB; IA; IC; 10; 1BLCTL; 1ASCTL; 1ALCTL; 1ASCTS; 1BLCTS; 1BSCTL; 1BSCTS; 1ALCTS		
+P42684	P42684-1		domain	domain	107	168				notDisRelated								SH3
+P42684	P42684-1		domain	domain	173	264				notDisRelated								SH2
+P42684	P42684-1		domain	domain	288	540				notDisRelated								Protein kinase
+P42684	P42684-1		region of interest	interest	1	48				notDisRelated								Disordered
+P42684	P42684-1		region of interest	interest	2	107				noEvidence								CAP
+P42684	P42684-1		region of interest	interest	60	81				notDisRelated								Disordered
+P42684	P42684-1		region of interest	interest	611	642				notDisRelated								Disordered
+P42684	P42684-1		region of interest	interest	654	675				notDisRelated								Disordered
+P42684	P42684-1		region of interest	interest	694	931				notDisRelated								F-actin-binding
+P42684	P42684-1		region of interest	interest	763	795				notDisRelated								Disordered
+P42684	P42684-1		region of interest	interest	807	852				notDisRelated								Disordered
+P42684	P42684-1		region of interest	interest	964	1025				notDisRelated								Disordered
+P42684	P42684-1		region of interest	interest	1020	1183				notDisRelated								F-actin-binding
+P42684	P42684-1		short sequence motif	motif	427	452				notDisRelated								Kinase activation loop
+P42684	P42684-1		short sequence motif	motif	658	661				notDisRelated								Nuclear localization signal
+P42684	P42684-1		compositionally biased region	biased	774	794				notDisRelated								Polar residues
+P42684	P42684-1		compositionally biased region	biased	807	827				notDisRelated								Polar residues
+P42684	P42684-1		compositionally biased region	biased	828	852				notDisRelated								Basic and acidic residues
+P42684	P42684-1		compositionally biased region	biased	966	981				notDisRelated								Basic and acidic residues
+P42684	P42684-1		compositionally biased region	biased	1000	1022				notDisRelated								Polar residues
+P42684	P42684-1		active site	enzyme act site	409	410				notDisRelated								Proton acceptor
+P42684	P42684-1		binding site	bind	294	303				notDisRelated								
+P42684	P42684-1		binding site	bind	317	318				notDisRelated								
+P42684	P42684-1		binding site	bind	362	369				notDisRelated								
+P42684	P42684-1		modified residue	phos	97	98				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	116	117				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	161	162				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	174	175				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	185	186				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	218	219				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	231	232				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	261	262				notDisRelated			15735735					Phosphotyrosine; by ABL1 and autocatalysis
+P42684	P42684-1		modified residue	phos	272	273				notDisRelated			12748290					Phosphotyrosine; by autocatalysis
+P42684	P42684-1		modified residue	phos	275	276				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	299	300				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	303	304				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	439	440				notDisRelated			12748290					Phosphotyrosine; by autocatalysis and SRC-type Tyr-kinases
+P42684	P42684-1		modified residue	phos	459	460				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	568	569				notDisRelated			12748290					Phosphotyrosine; by autocatalysis
+P42684	P42684-1		modified residue	phos	620	621				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	631	632				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	633	634				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	655	656				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	669	670				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	670	671				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	671	672				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	683	684				notDisRelated			12748290					Phosphotyrosine; by autocatalysis
+P42684	P42684-1		modified residue	phos	718	719				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	acetyl	776	777				notDisRelated								N6-acetyllysine
+P42684	P42684-1		modified residue	phos	783	784				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	800	801				notDisRelated								Phosphothreonine
+P42684	P42684-1		modified residue	phos	817	818				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	820	821				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	915	916				notDisRelated								Phosphoserine
+P42684	P42684-1		modified residue	phos	936	937				notDisRelated								Phosphoserine
+P42684	P42684-1		lipid moiety-binding region	lipid	2	3				notDisRelated								N-myristoyl glycine
+P42684	P42684-1	VSP_004961	splice variant	splicing	1	74	MGQQVGRVGEAPGLQQPQPRGIRGSSAARPSGRRRDPAGRTTETGFNIFTQHDHFASCVEDGFEGDKTGGSSP	MVLGTVLLPPNSYGRDQDTSLCCLCTEASESALPDLT		notDisRelated			17974005,18810762					In isoform 2 and isoform 4.
+P42684	P42684-1	VSP_017112	splice variant	splicing	1	53	MGQQVGRVGEAPGLQQPQPRGIRGSSAARPSGRRRDPAGRTTETGFNIFTQH	MVLGTVLLPPNSYGRDQDTSLCCLCTEASESALPDLT		notDisRelated			15489334					In isoform 3 and isoform 10.
+P42684	P42684-1	VSP_041772	splice variant	splicing	53	74				notDisRelated			14702039,18810762					In isoform 6, isoform 7 and isoform 8.
+P42684	P42684-1	VSP_041773	splice variant	splicing	550	565	EEVAEELGRAASSSS	EVLLHCANQTCITL		notDisRelated			14702039					In isoform 8.
+P42684	P42684-1	VSP_041774	splice variant	splicing	565	1183				notDisRelated			14702039					In isoform 8.
+P42684	P42684-1	VSP_021308	splice variant	splicing	688	791				notDisRelated			17974005,18810762					In isoform 4, isoform 5, isoform 7 and isoform 10.
+P42684	P42684-1	VAR_055411	sequence variant	variant	78	79	R	H	rs55655202	notDisRelated			17344846					
+P42684	P42684-1	VAR_055412	sequence variant	variant	99	100	E	Q		notDisRelated			17344846					Somatic mutation in breast cancer sample
+P42684	P42684-1	VAR_055413	sequence variant	variant	519	520	R	I		notDisRelated			17344846					Somatic mutation in lung squamous cell carcinoma
+P42684	P42684-1	VAR_055414	sequence variant	variant	769	770	T	S	rs55892721	notDisRelated			17344846					
+P42684	P42684-1	VAR_029232	sequence variant	variant	930	931	K	R	rs17277288	notDisRelated			17344846					
+P42684	P42684-1	VAR_029233	sequence variant	variant	946	947	V	M	rs28913889	notDisRelated								
+P42684	P42684-1	VAR_029234	sequence variant	variant	996	997	P	R	rs28913890	notDisRelated			17344846					
+P42684	P42684-1	VAR_029235	sequence variant	variant	1085	1086	S	N	rs28913891	notDisRelated								
+P42684	P42684-1	VAR_029236	sequence variant	variant	1101	1102	T	A	rs28913892	notDisRelated								
+P42684	P42684-1		sequence conflict	conflict	343	345	NL	TI		notDisRelated								In Ref. 9; no nucleotide entry.
+P42684	P42684-1		sequence conflict	conflict	435	436	T	I		notDisRelated								In Ref. 3; AK311045.
+P42684	P42684-1		sequence conflict	conflict	981	982	K	R		notDisRelated								In Ref. 4; CAD98092.
+P42684	P42684-1		strand	beta	111	117				notDisRelated								
+P42684	P42684-1		strand	beta	133	140				notDisRelated								
+P42684	P42684-1		strand	beta	141	151				notDisRelated								
+P42684	P42684-1		strand	beta	153	159				notDisRelated								
+P42684	P42684-1		helix	helix	159	162				notDisRelated								
+P42684	P42684-1		strand	beta	162	165				notDisRelated								
+P42684	P42684-1		helix	helix	168	171				notDisRelated								
+P42684	P42684-1		strand	beta	174	178				notDisRelated								
+P42684	P42684-1		helix	helix	180	188				notDisRelated								
+P42684	P42684-1		strand	beta	194	200				notDisRelated								
+P42684	P42684-1		strand	beta	207	214				notDisRelated								
+P42684	P42684-1		strand	beta	216	222				notDisRelated								
+P42684	P42684-1		strand	beta	226	229				notDisRelated								
+P42684	P42684-1		strand	beta	230	234				notDisRelated								
+P42684	P42684-1		strand	beta	236	241				notDisRelated								
+P42684	P42684-1		helix	helix	241	249				notDisRelated								
+P42684	P42684-1		strand	beta	255	258				notDisRelated								
+P42684	P42684-1		strand	beta	280	283				notDisRelated								
+P42684	P42684-1		helix	helix	285	288				notDisRelated								
+P42684	P42684-1		strand	beta	288	294				notDisRelated								
+P42684	P42684-1		helix	helix	294	298				notDisRelated								
+P42684	P42684-1		strand	beta	300	308				notDisRelated								
+P42684	P42684-1		helix	helix	308	311				notDisRelated								
+P42684	P42684-1		strand	beta	312	319				notDisRelated								
+P42684	P42684-1		helix	helix	326	338				notDisRelated								
+P42684	P42684-1		strand	beta	347	352				notDisRelated								
+P42684	P42684-1		strand	beta	353	357				notDisRelated								
+P42684	P42684-1		strand	beta	358	363				notDisRelated								
+P42684	P42684-1		helix	helix	369	376				notDisRelated								
+P42684	P42684-1		turn	turn	378	381				notDisRelated								
+P42684	P42684-1		helix	helix	383	403				notDisRelated								
+P42684	P42684-1		helix	helix	412	415				notDisRelated								
+P42684	P42684-1		strand	beta	415	418				notDisRelated								
+P42684	P42684-1		helix	helix	419	422				notDisRelated								
+P42684	P42684-1		strand	beta	423	426				notDisRelated								
+P42684	P42684-1		strand	beta	435	438				notDisRelated								
+P42684	P42684-1		strand	beta	438	441				notDisRelated								
+P42684	P42684-1		helix	helix	449	452				notDisRelated								
+P42684	P42684-1		helix	helix	454	460				notDisRelated								
+P42684	P42684-1		helix	helix	464	480				notDisRelated								
+P42684	P42684-1		helix	helix	491	494				notDisRelated								
+P42684	P42684-1		helix	helix	494	500				notDisRelated								
+P42684	P42684-1		helix	helix	512	522				notDisRelated								
+P42684	P42684-1		helix	helix	526	529				notDisRelated								
+P42684	P42684-1		helix	helix	532	546				notDisRelated								
+P42684	P42684-1		helix	helix	1069	1072				notDisRelated								
+P42684	P42684-1		turn	turn	1076	1079				notDisRelated								
+P42684	P42684-1		helix	helix	1080	1084				notDisRelated								
+P42684	P42684-1		helix	helix	1086	1100				notDisRelated								
+P42684	P42684-1		helix	helix	1106	1124				notDisRelated								
+P42684	P42684-1		helix	helix	1124	1127				notDisRelated								
+P42684	P42684-1		helix	helix	1130	1153				notDisRelated								
+P42684	P42684-1		strand	beta	1155	1159				notDisRelated								
+P42684	P42684-1		helix	helix	1165	1182				notDisRelated								
+P42684	P42684-1		modified residue	phos	647	648				notDisRelated								Phosphotyrosine
+P42684	P42684-1	VAR_082895	sequence variant	variant	12	13	S	T	rs1318056	notDisRelated			18810762					
+P42684	P42684-1		modified residue	phos	683	684				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	662	663				notDisRelated								Phosphotyrosine
+P42684	P42684-1		modified residue	phos	668	669				notDisRelated								Phosphotyrosine
+Q8N1M1	Q8N1M1-2	PRO_0000143121	chain	chain	1	669				noEvidence				Bestrophin-3	VMD2L3	VMD2L3; Vitelliform macular dystrophy 2-like protein 3; 2; 1; 4; 5; 6		
+Q8N1M1	Q8N1M1-2		topological domain	topo	1	26				notDisRelated								Cytoplasmic
+Q8N1M1	Q8N1M1-2		transmembrane region	transmem	26	47				notDisRelated								Helical
+Q8N1M1	Q8N1M1-2		topological domain	topo	47	71				notDisRelated								Extracellular
+Q8N1M1	Q8N1M1-2		transmembrane region	transmem	71	92				notDisRelated								Helical
+Q8N1M1	Q8N1M1-2		topological domain	topo	92	179				notDisRelated								Cytoplasmic
+Q8N1M1	Q8N1M1-2		transmembrane region	transmem	179	200				notDisRelated								Helical
+Q8N1M1	Q8N1M1-2		topological domain	topo	200	229				notDisRelated								Extracellular
+Q8N1M1	Q8N1M1-2		intramembrane region	intramem	229	250				notDisRelated								
+Q8N1M1	Q8N1M1-2		topological domain	topo	250	271				notDisRelated								Extracellular
+Q8N1M1	Q8N1M1-2		transmembrane region	transmem	271	292				notDisRelated								Helical
+Q8N1M1	Q8N1M1-2		topological domain	topo	292	669				notDisRelated								Cytoplasmic
+Q8N1M1	Q8N1M1-2		region of interest	interest	400	455				notDisRelated								Disordered
+Q8N1M1	Q8N1M1-2		region of interest	interest	473	494				notDisRelated								Disordered
+Q8N1M1	Q8N1M1-2		region of interest	interest	532	571				notDisRelated								Disordered
+Q8N1M1	Q8N1M1-2		compositionally biased region	biased	400	417				notDisRelated								Basic and acidic residues
+Q8N1M1	Q8N1M1-2		compositionally biased region	biased	532	551				notDisRelated								Polar residues
+Q8N1M1	Q8N1M1-2	VSP_046979	splice variant	splicing	1	163				notDisRelated								In isoform 5.
+Q8N1M1	Q8N1M1-2	VSP_008981	splice variant	splicing	1	107				notDisRelated			15489334					In isoform 4 and isoform 6.
+Q8N1M1	Q8N1M1-2	VSP_008982	splice variant	splicing	161	179	GFMTTDERKLFNHLKSPH	ERTGMKPILPSSFEMQSF		notDisRelated			15489334					In isoform 4.
+Q8N1M1	Q8N1M1-2	VSP_008983	splice variant	splicing	179	669				notDisRelated			15489334					In isoform 4.
+Q8N1M1	Q8N1M1-2	VSP_046980	splice variant	splicing	239	290				notDisRelated								In isoform 5.
+Q8N1M1	Q8N1M1-2	VSP_008977	splice variant	splicing	368	399	LSGSDFPDEEWLWDYEKHGHRHSMIRRVKRF	KQMPKNEWKMEDIKIPLPQPQFQCAKSDPGG		notDisRelated			12032738,12907679					In isoform 1.
+Q8N1M1	Q8N1M1-2	VSP_008978	splice variant	splicing	399	669				notDisRelated			12032738,12907679					In isoform 1.
+Q8N1M1	Q8N1M1-2	VAR_048409	sequence variant	variant	43	44	Y	H	rs1025016	noEvidence								
+Q8N1M1	Q8N1M1-2	VAR_048410	sequence variant	variant	622	623	E	G	rs17106884	noEvidence								
+Q9NTW7	Q9NTW7-1	PRO_0000047308	chain	chain	1	646				noEvidence				Zinc finger protein 64	Zfp-64	Zfp-64; ZNF338; Zinc finger protein 338; 3; 4; 5; 6; 1; 2; ZNF338		
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	175	198				notDisRelated								C2H2-type 1
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	203	226				notDisRelated								C2H2-type 2
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	231	254				notDisRelated								C2H2-type 3
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	299	325				notDisRelated								C2H2-type 4; atypical
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	330	353				notDisRelated								C2H2-type 5
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	358	381				notDisRelated								C2H2-type 6
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	386	409				notDisRelated								C2H2-type 7
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	414	437				notDisRelated								C2H2-type 8
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	442	466				notDisRelated								C2H2-type 9
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	467	490				notDisRelated								C2H2-type 10
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	495	518				notDisRelated								C2H2-type 11
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	523	547				notDisRelated								C2H2-type 12
+Q9NTW7	Q9NTW7-1		zinc finger region	zinc finger	580	603				notDisRelated								C2H2-type 13
+Q9NTW7	Q9NTW7-1		region of interest	interest	543	568				notDisRelated								Disordered
+Q9NTW7	Q9NTW7-1		region of interest	interest	600	646				notDisRelated								Disordered
+Q9NTW7	Q9NTW7-1		compositionally biased region	biased	543	561				notDisRelated								Basic and acidic residues
+Q9NTW7	Q9NTW7-1		compositionally biased region	biased	608	633				notDisRelated								Polar residues
+Q9NTW7	Q9NTW7-1	VSP_007285	splice variant	splicing	1	220				notDisRelated			14702039					In isoform 4.
+Q9NTW7	Q9NTW7-1	VSP_046896	splice variant	splicing	16	19	IPG	S		notDisRelated								In isoform 6.
+Q9NTW7	Q9NTW7-1	VSP_060092	splice variant	splicing	96	150				noEvidence								In isoform 2.
+Q9NTW7	Q9NTW7-1	VSP_007286	splice variant	splicing	220	255	KHLRIHSDERPFKCQICPYASRNSSQLTVHLRSHT	MSRRKQAKPQHLNSEEPRPARRECAEVAPQVAGEP		notDisRelated			14702039					In isoform 4.
+Q9NTW7	Q9NTW7-1	VSP_046897	splice variant	splicing	236	391				notDisRelated								In isoform 6, isoform 1 and isoform 2.
+Q9NTW7	Q9NTW7-1	VSP_038213	splice variant	splicing	411	416	DTPFQ	CCYVA		notDisRelated								In isoform 5.
+Q9NTW7	Q9NTW7-1	VSP_046898	splice variant	splicing	412	646	TPFQCWLCSAKFKISSDLKRHMIVHSGEKPFKCEFCDVRCTMKANLKSHIRIKHTFKCLHCAFQGRDRADLLEHSRLHQADHPEKCPECSYSCSSAAALRVHSRVHCKDRPFKCDFCSFDTKRPSSLAKHVDKVHRDEAKTENRAPLGKEGLREGSSQHVAKIVTQRAFRCETCGASFVRDDSLRCHKKQHSDQSENKNSDLVTFPPESGASGQLSTLVSVGQLEAPLEPSQDL	APFQCWLCSAKFKISSDLKRHMRVHSGEKPFKCEFCNVRCTMKGNLKSHIRIKHSGNNFKCPHCDFLGDSKATLRKHSRVHQSEHPEKCSECSYSCSSKAALRIHERIHCTDRPFKCNYCSFDTKQPSNLSKHMKKFHGDMVKTEALERKDTGRQSSRQVAKLDAKKSFHCDICDASFMREDSLRSHKRQHSEYSESKNSDVTVLQFQIDPSKQPATPLTVGHLQVPLQPSQVPQFSEGRVKIIVGHQVPQANTIVQAAAAAVNIVPPALVAQNPEELPGNSRLQILRQVSLIAPPQSSRCPSEAGAMTQPAVLLTTHEQTDGATLHQTLIPTASGGPQEGSGNQTFITSSGITCTDFEGLNALIQEGTAEVTVVSDGGQNIAVATTAPPVFSSSSQQELPKQTYSIIQGAAHPALLCPADSIPD		notDisRelated								In isoform 6, isoform 1 and isoform 2.
+Q9NTW7	Q9NTW7-1	VSP_038214	splice variant	splicing	416	646				notDisRelated								In isoform 5.
+Q9NTW7	Q9NTW7-1	VAR_028019	sequence variant	variant	68	69	Q	P	rs7353222	noEvidence								
+Q9NTW7	Q9NTW7-1	VAR_028020	sequence variant	variant	139	140	P	L	rs6021773	noEvidence								
+Q9NTW7	Q9NTW7-1	VAR_035564	sequence variant	variant	593	594	D	E		notDisRelated	a breast cancer sample	a breast cancer sample	16959974					somatic mutation
+Q9NTW7	Q9NTW7-1	VAR_035565	sequence variant	variant	609	610	K	N		notDisRelated	a breast cancer sample	a breast cancer sample	16959974					somatic mutation
+Q9NTW7	Q9NTW7-1		sequence conflict	conflict	240	241	S	G		notDisRelated								In Ref. 3; BAD96432.
+Q9NTW7	Q9NTW7-1		sequence conflict	conflict	521	522	R	C		notDisRelated								In Ref. 2; AAP88762 and 6; BC021087.
+Q9NTW7	Q9NTW7-1		turn	turn	178	181				notDisRelated								
+Q9NTW7	Q9NTW7-1		helix	helix	187	194				notDisRelated								
+Q9NTW7	Q9NTW7-1		helix	helix	194	197				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	202	205				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	206	209				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	211	215				notDisRelated								
+Q9NTW7	Q9NTW7-1		helix	helix	215	225				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	234	238				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	239	243				notDisRelated								
+Q9NTW7	Q9NTW7-1		helix	helix	243	251				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	494	497				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	498	502				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	503	507				notDisRelated								
+Q9NTW7	Q9NTW7-1		helix	helix	507	515				notDisRelated								
+Q9NTW7	Q9NTW7-1		helix	helix	515	518				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	522	525				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	526	530				notDisRelated								
+Q9NTW7	Q9NTW7-1		strand	beta	531	535				notDisRelated								
+Q9NTW7	Q9NTW7-1		helix	helix	535	547				notDisRelated								
+Q9NTW7	Q9NTW7-1		modified residue	phos	545	546				notDisRelated								Phosphoserine
+Q9NTW7	Q9NTW7-1		cross-link	cross-link	286	287				notDisRelated								Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in SUMO2
+Q9NTW7	Q9NTW7-1		cross-link	cross-link	397	398				notDisRelated								Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in SUMO2
+Q9NTW7	Q9NTW7-1	VAR_082942	sequence variant	variant	425	426	F	Y	rs16996517	notDisRelated								
+Q9NTW7	Q9NTW7-1	VAR_082943	sequence variant	variant	451	452	S	N	rs3746414	notDisRelated			15489334					
+P11137	P11137-1	PRO_0000072747	chain	chain	1	1828				noEvidence				Microtubule-associated protein 2	MAP-2	MAP-2; 1; 2; 3; 4; MAP2b; MAP2c		
+P11137	P11137-1		repeat	repeat	1661	1692				noEvidence								Tau/MAP 1
+P11137	P11137-1		repeat	repeat	1692	1723				noEvidence								Tau/MAP 2
+P11137	P11137-1		repeat	repeat	1723	1755				noEvidence								Tau/MAP 3
+P11137	P11137-1		region of interest	interest	1	89				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	109	222				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	340	498				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	579	661				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	701	745				notDisRelated								Interaction with KNDC1
+P11137	P11137-1		region of interest	interest	931	989				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	1073	1161				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	1197	1217				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	1297	1379				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	1403	1461				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	1447	1468				notDisRelated								Calmodulin-binding
+P11137	P11137-1		region of interest	interest	1471	1491				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	1506	1639				notDisRelated								Disordered
+P11137	P11137-1		region of interest	interest	1779	1802				notDisRelated								Disordered
+P11137	P11137-1		compositionally biased region	biased	62	81				notDisRelated								Polar residues
+P11137	P11137-1		compositionally biased region	biased	173	192				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	365	381				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	395	419				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	419	435				notDisRelated								Polar residues
+P11137	P11137-1		compositionally biased region	biased	436	467				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	579	622				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	622	651				notDisRelated								Polar residues
+P11137	P11137-1		compositionally biased region	biased	931	987				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	1100	1159				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	1314	1330				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	1349	1379				notDisRelated								Basic and acidic residues
+P11137	P11137-1		compositionally biased region	biased	1559	1577				notDisRelated								Polar residues
+P11137	P11137-1		compositionally biased region	biased	1583	1619				notDisRelated								Polar residues
+P11137	P11137-1		compositionally biased region	biased	1780	1802				notDisRelated								Polar residues
+P11137	P11137-1		modified residue	phos	136	137				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	140	141				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	143	144				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	285	286				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	498	499				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	601	602				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	605	606				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	610	611				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	629	630				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	725	726				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	729	730				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	733	734				notDisRelated								Phosphothreonine
+P11137	P11137-1		modified residue	phos	736	737				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	738	739				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	745	746				notDisRelated								Phosphotyrosine
+P11137	P11137-1		modified residue	phos	821	822				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	881	882				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	890	891				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	936	937				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1133	1134				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1134	1135				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1139	1140				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1154	1155				notDisRelated								Phosphothreonine
+P11137	P11137-1		modified residue	phos	1155	1156				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1159	1160				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1347	1348				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1353	1354				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1534	1535				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1555	1556				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1588	1589				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1602	1603				notDisRelated								Phosphothreonine
+P11137	P11137-1		modified residue	phos	1605	1606				notDisRelated								Phosphothreonine
+P11137	P11137-1		modified residue	phos	1616	1617				notDisRelated								Phosphothreonine
+P11137	P11137-1		modified residue	phos	1619	1620				notDisRelated								Phosphothreonine
+P11137	P11137-1		modified residue	phos	1649	1650				notDisRelated								Phosphothreonine
+P11137	P11137-1		modified residue	phos	1653	1654				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1679	1680				notDisRelated								Phosphoserine; by MARK1
+P11137	P11137-1		modified residue	phos	1782	1783				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1787	1788				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1790	1791				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1795	1796				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	1808	1809				notDisRelated								Phosphoserine
+P11137	P11137-1	VSP_003197	splice variant	splicing	152	1508				notDisRelated			15489334,8294038					In isoform 2.
+P11137	P11137-1	VSP_043596	splice variant	splicing	152	230	DLLTASKMEFHDQQELTPSTAEPSDQKEKESEKQSKPGEDLKHAALVSQPETTKTYPDKKDMQGTEEEKAPLALFGHT	AAGGESALAPSVFKQAKDKVSNSTLSKIPALQGSTKSPRYSSACPSTTKRATFSDSLLIQPTSAGSTDRLPYSKSGNK		notDisRelated			15489334					In isoform 4.
+P11137	P11137-1	VSP_011302	splice variant	splicing	152	156				notDisRelated			8294038					In isoform 3.
+P11137	P11137-1	VSP_043597	splice variant	splicing	230	1529				notDisRelated			15489334					In isoform 4.
+P11137	P11137-1	VSP_043598	splice variant	splicing	1691	1692	Q	QVRILNKKIDFSKVQSRCGSKDNIKHSAGGGN		notDisRelated			15489334					In isoform 4.
+P11137	P11137-1	VAR_019612	sequence variant	variant	82	83	A	G	rs2271251	noEvidence								
+P11137	P11137-1	VAR_050019	sequence variant	variant	179	180	E	G	rs6749066	noEvidence								
+P11137	P11137-1	VAR_036014	sequence variant	variant	277	278	E	D		notDisRelated	a colorectal cancer sample	a colorectal cancer sample	16959974					somatic mutation
+P11137	P11137-1	VAR_019613	sequence variant	variant	423	424	R	K	rs741006	noEvidence								
+P11137	P11137-1	VAR_036015	sequence variant	variant	705	706	P	L	rs146432517	notDisRelated	a colorectal cancer sample	a colorectal cancer sample	16959974					somatic mutation
+P11137	P11137-1	VAR_050020	sequence variant	variant	976	977	H	L	rs13425372	noEvidence								
+P11137	P11137-1	VAR_050021	sequence variant	variant	991	992	G	R	rs35927101	noEvidence								
+P11137	P11137-1	VAR_050022	sequence variant	variant	1099	1100	M	V	rs17745550	noEvidence								
+P11137	P11137-1		sequence conflict	conflict	9	10	A	G		notDisRelated								In Ref. 2; AAB48098/AAB48097.
+P11137	P11137-1		sequence conflict	conflict	37	38	A	R		notDisRelated								In Ref. 1; AAA03354.
+P11137	P11137-1		sequence conflict	conflict	108	109	G	A		notDisRelated								In Ref. 1; AAA03354.
+P11137	P11137-1		sequence conflict	conflict	187	188	K	S		notDisRelated								In Ref. 1; AAA03354.
+P11137	P11137-1		sequence conflict	conflict	1112	1113	E	Q		notDisRelated								In Ref. 1; AAA03354, 2; AAB48098 and 5; AAA59552.
+P11137	P11137-1		sequence conflict	conflict	1655	1656	A	GL		notDisRelated								In Ref. 2; AAB48098/AAB48097.
+P11137	P11137-1		sequence conflict	conflict	1715	1717	RH	D		notDisRelated								In Ref. 1; AAA03354.
+P11137	P11137-1		sequence conflict	conflict	1736	1737	A	V		notDisRelated								In Ref. 1; AAA03354.
+P11137	P11137-1		modified residue	phos	67	68				notDisRelated			15536091					Phosphotyrosine
+P11137	P11137-1		modified residue	phos	323	324				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	354	355				notDisRelated								Phosphoserine
+P11137	P11137-1		modified residue	phos	386	387				notDisRelated								Phosphoserine

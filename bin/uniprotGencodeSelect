@@ -28,7 +28,7 @@ def parseArgs():
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("gencodeMetaTsv",
-                        help="GENCODE metadata in TSV format from UCSC table")
+                        help="GENCODE metadata in TSV format UCSC import (not table), which includes tags")
     parser.add_argument("uniprotMetaTsv",
                         help="Uniprot metadata in TSV format")
     parser.add_argument("protTransPsl",
@@ -41,6 +41,7 @@ def prWarn(*args):
     print("WARNING:", *args, file=sys.stderr, flush=True)
 
 def dropVersion(ident):
+    # might be NaN
     return ident.split('.')[0]
 
 def splitMetaList(val):
@@ -50,9 +51,12 @@ def splitMetaList(val):
 def splitDropVersion(idents):
     return [dropVersion(id) for id in splitMetaList(idents)]
 
+def dropUniportIsoformModifier(acc):
+    return acc.split('-')[0]
+
 class GencodeMetadata:
     def __init__(self, gencodeMetaTsv):
-        self.df = pd.read_table(gencodeMetaTsv)
+        self.df = pd.read_table(gencodeMetaTsv, keep_default_na=False)
 
     def getTrans(self, transId):
         transes = self.df[self.df.transcriptId == transId]
@@ -68,7 +72,8 @@ class GencodeMetadata:
 
 class UniprotMeta:
     def __init__(self, uniprotMetaTsv):
-        self.df = pd.read_table(uniprotMetaTsv)
+        self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
+
         # index by gene and transcript ids
         self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
         self.df['ensemblTransAccs'] = self.df.ensemblTrans.apply(splitDropVersion)
@@ -97,10 +102,19 @@ class UniprotMeta:
             return None
         return protMetas
 
-def loadProtTransPsl(protTransPsl):
+def keepAlign(uniprotMeta, psl):
+    # ignored PAR_Y (e.g. ENST00000359512.8_PAR_Y)
+    if psl.tName.endswith("_PAR_Y"):
+        return False
+    # only keep alignments from main SwissProt isoform, as alt-isoforms are
+    # not annotated
+    return not uniprotMeta.df.mainIsoAcc.isin([psl.qName]).empty
+
+def loadProtTransPsl(uniprotMeta, protTransPsl):
     alignsByTrans = defaultdict(list)  # by stable trans id
     for psl in PslReader(protTransPsl):
-        alignsByTrans[psl.tName].append(psl)
+        if keepAlign(uniprotMeta, psl):
+            alignsByTrans[psl.tName].append(psl)
     alignsByTrans.default_factory = None
     return alignsByTrans
 
@@ -161,7 +175,7 @@ def writePairedPsl(fh, protTransPaired):
 def proteinTranscriptAlign(gencodeMetaTsv, uniprotMetaTsv, protTransPsl, protTransPairedPsl):
     gencodeMeta = GencodeMetadata(gencodeMetaTsv)
     uniprotMeta = UniprotMeta(uniprotMetaTsv)
-    alignsByTrans = loadProtTransPsl(protTransPsl)
+    alignsByTrans = loadProtTransPsl(uniprotMeta, protTransPsl)
 
     # alignsByTrans is cleared as alignments add to protTransPaired
     protTransPaired = selectUniprotTransPairs(gencodeMeta, uniprotMeta, pairTransByUniprotTransId, alignsByTrans)

@@ -1,0 +1,49 @@
+#!/bin/bash
+set -beEu -o pipefail
+
+# to build add entries to test set
+#      tmlr cut -f acc input/swissprot.9606.tab >acc.tsv
+#  add new swissprot accession to acc.tsv
+#      ./getTestData acc.tsv tmp
+#      cp tmp/* input/
+#      make testRunBlastJobs
+#  update expected/
+
+gencodeRel=43
+
+
+usage="$0 acctsv outdir"
+
+if [ $# != 2 ] ; then
+    echo "Wrong # args: $usage" >&2
+    exit 1
+fi
+acctsv="$1"
+outdir="$2"
+
+spdir=/hive/data/outside/otto/uniprot/tab
+sppre=${spdir}/swissprot.9606
+gndir=/hive/data/genomes/hg38/bed/gencodeV${gencodeRel}/hgcImport/data
+gnfa=${gndir}/release_${gencodeRel}/gencode.v${gencodeRel}.pc_transcripts.fa.gz 
+
+spoutpre=${outdir}/swissprot.9606
+gnoutpre=${outdir}/gencode.v${gencodeRel}
+mkdir -p ${outdir}
+
+# swissprot data (annots has stray quotes, so use tsvlite)
+tmlr join -j acc -f ${acctsv} ${sppre}.tab > ${spoutpre}.tab
+mlr --tsvlite join -j acc -f ${acctsv} ${sppre}.annots.tab > ${spoutpre}.annots.tab
+
+# all isoforms for acc
+faSize -detailed ${sppre}.fa.gz | fgrep -f ${acctsv} | cut -f 1 >${spoutpre}.fa.ids.tmp
+faSomeRecords ${sppre}.fa.gz ${spoutpre}.fa.ids.tmp ${spoutpre}.fa
+
+# gencode genes in swissprots
+tmlr cut -f ensemblGene input/swissprot.9606.tab  | tawk '{$0 = gensub("\\.[0-9+]","","g"); print gensub("\\|","\n","g")}' > ${gnoutpre}.gene.acc.tmp
+(head -1 ${gndir}/gencode.tsv && fgrep -f ${gnoutpre}.gene.acc.tmp ${gndir}/gencode.tsv) > ${gnoutpre}.metadata.tsv
+
+# fasta ids
+zcat ${gnfa} | fgrep -f ${gnoutpre}.gene.acc.tmp | sed -e 's/>//' > ${gnoutpre}.fa.ids.tmp
+faSomeRecords ${gnfa} ${gnoutpre}.fa.ids.tmp ${gnoutpre}.pc_transcripts.fa
+
+rm tmp/*.tmp
