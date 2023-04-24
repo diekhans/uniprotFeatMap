@@ -41,11 +41,11 @@ def parseArgs():
 
 def problemLogOpen(problemLogTsv):
     logFh = fileOps.opengz(problemLogTsv, 'w')
-    fileOps.prRowv(logFh, "reason", "transcriptId", "key", "uniprotId")
+    fileOps.prRowv(logFh, "reason", "transcriptId", "transcriptType", "key", "uniprotId")
     return logFh
 
-def problemLog(logFh, reason, transcriptId, key=None, uniprotId=None):
-    fileOps.prRowv(logFh, reason, transcriptId, key, uniprotId)
+def problemLog(logFh, reason, transcriptId, transcriptType, key=None, uniprotId=None):
+    fileOps.prRowv(logFh, reason, transcriptId, transcriptType, key, uniprotId)
 
 def dropVersion(ident):
     # might be NaN
@@ -80,6 +80,8 @@ class GencodeMetadata:
     def getCodingTransIds(self):
         return list(self.df[self.df.transcriptClass == 'coding'].transcriptId)
 
+    def getTransType(self, transId):
+        return self.getTrans(transId).transcriptType
 
 class UniprotMeta:
     def __init__(self, uniprotMetaTsv):
@@ -147,7 +149,8 @@ def pairTransByUniprotTransId(gencodeMeta, uniprotMeta, transId, aligns, logFh):
         return None
     protAlign = selectAlignByProtAccs(aligns, [protMeta.mainIsoAcc])
     if protAlign is None:
-        problemLog(logFh, "no_uniprot_trans_id_aligns", transId, transId, protMeta.mainIsoAcc)
+        problemLog(logFh, "no_uniprot_trans_id_aligns", transId, gencodeMeta.getTransType(transId),
+                   transId, protMeta.mainIsoAcc)
     return protAlign
 
 def pairTransByUniprotGeneId(gencodeMeta, uniprotMeta, transId, aligns, logFh):
@@ -157,7 +160,8 @@ def pairTransByUniprotGeneId(gencodeMeta, uniprotMeta, transId, aligns, logFh):
         return None
     protAlign = selectAlignByProtAccs(aligns, frozenset(protMetas.mainIsoAcc))
     if protAlign is None:
-        problemLog(logFh, "no_uniprot_gene_id_aligns", transId, geneId, ",".join(protMetas.mainIsoAcc))
+        problemLog(logFh, "no_uniprot_gene_id_aligns", transId, gencodeMeta.getTransType(transId),
+                   geneId, ",".join(protMetas.mainIsoAcc))
     return protAlign
 
 def pairTransByUniprotGeneName(gencodeMeta, uniprotMeta, transId, aligns, logFh):
@@ -167,7 +171,8 @@ def pairTransByUniprotGeneName(gencodeMeta, uniprotMeta, transId, aligns, logFh)
         return None
     protAlign = selectAlignByProtAccs(aligns, frozenset(protMetas.mainIsoAcc))
     if protAlign is None:
-        problemLog(logFh, "no_uniprot_gene_name_aligns", transId, geneName, ",".join(protMetas.mainIsoAcc))
+        problemLog(logFh, "no_uniprot_gene_name_aligns", transId, gencodeMeta.getTransType(transId),
+                   geneName, ",".join(protMetas.mainIsoAcc))
     return protAlign
 
 ###
@@ -189,15 +194,15 @@ def selectUniprotTransPairs(gencodeMeta, uniprotMeta, selectFunc, alignsByTrans,
             del alignsByTrans[transId]
     return protTransPaired
 
-def reportUnpairedTranscripts(alignsByTrans, logFh):
+def reportUnpairedTranscripts(gencodeMeta, alignsByTrans, logFh):
     for transId in sorted(alignsByTrans.keys()):
-        problemLog(logFh, "no_uniprot_paired", transId)
+        problemLog(logFh, "no_uniprot_paired", transId, gencodeMeta.getTransType(transId))
 
 def reportUnalignedTranscripts(gencodeMeta, alignsByTrans, pairedByTrans, logFh):
     alignedTransIds = set(alignsByTrans.keys()) | set(pairedByTrans.keys())
     unalignedTransIds = set(gencodeMeta.getCodingTransIds()) - alignedTransIds
     for transId in sorted(unalignedTransIds):
-        problemLog(logFh, "no_uniprot_aligned", transId)
+        problemLog(logFh, "no_uniprot_aligned", transId, gencodeMeta.getTransType(transId))
 
 def writePairedPsl(fh, protTransPaired):
     for psl in sorted(protTransPaired, key=Psl.targetKey):
@@ -216,7 +221,7 @@ def proteinTranscriptAlign(gencodeMetaTsv, uniprotMetaTsv, protTransPsl, protTra
     protTransPaired += selectUniprotTransPairs(gencodeMeta, uniprotMeta, pairTransByUniprotGeneId, alignsByTrans, pairedByTrans, logFh)
     protTransPaired += selectUniprotTransPairs(gencodeMeta, uniprotMeta, pairTransByUniprotGeneName, alignsByTrans, pairedByTrans, logFh)
 
-    reportUnpairedTranscripts(alignsByTrans, logFh)
+    reportUnpairedTranscripts(gencodeMeta, alignsByTrans, logFh)
     reportUnalignedTranscripts(gencodeMeta, alignsByTrans, pairedByTrans, logFh)
 
     with fileOps.opengz(protTransPairedPsl, 'w') as fh:
