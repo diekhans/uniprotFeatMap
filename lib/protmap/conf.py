@@ -12,7 +12,7 @@ paraHost = "ku"
 ##
 
 # want to allow for alignments to other isoforms, so let a lot pass
-protAlnMinCover = 0.25
+protAlnMinCover = 0.0
 
 # stricter filter keeps if from being too far off
-protAlnMinId = 0.80
+protAlnMinId = 0.8

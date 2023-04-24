@@ -76,3 +76,27 @@ ensemblTrans
   filter based on either
   hgncSym or hgncId,  ensemblGene, ensemblTrans
 
+
+* aligning all isoforms to all transcripts seems problematic
+  
+* building gencode to genome PSLs
+  
+* test alignment issues
+** WARNING: no alignments found for 'P11137-1' to matched transcript 'ENST00000199940.10'
+ENST00000199940.10 / ENSG00000078018.22 [P11137-4]
+canonical is 'P11137-1', which has a large exon not in P11137-4
+
+raw BLAST alignes
+| qName    | qSize | tName              | tStart | tEnd |  ident | qCover | repMatch | tCover |
+| P11137-1 |  1827 | ENST00000199940.10 |    440 | 1190 | 0.7208 | 0.1314 |   0.0000 | 0.1071 |
+| P11137-1 |  1827 | ENST00000199940.10 |    491 | 2117 | 0.6982 | 0.2720 |   0.0000 | 0.2218 |
+| P11137-2 |   471 | ENST00000199940.10 |    440 | 2117 | 0.9958 | 1.0000 |   0.0000 | 0.2102 |
+| P11137-3 |  1823 | ENST00000199940.10 |    440 | 1190 | 0.7292 | 0.1317 |   0.0000 | 0.1071 |
+| P11137-3 |  1823 | ENST00000199940.10 |    491 | 2117 | 0.6982 | 0.2726 |   0.0000 | 0.2218 |
+
+P11137-4 not align by BLAST, aligns perfectly to genome
+
+does align to 
+output/testRunBlastJobs.work/aligns/prot22.fa.psl:559	0	0	0	0	0	0	0	++	P11137-4	559	0	559	ENST00000199940.10	2241	440	2117	1	559,	0,	440,
+
+

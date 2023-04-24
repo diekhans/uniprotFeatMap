@@ -5,7 +5,7 @@ set -beEu -o pipefail
 #      tmlr cut -f acc input/swissprot.9606.tab >acc.tsv
 #  add new swissprot accession to acc.tsv
 #      ./getTestData acc.tsv tmp
-#      cp tmp/* input/
+#      cp tmp/*.{tsv,fa,tab,psl,gp} input/
 #      make testRunBlastJobs
 #  update expected/
 
@@ -24,7 +24,8 @@ outdir="$2"
 spdir=/hive/data/outside/otto/uniprot/tab
 sppre=${spdir}/swissprot.9606
 gndir=/hive/data/genomes/hg38/bed/gencodeV${gencodeRel}/hgcImport/data
-gnfa=${gndir}/release_${gencodeRel}/gencode.v${gencodeRel}.pc_transcripts.fa.gz 
+gnfa=${gndir}/release_${gencodeRel}/gencode.v${gencodeRel}.pc_transcripts.fa.gz
+chromSizes=/hive/data/genomes/hg38/chrom.sizes
 
 spoutpre=${outdir}/swissprot.9606
 gnoutpre=${outdir}/gencode.v${gencodeRel}
@@ -39,11 +40,14 @@ faSize -detailed ${sppre}.fa.gz | fgrep -f ${acctsv} | cut -f 1 >${spoutpre}.fa.
 faSomeRecords ${sppre}.fa.gz ${spoutpre}.fa.ids.tmp ${spoutpre}.fa
 
 # gencode genes in swissprots
-tmlr cut -f ensemblGene input/swissprot.9606.tab  | tawk '{$0 = gensub("\\.[0-9+]","","g"); print gensub("\\|","\n","g")}' > ${gnoutpre}.gene.acc.tmp
+tmlr cut -f ensemblGene input/swissprot.9606.tab  | tawk '{$0 = gensub("\\.[0-9]+","","g"); print gensub("\\|","\n","g")}' > ${gnoutpre}.gene.acc.tmp
 (head -1 ${gndir}/gencode.tsv && fgrep -f ${gnoutpre}.gene.acc.tmp ${gndir}/gencode.tsv) > ${gnoutpre}.metadata.tsv
 
 # fasta ids
 zcat ${gnfa} | fgrep -f ${gnoutpre}.gene.acc.tmp | sed -e 's/>//' > ${gnoutpre}.fa.ids.tmp
 faSomeRecords ${gnfa} ${gnoutpre}.fa.ids.tmp ${gnoutpre}.pc_transcripts.fa
 
-rm tmp/*.tmp
+# gencode to genome PSL
+awk '/^>/{print gensub(">([A-Z0-9.]+).*$", "\\1", 1)}' ${gnoutpre}.pc_transcripts.fa > ${gnoutpre}.trans.acc.tmp
+fgrep -f ${gnoutpre}.trans.acc.tmp ${gndir}/gencode.gp > ${gnoutpre}.gp
+genePredToPsl ${chromSizes} ${gnoutpre}.gp ${gnoutpre}.psl

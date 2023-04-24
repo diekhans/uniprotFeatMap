@@ -1,0 +1,58 @@
+reason	transcriptId	key	uniprotId
+no_uniprot_trans_id_aligns	ENST00000199940.10	ENST00000199940.10	P11137-1
+no_uniprot_trans_id_aligns	ENST00000216923.5	ENST00000216923.5	Q9NTW7-1
+no_uniprot_trans_id_aligns	ENST00000346617.8	ENST00000346617.8	Q9NTW7-1
+no_uniprot_trans_id_aligns	ENST00000371515.8	ENST00000371515.8	Q9NTW7-1
+no_uniprot_gene_id_aligns	ENST00000199940.10	ENSG00000078018.22	P11137-1
+no_uniprot_gene_id_aligns	ENST00000216923.5	ENSG00000020256.20	Q9NTW7-1
+no_uniprot_gene_id_aligns	ENST00000346617.8	ENSG00000020256.20	Q9NTW7-1
+no_uniprot_gene_id_aligns	ENST00000371515.8	ENSG00000020256.20	Q9NTW7-1
+no_uniprot_gene_name_aligns	ENST00000199940.10	MAP2	P11137-1
+no_uniprot_gene_name_aligns	ENST00000216923.5	ZFP64	Q9NTW7-1
+no_uniprot_gene_name_aligns	ENST00000346617.8	ZFP64	Q9NTW7-1
+no_uniprot_gene_name_aligns	ENST00000371515.8	ZFP64	Q9NTW7-1
+no_uniprot_paired	ENST00000199940.10		
+no_uniprot_paired	ENST00000216923.5		
+no_uniprot_paired	ENST00000346617.8		
+no_uniprot_paired	ENST00000371515.8		
+no_uniprot_aligned	ENST00000443865.2		
+no_uniprot_aligned	ENST00000446604.6		
+no_uniprot_aligned	ENST00000448448.2		
+no_uniprot_aligned	ENST00000460052.1		
+no_uniprot_aligned	ENST00000461253.1		
+no_uniprot_aligned	ENST00000461898.1		
+no_uniprot_aligned	ENST00000464977.5		
+no_uniprot_aligned	ENST00000465868.5		
+no_uniprot_aligned	ENST00000467385.5		
+no_uniprot_aligned	ENST00000467811.5		
+no_uniprot_aligned	ENST00000470729.5		
+no_uniprot_aligned	ENST00000471048.1		
+no_uniprot_aligned	ENST00000471619.5		
+no_uniprot_aligned	ENST00000471656.5		
+no_uniprot_aligned	ENST00000473543.1		
+no_uniprot_aligned	ENST00000475600.5		
+no_uniprot_aligned	ENST00000477786.5		
+no_uniprot_aligned	ENST00000481649.1		
+no_uniprot_aligned	ENST00000482072.1		
+no_uniprot_aligned	ENST00000482864.5		
+no_uniprot_aligned	ENST00000486342.1		
+no_uniprot_aligned	ENST00000486351.1		
+no_uniprot_aligned	ENST00000495493.1		
+no_uniprot_aligned	ENST00000496497.1		
+no_uniprot_aligned	ENST00000519732.5		
+no_uniprot_aligned	ENST00000521526.2		
+no_uniprot_aligned	ENST00000524383.1		
+no_uniprot_aligned	ENST00000529843.1		
+no_uniprot_aligned	ENST00000533574.1		
+no_uniprot_aligned	ENST00000533674.1		
+no_uniprot_aligned	ENST00000538028.1		
+no_uniprot_aligned	ENST00000540049.1		
+no_uniprot_aligned	ENST00000555289.5		
+no_uniprot_aligned	ENST00000557093.1		
+no_uniprot_aligned	ENST00000558725.5		
+no_uniprot_aligned	ENST00000561229.1		
+no_uniprot_aligned	ENST00000592493.1		
+no_uniprot_aligned	ENST00000611776.4		
+no_uniprot_aligned	ENST00000616052.3		
+no_uniprot_aligned	ENST00000627359.1		
+no_uniprot_aligned	ENST00000668691.1		

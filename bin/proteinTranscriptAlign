@@ -13,6 +13,11 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.utils import getDoneFile, runIfNotDone, runIfOutOfDate
 from protmap import conf
 
+# Note:
+#  - Don't filter for minimum alignment coverage to get alt isoforms, which
+#    are often split
+#  - percent-identity doesn't seem very sane from blastToPsl for protein to RNH
+
 def parseArgs():
     desc = """Align uniprot to transcript with BLAST and convert to PSL.
     program can rerun to finish up after manual parasol recovery.
@@ -91,7 +96,7 @@ def combineAligns(alignDir, protTransPsl):
     # discard not within the configure minimum identity and coverage.  Batch
     # program discards PSLs that are not ++ alignments
     pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
-                  ["sort", "-k14,14", "--files0-from=-"],
+                  ["sort", "-k14,14", "-k10,10", "--files0-from=-"],
                   ["pslCDnaFilter", "-verbose=0",
                    "-minCover=" + str(conf.protAlnMinCover),
                    "-minId=" + str(conf.protAlnMinId),
