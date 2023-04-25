@@ -10,7 +10,7 @@ from pycbio.distrib.parasol import Para
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 
-from protmap.utils import getDoneFile, runIfNotDone, runIfOutOfDate
+from protmap import getDoneFile, runIfNotDone, runIfOutOfDate
 from protmap import conf
 
 # Note:

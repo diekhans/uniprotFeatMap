@@ -4,11 +4,13 @@ import sys
 from os import path as osp
 import argparse
 from collections import defaultdict
-import pandas as pd
 from pycbio.sys import fileOps
 from pycbio.hgdata.psl import Psl, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from protmap import dropVersion
+from protmap.gencode import GencodeMetadata
+from protmap.uniprot import UniprotMeta
 
 # Terminology
 #    xxxId is id with version
@@ -47,78 +49,7 @@ def problemLogOpen(problemLogTsv):
 def problemLog(logFh, reason, transcriptId, transcriptType, key=None, uniprotId=None):
     fileOps.prRowv(logFh, reason, transcriptId, transcriptType, key, uniprotId)
 
-def dropVersion(ident):
-    # might be NaN
-    return ident.split('.')[0]
-
-def splitMetaList(val):
-    """ split strings like: ENST00000369413.8|ENST00000528909.1"""
-    return val.split('|')
-
-def splitDropVersion(idents):
-    return [dropVersion(id) for id in splitMetaList(idents)]
-
-def dropUniportIsoformModifier(acc):
-    return acc.split('-')[0]
-
-class GencodeMetadata:
-    def __init__(self, gencodeMetaTsv):
-        self.df = pd.read_table(gencodeMetaTsv, keep_default_na=False)
-
-    def getTrans(self, transId):
-        transes = self.df[self.df.transcriptId == transId]
-        if len(transes) == 0:
-            raise Exception(f"can't find GENCODE metadata for '{transId}'")
-        return transes.iloc[0]
-
-    def getGeneId(self, transId):
-        return self.getTrans(transId).geneId
-
-    def getGeneName(self, transId):
-        return self.getTrans(transId).geneName
-
-    def getCodingTransIds(self):
-        return list(self.df[self.df.transcriptClass == 'coding'].transcriptId)
-
-    def getTransType(self, transId):
-        return self.getTrans(transId).transcriptType
-
-class UniprotMeta:
-    def __init__(self, uniprotMetaTsv):
-        self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
-
-        # index by gene and transcript ids
-        self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
-        self.df['ensemblTransAccs'] = self.df.ensemblTrans.apply(splitDropVersion)
-        self.byGeneAccDf = self.df.explode('ensemblGeneAccs')
-        self.byGeneAccDf.rename(columns={'ensemblGeneAccs': 'ensemblGeneAcc'}, inplace=True)
-        self.byTranscriptAccDf = self.df.explode('ensemblTransAccs')
-        self.byTranscriptAccDf.rename(columns={'ensemblTransAccs': 'ensemblTransAcc'}, inplace=True)
-
-    def getTransMeta(self, transAcc):
-        protMetas = self.byTranscriptAccDf[self.byTranscriptAccDf.ensemblTransAcc == transAcc]
-        if len(protMetas) == 0:
-            return None
-        if len(protMetas) > 1:
-            raise Exception(f"excepted no more than protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
-        return protMetas.iloc[0]
-
-    def getGeneAccMetas(self, geneAcc):
-        protMetas = self.byGeneAccDf[self.byGeneAccDf.ensemblGeneAcc == geneAcc]
-        if len(protMetas) == 0:
-            return None
-        return protMetas
-
-    def getGeneNameMetas(self, geneName):
-        protMetas = self.byGeneAccDf[self.byGeneAccDf.geneName == geneName]
-        if len(protMetas) == 0:
-            return None
-        return protMetas
-
 def keepAlign(uniprotMeta, psl):
-    # ignored PAR_Y (e.g. ENST00000359512.8_PAR_Y)
-    if psl.tName.endswith("_PAR_Y"):
-        return False
     # only keep alignments from main SwissProt isoform, as alt-isoforms are
     # not annotated
     return not uniprotMeta.df.mainIsoAcc.isin([psl.qName]).empty

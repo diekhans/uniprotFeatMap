@@ -1,0 +1,44 @@
+import pandas as pd
+from protmap import dropVersion
+
+def splitMetaList(val):
+    """ split strings like: ENST00000369413.8|ENST00000528909.1"""
+    return val.split('|')
+
+def splitDropVersion(idents):
+    return [dropVersion(id) for id in splitMetaList(idents)]
+
+def dropUniportIsoformModifier(acc):
+    return acc.split('-')[0]
+
+class UniprotMeta:
+    def __init__(self, uniprotMetaTsv):
+        self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
+
+        # index by gene and transcript ids
+        self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
+        self.df['ensemblTransAccs'] = self.df.ensemblTrans.apply(splitDropVersion)
+        self.byGeneAccDf = self.df.explode('ensemblGeneAccs')
+        self.byGeneAccDf.rename(columns={'ensemblGeneAccs': 'ensemblGeneAcc'}, inplace=True)
+        self.byTranscriptAccDf = self.df.explode('ensemblTransAccs')
+        self.byTranscriptAccDf.rename(columns={'ensemblTransAccs': 'ensemblTransAcc'}, inplace=True)
+
+    def getTransMeta(self, transAcc):
+        protMetas = self.byTranscriptAccDf[self.byTranscriptAccDf.ensemblTransAcc == transAcc]
+        if len(protMetas) == 0:
+            return None
+        if len(protMetas) > 1:
+            raise Exception(f"excepted no more than protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
+        return protMetas.iloc[0]
+
+    def getGeneAccMetas(self, geneAcc):
+        protMetas = self.byGeneAccDf[self.byGeneAccDf.ensemblGeneAcc == geneAcc]
+        if len(protMetas) == 0:
+            return None
+        return protMetas
+
+    def getGeneNameMetas(self, geneName):
+        protMetas = self.byGeneAccDf[self.byGeneAccDf.geneName == geneName]
+        if len(protMetas) == 0:
+            return None
+        return protMetas
