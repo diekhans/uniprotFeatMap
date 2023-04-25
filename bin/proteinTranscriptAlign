@@ -2,16 +2,13 @@
 
 import sys
 from os import path as osp
-import glob
 import argparse
 import pipettor
 from pycbio.sys import fileOps
-from pycbio.distrib.parasol import Para
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-
-from protmap import getDoneFile, runIfNotDone, runIfOutOfDate
-from protmap import conf
+from protmap import conf, prMsg, runIfNotDone, runIfOutOfDate
+from protmap.align import querySplit, runBatch
 
 # Note:
 #  - Don't filter for minimum alignment coverage to get alt isoforms, which
@@ -33,9 +30,6 @@ def parseArgs():
                         help="temporary directory used by parasol run")
     return parser.parse_args()
 
-def prLog(msg):
-    print(msg, file=sys.stderr, flush=True)
-
 def editFasta(inFa, outFa):
     """
     decompress and split GENCODE FASTA headers like
@@ -46,8 +40,8 @@ def editFasta(inFa, outFa):
             for line in inFh:
                 print(line.replace('|', ' ').strip(), file=outFh)
 
-def buildTargetTranscripts(transFa, transDbFa, workDir):
-    prLog("building target transcript database")
+def targetBuildDb(transFa, transDbFa, workDir):
+    prMsg("building target transcript database")
     fileOps.ensureDir(workDir)
     fileOps.ensureFileDir(transDbFa)
     editFasta(transFa, transDbFa)
@@ -56,43 +50,9 @@ def buildTargetTranscripts(transFa, transDbFa, workDir):
     pipettor.run([osp.join(conf.blastDir, "formatdb"),
                   "-l", logFile, "-i", transDbFa, "-p", "F"])
 
-def getProtSplitPrefix(protSplitDir):
-    return osp.join(protSplitDir, "prot")
-
-def listProtSplitFas(protSplitDir):
-    return glob.glob(getProtSplitPrefix(protSplitDir) + "*")
-
-def buildTargetQueryProts(protFa, protSplitDir):
-    prLog("split query proteins")
-    fileOps.ensureDir(protSplitDir)
-    pipettor.run(["faSplit", "about", protFa, 2500, getProtSplitPrefix(protSplitDir)])
-
-def makeJobFile(protSplitDir, transDbFa, alignDir, workDir):
-    jobFile = osp.join(workDir, "jobs.para")
-    runBlast = osp.join(osp.dirname(__file__), "runBlast")
-    with open(jobFile, 'w') as fh:
-        for protFa in listProtSplitFas(protSplitDir):
-            outPsl = osp.join(alignDir, osp.basename(protFa) + ".psl")
-            print(runBlast, transDbFa, protFa, f"{{check out exists {outPsl}}}", file=fh)
-    if osp.getsize(jobFile) == 0:
-        raise Exception(f"empty job file create: {jobFile}")
-    return jobFile
-
-def runBatch(protSplitDir, transDbFa, alignDir, workDir):
-    prLog("running BLAST batch")
-    jobFile = makeJobFile(protSplitDir, transDbFa, alignDir, workDir)
-    paraDir = osp.abspath(osp.join(workDir, "batch"))
-    para = Para(conf.paraHost, jobFile, paraDir=paraDir)
-    para.free()
-    try:
-        para.make()
-    except pipettor.exceptions.ProcessException as ex:
-        raise Exception(f"batch failed, correct problem, re-run with -batch={paraDir}\n"
-                        "then touch " + getDoneFile(alignDir)) from ex
-
 def combineAligns(alignDir, protTransPsl):
     "concatenate and sort by tName (transcript))"
-    prLog("combining alignments")
+    prMsg("combining alignments")
     # discard not within the configure minimum identity and coverage.  Batch
     # program discards PSLs that are not ++ alignments
     pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
@@ -107,23 +67,23 @@ def proteinTranscriptAlign(protFa, transFa, protTransPsl, workDir):
     transDbFa = osp.join(transDbDir, "transDb.fa")
     with runIfNotDone(transDbDir, depends=transFa) as do:
         if do:
-            buildTargetTranscripts(transFa, transDbFa, workDir)
+            targetBuildDb(transFa, transDbFa, workDir)
 
-    protSplitDir = osp.join(workDir, "protSplit")
-    with runIfNotDone(protSplitDir, depends=protFa) as do:
+    querySplitDir = osp.join(workDir, "protSplit")
+    with runIfNotDone(querySplitDir, depends=protFa) as do:
         if do:
-            buildTargetQueryProts(protFa, protSplitDir)
+            querySplit(protFa, querySplitDir)
 
     alignDir = osp.join(workDir, "aligns")
-    with runIfNotDone(alignDir, doneDepends=[transDbDir, protSplitDir]) as do:
+    with runIfNotDone(alignDir, doneDepends=[transDbDir, querySplitDir]) as do:
         if do:
-            runBatch(protSplitDir, transDbFa, alignDir, workDir)
+            runBatch(osp.dirname(__file__), querySplitDir, transDbFa, alignDir, workDir)
 
     with runIfOutOfDate(protTransPsl, doneDepends=alignDir) as do:
         if do:
             with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
                 combineAligns(alignDir, tmpPsl)
-    prLog("finished")
+    prMsg("finished")
 
 def main(opts):
     proteinTranscriptAlign(opts.protFa, opts.transFa, opts.protTransPsl, opts.workDir)

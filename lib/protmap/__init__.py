@@ -2,10 +2,13 @@
 Library of common functions and other definitions
 """
 
+import sys
 from os import path as osp
 
+def prMsg(msg):
+    print(msg, file=sys.stderr, flush=True)
+
 def dropVersion(ident):
-    # might be NaN
     return ident.split('.')[0]
 
 def getDoneFile(target):

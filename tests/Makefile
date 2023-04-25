@@ -26,7 +26,7 @@ testUniprotGencodeSelectBasic: mkout
 testRunBlastJobs: mkout
 	rm -rf output/$@.psl output/$@.work
 	${proteinTranscriptAlign} input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
-	cut -f 14 output/$@.work/aligns/prot*.psl | sort -u > output/$@.raw.tids
+	cut -f 14 output/$@.work/aligns/*.psl | sort -u > output/$@.raw.tids
 	cut -f 14 output/$@.psl | sort -u > output/$@.filtered.tids
 	diff expected/$@.raw.tids output/$@.raw.tids
 	diff expected/$@.filtered.tids output/$@.filtered.tids
