@@ -69,19 +69,19 @@ def combineAligns(alignDir, isoCanonicalPsl):
 def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, workDir):
     canonicalDbDir = osp.join(workDir, "canonicalDb")
     canonicalDbFa = osp.join(canonicalDbDir, "canonicalDb.fa")
-    with runIfNotDone(canonicalDbDir, depends=canonicalDbFa) as do:
+    with runIfNotDone(canonicalDbDir, depends=uniprotFa) as do:
         if do:
             targetBuildDb(uniprotFa, canonicalDbFa, workDir)
 
-    querySplitDir = osp.join(workDir, "isoSplit")
-    with runIfNotDone(querySplitDir, depends=uniprotFa) as do:
+    queriesDir = osp.join(workDir, "split")
+    with runIfNotDone(queriesDir, depends=uniprotFa) as do:
         if do:
-            querySplit(uniprotFa, querySplitDir)
+            querySplit(uniprotFa, queriesDir)
 
-    alignDir = osp.join(workDir, "isoCanonAligns")
-    with runIfNotDone(alignDir, doneDepends=[canonicalDbDir, querySplitDir]) as do:
+    alignDir = osp.join(workDir, "aligns")
+    with runIfNotDone(alignDir, doneDepends=[canonicalDbDir, queriesDir]) as do:
         if do:
-            runBatch(proteinProteinAlignJob, querySplitDir, canonicalDbFa, alignDir,
+            runBatch(proteinProteinAlignJob, queriesDir, canonicalDbFa, alignDir,
                      osp.join(workDir, "batch"))
 
     with runIfOutOfDate(isoCanonicalPsl, doneDepends=alignDir) as do:

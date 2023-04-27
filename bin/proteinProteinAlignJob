@@ -19,4 +19,5 @@ outPslTmp=$outPsl.$(hostname).$$.tmp
 
 ${blastAll} -p blastp -F F -d $targetDb -i $queryFa | \
     blastToPsl /dev/stdin /dev/stdout > $outPslTmp
+#blat -noHead -prot $targetDb $queryFa $outPslTmp
 mv -f $outPslTmp $outPsl

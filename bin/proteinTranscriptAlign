@@ -71,15 +71,15 @@ def proteinTranscriptAlign(protFa, transFa, protTransPsl, workDir):
         if do:
             targetBuildDb(transFa, transDbFa, workDir)
 
-    querySplitDir = osp.join(workDir, "protSplit")
-    with runIfNotDone(querySplitDir, depends=protFa) as do:
+    queriesDir = osp.join(workDir, "queriesDir")
+    with runIfNotDone(queriesDir, depends=protFa) as do:
         if do:
-            querySplit(protFa, querySplitDir)
+            querySplit(protFa, queriesDir)
 
-    alignDir = osp.join(workDir, "protTransAligns")
-    with runIfNotDone(alignDir, doneDepends=[transDbDir, querySplitDir]) as do:
+    alignDir = osp.join(workDir, "aligns")
+    with runIfNotDone(alignDir, doneDepends=[transDbDir, queriesDir]) as do:
         if do:
-            runBatch(proteinTranscriptAlignJob, querySplitDir, transDbFa, alignDir,
+            runBatch(proteinTranscriptAlignJob, queriesDir, transDbFa, alignDir,
                      osp.join(workDir, "batch"))
 
     with runIfOutOfDate(protTransPsl, doneDepends=alignDir) as do:

@@ -15,12 +15,31 @@ def getDoneFile(target):
     "get path to done file corresponding to target"
     return osp.normpath(target) + ".done"
 
+def _normalizeDepends(depends):
+    "make list if str or None"
+    if depends is None:
+        depends = ()
+    elif isinstance(depends, str):
+        depends = (depends,)
+    return depends
+
+def _checkDepends(depends):
+    for depend in depends:
+        if not osp.exists(depend):
+            raise Exception(f"dependency does not exist: {depend}")
+
 def _isOutOfDate(doneFile, depends):
     modTime = osp.getmtime(doneFile)
     for depend in depends:
         if osp.getmtime(depend) > modTime:
             return True
     return False
+
+def _checkDoneDepends(doneDepends):
+    for doneDepend in doneDepends:
+        depend = getDoneFile(doneDepend)
+        if not osp.exists(depend):
+            raise Exception(f"dependency does not exist: {depend}")
 
 def _isDoneOutOfDate(doneFile, doneDepends):
     return _isOutOfDate(doneFile, [getDoneFile(d) for d in doneDepends])
@@ -39,15 +58,15 @@ class runIfNotDone:
 
     def __init__(self, target, *, depends=None, doneDepends=None):
         "depends can be a string filename or list"
-        if isinstance(depends, str):
-            depends = [depends]
-        if isinstance(doneDepends, str):
-            doneDepends = [doneDepends]
+        depends = _normalizeDepends(depends)
+        _checkDepends(depends)
+        doneDepends = _normalizeDepends(doneDepends)
+        _checkDoneDepends(doneDepends)
 
         self.doneFile = getDoneFile(target)
         self.outOfDate = ((not osp.exists(self.doneFile)) or
-                          ((depends is not None) and _isOutOfDate(self.doneFile, depends)) or
-                          ((doneDepends is not None) and _isDoneOutOfDate(self.doneFile, doneDepends)))
+                          _isOutOfDate(self.doneFile, depends) or
+                          _isDoneOutOfDate(self.doneFile, doneDepends))
 
     def __enter__(self):
         return self.outOfDate
