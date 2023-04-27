@@ -13,32 +13,31 @@ def queryGetSplitPrefix(querySplitDir):
     return osp.join(querySplitDir, "query")
 
 def queryListSplitFas(querySplitDir):
-    return glob.glob(queryGetSplitPrefix(querySplitDir) + "*")
+    return sorted(glob.glob(queryGetSplitPrefix(querySplitDir) + "*"))
 
 def querySplit(queryFa, querySplitDir):
     prMsg("split query proteins")
     fileOps.ensureDir(querySplitDir)
     pipettor.run(["faSplit", "about", queryFa, 2500, queryGetSplitPrefix(querySplitDir)])
 
-def makeJobFile(bindir, querySplitDir, transDbFa, alignDir, workDir):
-    jobFile = osp.join(workDir, "jobs.para")
-    jobCmd = osp.join(bindir, "proteinTranscriptAlignJob")
+def makeJobFile(alignProg, querySplitDir, targetDbFa, alignDir, alignBatchDir):
+    jobFile = osp.join(alignBatchDir, "jobs.para")
     with open(jobFile, 'w') as fh:
         for queryFa in queryListSplitFas(querySplitDir):
             outPsl = osp.join(alignDir, osp.basename(queryFa) + ".psl")
-            print(jobCmd, transDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
+            print(alignProg, targetDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
     if osp.getsize(jobFile) == 0:
         raise Exception(f"empty job file create: {jobFile}")
     return jobFile
 
-def runBatch(bindir, querySplitDir, transDbFa, alignDir, workDir):
+def runBatch(alignProg, querySplitDir, targetDbFa, alignDir, alignBatchDir):
     prMsg("running alignment batch")
-    jobFile = makeJobFile(bindir, querySplitDir, transDbFa, alignDir, workDir)
-    paraDir = osp.abspath(osp.join(workDir, "batch"))
-    para = Para(conf.paraHost, jobFile, paraDir=paraDir)
+    fileOps.ensureDir(alignBatchDir)
+    jobFile = makeJobFile(alignProg, querySplitDir, targetDbFa, alignDir, alignBatchDir)
+    para = Para(conf.paraHost, jobFile, paraDir=alignBatchDir)
     para.free()
     try:
         para.make()
     except pipettor.exceptions.ProcessException as ex:
-        raise Exception(f"batch failed, correct problem, re-run with -batch={paraDir}\n"
+        raise Exception(f"batch failed, correct problem, re-run with -batch={alignBatchDir}\n"
                         "then touch " + getDoneFile(alignDir)) from ex

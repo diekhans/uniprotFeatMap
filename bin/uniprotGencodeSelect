@@ -20,8 +20,7 @@ from protmap.uniprot import UniprotMeta
 #   - start with alignments of uniprot proteins to GENCODE coding transcript,
 #     already filtered for ++ strand and minimal coverage of protein
 #   - goal to find the best alignment for each transcript:
-#     - for each transcript id, if the uniprot entry is part with it by id,
-#       us the best covering align of the protein.
+#     - uniprot entry list best covering align of the protein.
 #     -
 
 def parseArgs():

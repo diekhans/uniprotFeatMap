@@ -1,5 +1,8 @@
+SHELL = /bin/bash -beEu -o pipefail
+
 proteinTranscriptAlign = ../bin/proteinTranscriptAlign 
 uniprotGencodeSelect = ../bin/uniprotGencodeSelect
+uniprotIsoCanonicalAlign = ../bin/uniprotIsoCanonicalAlign
 
 all:
 	@echo "Note: targets are:"
@@ -12,24 +15,32 @@ all:
 test: uniprotGencodeSelectTests
 	@echo "to test blast alignments use: make fulltest" >&2
 
-fulltest: test testRunBlastJobs
-aligntest: testRunBlastJobs
+fulltest: test aligntest
+aligntest: testProtTransAlign testProtCanonAlign
 
 uniprotGencodeSelectTests: testUniprotGencodeSelectBasic
 
 testUniprotGencodeSelectBasic: mkout
-	${uniprotGencodeSelect} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testRunBlastJobs.psl output/$@.psl output/$@.problems.tsv
+	${uniprotGencodeSelect} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 
-
-testRunBlastJobs: mkout
+testProtTransAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${proteinTranscriptAlign} input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
-	cut -f 14 output/$@.work/aligns/*.psl | sort -u > output/$@.raw.tids
+	cut -f 14 output/$@.work/protTransAligns/*.psl | sort -u > output/$@.raw.tids
 	cut -f 14 output/$@.psl | sort -u > output/$@.filtered.tids
 	diff expected/$@.raw.tids output/$@.raw.tids
 	diff expected/$@.filtered.tids output/$@.filtered.tids
+
+testProtCanonAlign: mkout
+	rm -rf output/$@.psl output/$@.work
+	${uniprotIsoCanonicalAlign} input/swissprot.9606.fa output/$@.psl output/$@.work
+	cut -f 14 output/$@.work/isoCanonAligns/*.psl | sort -u > output/$@.raw.tids
+	cut -f 14 output/$@.psl | sort -u > output/$@.filtered.tids
+	diff expected/$@.raw.tids output/$@.raw.tids
+	diff expected/$@.filtered.tids output/$@.filtered.tids
+
 
 mkout:
 	@mkdir -p output

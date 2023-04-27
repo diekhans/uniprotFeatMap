@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+
+import sys
+from os import path as osp
+import re
+import argparse
+import pipettor
+from pycbio.sys import fileOps
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from protmap import conf, prMsg, runIfNotDone, runIfOutOfDate
+from protmap.align import querySplit, runBatch
+
+proteinProteinAlignJob = osp.join(osp.dirname(__file__), "proteinProteinAlignJob")
+
+
+# Note:
+#  - Don't filter for minimum alignment coverage to get alt isoforms, which
+#    are often split
+
+def parseArgs():
+    desc = """produce mapping alignments of each uniprot iso to the canonical,
+    including a 1-to-1 mapping of the canonical."""
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("uniprotFa",
+                        help="uniprotFa FASTA")
+    parser.add_argument("isoCanonicalPsl",
+                        help="alignments")
+    parser.add_argument("workDir",
+                        help="temporary directory used by parasol run")
+    return parser.parse_args()
+
+def getUniprotCanonicalFa(inFa, outFa):
+    """
+    out canonical isoform records, which have headers like
+    >P14060 isRefOf P14060
+    """
+    inCanonical = False
+    with fileOps.opengz(inFa) as inFh:
+        with open(outFa, 'w') as outFh:
+            for line in inFh:
+                if line.startswith('>'):
+                    inCanonical = re.match("^>.+ isRefOf .+$", line)
+                if inCanonical:
+                    outFh.write(line)
+
+def targetBuildDb(uniprotFa, canonicalFa, workDir):
+    prMsg("building canonical isoform database")
+    fileOps.ensureDir(workDir)
+    fileOps.ensureFileDir(canonicalFa)
+    getUniprotCanonicalFa(uniprotFa, canonicalFa)
+
+    logFile = osp.join(workDir, "formatdb.log")
+    pipettor.run([osp.join(conf.blastDir, "formatdb"),
+                  "-l", logFile, "-i", canonicalFa, "-p", "T"])
+
+def combineAligns(alignDir, isoCanonicalPsl):
+    "concatenate and sort by tName (canonical isoform))"
+    prMsg("combining alignments")
+    # discard not within the configure minimum identity and coverage.  Batch
+    # program discards PSLs that are not ++ alignments
+    pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
+                  ["sort", "-k14,14", "-k10,10", "--files0-from=-"],
+                  ["pslCDnaFilter", "-verbose=0",
+                   "-minCover=" + str(conf.isoCanconAlnMinCover),
+                   "-minId=" + str(conf.isoCanconIsoAlnMinId),
+                   "/dev/stdin", "/dev/stdout"]], stdout=isoCanonicalPsl)
+
+def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, workDir):
+    canonicalDbDir = osp.join(workDir, "canonicalDb")
+    canonicalDbFa = osp.join(canonicalDbDir, "canonicalDb.fa")
+    with runIfNotDone(canonicalDbDir, depends=canonicalDbFa) as do:
+        if do:
+            targetBuildDb(uniprotFa, canonicalDbFa, workDir)
+
+    querySplitDir = osp.join(workDir, "isoSplit")
+    with runIfNotDone(querySplitDir, depends=uniprotFa) as do:
+        if do:
+            querySplit(uniprotFa, querySplitDir)
+
+    alignDir = osp.join(workDir, "isoCanonAligns")
+    with runIfNotDone(alignDir, doneDepends=[canonicalDbDir, querySplitDir]) as do:
+        if do:
+            runBatch(proteinProteinAlignJob, querySplitDir, canonicalDbFa, alignDir,
+                     osp.join(workDir, "batch"))
+
+    with runIfOutOfDate(isoCanonicalPsl, doneDepends=alignDir) as do:
+        if do:
+            with fileOps.AtomicFileCreate(isoCanonicalPsl) as tmpPsl:
+                combineAligns(alignDir, tmpPsl)
+    prMsg("finished")
+
+def main(opts):
+    uniprotIsoCanonicalAlign(opts.uniprotFa, opts.isoCanonicalPsl, opts.workDir)
+
+main(parseArgs())

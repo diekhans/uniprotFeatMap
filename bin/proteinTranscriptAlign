@@ -10,6 +10,8 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap import conf, prMsg, runIfNotDone, runIfOutOfDate
 from protmap.align import querySplit, runBatch
 
+proteinTranscriptAlignJob = osp.join(osp.dirname(__file__), "proteinTranscriptAlignJob")
+
 # Note:
 #  - Don't filter for minimum alignment coverage to get alt isoforms, which
 #    are often split
@@ -58,8 +60,8 @@ def combineAligns(alignDir, protTransPsl):
     pipettor.run([["find", alignDir, "-name", "*.psl", "-print0"],
                   ["sort", "-k14,14", "-k10,10", "--files0-from=-"],
                   ["pslCDnaFilter", "-verbose=0",
-                   "-minCover=" + str(conf.protAlnMinCover),
-                   "-minId=" + str(conf.protAlnMinId),
+                   "-minCover=" + str(conf.protTransAlnMinCover),
+                   "-minId=" + str(conf.protTransAlnMinId),
                    "/dev/stdin", "/dev/stdout"]], stdout=protTransPsl)
 
 def proteinTranscriptAlign(protFa, transFa, protTransPsl, workDir):
@@ -74,10 +76,11 @@ def proteinTranscriptAlign(protFa, transFa, protTransPsl, workDir):
         if do:
             querySplit(protFa, querySplitDir)
 
-    alignDir = osp.join(workDir, "aligns")
+    alignDir = osp.join(workDir, "protTransAligns")
     with runIfNotDone(alignDir, doneDepends=[transDbDir, querySplitDir]) as do:
         if do:
-            runBatch(osp.dirname(__file__), querySplitDir, transDbFa, alignDir, workDir)
+            runBatch(proteinTranscriptAlignJob, querySplitDir, transDbFa, alignDir,
+                     osp.join(workDir, "batch"))
 
     with runIfOutOfDate(protTransPsl, doneDepends=alignDir) as do:
         if do:
