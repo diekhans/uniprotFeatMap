@@ -25,21 +25,25 @@ testUniprotGencodeSelectBasic: mkout
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 
+define checkAlignments
+	pslStats -tsv -queries=input/swissprot.9606.sizes output/$@.psl output/$@.stats.tsv
+	cut -f 10,14 output/$@.work/*Aligns/*.psl | sort -u -k2,2 -k1,1 > output/$@.raw.tids
+	cut -f 10,14 output/$@.psl | sort -u -k2,2 -k1,1 > output/$@.filtered.tids
+	diff expected/$@.raw.tids output/$@.raw.tids
+	diff expected/$@.filtered.tids output/$@.filtered.tids
+	diff expected/$@.stats.tsv output/$@.stats.tsv
+	diff expected/$@.psl output/$@.psl
+endef
+
 testProtTransAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${proteinTranscriptAlign} input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
-	cut -f 14 output/$@.work/protTransAligns/*.psl | sort -u > output/$@.raw.tids
-	cut -f 14 output/$@.psl | sort -u > output/$@.filtered.tids
-	diff expected/$@.raw.tids output/$@.raw.tids
-	diff expected/$@.filtered.tids output/$@.filtered.tids
+	$(call checkAlignments)
 
 testProtCanonAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${uniprotIsoCanonicalAlign} input/swissprot.9606.fa output/$@.psl output/$@.work
-	cut -f 14 output/$@.work/isoCanonAligns/*.psl | sort -u > output/$@.raw.tids
-	cut -f 14 output/$@.psl | sort -u > output/$@.filtered.tids
-	diff expected/$@.raw.tids output/$@.raw.tids
-	diff expected/$@.filtered.tids output/$@.filtered.tids
+	$(call checkAlignments)
 
 
 mkout:
