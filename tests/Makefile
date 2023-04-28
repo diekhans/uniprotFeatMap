@@ -13,7 +13,7 @@ all:
 
 
 test: uniprotGencodeSelectTests
-	@echo "to test blast alignments use: make fulltest" >&2
+	@echo "Note to test alignments use: make fulltest" >&2
 
 fulltest: test aligntest
 aligntest: testProtTransAlign testProtCanonAlign

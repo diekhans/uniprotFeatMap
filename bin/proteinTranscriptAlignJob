@@ -17,8 +17,12 @@ outPsl="$3"
 mkdir -p $(dirname ${outPsl})
 outPslTmp=$outPsl.$(hostname).$$.tmp
 
+# keep ++ strand
+function filter() {
+    tawk '$9 == "++"'
+}
+
 ${blastAll} -p tblastn -F F -d $targetDb -i $queryFa | \
-    blastToPsl /dev/stdin /dev/stdout | \
-    tawk '$9 == "++"' > $outPslTmp
-#blat -noHead -q=prot -t=dnax $targetDb $queryFa /dev/stdout | tawk '$9 == "++"' > $outPslTmp
+    blastToPsl /dev/stdin /dev/stdout | filter > $outPslTmp
+#blat -noHead -q=prot -t=dnax $targetDb $queryFa /dev/stdout | filter > $outPslTmp
 mv -f $outPslTmp $outPsl
