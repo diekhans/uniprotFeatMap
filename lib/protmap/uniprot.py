@@ -28,7 +28,7 @@ class UniprotMeta:
         if len(protMetas) == 0:
             return None
         if len(protMetas) > 1:
-            raise Exception(f"excepted no more than protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
+            raise Exception(f"more than one protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
         return protMetas.iloc[0]
 
     def getGeneAccMetas(self, geneAcc):

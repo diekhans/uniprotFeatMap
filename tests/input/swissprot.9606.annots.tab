@@ -1102,6 +1102,30 @@ P42684	P42684-1	VAR_082895	sequence variant	variant	12	13	S	T	rs1318056	notDisRe
 P42684	P42684-1		modified residue	phos	683	684				notDisRelated								Phosphotyrosine
 P42684	P42684-1		modified residue	phos	662	663				notDisRelated								Phosphotyrosine
 P42684	P42684-1		modified residue	phos	668	669				notDisRelated								Phosphotyrosine
+P51809	P51809-1		initiator methionine	init Met	1	2				notDisRelated								Removed
+P51809	P51809-1	PRO_0000206761	chain	chain	2	221				noEvidence				Vesicle-associated membrane protein 7	VAMP-7	VAMP-7; Ti-VAMP; SYBL1; Tetanus-insensitive VAMP; Synaptobrevin-like protein 1; 1; 2; 3; Ti-VAMPa/VAMP7a; Ti-VAMPb/VAMP7b; Ti-VAMPc/VAMP7c		
+P51809	P51809-1		topological domain	topo	2	189				notDisRelated								Cytoplasmic
+P51809	P51809-1		transmembrane region	transmem	189	210				notDisRelated								Helical; Anchor for type IV membrane protein
+P51809	P51809-1		topological domain	topo	210	221				notDisRelated								Vesicular
+P51809	P51809-1		domain	domain	7	111				notDisRelated								Longin
+P51809	P51809-1		domain	domain	125	186				notDisRelated								v-SNARE coiled-coil homology
+P51809	P51809-1		modified residue	acetyl	2	3				notDisRelated								N-acetylalanine; partial
+P51809	P51809-1		modified residue	phos	167	168				notDisRelated								Phosphoserine
+P51809	P51809-1		modified residue	phos	168	169				notDisRelated								Phosphoserine
+P51809	P51809-1	VSP_017508	splice variant	splicing	28	69				notDisRelated			12853575					In isoform 3.
+P51809	P51809-1	VSP_017509	splice variant	splicing	145	221	DLVAQRGERLELLIDKTENLVDSSVTFKTTSRNLARAMCMKNLKLTIIIIIVSIVFIYIIVSPLCGGFTWPSCVKK	VCHLQNYQQKSCSSHVYEEPQAHYYHHHRINCVHLYHCFTSLWWIYMAKLCEEIGKKKLPLTKDMREQGVKSNPCDSSLSHTDRWYLPVSSTLFSLFKILFHASRFIFVLSTSLFL		notDisRelated								In isoform 2.
+P51809	P51809-1		sequence conflict	conflict	98	99	L	P		notDisRelated								In Ref. 5; BAD96514.
+P51809	P51809-1		strand	beta	5	11				notDisRelated								
+P51809	P51809-1		strand	beta	13	20				notDisRelated								
+P51809	P51809-1		strand	beta	21	24				notDisRelated								
+P51809	P51809-1		helix	helix	26	34				notDisRelated								
+P51809	P51809-1		strand	beta	38	41				notDisRelated								
+P51809	P51809-1		strand	beta	42	48				notDisRelated								
+P51809	P51809-1		strand	beta	50	58				notDisRelated								
+P51809	P51809-1		strand	beta	60	71				notDisRelated								
+P51809	P51809-1		helix	helix	72	90				notDisRelated								
+P51809	P51809-1		helix	helix	91	96				notDisRelated								
+P51809	P51809-1		helix	helix	103	118				notDisRelated								
 Q8N1M1	Q8N1M1-2	PRO_0000143121	chain	chain	1	669				noEvidence				Bestrophin-3	VMD2L3	VMD2L3; Vitelliform macular dystrophy 2-like protein 3; 2; 1; 4; 5; 6		
 Q8N1M1	Q8N1M1-2		topological domain	topo	1	26				notDisRelated								Cytoplasmic
 Q8N1M1	Q8N1M1-2		transmembrane region	transmem	26	47				notDisRelated								Helical
