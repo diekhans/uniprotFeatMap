@@ -1,18 +1,19 @@
 #!/bin/bash
 set -beEu -o pipefail
-usage="$0 targetDb queryFa outPsl"
+usage="$0 algo targetDb queryFa outPsl"
 
 # must match decoratorConf.py
 blastDir=/cluster/bin/blast/x86_64/blast-2.2.16/bin
 blastAll=${blastDir}/blastall
 
-if [ $# != 3 ] ; then
+if [ $# != 4 ] ; then
     echo "Wrong # args: $usage" >&2
     exit 1
 fi
-targetDb="$1"
-queryFa="$2"
-outPsl="$3"
+algo="$1"
+targetDb="$2"
+queryFa="$3"
+outPsl="$4"
 
 mkdir -p $(dirname ${outPsl})
 outPslTmp=$outPsl.$(hostname).$$.tmp
@@ -22,7 +23,13 @@ function filter() {
     tawk '$9 == "++"'
 }
 
-${blastAll} -p tblastn -F F -d $targetDb -i $queryFa | \
-    blastToPsl /dev/stdin /dev/stdout | filter > $outPslTmp
-#blat -noHead -q=prot -t=dnax $targetDb $queryFa /dev/stdout | filter > $outPslTmp
+if [ "${algo}" = "blast" ] ; then
+    ${blastAll} -p tblastn -F F -d $targetDb -i $queryFa | \
+        blastToPsl /dev/stdin /dev/stdout | filter > $outPslTmp
+elif [ "${algo}" = "blat" ] ; then
+    blat -noHead -q=prot -t=dnax $targetDb $queryFa /dev/stdout | filter > $outPslTmp
+else
+    echo "Error: invalid algo '${algo}'" >&2
+    exit 1
+fi
 mv -f $outPslTmp $outPsl

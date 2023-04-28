@@ -20,20 +20,21 @@ def querySplit(queryFa, queriesDir):
     fileOps.ensureDir(queriesDir)
     pipettor.run(["faSplit", "about", queryFa, 2500, queryGetSplitPrefix(queriesDir)])
 
-def makeJobFile(alignProg, queriesDir, targetDbFa, alignDir, alignBatchDir):
+def makeJobFile(alignCmd, queriesDir, targetDbFa, alignDir, alignBatchDir):
     jobFile = osp.join(alignBatchDir, "jobs.para")
     with open(jobFile, 'w') as fh:
         for queryFa in queryListSplitFas(queriesDir):
             outPsl = osp.join(alignDir, osp.basename(queryFa) + ".psl")
-            print(alignProg, targetDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
+            print(*alignCmd, targetDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
     if osp.getsize(jobFile) == 0:
         raise Exception(f"empty job file create: {jobFile}")
     return jobFile
 
-def runBatch(alignProg, queriesDir, targetDbFa, alignDir, alignBatchDir):
+def runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
+    "alignCmdPre is list of program and initial arguments"
     prMsg("running alignment batch")
     fileOps.ensureDir(alignBatchDir)
-    jobFile = makeJobFile(alignProg, queriesDir, targetDbFa, alignDir, alignBatchDir)
+    jobFile = makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
     para = Para(conf.paraHost, jobFile, paraDir=alignBatchDir)
     para.free()
     try:

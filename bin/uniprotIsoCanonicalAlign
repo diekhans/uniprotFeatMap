@@ -22,6 +22,8 @@ def parseArgs():
     desc = """produce mapping alignments of each uniprot iso to the canonical,
     including a 1-to-1 mapping of the canonical."""
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--algo", choices=("blast", "blat"), default="blast",
+                        help="alignment algorithm")
     parser.add_argument("uniprotFa",
                         help="uniprotFa FASTA")
     parser.add_argument("isoCanonicalPsl",
@@ -66,7 +68,7 @@ def combineAligns(alignDir, isoCanonicalPsl):
                    "-minId=" + str(conf.isoCanconIsoAlnMinId),
                    "/dev/stdin", "/dev/stdout"]], stdout=isoCanonicalPsl)
 
-def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, workDir):
+def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, algo, workDir):
     canonicalDbDir = osp.join(workDir, "canonicalDb")
     canonicalDbFa = osp.join(canonicalDbDir, "canonicalDb.fa")
     with runIfNotDone(canonicalDbDir, depends=uniprotFa) as do:
@@ -81,7 +83,7 @@ def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, workDir):
     alignDir = osp.join(workDir, "aligns")
     with runIfNotDone(alignDir, doneDepends=[canonicalDbDir, queriesDir]) as do:
         if do:
-            runBatch(uniprotIsoCanonicalAlignJob, queriesDir, canonicalDbFa, alignDir,
+            runBatch([uniprotIsoCanonicalAlignJob, algo], queriesDir, canonicalDbFa, alignDir,
                      osp.join(workDir, "batch"))
 
     with runIfOutOfDate(isoCanonicalPsl, doneDepends=alignDir) as do:
@@ -91,6 +93,6 @@ def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, workDir):
     prMsg("finished")
 
 def main(opts):
-    uniprotIsoCanonicalAlign(opts.uniprotFa, opts.isoCanonicalPsl, opts.workDir)
+    uniprotIsoCanonicalAlign(opts.uniprotFa, opts.isoCanonicalPsl, opts.algo, opts.workDir)
 
 main(parseArgs())
