@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+
+import sys
+from os import path as osp
+import argparse
+from collections import defaultdict
+from pycbio.sys import fileOps
+from pycbio.hgdata.psl import Psl, PslReader
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from protmap.uniprot import UniprotMeta, dropUniportIsoformModifier
+
+def parseArgs():
+    desc = """Filter alignments of uniprot isoforms to canonical. This includes
+    the canonical self-alignments.
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("uniprotMetaTsv",
+                        help="Uniprot metadata in TSV format")
+    parser.add_argument("isoCanonicalRawPsl",
+                        help="protein alignment PSL")
+    parser.add_argument("isoCanonicalPsl",
+                        help="paired alignments")
+    parser.add_argument("problemLogTsv",
+                        help="log file of issues")
+    return parser.parse_args()
+
+def problemLogOpen(problemLogTsv):
+    logFh = fileOps.opengz(problemLogTsv, 'w')
+    fileOps.prRowv(logFh, "reason", "uniprotAcc", "canonicalUniprotAcc")
+    return logFh
+
+def problemLog(logFh, reason, uniprotAcc, canonicalUniprotAcc):
+    fileOps.prRowv(logFh, reason, uniprotAcc, canonicalUniprotAcc)
+
+def keepAlign(psl):
+    "only keeping match thing base id. although maybe pre-filters"
+    return dropUniportIsoformModifier(psl.qName) == dropUniportIsoformModifier(psl.tName)
+
+def loadAlignPsl(isoCanonicalRawPsl):
+    alignsByIso = defaultdict(list)  # by isoform id
+    for psl in PslReader(isoCanonicalRawPsl):
+        if keepAlign(psl):
+            alignsByIso[psl.qName].append(psl)
+    alignsByIso.default_factory = None
+    return alignsByIso
+
+def selectBestIsoToCanon(isoId, isoAligns):
+    # special cases, same sequence, although still could have multiple alignments
+    isoAlignsSub = [psl for psl in isoAligns if psl.tName == isoId]
+    if len(isoAlignsSub) == 0:
+        isoAlignsSub = isoAligns
+
+    # need one with the best ident * coverage score
+    return sorted(isoAligns, key=lambda psl: -(psl.queryAligned() * psl.identity()))[0]
+
+def selectIsoCanonAligns(alignsByIso):
+    """Best alignment of each isoforms it's canonical protein sequence, include canonical
+    self-alignments
+    """
+    isoCanonicalPairs = []
+    for isoId in sorted(alignsByIso.keys()):
+        selectedAln = selectBestIsoToCanon(isoId, alignsByIso[isoId])
+        if selectedAln is not None:
+            isoCanonicalPairs.append(selectedAln)
+    return isoCanonicalPairs
+
+def reportUnalignedIsos(uniprotMeta, isoCanonicalPairs, logFh):
+    alignedIsoIds = set([psl.qName for psl in isoCanonicalPairs])
+    unalignedIsoIds = set(uniprotMeta.byIsoId.isoId) - alignedIsoIds
+    for isoId in sorted(unalignedIsoIds):
+        canonicalAcc = uniprotMeta.getByIsoId(isoId).mainIsoAcc
+        reason = "no_iso_canonical_align" if isoId != canonicalAcc else "no_canonical_self_align"
+        problemLog(logFh, reason, isoId, canonicalAcc)
+
+def writePairedPsl(fh, isoCanonicalPairs):
+    for psl in sorted(isoCanonicalPairs, key=Psl.queryKey):
+        psl.write(fh)
+
+def uniprotIsoCanonicalSelect(uniprotMetaTsv, isoCanonicalRawPsl, isoCanonicalPsl, problemLogTsv):
+    uniprotMeta = UniprotMeta(uniprotMetaTsv)
+    alignsByIso = loadAlignPsl(isoCanonicalRawPsl)
+
+    logFh = problemLogOpen(problemLogTsv)
+
+    isoCanonicalPairs = selectIsoCanonAligns(alignsByIso)
+    reportUnalignedIsos(uniprotMeta, isoCanonicalPairs, logFh)
+
+    with fileOps.opengz(isoCanonicalPsl, 'w') as fh:
+        writePairedPsl(fh, isoCanonicalPairs)
+    logFh.close()
+
+def main(opts):
+    uniprotIsoCanonicalSelect(opts.uniprotMetaTsv, opts.isoCanonicalRawPsl, opts.isoCanonicalPsl,
+                              opts.problemLogTsv)
+
+main(parseArgs())

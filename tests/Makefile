@@ -3,6 +3,7 @@ SHELL = /bin/bash -beEu -o pipefail
 proteinTranscriptAlign = ../bin/proteinTranscriptAlign 
 uniprotGencodeSelect = ../bin/uniprotGencodeSelect
 uniprotIsoCanonicalAlign = ../bin/uniprotIsoCanonicalAlign
+uniprotIsoCanonicalSelect = ../bin/uniprotIsoCanonicalSelect
 
 all:
 	@echo "Note: targets are:"
@@ -12,7 +13,7 @@ all:
 	@echo "      make clean"
 
 
-test: uniprotGencodeSelectTests
+test: uniprotGencodeSelectTests uniprotIsoCanonicalSelectTests
 	@echo "Note to test alignments use: make fulltest" >&2
 
 fulltest: test aligntest
@@ -22,6 +23,13 @@ uniprotGencodeSelectTests: testUniprotGencodeSelectBasic
 
 testUniprotGencodeSelectBasic: mkout
 	${uniprotGencodeSelect} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransAlign.psl output/$@.psl output/$@.problems.tsv
+	diff expected/$@.psl output/$@.psl
+	diff expected/$@.problems.tsv output/$@.problems.tsv
+
+uniprotIsoCanonicalSelectTests: testUniprotIsoCanonicalSelectBasic
+
+testUniprotIsoCanonicalSelectBasic: mkout
+	${uniprotIsoCanonicalSelect} input/swissprot.9606.tab expected/testProtCanonAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 
