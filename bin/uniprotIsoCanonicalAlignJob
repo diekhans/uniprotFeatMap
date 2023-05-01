@@ -18,16 +18,16 @@ outPsl="$4"
 mkdir -p $(dirname ${outPsl})
 outPslTmp=$outPsl.$(hostname).$$.tmp
 
-# keep + strand with same acc
-function filter() {
-    tawk '$9 == "+" && gensub("^([A-Z0-9]+).*$", "\\1", 1, $10) == gensub("^([A-Z0-9]+).*$", "\\1", 1, $14)'
+# keep + strand with same acc and chain
+function filterChain() {
+    tawk '$9 == "+" && gensub("^([A-Z0-9]+).*$", "\\1", 1, $10) == gensub("^([A-Z0-9]+).*$", "\\1", 1, $14)' |\
+        pslMapPostChain /dev/stdin /dev/stdout
 }
 
-
 if [ "${algo}" = "blast" ] ; then
-    ${blastAll} -p blastp -F F -d $targetDb -i $queryFa | blastToPsl /dev/stdin /dev/stdout | filter > $outPslTmp
+    ${blastAll} -p blastp -F F -d $targetDb -i $queryFa | blastToPsl /dev/stdin /dev/stdout | filterChain > $outPslTmp
 elif [ "${algo}" = "blat" ] ; then
-    blat -noHead -prot $targetDb $queryFa /dev/stdout | filter >$outPslTmp
+    blat -noHead -prot $targetDb $queryFa /dev/stdout | filterChain >$outPslTmp
 else
     echo "Error: invalid algo '${algo}'" >&2
     exit 1

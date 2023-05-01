@@ -17,19 +17,19 @@ test: uniprotGencodeSelectTests uniprotIsoCanonicalSelectTests
 	@echo "Note to test alignments use: make fulltest" >&2
 
 fulltest: test aligntest
-aligntest: testProtTransAlign testProtCanonAlign
+aligntest: protTransAlignTests protCanonAlignTest
 
 uniprotGencodeSelectTests: testUniprotGencodeSelectBasic
 
 testUniprotGencodeSelectBasic: mkout
-	${uniprotGencodeSelect} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransAlign.psl output/$@.psl output/$@.problems.tsv
+	${uniprotGencodeSelect} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransBlastAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 
 uniprotIsoCanonicalSelectTests: testUniprotIsoCanonicalSelectBasic
 
 testUniprotIsoCanonicalSelectBasic: mkout
-	${uniprotIsoCanonicalSelect} input/swissprot.9606.tab expected/testProtCanonAlign.psl output/$@.psl output/$@.problems.tsv
+	${uniprotIsoCanonicalSelect} input/swissprot.9606.tab expected/testProtCanonBlastAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 
@@ -43,14 +43,24 @@ define checkAlignments
 	diff expected/$@.psl output/$@.psl
 endef
 
-testProtTransAlign: mkout
+protTransAlignTests: testProtTransBlastAlign testProtTransBlatAlign
+testProtTransBlastAlign: mkout
 	rm -rf output/$@.psl output/$@.work
-	${proteinTranscriptAlign} input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
+	${proteinTranscriptAlign} --algo=blast input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
+	$(call checkAlignments)
+testProtTransBlatAlign: mkout
+	rm -rf output/$@.psl output/$@.work
+	${proteinTranscriptAlign} --algo=blat input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
 	$(call checkAlignments)
 
-testProtCanonAlign: mkout
+protCanonAlignTest: testProtCanonBlastAlign testProtCanonBlatAlign
+testProtCanonBlastAlign: mkout
 	rm -rf output/$@.psl output/$@.work
-	${uniprotIsoCanonicalAlign} input/swissprot.9606.fa output/$@.psl output/$@.work
+	${uniprotIsoCanonicalAlign} --algo=blast input/swissprot.9606.fa output/$@.psl output/$@.work
+	$(call checkAlignments)
+testProtCanonBlatAlign: mkout
+	rm -rf output/$@.psl output/$@.work
+	${uniprotIsoCanonicalAlign} --algo=blat input/swissprot.9606.fa output/$@.psl output/$@.work
 	$(call checkAlignments)
 
 

@@ -19,15 +19,15 @@ mkdir -p $(dirname ${outPsl})
 outPslTmp=$outPsl.$(hostname).$$.tmp
 
 # keep ++ strand
-function filter() {
-    tawk '$9 == "++"'
+function filterChain() {
+    tawk '$9 == "++"' | pslMapPostChain /dev/stdin /dev/stdout
 }
 
 if [ "${algo}" = "blast" ] ; then
     ${blastAll} -p tblastn -F F -d $targetDb -i $queryFa | \
-        blastToPsl /dev/stdin /dev/stdout | filter > $outPslTmp
+        blastToPsl /dev/stdin /dev/stdout | filterChain > $outPslTmp
 elif [ "${algo}" = "blat" ] ; then
-    blat -noHead -q=prot -t=dnax $targetDb $queryFa /dev/stdout | filter > $outPslTmp
+    blat -noHead -q=prot -t=dnax $targetDb $queryFa /dev/stdout | filterChain > $outPslTmp
 else
     echo "Error: invalid algo '${algo}'" >&2
     exit 1

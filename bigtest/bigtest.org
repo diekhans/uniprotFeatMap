@@ -1,0 +1,29 @@
+
+* get metadata
+cd data
+zcat gencode.v43.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} />/{print gensub("^>([A-Z0-9.]+).*", "\\1", "g")}' > gencode.v43.pc_transcript_ids.tsv
+tmlr join -j transcriptId -f gencode.v43.pc_transcript_ids.tsv  /hive/data/genomes/hg38/bed/gencodeV43/hgcImport/data/gencode.tsv >gencode.v43.pc_metadata.tsv
+zcat gencode.v43.pc_transcripts.fa.gz |sed 's/|/ /g' |faSize -detailed stdin > gencode.v43.pc_transcripts.sizes
+
+* make does all
+
+* as
+
+| dataset          | algo  | filt   | stats  |  aln0 |   aln1 |  alnN |
+|------------------+-------+--------+--------+-------+--------+-------|
+| swissprotGencode | blat  | raw    | qstats |   586 |   2235 | 39602 |
+| swissprotGencode | blast | raw    | qstats |   632 |   3022 | 38769 |
+| swissprotGencode | blat  | paired | qstats | 23006 |   3755 | 15662 |
+| swissprotGencode | blast | paired | qstats | 23004 |   3845 | 15574 |
+| swissprotGencode | blat  | raw    | tstats |   670 |  18957 | 91652 |
+| swissprotGencode | blast | raw    | tstats |  1926 |  22867 | 86486 |
+| swissprotGencode | blat  | paired | tstats |  2249 | 109029 |     0 |
+| swissprotGencode | blast | paired | tstats |  4380 | 106898 |     0 |
+
+
+| dataset  | algo  | filt   | stats  | aln0 |  aln1 | alnN |
+|----------+-------+--------+--------+------+-------+------|
+| isoCanon | blat  | raw    | qstats |  188 | 41830 |  405 |
+| isoCanon | blast | raw    | qstats | 2342 | 39720 |  361 |
+| isoCanon | blat  | paired | qstats |  188 | 42234 |    0 |
+| isoCanon | blast | paired | qstats | 2342 | 40080 |    0 |

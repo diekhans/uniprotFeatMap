@@ -1,0 +1,25 @@
+#!/bin/bash
+set -beEu -o pipefail
+
+usage="$0 dataset algo filter stats inQstats outCnts"
+
+if [ $# != 6 ] ; then
+    echo "Wrong number of args: $usage" >&2
+    exit 1
+fi
+dataset="$1"; shift
+algo="$1"; shift
+filter="$1"; shift
+stats="$1"; shift
+inQstats="$1"; shift
+outCnts="$1"; shift
+
+tab="	"
+
+aln0=$(tmlr filter  --headerless-csv-output '$alnCnt == 0'  $inQstats  |wc -l)
+aln1=$(tmlr filter  --headerless-csv-output '$alnCnt == 1'  $inQstats  |wc -l)
+alnN=$(tmlr filter  --headerless-csv-output '$alnCnt > 1'  $inQstats  |wc -l)
+
+echo "dataset${tab}algo${tab}filt${tab}stats${tab}aln0${tab}aln1${tab}alnN" > $outCnts
+echo "${dataset}${tab}${algo}${tab}${filter}${tab}${stats}${tab}${aln0}${tab}${aln1}${tab}${alnN}" >> $outCnts
+
