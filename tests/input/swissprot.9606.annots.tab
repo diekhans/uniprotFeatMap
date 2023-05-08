@@ -1102,6 +1102,26 @@ P42684	P42684-1	VAR_082895	sequence variant	variant	12	13	S	T	rs1318056	notDisRe
 P42684	P42684-1		modified residue	phos	683	684				notDisRelated								Phosphotyrosine
 P42684	P42684-1		modified residue	phos	662	663				notDisRelated								Phosphotyrosine
 P42684	P42684-1		modified residue	phos	668	669				notDisRelated								Phosphotyrosine
+Q6PF04	Q6PF04-1	PRO_0000234597	chain	chain	1	618				noEvidence				Zinc finger protein 613	1	1; 2		
+Q6PF04	Q6PF04-1		domain	domain	8	79				notDisRelated								KRAB
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	204	227				notDisRelated								C2H2-type 1
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	232	255				notDisRelated								C2H2-type 2
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	260	283				notDisRelated								C2H2-type 3
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	288	311				notDisRelated								C2H2-type 4
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	316	339				notDisRelated								C2H2-type 5
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	344	367				notDisRelated								C2H2-type 6
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	372	395				notDisRelated								C2H2-type 7
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	400	423				notDisRelated								C2H2-type 8
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	428	451				notDisRelated								C2H2-type 9
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	456	479				notDisRelated								C2H2-type 10
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	484	507				notDisRelated								C2H2-type 11
+Q6PF04	Q6PF04-1		zinc finger region	zinc finger	512	536				notDisRelated								C2H2-type 12
+Q6PF04	Q6PF04-1	VSP_018388	splice variant	splicing	1	37				notDisRelated			14702039					In isoform 2.
+Q6PF04	Q6PF04-1	VAR_028096	sequence variant	variant	84	85	D	N	rs17854933	notDisRelated			15489334					
+Q6PF04	Q6PF04-1	VAR_028097	sequence variant	variant	93	94	K	E	rs8106409	noEvidence								
+Q6PF04	Q6PF04-1	VAR_028098	sequence variant	variant	135	136	I	R	rs16983243	noEvidence								
+Q6PF04	Q6PF04-1	VAR_057428	sequence variant	variant	163	164	S	F	rs33998555	noEvidence								
+Q6PF04	Q6PF04-1	VAR_057429	sequence variant	variant	611	612	D	V	rs16983253	noEvidence								
 P51809	P51809-1		initiator methionine	init Met	1	2				notDisRelated								Removed
 P51809	P51809-1	PRO_0000206761	chain	chain	2	221				noEvidence				Vesicle-associated membrane protein 7	VAMP-7	VAMP-7; Ti-VAMP; SYBL1; Tetanus-insensitive VAMP; Synaptobrevin-like protein 1; 1; 2; 3; Ti-VAMPa/VAMP7a; Ti-VAMPb/VAMP7b; Ti-VAMPc/VAMP7c		
 P51809	P51809-1		topological domain	topo	2	189				notDisRelated								Cytoplasmic
@@ -1126,6 +1146,27 @@ P51809	P51809-1		strand	beta	60	71				notDisRelated
 P51809	P51809-1		helix	helix	72	90				notDisRelated								
 P51809	P51809-1		helix	helix	91	96				notDisRelated								
 P51809	P51809-1		helix	helix	103	118				notDisRelated								
+Q9GZX5	Q9GZX5	PRO_0000047546	chain	chain	1	533				noEvidence				Zinc finger protein 350	ZBRK1	ZBRK1; Zinc finger protein ZBRK1; KRAB zinc finger protein ZFQR; Zinc finger and BRCA1-interacting protein with a KRAB domain 1		
+Q9GZX5	Q9GZX5		domain	domain	8	80				notDisRelated								KRAB
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	206	229				notDisRelated								C2H2-type 1
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	234	257				notDisRelated								C2H2-type 2
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	262	285				notDisRelated								C2H2-type 3
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	290	313				notDisRelated								C2H2-type 4
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	318	341				notDisRelated								C2H2-type 5
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	346	369				notDisRelated								C2H2-type 6
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	374	397				notDisRelated								C2H2-type 7
+Q9GZX5	Q9GZX5		zinc finger region	zinc finger	402	425				notDisRelated								C2H2-type 8
+Q9GZX5	Q9GZX5		region of interest	interest	427	466				notDisRelated								Disordered
+Q9GZX5	Q9GZX5		compositionally biased region	biased	427	449				notDisRelated								Basic and acidic residues
+Q9GZX5	Q9GZX5		compositionally biased region	biased	449	466				notDisRelated								Polar residues
+Q9GZX5	Q9GZX5	VAR_046718	sequence variant	variant	37	38	M	I	rs4987241	noEvidence								
+Q9GZX5	Q9GZX5	VAR_019902	sequence variant	variant	66	67	L	P	rs2278420	notDisRelated			11090615,12872252,14702039					
+Q9GZX5	Q9GZX5	VAR_046719	sequence variant	variant	69	70	I	T	rs4987042	noEvidence								
+Q9GZX5	Q9GZX5	VAR_046720	sequence variant	variant	132	133	R	C	rs28997584	noEvidence								
+Q9GZX5	Q9GZX5	VAR_046721	sequence variant	variant	406	407	E	K	rs3764539	noEvidence								
+Q9GZX5	Q9GZX5	VAR_019903	sequence variant	variant	472	473	S	P	rs4986771	notDisRelated			12872252					
+Q9GZX5	Q9GZX5	VAR_019904	sequence variant	variant	501	502	R	S	rs2278415	notDisRelated			11090615,12872252,14702039					
+Q9GZX5	Q9GZX5	VAR_019905	sequence variant	variant	524	525	V	I	rs4988337	notDisRelated			11161714,12872252					
 Q8N1M1	Q8N1M1-2	PRO_0000143121	chain	chain	1	669				noEvidence				Bestrophin-3	VMD2L3	VMD2L3; Vitelliform macular dystrophy 2-like protein 3; 2; 1; 4; 5; 6		
 Q8N1M1	Q8N1M1-2		topological domain	topo	1	26				notDisRelated								Cytoplasmic
 Q8N1M1	Q8N1M1-2		transmembrane region	transmem	26	47				notDisRelated								Helical
@@ -1308,3 +1349,22 @@ P11137	P11137-1		modified residue	phos	67	68				notDisRelated			15536091					Pho
 P11137	P11137-1		modified residue	phos	323	324				notDisRelated								Phosphoserine
 P11137	P11137-1		modified residue	phos	354	355				notDisRelated								Phosphoserine
 P11137	P11137-1		modified residue	phos	386	387				notDisRelated								Phosphoserine
+Q9BS31	Q9BS31	PRO_0000251224	chain	chain	1	506				noEvidence				Zinc finger protein 649				
+Q9BS31	Q9BS31		domain	domain	8	80				notDisRelated								KRAB
+Q9BS31	Q9BS31		zinc finger region	zinc finger	178	201				notDisRelated								C2H2-type 1
+Q9BS31	Q9BS31		zinc finger region	zinc finger	206	229				notDisRelated								C2H2-type 2
+Q9BS31	Q9BS31		zinc finger region	zinc finger	234	257				notDisRelated								C2H2-type 3
+Q9BS31	Q9BS31		zinc finger region	zinc finger	262	285				notDisRelated								C2H2-type 4
+Q9BS31	Q9BS31		zinc finger region	zinc finger	290	313				notDisRelated								C2H2-type 5
+Q9BS31	Q9BS31		zinc finger region	zinc finger	318	341				notDisRelated								C2H2-type 6
+Q9BS31	Q9BS31		zinc finger region	zinc finger	346	369				notDisRelated								C2H2-type 7
+Q9BS31	Q9BS31		zinc finger region	zinc finger	374	397				notDisRelated								C2H2-type 8
+Q9BS31	Q9BS31		zinc finger region	zinc finger	402	425				notDisRelated								C2H2-type 9
+Q9BS31	Q9BS31		zinc finger region	zinc finger	430	453				notDisRelated								C2H2-type 10
+Q9BS31	Q9BS31		region of interest	interest	455	482				notDisRelated								Disordered
+Q9BS31	Q9BS31		compositionally biased region	biased	463	482				notDisRelated								Polar residues
+Q9BS31	Q9BS31		cross-link	cross-link	112	113				notDisRelated								Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in SUMO2
+Q9BS31	Q9BS31	VAR_027668	sequence variant	variant	352	353	G	D	rs6509593	noEvidence								
+Q9BS31	Q9BS31	VAR_027669	sequence variant	variant	469	470	A	T	rs1433083	noEvidence								
+Q9BS31	Q9BS31		sequence conflict	conflict	8	9	L	V		notDisRelated								In Ref. 2; BAB14191.
+Q9BS31	Q9BS31		sequence conflict	conflict	314	315	G	E		notDisRelated								In Ref. 2; BAB14191.

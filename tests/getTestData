@@ -6,8 +6,10 @@ set -beEu -o pipefail
 #  add new swissprot accession to acc.tsv
 #      ./getTestData acc.tsv tmp
 #      cp tmp/*.{tsv,fa,tab,psl,gp} input/
-#      make -k aligntest
-#  update expected/
+#      make -j 10 -k aligntest
+#      cp output/* expected/
+#      make -j 10 -k test
+#      cp output/* expected/
 
 gencodeRel=43
 
