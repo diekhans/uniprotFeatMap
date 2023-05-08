@@ -13,7 +13,7 @@ def splitDropVersion(idents):
 def dropUniportIsoformModifier(acc):
     return acc.split('-')[0]
 
-class UniprotMeta:
+class UniprotMetaTbl:
     def __init__(self, uniprotMetaTsv):
         self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
 

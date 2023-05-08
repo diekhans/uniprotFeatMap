@@ -8,7 +8,7 @@ from pycbio.sys import fileOps
 from pycbio.hgdata.psl import Psl, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniprotMeta, dropUniportIsoformModifier
+from protmap.uniprot import UniprotMetaTbl, dropUniportIsoformModifier
 
 def parseArgs():
     desc = """Filter alignments of uniprot isoforms to canonical. This includes
@@ -65,11 +65,11 @@ def selectIsoCanonAligns(alignsByIso):
             isoCanonicalPairs.append(selectedAln)
     return isoCanonicalPairs
 
-def reportUnalignedIsos(uniprotMeta, isoCanonicalPairs, logFh):
+def reportUnalignedIsos(uniprotMetaTbl, isoCanonicalPairs, logFh):
     alignedIsoIds = set([psl.qName for psl in isoCanonicalPairs])
-    unalignedIsoIds = set(uniprotMeta.byIsoId.isoId) - alignedIsoIds
+    unalignedIsoIds = set(uniprotMetaTbl.byIsoId.isoId) - alignedIsoIds
     for isoId in sorted(unalignedIsoIds):
-        canonicalAcc = uniprotMeta.getByIsoId(isoId).mainIsoAcc
+        canonicalAcc = uniprotMetaTbl.getByIsoId(isoId).mainIsoAcc
         reason = "no_iso_canonical_align" if isoId != canonicalAcc else "no_canonical_self_align"
         problemLog(logFh, reason, isoId, canonicalAcc)
 
@@ -78,13 +78,13 @@ def writePairedPsl(fh, isoCanonicalPairs):
         psl.write(fh)
 
 def uniprotIsoCanonicalSelect(uniprotMetaTsv, isoCanonicalRawPsl, isoCanonicalPsl, problemLogTsv):
-    uniprotMeta = UniprotMeta(uniprotMetaTsv)
+    uniprotMetaTbl = UniprotMetaTbl(uniprotMetaTsv)
     alignsByIso = loadAlignPsl(isoCanonicalRawPsl)
 
     logFh = problemLogOpen(problemLogTsv)
 
     isoCanonicalPairs = selectIsoCanonAligns(alignsByIso)
-    reportUnalignedIsos(uniprotMeta, isoCanonicalPairs, logFh)
+    reportUnalignedIsos(uniprotMetaTbl, isoCanonicalPairs, logFh)
 
     with fileOps.opengz(isoCanonicalPsl, 'w') as fh:
         writePairedPsl(fh, isoCanonicalPairs)
