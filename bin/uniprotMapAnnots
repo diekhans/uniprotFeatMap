@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import os.path as osp
+import argparse
+import pipettor
+from pycbio.sys import fileOps
+from pycbio.hgdata.psl import Psl, PslBlock, PslReader
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from protmap.uniprot import UniprotAnnotTbl
+
+def parseArgs():
+    desc = """
+    TransMap a subset of the Uniprot annotations to the genome
+    via protein and transcript alignments.
+
+    Resulting PSLs will have query name of isoId#annotRowIndex
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--keep", action="store_true",
+                        help="""keep intermediate files""")
+    parser.add_argument("uniprotAnnotsTsv",
+                        help="Uniprot annotations TSV from uniprotToTab")
+    parser.add_argument("isoCanonicalPsl",
+                        help="isoform to canonical paired alignments from uniprotIsoCanonicalSelect")
+    parser.add_argument("protTransPairedPsl",
+                        help="paired protein to transcript alignments from uniprotGencodeSelect")
+    parser.add_argument("transGenomePsl",
+                        help="transcript genome alignment; often from genePredToPsl")
+    parser.add_argument("annotGenomePsl",
+                        help="Uniprot annotations mapped to genome")
+    return parser.parse_args()
+
+def getCanonProtSizes(isoCanonicalPsl):
+    # canonical is target
+    canonProtSizes = {}
+    for psl in PslReader(isoCanonicalPsl):
+        canonProtSizes[psl.tName] = psl.tSize
+    return canonProtSizes
+
+def createPsl(rowIdx, annot, canonProtSizes):
+    qName = annot.mainIsoAcc + "#" + str(rowIdx)
+    tStart = annot.begin - 1
+    tEnd = annot.end
+    qSize = tEnd - tStart
+    tSize = canonProtSizes[annot.mainIsoAcc]
+
+    psl = Psl(qName=qName, qSize=qSize, qStart=0, qEnd=qSize,
+              tName=annot.mainIsoAcc, tSize=tSize, tStart=tStart, tEnd=tEnd,
+              strand='+')
+    psl.addBlock(PslBlock(qStart=0, tStart=tStart, size=qSize))
+    return psl
+
+# featType to use
+_featTypeToMap = frozenset([
+    "domain",
+    "zinc finger region"
+])
+
+def annotFilter(annot, canonProtSizes):
+    if annot.mainIsoAcc not in canonProtSizes:
+        return False  # no point, will not map
+    return annot.featType in _featTypeToMap
+
+def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotTmpPslFh):
+    for rowIdx in range(0, len(uniprotAnnotTbl.df)):
+        annot = uniprotAnnotTbl.df.iloc[rowIdx]
+        if annotFilter(annot, canonProtSizes):
+            createPsl(rowIdx, annot, canonProtSizes).write(annotTmpPslFh)
+
+def pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
+                 annotGenomePslFh):
+    pipettor.run([["pslMap", "-swapMap", annotTmpPsl, isoCanonicalPsl, "/dev/stdout"],
+                  ["pslMap", "/dev/stdin", protTransPairedPsl, "/dev/stdout"],
+                  ["pslMap", "/dev/stdin", transGenomePsl, "/dev/stdout"]],
+                 stdout=annotGenomePslFh)
+
+def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
+                     transGenomePsl, annotGenomePsl,
+                     keepTmp):
+    uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
+    canonProtSizes = getCanonProtSizes(isoCanonicalPsl)
+    annotTmpPsl = fileOps.tmpFileGet("annots", ".psl.tmp")
+    with fileOps.opengz(annotTmpPsl, 'w') as annotTmpPslFh:
+        createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotTmpPslFh)
+
+    with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
+        pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
+                     annotGenomePslFh)
+
+    if not keepTmp:
+        os.unlink(annotTmpPsl)
+
+def main(opts):
+    uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.isoCanonicalPsl, opts.protTransPairedPsl, opts.transGenomePsl,
+                     opts.annotGenomePsl, opts.keep)
+
+main(parseArgs())

@@ -4,6 +4,7 @@ proteinTranscriptAlign = ../bin/proteinTranscriptAlign
 uniprotGencodeSelect = ../bin/uniprotGencodeSelect
 uniprotIsoCanonicalAlign = ../bin/uniprotIsoCanonicalAlign
 uniprotIsoCanonicalSelect = ../bin/uniprotIsoCanonicalSelect
+uniprotMapAnnots = ../bin/uniprotMapAnnots
 
 all:
 	@echo "Note: targets are:"
@@ -13,7 +14,7 @@ all:
 	@echo "      make clean"
 
 
-test: uniprotGencodeSelectTests uniprotIsoCanonicalSelectTests
+test: uniprotGencodeSelectTests uniprotIsoCanonicalSelectTests uniprotMapAnnotsTests
 	@echo "Note to test alignments use: make fulltest" >&2
 
 fulltest: test aligntest
@@ -63,6 +64,16 @@ testProtCanonBlatAlign: mkout
 	${uniprotIsoCanonicalAlign} --algo=blat input/swissprot.9606.fa output/$@.psl output/$@.work
 	$(call checkAlignments)
 
+
+uniprotMapAnnotsTests: testUniprotMapAnnots
+
+testUniprotMapAnnots: mkout
+	${uniprotMapAnnots} input/swissprot.9606.annots.tab \
+	    expected/testProtCanonBlatAlign.psl \
+	    expected/testUniprotGencodeSelectBasic.psl \
+	    input/gencode.v43.psl \
+            output/$@.psl
+	diff expected/$@.psl output/$@.psl
 
 mkout:
 	@mkdir -p output

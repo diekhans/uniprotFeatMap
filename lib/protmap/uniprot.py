@@ -1,3 +1,7 @@
+"""
+Reads files create by uniprotToTab
+"""
+
 import pandas as pd
 from protmap import dropVersion
 
@@ -14,6 +18,7 @@ def dropUniportIsoformModifier(acc):
     return acc.split('-')[0]
 
 class UniprotMetaTbl:
+    """reads swissprot.9606.tab, trembl.9606.tab"""
     def __init__(self, uniprotMetaTsv):
         self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
 
@@ -61,3 +66,9 @@ class UniprotMetaTbl:
         if len(protMetas) == 0:
             return None
         return protMetas
+
+
+class UniprotAnnotTbl:
+    """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
+    def __init__(self, uniprotAnnotsTsv):
+        self.df = pd.read_table(uniprotAnnotsTsv, keep_default_na=False)

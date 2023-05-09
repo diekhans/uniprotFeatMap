@@ -94,9 +94,28 @@ raw BLAST alignes
 | P11137-3 |  1823 | ENST00000199940.10 |    440 | 1190 | 0.7292 | 0.1317 |   0.0000 | 0.1071 |
 | P11137-3 |  1823 | ENST00000199940.10 |    491 | 2117 | 0.6982 | 0.2726 |   0.0000 | 0.2218 |
 
-P11137-4 not align by BLAST, aligns perfectly to genome
+* feature types
+tmlr --tsvlite uniq -g featType,shortFeatType,comment ../../data/swissprot.9606.annots.tab  >annots.uniq-comment.tsv
 
-does align to 
-output/testRunBlastJobs.work/aligns/prot22.fa.psl:559	0	0	0	0	0	0	0	++	P11137-4	559	0	559	ENST00000199940.10	2241	440	2117	1	559,	0,	440,
+** possible types:
+| featType             | shortFeatType   |
+|----------------------+-----------------|
+| topological domain   | topo            |
+| transmembrane region | transmem        |
+| active site          | enzyme act site |
+| binding site         | bind            |
+| glycosylation site   | glyco           |
+| domain               | domain          |
+| zinc finger region   | zinc finger     |
+| DNA-binding region   | DNA-binding     |
+| domain               | phos            |
+| domain               | lipo            |
+| domain               | acetyl          |
 
 
+
+tmlr --tsvlite join -j shortFeatType -f shortFeat.tsv ../../data/swissprot.9606.annots.tab | \
+tmlr --tsvlite uniq -g featType,shortFeatType,comment >annots.uniq-comment.tsv
+
+tmlr --tsvlite join -j featType -f feat.tsv ../../data/swissprot.9606.annots.tab | \
+tmlr --tsvlite uniq -g featType,shortFeatType,comment >annots.uniq-feat.tsv
