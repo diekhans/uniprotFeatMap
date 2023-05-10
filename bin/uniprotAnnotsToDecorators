@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+
+import sys
+import os.path as osp
+import argparse
+import pandas as pd
+from pycbio.sys import fileOps
+from pycbio.sys.svgcolors import SvgColors
+from pycbio.hgdata.psl import PslReader
+from pycbio.hgdata.bed import Bed, BedBlock
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from protmap.uniprot import UniprotAnnotTbl, canonicalAnnotDecode
+
+def parseArgs():
+    desc = """
+    Take mapped domain annotations alignments create by uniprotMapAnnots
+    and convert to decorators.
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("uniprotAnnotsTsv",
+                        help="Uniprot annotations TSV from uniprotToTab")
+    parser.add_argument("annotGenomePsl",
+                        help="Uniprot annotations mapped to genome from  uniprotMapAnnots")
+    parser.add_argument("annotTransRefTsv",
+                        help="association of annotations to mapped transcripts")
+    parser.add_argument("annotDecoratorBed",
+                        help="annotation decorator BED file output")
+    return parser.parse_args()
+
+def getAnnot(uniprotAnnotTbl, annotId):
+    canonId, annotIdx = canonicalAnnotDecode(annotId)
+    annot = uniprotAnnotTbl.df.iloc[annotIdx]
+    if canonId != annot.mainIsoAcc:
+        raise Exception(f"canonId '{canonId}' do not match annotation record 'annot.mainIsoAcc' at row {annotIdx}")
+    return annot
+
+def getAnnotTransRef(annotTransRefs, annotId, alignIdx):
+    annotTransRef = annotTransRefs[annotTransRefs.alignIdx == alignIdx].iloc[0]
+    if annotId != annotTransRef.annotId:
+        raise Exception(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
+    return annotTransRef
+
+def createDecoratorBed(name, chrom, blocks, color, transId, style, *, fillColor=None, keywords="", glyph=""):
+    # extraCols are: decoratedItem, style, fillColor, keywords, glyphText
+    if fillColor is None:
+        fillColor = color
+    start, end = blocks[0].start, blocks[-1].end
+    return Bed(chrom, start, end, name, strand='+', thickStart=start, thickEnd=end, itemRgb=color.toRgb8Str(),
+               blocks=blocks, extraCols=[transId, style, fillColor.toRgba8Str(), keywords, glyph])
+
+def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds):
+    blocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
+    bed = createDecoratorBed(annot.shortFeatType, annotPsl.tName, blocks,
+                             SvgColors.blue, annotTransRef.transcriptId,
+                             "block")
+    decoratorBeds.append(bed)
+
+def processAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):
+    mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds)
+
+def processAnnotations(uniprotAnnotTbl, annotGenomePsl, annotTransRefs, decoratorBeds):
+    alignIdx = 0
+    for annotPsl in PslReader(annotGenomePsl):
+        processAnnotation(annotPsl, getAnnot(uniprotAnnotTbl, annotPsl.qName),
+                          getAnnotTransRef(annotTransRefs, annotPsl.qName, alignIdx),
+                          decoratorBeds)
+        alignIdx += 1
+
+def writeBeds(decoratorBeds, annotDecoratorBed):
+    with fileOps.AtomicFileCreate(annotDecoratorBed) as tmpBed:
+        with fileOps.opengz(tmpBed, 'w') as fh:
+            for annotBed in sorted(decoratorBeds, key=lambda b: (b.chrom, b.chromStart, b.chromEnd)):
+                annotBed.write(fh)
+
+def uniprotAnnotsToDecorators(uniprotAnnotsTsv, annotGenomePsl, annotTransRefTsv, annotDecoratorBed):
+    uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
+    annotTransRefs = pd.read_table(annotTransRefTsv)
+    decoratorBeds = []
+    processAnnotations(uniprotAnnotTbl, annotGenomePsl, annotTransRefs, decoratorBeds)
+    writeBeds(decoratorBeds, annotDecoratorBed)
+
+def main(opts):
+    uniprotAnnotsToDecorators(opts.uniprotAnnotsTsv, opts.annotGenomePsl, opts.annotTransRefTsv,
+                              opts.annotDecoratorBed)
+
+main(parseArgs())

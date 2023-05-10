@@ -6,10 +6,11 @@ import os.path as osp
 import argparse
 import pipettor
 from pycbio.sys import fileOps
+from pycbio.tsv import TsvReader
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniprotAnnotTbl
+from protmap.uniprot import UniprotAnnotTbl, canonicalAnnotEncode
 
 def parseArgs():
     desc = """
@@ -31,6 +32,8 @@ def parseArgs():
                         help="transcript genome alignment; often from genePredToPsl")
     parser.add_argument("annotGenomePsl",
                         help="Uniprot annotations mapped to genome")
+    parser.add_argument("annotTransRefTsv",
+                        help="association of annotations to mapped transcripts")
     return parser.parse_args()
 
 def getCanonProtSizes(isoCanonicalPsl):
@@ -40,8 +43,8 @@ def getCanonProtSizes(isoCanonicalPsl):
         canonProtSizes[psl.tName] = psl.tSize
     return canonProtSizes
 
-def createPsl(rowIdx, annot, canonProtSizes):
-    qName = annot.mainIsoAcc + "#" + str(rowIdx)
+def createPsl(annotIdx, annot, canonProtSizes):
+    qName = canonicalAnnotEncode(annot.mainIsoAcc, annotIdx)
     tStart = annot.begin - 1
     tEnd = annot.end
     qSize = tEnd - tStart
@@ -65,36 +68,56 @@ def annotFilter(annot, canonProtSizes):
     return annot.featType in _featTypeToMap
 
 def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotTmpPslFh):
-    for rowIdx in range(0, len(uniprotAnnotTbl.df)):
-        annot = uniprotAnnotTbl.df.iloc[rowIdx]
+    for annotIdx in range(0, len(uniprotAnnotTbl.df)):
+        annot = uniprotAnnotTbl.df.iloc[annotIdx]
         if annotFilter(annot, canonProtSizes):
-            createPsl(rowIdx, annot, canonProtSizes).write(annotTmpPslFh)
+            createPsl(annotIdx, annot, canonProtSizes).write(annotTmpPslFh)
+
+def annotTransRefOpen(annotTransRefTsv):
+    annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
+    fileOps.prRowv(annotTransRefFh, "annotId", "transcriptId", "alignIdx")
+    return annotTransRefFh
+
+def annotTransRefWrite(annotTransRefFh, annotId, transcriptId, alignIdx):
+    fileOps.prRowv(annotTransRefFh, annotId, transcriptId, alignIdx)
+
+def writeRefs(mapInfoTmp, annotTransRefFh):
+    for row in TsvReader(mapInfoTmp):
+        if row.mappedPslLine != "":
+            annotTransRefWrite(annotTransRefFh, row.srcQName, row.srcTName, row.mappedPslLine)
 
 def pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
-                 annotGenomePslFh):
+                 annotGenomePslFh, annotTransRefFh):
+    mapInfoTmp = fileOps.tmpFileGet(prefix="mapinfo")
+
     pipettor.run([["pslMap", "-swapMap", annotTmpPsl, isoCanonicalPsl, "/dev/stdout"],
                   ["pslMap", "/dev/stdin", protTransPairedPsl, "/dev/stdout"],
-                  ["pslMap", "/dev/stdin", transGenomePsl, "/dev/stdout"]],
+                  ["pslMap", "/dev/stdin", f"-mapInfo={mapInfoTmp}", transGenomePsl, "/dev/stdout"]],
                  stdout=annotGenomePslFh)
 
+    writeRefs(mapInfoTmp, annotTransRefFh)
+    os.unlink(mapInfoTmp)
+
 def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
-                     transGenomePsl, annotGenomePsl,
+                     transGenomePsl, annotGenomePsl, annotTransRefTsv,
                      keepTmp):
     uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
     canonProtSizes = getCanonProtSizes(isoCanonicalPsl)
     annotTmpPsl = fileOps.tmpFileGet("annots", ".psl.tmp")
+    annotTransRefFh = annotTransRefOpen(annotTransRefTsv)
     with fileOps.opengz(annotTmpPsl, 'w') as annotTmpPslFh:
         createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotTmpPslFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
         pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
-                     annotGenomePslFh)
+                     annotGenomePslFh, annotTransRefFh)
 
     if not keepTmp:
         os.unlink(annotTmpPsl)
+    annotTransRefFh.close()
 
 def main(opts):
     uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.isoCanonicalPsl, opts.protTransPairedPsl, opts.transGenomePsl,
-                     opts.annotGenomePsl, opts.keep)
+                     opts.annotGenomePsl, opts.annotTransRefTsv, opts.keep)
 
 main(parseArgs())

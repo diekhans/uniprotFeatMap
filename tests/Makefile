@@ -5,6 +5,7 @@ uniprotGencodeSelect = ../bin/uniprotGencodeSelect
 uniprotIsoCanonicalAlign = ../bin/uniprotIsoCanonicalAlign
 uniprotIsoCanonicalSelect = ../bin/uniprotIsoCanonicalSelect
 uniprotMapAnnots = ../bin/uniprotMapAnnots
+uniprotAnnotsToDecorators = ../bin/uniprotAnnotsToDecorators
 
 all:
 	@echo "Note: targets are:"
@@ -14,7 +15,7 @@ all:
 	@echo "      make clean"
 
 
-test: uniprotGencodeSelectTests uniprotIsoCanonicalSelectTests uniprotMapAnnotsTests
+test: uniprotGencodeSelectTests uniprotIsoCanonicalSelectTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests
 	@echo "Note to test alignments use: make fulltest" >&2
 
 fulltest: test aligntest
@@ -72,8 +73,18 @@ testUniprotMapAnnots: mkout
 	    expected/testProtCanonBlatAlign.psl \
 	    expected/testUniprotGencodeSelectBasic.psl \
 	    input/gencode.v43.psl \
-            output/$@.psl
+            output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
+	diff expected/$@.ref.tsv output/$@.ref.tsv
+
+uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
+
+testUniprotAnnotsToDecorators: mkout
+	${uniprotAnnotsToDecorators} input/swissprot.9606.annots.tab \
+	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
+            output/$@.bed
+	diff expected/$@.bed output/$@.bed
+
 
 mkout:
 	@mkdir -p output

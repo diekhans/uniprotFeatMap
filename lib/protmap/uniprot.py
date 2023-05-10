@@ -72,3 +72,14 @@ class UniprotAnnotTbl:
     """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
     def __init__(self, uniprotAnnotsTsv):
         self.df = pd.read_table(uniprotAnnotsTsv, keep_default_na=False)
+
+
+def canonicalAnnotEncode(canonId, annotIdx):
+    return canonId + "#" + str(annotIdx)
+
+def canonicalAnnotDecode(name):
+    try:
+        canonId, annotIdx = name.split('#')
+        return canonId, int(annotIdx)
+    except ValueError:
+        raise ValueError(f"invalid encode canonId and annotIdx: '{name}'")
