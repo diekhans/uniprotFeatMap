@@ -10,18 +10,21 @@ isoCanonFilts = raw paired
 sppre = ../data/swissprot.9606
 spsizes = ${sppre}.sizes
 spmeta= ${sppre}.tab
+spannot= ${sppre}.annots.tab
 spfa = ${sppre}.fa.gz
 
 gnpre = ../data/gencode.v43
 gnsizes = ${gnpre}.pc_transcripts.sizes
 gnmeta = ${gnpre}.pc_metadata.tsv
 gnfa = ${gnpre}.pc_transcripts.fa.gz
+gnpsl = ${gnpre}.pc_transcripts.psl
 
 
 all: ${algos:%=%_mkAlgo}
 	${MAKE} combineStatsCnts
 %_mkAlgo:
 	${MAKE} mkFilt algo=$*
+	${MAKE} mkUniprotMapAnnots mkDecorators algo=$*
 
 mkFilt: ${swissprotGencodeFilts:%=%_mkProtGeneFilt} ${isoCanonFilts:%=%_mkIsoCanonFilt}
 
@@ -121,4 +124,32 @@ ${isoCanonAlgoPre}.raw.psl:
 
 ${isoCanonAlgoPre}.paired.psl: ${isoCanonAlgoPre}.raw.psl
 	../bin/uniprotIsoCanonicalSelect ${spmeta} $< $@.tmp ${isoCanonAlgoPre}.paired.problems.tsv
+	mv -f $@.tmp $@
+
+##
+# map annotations
+##
+mapAnnotsAlgoPre = mapAnnots/mapAnnots.${algo}
+mapAnnotsPsl = ${mapAnnotsAlgoPre}.psl
+mapAnnotsRevTsv = ${mapAnnotsAlgoPre}.ref.tsv
+
+mkUniprotMapAnnots: ${mapAnnotsPsl}
+
+${mapAnnotsPsl}: ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl
+	@mkdir -p $(dir $@)
+	../bin/uniprotMapAnnots ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
+            $@.tmp ${mapAnnotsRevTsv}
+	mv -f $@.tmp $@
+
+##
+# make decorators
+##
+decoratorsAlgoPre = decorators/swissprot-gencode.v43.${algo}
+decoratorsBed = ${decoratorsAlgoPre}.decorators.bed
+
+mkDecorators: ${decoratorsBed}
+
+${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
+	@mkdir -p $(dir $@)
+	../bin/uniprotAnnotsToDecorators ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.tmp
 	mv -f $@.tmp $@

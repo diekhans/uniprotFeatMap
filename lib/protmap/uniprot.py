@@ -21,6 +21,8 @@ class UniprotMetaTbl:
     """reads swissprot.9606.tab, trembl.9606.tab"""
     def __init__(self, uniprotMetaTsv):
         self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
+        if "orgName" not in self.df.columns:
+            raise Exception("column 'orgName' not found, is this a UnIprot metadata TSV: " + uniprotMetaTsv)
 
         # index by gene and transcript ids
         self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
@@ -72,6 +74,8 @@ class UniprotAnnotTbl:
     """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
     def __init__(self, uniprotAnnotsTsv):
         self.df = pd.read_table(uniprotAnnotsTsv, keep_default_na=False)
+        if "featType" not in self.df.columns:
+            raise Exception("column 'featType' not found, is this a UnIprot annotations TSV: " + uniprotAnnotsTsv)
 
 
 def canonicalAnnotEncode(canonId, annotIdx):

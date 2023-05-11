@@ -32,7 +32,7 @@ def getAnnot(uniprotAnnotTbl, annotId):
     canonId, annotIdx = canonicalAnnotDecode(annotId)
     annot = uniprotAnnotTbl.df.iloc[annotIdx]
     if canonId != annot.mainIsoAcc:
-        raise Exception(f"canonId '{canonId}' do not match annotation record 'annot.mainIsoAcc' at row {annotIdx}")
+        raise Exception(f"annotId '{annotId}' do not match annotation record '{annot.mainIsoAcc}' at row {annotIdx}")
     return annot
 
 def getAnnotTransRef(annotTransRefs, annotId, alignIdx):
