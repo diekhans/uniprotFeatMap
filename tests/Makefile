@@ -7,6 +7,9 @@ uniprotIsoCanonicalSelect = ../bin/uniprotIsoCanonicalSelect
 uniprotMapAnnots = ../bin/uniprotMapAnnots
 uniprotAnnotsToDecorators = ../bin/uniprotAnnotsToDecorators
 
+chromSizes = /hive/data/genomes/hg38/chrom.sizes
+decoAs =  ../../kent/src/hg/lib/decoration.as
+
 all:
 	@echo "Note: targets are:"
 	@echo "      make test"
@@ -84,7 +87,7 @@ testUniprotAnnotsToDecorators: mkout
 	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
             output/$@.bed
 	diff expected/$@.bed output/$@.bed
-
+	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 
 mkout:
 	@mkdir -p output

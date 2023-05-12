@@ -53,7 +53,7 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds):
     blocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     bed = createDecoratorBed(annot.shortFeatType, annotPsl.tName, blocks,
                              SvgColors.blue, annotTransRef.transcriptId,
-                             "block")
+                             "block", keywords=annotPsl.qName)
     decoratorBeds.append(bed)
 
 def processAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):

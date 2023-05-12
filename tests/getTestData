@@ -42,7 +42,7 @@ faSize -detailed ${sppre}.fa.gz | fgrep -f ${acctsv} | cut -f 1 >${spoutpre}.fa.
 faSomeRecords ${sppre}.fa.gz ${spoutpre}.fa.ids.tmp ${spoutpre}.fa
 
 # gencode genes in swissprots
-tmlr cut -f ensemblGene input/swissprot.9606.tab  | tawk '{$0 = gensub("\\.[0-9A-Z_]+","","g"); print gensub("\\|","\n","g")}' > ${gnoutpre}.gene.acc.tmp
+tmlr cut -f ensemblGene tmp/swissprot.9606.tab  | tawk '{$0 = gensub("\\.[0-9A-Z_]+","","g"); print gensub("\\|","\n","g")}' > ${gnoutpre}.gene.acc.tmp
 (head -1 ${gndir}/gencode.tsv && fgrep -f ${gnoutpre}.gene.acc.tmp ${gndir}/gencode.tsv) > ${gnoutpre}.metadata.tsv
 
 # fasta ids

@@ -1349,6 +1349,42 @@ P11137	P11137-1		modified residue	phos	67	68				notDisRelated			15536091					Pho
 P11137	P11137-1		modified residue	phos	323	324				notDisRelated								Phosphoserine
 P11137	P11137-1		modified residue	phos	354	355				notDisRelated								Phosphoserine
 P11137	P11137-1		modified residue	phos	386	387				notDisRelated								Phosphoserine
+Q9UI95	Q9UI95	PRO_0000126119	chain	chain	1	212				noEvidence				Mitotic spindle assembly checkpoint protein MAD2B	hREV7	hREV7; MAD2-like protein 2; REV7; MAD2B; REV7 homolog; Mitotic arrest deficient 2-like protein 2		
+Q9UI95	Q9UI95		domain	domain	13	204				notDisRelated								HORMA
+Q9UI95	Q9UI95		region of interest	interest	21	156				noEvidence								Mediates interaction with REV1 and REV3L and homodimerization
+Q9UI95	Q9UI95		region of interest	interest	150	212				noEvidence								Mediates interaction with ipaB
+Q9UI95	Q9UI95	VAR_077981	sequence variant	variant	85	86	V	E	rs1057517674	disRelated	Fanconi anemia, complementation group V	FANCV	27500492					drastically reduced protein abundance
+Q9UI95	Q9UI95		mutagenesis site	mutagen	63	64	Y	A		notDisRelated			20164194					Alters interaction with REV3L. Loss of interaction with REV3L; when associated with A-171.
+Q9UI95	Q9UI95		mutagenesis site	mutagen	124	125	R	A		notDisRelated			20164194					Induces structural changes that increase affinity for REV3L and REV1. No effect on interaction with REV1; when associated with A-171.
+Q9UI95	Q9UI95		mutagenesis site	mutagen	171	172	W	A		notDisRelated			20164194					Alters interaction with REV3L and REV1. Loss of interaction with REV3L; when associated with A-63. No effect on interaction with REV1; when associated with A-124.
+Q9UI95	Q9UI95		mutagenesis site	mutagen	186	187	L	A		notDisRelated			20164194					Significantly prevents interaction with REV1; no effect on interaction with REV3L.
+Q9UI95	Q9UI95		mutagenesis site	mutagen	200	201	Q	A		notDisRelated			20164194					Significantly prevents interaction with REV1; no effect on interaction with REV3L.
+Q9UI95	Q9UI95		mutagenesis site	mutagen	202	203	Y	A		notDisRelated			20164194					Significantly prevents interaction with REV1; no effect on interaction with REV3L.
+Q9UI95	Q9UI95		sequence conflict	conflict	17	18	D	A		notDisRelated								In Ref. 3; AAD30290.
+Q9UI95	Q9UI95		sequence conflict	conflict	96	97	E	D		notDisRelated								In Ref. 2; AAF20267.
+Q9UI95	Q9UI95		sequence conflict	conflict	199	200	M	V		notDisRelated								In Ref. 2; AAF20267.
+Q9UI95	Q9UI95		helix	helix	6	9				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	10	13				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	13	34				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	39	42				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	42	48				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	50	56				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	58	77				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	80	89				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	90	93				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	94	104				notDisRelated								
+Q9UI95	Q9UI95		turn	turn	106	112				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	112	115				notDisRelated								
+Q9UI95	Q9UI95		turn	turn	115	119				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	119	132				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	133	136				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	145	156				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	156	160				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	162	167				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	169	174				notDisRelated								
+Q9UI95	Q9UI95		helix	helix	176	180				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	185	197				notDisRelated								
+Q9UI95	Q9UI95		strand	beta	198	206				notDisRelated								
 Q9BS31	Q9BS31	PRO_0000251224	chain	chain	1	506				noEvidence				Zinc finger protein 649				
 Q9BS31	Q9BS31		domain	domain	8	80				notDisRelated								KRAB
 Q9BS31	Q9BS31		zinc finger region	zinc finger	178	201				notDisRelated								C2H2-type 1
