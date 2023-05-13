@@ -3,7 +3,7 @@ set -beEu -o pipefail
 
 # to build add entries to test set
 #      tmlr cut -f acc input/swissprot.9606.tab >acc.tsv
-#  add new swissprot accession to acc.tsv
+#    add new swissprot accession to acc.tsv
 #      ./getTestData acc.tsv tmp
 #      cp tmp/*.{tsv,fa,tab,psl,gp} input/
 #      make -j 10 -k aligntest

@@ -46,6 +46,7 @@ def createDecoratorBed(name, chrom, blocks, color, transId, style, *, fillColor=
     if fillColor is None:
         fillColor = color
     start, end = blocks[0].start, blocks[-1].end
+
     return Bed(chrom, start, end, name, strand='+', thickStart=start, thickEnd=end, itemRgb=color.toRgb8Str(),
                blocks=blocks, extraCols=[transId, style, fillColor.toRgba8Str(), keywords, glyph])
 

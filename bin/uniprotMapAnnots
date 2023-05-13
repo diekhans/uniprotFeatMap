@@ -43,17 +43,22 @@ def getCanonProtSizes(isoCanonicalPsl):
         canonProtSizes[psl.tName] = psl.tSize
     return canonProtSizes
 
-def createPsl(annotIdx, annot, canonProtSizes):
+def createAnnotPsl(annotIdx, annot, canonProtSizes):
     qName = canonicalAnnotEncode(annot.mainIsoAcc, annotIdx)
     tStart = annot.begin - 1
     tEnd = annot.end
-    qSize = tEnd - tStart
     tSize = canonProtSizes[annot.mainIsoAcc]
+
+    # some annotations go past the end of the protein
+    if tEnd > tSize:
+        tEnd = tSize
+    qSize = tEnd - tStart
 
     psl = Psl(qName=qName, qSize=qSize, qStart=0, qEnd=qSize,
               tName=annot.mainIsoAcc, tSize=tSize, tStart=tStart, tEnd=tEnd,
               strand='+')
     psl.addBlock(PslBlock(qStart=0, tStart=tStart, size=qSize))
+    psl.computeCounts()
     return psl
 
 # featType to use
@@ -71,7 +76,7 @@ def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotTmpPslFh):
     for annotIdx in range(0, len(uniprotAnnotTbl.df)):
         annot = uniprotAnnotTbl.df.iloc[annotIdx]
         if annotFilter(annot, canonProtSizes):
-            createPsl(annotIdx, annot, canonProtSizes).write(annotTmpPslFh)
+            createAnnotPsl(annotIdx, annot, canonProtSizes).write(annotTmpPslFh)
 
 def annotTransRefOpen(annotTransRefTsv):
     annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
@@ -88,7 +93,7 @@ def writeRefs(mapInfoTmp, annotTransRefFh):
 
 def pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
                  annotGenomePslFh, annotTransRefFh):
-    mapInfoTmp = fileOps.tmpFileGet(prefix="mapinfo")
+    mapInfoTmp = fileOps.tmpFileGet(prefix="mapinfo.")
 
     pipettor.run([["pslMap", "-swapMap", annotTmpPsl, isoCanonicalPsl, "/dev/stdout"],
                   ["pslMap", "/dev/stdin", protTransPairedPsl, "/dev/stdout"],
@@ -103,7 +108,7 @@ def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
                      keepTmp):
     uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
     canonProtSizes = getCanonProtSizes(isoCanonicalPsl)
-    annotTmpPsl = fileOps.tmpFileGet("annots", ".psl.tmp")
+    annotTmpPsl = fileOps.tmpFileGet("annots.", ".psl.tmp")
     annotTransRefFh = annotTransRefOpen(annotTransRefTsv)
     with fileOps.opengz(annotTmpPsl, 'w') as annotTmpPslFh:
         createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotTmpPslFh)
@@ -112,7 +117,9 @@ def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
         pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
                      annotGenomePslFh, annotTransRefFh)
 
-    if not keepTmp:
+    if keepTmp:
+        print("Keeping annotTmpPsl:", annotTmpPsl, file=sys.stderr)
+    else:
         os.unlink(annotTmpPsl)
     annotTransRefFh.close()
 

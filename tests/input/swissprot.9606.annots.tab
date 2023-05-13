@@ -1102,6 +1102,72 @@ P42684	P42684-1	VAR_082895	sequence variant	variant	12	13	S	T	rs1318056	notDisRe
 P42684	P42684-1		modified residue	phos	683	684				notDisRelated								Phosphotyrosine
 P42684	P42684-1		modified residue	phos	662	663				notDisRelated								Phosphotyrosine
 P42684	P42684-1		modified residue	phos	668	669				notDisRelated								Phosphotyrosine
+Q9Y215	Q9Y215-1		signal peptide	signal pep	1	23				notDisRelated								
+Q9Y215	Q9Y215-1	PRO_0000005854	chain	chain	23	456				noEvidence				Acetylcholinesterase collagenic tail peptide	AChE Q subunit	AChE Q subunit; Acetylcholinesterase-associated collagen; I; V; II; IV; VI; III; VII; VIII		
+Q9Y215	Q9Y215-1		domain	domain	96	270				noEvidence								Collagen-like 1
+Q9Y215	Q9Y215-1		domain	domain	277	292				noEvidence								Collagen-like 2
+Q9Y215	Q9Y215-1		region of interest	interest	51	68				noEvidence								PRAD
+Q9Y215	Q9Y215-1		region of interest	interest	90	283				notDisRelated								Disordered
+Q9Y215	Q9Y215-1		region of interest	interest	130	134				notDisRelated								Heparan sulfate proteoglycan binding
+Q9Y215	Q9Y215-1		region of interest	interest	235	239				notDisRelated								Heparan sulfate proteoglycan binding
+Q9Y215	Q9Y215-1		compositionally biased region	biased	133	151				notDisRelated								Pro residues
+Q9Y215	Q9Y215-1		compositionally biased region	biased	183	198				notDisRelated								Basic and acidic residues
+Q9Y215	Q9Y215-1		compositionally biased region	biased	253	274				notDisRelated								Pro residues
+Q9Y215	Q9Y215-1		disulfide bond	disulf bond	51	52				notDisRelated								Interchain (with T subunit
+Q9Y215	Q9Y215-1		disulfide bond	disulf bond	52	53				notDisRelated								Interchain (with T subunit
+Q9Y215	Q9Y215-1		disulfide bond	disulf bond	93	94				notDisRelated								Interchain
+Q9Y215	Q9Y215-1		disulfide bond	disulf bond	291	292				notDisRelated								Interchain
+Q9Y215	Q9Y215-1		disulfide bond	disulf bond	293	294				notDisRelated								Interchain
+Q9Y215	Q9Y215-1	VSP_001175	splice variant	splicing	1	36	MVVLNPMTLGIYLQLFFLSIVSQPTFINSVLPISA	MTGSSFSLAHLLIISGLLCYSAGCL		notDisRelated			14702039					In isoform II.
+Q9Y215	Q9Y215-1	VSP_001176	splice variant	splicing	73	77				notDisRelated								In isoform IV.
+Q9Y215	Q9Y215-1	VSP_001177	splice variant	splicing	74	108				notDisRelated								In isoform III.
+Q9Y215	Q9Y215-1	VSP_001178	splice variant	splicing	124	133				notDisRelated								In isoform V.
+Q9Y215	Q9Y215-1	VSP_001179	splice variant	splicing	240	292	GQKGDSGVMGPPGKPGPSGQPGRPGPPGPPPAGQLIMGPKGERGFPGPPGRC	SSRTPCTLPRRPPVPCGQGSRSPVTVVAGNESQACLLPRFEEDYISSGTERG		notDisRelated								In isoform VI.
+Q9Y215	Q9Y215-1	VSP_001180	splice variant	splicing	272	282	GQLIMGPKGE	DFCGQQPGGA		notDisRelated								In isoform VII.
+Q9Y215	Q9Y215-1	VSP_001181	splice variant	splicing	273	330	QLIMGPKGERGFPGPPGRCLCGPTMNVNNPSYGESVYGPSSPRVPVIFVVNNQEELE	HMETCNAPSTATSTPRPAATSPEGREEKVGCAPQNWQQLLHCHQTGHVLAPSPPTFV		notDisRelated								In isoform VIII.
+Q9Y215	Q9Y215-1	VSP_001182	splice variant	splicing	282	456				notDisRelated								In isoform VII.
+Q9Y215	Q9Y215-1	VSP_001183	splice variant	splicing	292	456				notDisRelated								In isoform VI.
+Q9Y215	Q9Y215-1	VSP_001184	splice variant	splicing	330	456				notDisRelated								In isoform VIII.
+Q9Y215	Q9Y215-1	VAR_010133	sequence variant	variant	59	60	P	Q		disRelated	Myasthenic syndrome, congenital, 5	CMS5	10665486					abrogates binding to T subunit
+Q9Y215	Q9Y215-1	VAR_048809	sequence variant	variant	312	313	S	G	rs6782980	noEvidence								
+Q9Y215	Q9Y215-1	VAR_071710	sequence variant	variant	337	338	I	T	rs1057521153	disRelated	Myasthenic syndrome, congenital, 5	CMS5	24938146					
+Q9Y215	Q9Y215-1	VAR_010134	sequence variant	variant	342	343	D	E	rs758554049	disRelated	Myasthenic syndrome, congenital, 5	CMS5	10665486					impairs anchoring to the basal lamina
+Q9Y215	Q9Y215-1	VAR_010135	sequence variant	variant	410	411	R	Q	rs1025361623	disRelated	Myasthenic syndrome, congenital, 5	CMS5	10665486					
+Q9Y215	Q9Y215-1	VAR_010136	sequence variant	variant	430	431	Y	S	rs121908923	disRelated	Myasthenic syndrome, congenital, 5	CMS5	9758617					
+Q9Y215	Q9Y215-1	VAR_010137	sequence variant	variant	444	445	C	Y		disRelated	Myasthenic syndrome, congenital, 5	CMS5	10665486					
+Q9Y215	Q9Y215-1		sequence conflict	conflict	370	371	D	N		notDisRelated								In Ref. 3; AAO06818.
+Q9Y215	Q9Y215-1		sequence conflict	conflict	399	400	R	RD		notDisRelated								In Ref. 1; CAA12648 and 3; AAO06814/AAO06816/AAO06817/AAO06818/AAO06819.
+Q9Y215	Q9Y215-1		sequence conflict	conflict	400	401	C	Y		notDisRelated								In Ref. 3; AAO06816.
+Q9Y215	Q9Y215-1		sequence conflict	conflict	404	405	Y	D		notDisRelated								In Ref. 3; AAO06817.
+Q9Y215	Q9Y215-1		sequence conflict	conflict	423	424	G	V		notDisRelated								In Ref. 3; AAO06819.
+Q96D53	Q96D53-1	PRO_0000271797	chain	chain	1	545				noEvidence				Atypical kinase COQ8B, mitochondrial	ADCK4	ADCK4; Coenzyme Q protein 8B; AarF domain-containing protein kinase 4; 1; 2		
+Q96D53	Q96D53-1		transmembrane region	transmem	92	109				notDisRelated								Helical
+Q96D53	Q96D53-1		domain	domain	191	424				noEvidence								Protein kinase
+Q96D53	Q96D53-1		region of interest	interest	45	87				notDisRelated								Disordered
+Q96D53	Q96D53-1		short sequence motif	motif	155	159				notDisRelated								KxGQ motif
+Q96D53	Q96D53-1		short sequence motif	motif	216	220				notDisRelated								AAAS motif
+Q96D53	Q96D53-1		compositionally biased region	biased	51	87				notDisRelated								Basic and acidic residues
+Q96D53	Q96D53-1		active site	enzyme act site	367	368				notDisRelated								Proton acceptor
+Q96D53	Q96D53-1		binding site	bind	219	220				notDisRelated								
+Q96D53	Q96D53-1		binding site	bind	237	238				notDisRelated								
+Q96D53	Q96D53-1		binding site	bind	324	328				notDisRelated								
+Q96D53	Q96D53-1		binding site	bind	372	373				notDisRelated								
+Q96D53	Q96D53-1		binding site	bind	386	387				notDisRelated								
+Q96D53	Q96D53-1	VSP_022357	splice variant	splicing	123	164				notDisRelated			15489334					In isoform 2.
+Q96D53	Q96D53-1	VAR_041420	sequence variant	variant	78	79	R	C	rs11538384	notDisRelated			17344846					
+Q96D53	Q96D53-1	VAR_076861	sequence variant	variant	98	99	L	R		disRelated	Nephrotic syndrome 9	NPHS9	25967120					
+Q96D53	Q96D53-1	VAR_029995	sequence variant	variant	174	175	H	R	rs3865452	notDisRelated			17344846					
+Q96D53	Q96D53-1	VAR_070552	sequence variant	variant	178	179	R	W	rs398122978	disRelated	Nephrotic syndrome 9	NPHS9	24270420,25967120					
+Q96D53	Q96D53-1	VAR_070553	sequence variant	variant	286	287	D	G	rs398122979	disRelated	Nephrotic syndrome 9	NPHS9	24270420					
+Q96D53	Q96D53-1	VAR_076862	sequence variant	variant	310	311	P	L		disRelated	Nephrotic syndrome 9	NPHS9	25967120					
+Q96D53	Q96D53-1	VAR_041421	sequence variant	variant	318	319	T	M	rs55899516	notDisRelated			17344846					
+Q96D53	Q96D53-1	VAR_070554	sequence variant	variant	320	321	R	W	rs369573693	disRelated	Nephrotic syndrome 9	NPHS9	24270420					
+Q96D53	Q96D53-1	VAR_070555	sequence variant	variant	343	344	R	W	rs398122981	disRelated	Nephrotic syndrome 9	NPHS9	24270420					
+Q96D53	Q96D53-1	VAR_041422	sequence variant	variant	352	353	T	R	rs36012476	notDisRelated			17344846					
+Q96D53	Q96D53-1	VAR_041423	sequence variant	variant	462	463	T	M	rs56083906	notDisRelated			17344846					
+Q96D53	Q96D53-1	VAR_070556	sequence variant	variant	477	478	R	Q	rs1057519347	disRelated	Nephrotic syndrome 9	NPHS9	24270420					
+Q96D53	Q96D53-1	VAR_076863	sequence variant	variant	498	499	A	E		disRelated	Nephrotic syndrome 9	NPHS9	25967120					
+Q96D53	Q96D53-1		sequence conflict	conflict	164	167	DNS	GTA		notDisRelated								In Ref. 2; BAB14004.
 Q6PF04	Q6PF04-1	PRO_0000234597	chain	chain	1	618				noEvidence				Zinc finger protein 613	1	1; 2		
 Q6PF04	Q6PF04-1		domain	domain	8	79				notDisRelated								KRAB
 Q6PF04	Q6PF04-1		zinc finger region	zinc finger	204	227				notDisRelated								C2H2-type 1

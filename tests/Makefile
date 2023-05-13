@@ -30,6 +30,7 @@ testUniprotGencodeSelectBasic: mkout
 	${uniprotGencodeSelect} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransBlastAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
+	pslCheck -verbose=0 output/$@.psl
 
 uniprotIsoCanonicalSelectTests: testUniprotIsoCanonicalSelectBasic
 
@@ -46,6 +47,7 @@ define checkAlignments
 	diff expected/$@.filtered.tids output/$@.filtered.tids
 	diff expected/$@.stats.tsv output/$@.stats.tsv
 	diff expected/$@.psl output/$@.psl
+	pslCheck -verbose=0 output/$@.psl
 endef
 
 protTransAlignTests: testProtTransBlastAlign testProtTransBlatAlign
@@ -79,6 +81,7 @@ testUniprotMapAnnots: mkout
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
+	pslCheck -verbose=0 output/$@.psl
 
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 
