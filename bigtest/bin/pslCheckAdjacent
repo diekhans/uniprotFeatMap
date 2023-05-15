@@ -1,0 +1,46 @@
+#!/bin/sh
+# -*-awk-*-
+non_exist_in_awk==0 "exec" "gawk" "-f" "$0" "$@"
+
+#
+# pslCheckAdjacent
+#
+BEGIN {
+    FS="\t";
+}
+
+/^$/ || /^ +$/ || /^#/ {
+    next;
+}
+{
+    strand=$9;
+    qName=$10;
+    qSize=$11;
+    qStart=$12;
+    qEnd=$13;
+    tName=$14;
+    tSize=$15;
+    tStart=$16;
+    tEnd=$17;
+    blkCnt=$18;
+
+    blockSizesStr=$19;
+    qStartsStr=$20;
+    tStartsStr=$21;
+
+    split(blockSizesStr, blockSizes, ",");
+    split(qStartsStr, qStarts, ",");
+    split(tStartsStr, tStarts, ",");
+
+    qEndPrev = qStarts[1] + blockSizes[1];
+    tEndPrev = tStarts[1] + blockSizes[1];
+    for (i = 2; i <= blkCnt; i++) {
+        qStart = qStarts[i];
+        tStart = tStarts[i];
+        if ((qStart == qEndPrev) && (tStart == tEndPrev)) {
+            print "block adjacent: ", FILENAME, qName, qEndPrev, qStart, tName, tEndPrev, tStart > "/dev/stderr"
+        }
+        qEndPrev = qStart + blockSizes[i];
+        tEndPrev = tStart + blockSizes[i];
+    }
+}
