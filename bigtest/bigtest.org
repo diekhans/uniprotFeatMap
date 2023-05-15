@@ -1,11 +1,11 @@
 
 * get metadata
 cd data
-zcat gencode.v43.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} />/{print gensub("^>([A-Z0-9.]+).*", "\\1", "g")}' > gencode.v43.pc_transcript_ids.tsv
-tmlr join -j transcriptId -f gencode.v43.pc_transcript_ids.tsv /hive/data/genomes/hg38/bed/gencodeV43/hgcImport/data/gencode.tsv >gencode.v43.pc_metadata.tsv
+zcat gencode.v43.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} />/{print gensub("^>([A-Z0-9.]+).*", "\\1", "g")}' > gencode.v43.pc_transcripts.ids.tsv
+tmlr join -j transcriptId -f gencode.v43.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV43/hgcImport/data/gencode.tsv >gencode.v43.pc_transcripts.meta.tsv
 zcat gencode.v43.pc_transcripts.fa.gz |sed 's/|/ /g' |faSize -detailed stdin > gencode.v43.pc_transcripts.sizes
 
-tawk '$6<$7' /hive/data/genomes/hg38/bed/gencodeV43/hgcImport/data/gencode.gp > gencode.v43.pc_transcripts.gp
+fgrep -f gencode.v43.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV43/hgcImport/data/gencode.gp > gencode.v43.pc_transcripts.gp
 genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v43.pc_transcripts.gp gencode.v43.pc_transcripts.psl
 
 * make does all

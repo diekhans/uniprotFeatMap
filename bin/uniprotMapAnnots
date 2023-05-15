@@ -80,16 +80,17 @@ def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotTmpPslFh):
 
 def annotTransRefOpen(annotTransRefTsv):
     annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
-    fileOps.prRowv(annotTransRefFh, "annotId", "transcriptId", "alignIdx")
+    fileOps.prRowv(annotTransRefFh, "annotId", "transcriptPos", "transcriptId", "alignIdx")
     return annotTransRefFh
 
-def annotTransRefWrite(annotTransRefFh, annotId, transcriptId, alignIdx):
-    fileOps.prRowv(annotTransRefFh, annotId, transcriptId, alignIdx)
+def annotTransRefWrite(annotTransRefFh, annotId, transcriptPos, transcriptId, alignIdx):
+    fileOps.prRowv(annotTransRefFh, annotId, transcriptPos, transcriptId, alignIdx)
 
 def writeRefs(mapInfoTmp, annotTransRefFh):
     for row in TsvReader(mapInfoTmp):
         if row.mappedPslLine != "":
-            annotTransRefWrite(annotTransRefFh, row.srcQName, row.srcTName, row.mappedPslLine)
+            transcriptPos = f"{row.mappedTName}:{row.mappedTStart}-{row.mappedTEnd}"
+            annotTransRefWrite(annotTransRefFh, row.srcQName, transcriptPos, row.srcTName, row.mappedPslLine)
 
 def pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
                  annotGenomePslFh, annotTransRefFh):

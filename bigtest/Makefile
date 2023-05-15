@@ -13,11 +13,11 @@ spmeta= ${sppre}.tab
 spannot= ${sppre}.annots.tab
 spfa = ${sppre}.fa.gz
 
-gnpre = ../data/gencode.v43
-gnsizes = ${gnpre}.pc_transcripts.sizes
-gnmeta = ${gnpre}.pc_metadata.tsv
-gnfa = ${gnpre}.pc_transcripts.fa.gz
-gnpsl = ${gnpre}.pc_transcripts.psl
+gnpre = ../data/gencode.v43.pc_transcripts
+gnsizes = ${gnpre}.sizes
+gnmeta = ${gnpre}.meta.tsv
+gnfa = ${gnpre}.fa.gz
+gnpsl = ${gnpre}..psl
 
 
 all: ${algos:%=%_mkAlgo}

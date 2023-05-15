@@ -10,11 +10,13 @@ gencodeMeta = ${gencodePre}.pc_metadata.tsv
 gencodeFa = ${gencodePre}.pc_transcripts.fa.gz
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
 decoAs =  ../../kent/src/hg/lib/decoration.as
+bigGpAs =  ../../kent/src/hg/lib/bigGenePred.as
+
 
 algos = blat blast
 
 
-all: ${algos:%=%_mkAlgo}
+all: ${algos:%=%_mkAlgo} mkGencodeBb
 %_mkAlgo:
 	${MAKE} mkDecorators algo=$*
 
@@ -30,4 +32,21 @@ ${decoratorsOutBb}: ${decoratorsInBed}
 	bedToBigBed -type=bed12+ -as=${decoAs} -tab ${decoratorsInBed} ${chromSizes} $@.tmp
 	mv -f $@.tmp $@
 
+
+gencodePre = ../data/gencode.v43.pc_transcripts
+
+gencodeTrackPre = hg38/gencode.v43
+
+mkGencodeBb: ${gencodeTrackPre}.bb
+
+${gencodeTrackPre}.bb: ${gencodeTrackPre}.bed
+	bedToBigBed -type=bed12+8 -tab -as=${bigGpAs} $< ${chromSizes} $@.tmp
+	mv -f $@.tmp $@
+
+${gencodeTrackPre}.bed: ${gencodePre}.gp
+	tmlr cut -f transcriptId,geneName,geneId ${gencodePre}.meta.tsv > hg38/gencode.names
+	tmlr cut -f transcriptId,transcriptType ${gencodePre}.meta.tsv > hg38/gencode.types
+	genePredToBigGenePred -geneNames=hg38/gencode.names -geneType=hg38/gencode.types $< /dev/stdout | sort -k1,1 -k2,2n > $@.tmp
+	rm hg38/gencode.names hg38/gencode.types
+	mv -f $@.tmp $@
 

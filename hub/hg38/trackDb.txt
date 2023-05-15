@@ -1,0 +1,40 @@
+track gencodeV43_blat_deco
+html ../empty.html
+shortLabel gencodeV43 BLAT deco
+longLabel gencodeV43 BLAT deco
+description gencodeV43 BLAT deco
+type bigGenePred
+group genes
+#itemRgb on
+color 12,12,120
+priority 3
+visibility pack
+searchIndex name,geneName,geneName2
+bigDataUrl gencode.v43.bb
+labelFields name,name2,geneName
+defaultLabelFields geneName2
+labelSeperator " / "
+mouseOver gene: $geneName2	transcript: $name	geneId: $geneName	type: $type
+decorator.url swissprot-gencode.v43.blat.bb
+
+
+track gencodeV43_blast_deco
+html ../empty.html
+shortLabel gencodeV43 BLAST deco
+longLabel gencodeV43 BLAST deco
+description gencodeV43 BLAST deco
+type bigGenePred
+group genes
+#itemRgb on
+color 12,12,120
+priority 3
+visibility pack
+searchIndex name,geneName,geneName2
+bigDataUrl gencode.v43.bb
+labelFields name,name2,geneName
+defaultLabelFields geneName2
+labelSeperator " / "
+mouseOver gene: $geneName2	transcript: $name	geneId: $geneName	type: $type
+decorator.url swissprot-gencode.v43.blast.bb
+
+
