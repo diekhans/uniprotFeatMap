@@ -82,6 +82,7 @@ ${protGeneAlgoPre}.raw.psl:
 
 ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
 	../bin/uniprotGencodeSelect ${gnmeta} ${spmeta} $< $@.tmp ${protGeneAlgoPre}.paired.problems.tsv
+	pslCheck $@.tmp
 	mv -f $@.tmp $@
 
 ##
@@ -124,6 +125,7 @@ ${isoCanonAlgoPre}.raw.psl:
 
 ${isoCanonAlgoPre}.paired.psl: ${isoCanonAlgoPre}.raw.psl
 	../bin/uniprotIsoCanonicalSelect ${spmeta} $< $@.tmp ${isoCanonAlgoPre}.paired.problems.tsv
+	pslCheck $@.tmp
 	mv -f $@.tmp $@
 
 ##
@@ -137,8 +139,9 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 
 ${mapAnnotsPsl}: ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl
 	@mkdir -p $(dir $@)
-	../bin/uniprotMapAnnots ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
+	../bin/uniprotMapAnnots --keep ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
             $@.tmp ${mapAnnotsRevTsv}
+	pslCheck $@.tmp
 	mv -f $@.tmp $@
 
 ##
