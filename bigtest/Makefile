@@ -17,7 +17,7 @@ gnpre = ../data/gencode.v43.pc_transcripts
 gnsizes = ${gnpre}.sizes
 gnmeta = ${gnpre}.meta.tsv
 gnfa = ${gnpre}.fa.gz
-gnpsl = ${gnpre}..psl
+gnpsl = ${gnpre}.psl
 
 
 all: ${algos:%=%_mkAlgo}

@@ -89,7 +89,7 @@ def annotTransRefWrite(annotTransRefFh, annotId, transcriptPos, transcriptId, al
 def writeRefs(mapInfoTmp, annotTransRefFh):
     for row in TsvReader(mapInfoTmp):
         if row.mappedPslLine != "":
-            transcriptPos = f"{row.mappedTName}:{row.mappedTStart}-{row.mappedTEnd}"
+            transcriptPos = f"{row.mappingTName}:{row.mappingTStart}-{row.mappingTEnd}"
             annotTransRefWrite(annotTransRefFh, row.srcQName, transcriptPos, row.srcTName, row.mappedPslLine)
 
 def pslMapAnnots(annotTmpPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
