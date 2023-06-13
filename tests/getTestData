@@ -5,7 +5,7 @@ set -beEu -o pipefail
 #      tmlr cut -f acc input/swissprot.9606.tab >acc.tsv
 #    add new swissprot accession to acc.tsv
 #      ./getTestData acc.tsv tmp
-#      cp tmp/*.{tsv,fa,tab,psl,gp} input/
+#      cp tmp/*.{tsv,fa,tab,psl,gp,sizes} input/
 #      make -j 10 -k aligntest
 #      cp output/* expected/
 #      make -j 10 -k test
@@ -40,6 +40,7 @@ mlr --tsvlite join -j acc -f ${acctsv} ${sppre}.annots.tab > ${spoutpre}.annots.
 # all isoforms for acc
 faSize -detailed ${sppre}.fa.gz | fgrep -f ${acctsv} | cut -f 1 >${spoutpre}.fa.ids.tmp
 faSomeRecords ${sppre}.fa.gz ${spoutpre}.fa.ids.tmp ${spoutpre}.fa
+faSize -detailed ${spoutpre}.fa > ${spoutpre}.sizes
 
 # gencode genes in swissprots
 tmlr cut -f ensemblGene tmp/swissprot.9606.tab  | tawk '{$0 = gensub("\\.[0-9A-Z_]+","","g"); print gensub("\\|","\n","g")}' > ${gnoutpre}.gene.acc.tmp

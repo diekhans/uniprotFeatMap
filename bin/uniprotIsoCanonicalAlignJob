@@ -1,4 +1,6 @@
 #!/bin/bash
+source ${HOME}/.bashrc
+
 set -beEu -o pipefail
 usage="$0 algo targetDb queryFa outPsl"
 
@@ -21,7 +23,7 @@ outPslTmp=$outPsl.$(hostname).$$.tmp
 # keep + strand with same acc and chain
 function filterChain() {
     tawk '$9 == "+" && gensub("^([A-Z0-9]+).*$", "\\1", 1, $10) == gensub("^([A-Z0-9]+).*$", "\\1", 1, $14)' |\
-        pslMapPostChain /dev/stdin /dev/stdout
+         tee $(dirname  ${outPsl})/$(basename ${outPsl} .psl).unfilt.psl | pslMapPostChain /dev/stdin /dev/stdout
 }
 
 if [ "${algo}" = "blast" ] ; then

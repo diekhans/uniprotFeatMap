@@ -51,10 +51,15 @@ def createDecoratorBed(name, chrom, blocks, color, annotTransRef, style, *, fill
                blocks=blocks, extraCols=[transPosId, style, fillColor.toRgba8Str(), keywords, glyph])
 
 def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds):
+    color = SvgColors.green
+    fillColor = color.setAlpha(0.5)
     blocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
-    bed = createDecoratorBed(annot.shortFeatType, annotPsl.tName, blocks,
-                             SvgColors.blue, annotTransRef,
-                             "block", keywords=annotPsl.qName)
+    name = annot.shortFeatType
+    if annot.comment != "":
+        name += f" ({annot.comment})"
+    bed = createDecoratorBed(name, annotPsl.tName, blocks,
+                             color, annotTransRef,
+                             "block", fillColor=fillColor, keywords=annotPsl.qName)
     decoratorBeds.append(bed)
 
 def processAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):

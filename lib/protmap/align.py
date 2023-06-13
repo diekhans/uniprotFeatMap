@@ -35,7 +35,7 @@ def runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
     prMsg("running alignment batch")
     fileOps.ensureDir(alignBatchDir)
     jobFile = makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
-    para = Para(conf.paraHost, jobFile, paraDir=alignBatchDir)
+    para = Para(conf.paraHost, jobFile, paraDir=alignBatchDir, retries=2)
     para.free()
     try:
         para.make()

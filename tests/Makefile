@@ -74,14 +74,23 @@ testProtCanonBlatAlign: mkout
 uniprotMapAnnotsTests: testUniprotMapAnnots
 
 testUniprotMapAnnots: mkout
-	${uniprotMapAnnots} input/swissprot.9606.annots.tab \
+	${uniprotMapAnnots} --annotCanonPsl=output/$@.annotCanon.psl \
+	    --annotIsoPsl=output/$@.annotIso.psl \
+	    --annotTransPsl=output/$@.annotTrans.psl \
+	    input/swissprot.9606.annots.tab \
 	    expected/testProtCanonBlatAlign.psl \
 	    expected/testUniprotGencodeSelectBasic.psl \
 	    input/gencode.v43.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
+	diff expected/$@.annotCanon.psl output/$@.annotCanon.psl
+	diff expected/$@.annotIso.psl output/$@.annotIso.psl
+	diff expected/$@.annotTrans.psl output/$@.annotTrans.psl
 	pslCheck -verbose=0 output/$@.psl
+	pslCheck -verbose=0 output/$@.annotCanon.psl
+	pslCheck -verbose=0 output/$@.annotIso.psl
+	pslCheck -verbose=0 output/$@.annotTrans.psl
 
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 

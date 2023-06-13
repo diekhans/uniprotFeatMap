@@ -11,7 +11,7 @@ priority 3
 visibility pack
 searchIndex name,geneName,geneName2
 bigDataUrl gencode.v43.bb
-labelFields name,name2,geneName
+labelFields name,name2,geneName,geneName2
 defaultLabelFields geneName2
 labelSeperator " / "
 mouseOver gene: $geneName2	transcript: $name	geneId: $geneName	type: $type

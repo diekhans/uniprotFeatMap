@@ -1,6 +1,9 @@
 #!/bin/bash
+source ${HOME}/.bashrc
+
 set -beEu -o pipefail
 usage="$0 algo targetDb queryFa outPsl"
+
 
 # must match decoratorConf.py
 blastDir=/cluster/bin/blast/x86_64/blast-2.2.16/bin
@@ -20,7 +23,7 @@ outPslTmp=$outPsl.$(hostname).$$.tmp
 
 # keep ++ strand
 function filterChain() {
-    tawk '$9 == "++"' | pslMapPostChain /dev/stdin /dev/stdout
+    tawk '$9 == "++"' | tee $(dirname  ${outPsl})/$(basename ${outPsl} .psl).unfilt.psl | pslMapPostChain /dev/stdin /dev/stdout
 }
 
 if [ "${algo}" = "blast" ] ; then

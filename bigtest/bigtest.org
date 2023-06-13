@@ -30,3 +30,14 @@ genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v43.pc_transcripts.gp 
 | isoCanon | blast | raw    | qstats | 2342 | 39720 |  361 |
 | isoCanon | blat  | paired | qstats |  188 | 42234 |    0 |
 | isoCanon | blast | paired | qstats | 2342 | 40080 |    0 |
+
+
+* debug
+ https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
+
+
+ USER=demo-markd jkmmake cgi >&log
+ https://hgwdev-demo-markd.gi.ucsc.edu/
+
+    Network error while attempting to retrieve decorations from swissprot-gencode.v43.blast.bb (track hub_26468_gencodeV43_blast_deco)
+    Network error while attempting to retrieve decorations from swissprot-gencode.v43.blat.bb (track hub_26468_gencodeV43_blat_deco)

@@ -22,6 +22,7 @@ gnpsl = ${gnpre}.psl
 
 all: ${algos:%=%_mkAlgo}
 	${MAKE} combineStatsCnts
+	cd ../hub && ${MAKE}
 %_mkAlgo:
 	${MAKE} mkFilt algo=$*
 	${MAKE} mkUniprotMapAnnots mkDecorators algo=$*
@@ -139,7 +140,7 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 
 ${mapAnnotsPsl}: ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl
 	@mkdir -p $(dir $@)
-	../bin/uniprotMapAnnots --keep ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
+	../bin/uniprotMapAnnots ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
             $@.tmp ${mapAnnotsRevTsv}
 	pslCheck $@.tmp
 	mv -f $@.tmp $@
