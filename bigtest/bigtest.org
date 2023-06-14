@@ -39,5 +39,3 @@ genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v43.pc_transcripts.gp 
  USER=demo-markd jkmmake cgi >&log
  https://hgwdev-demo-markd.gi.ucsc.edu/
 
-    Network error while attempting to retrieve decorations from swissprot-gencode.v43.blast.bb (track hub_26468_gencodeV43_blast_deco)
-    Network error while attempting to retrieve decorations from swissprot-gencode.v43.blat.bb (track hub_26468_gencodeV43_blat_deco)
