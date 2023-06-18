@@ -62,8 +62,21 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds):
                              "block", fillColor=fillColor, keywords=annotPsl.qName)
     decoratorBeds.append(bed)
 
-def processAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):
+def buildAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):
     mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds)
+
+# shortFeatType to not use
+_shortFeatTypesToSkip = frozenset([
+    'variant',
+    'conflict',
+    'splicing',
+    'biased'
+])
+
+def processAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):
+    "if decorator should be made from annotation, build BED"
+    if annot.shortFeatType not in _shortFeatTypesToSkip:
+        buildAnnotation(annotPsl, annot, annotTransRef, decoratorBeds)
 
 def processAnnotations(uniprotAnnotTbl, annotGenomePsl, annotTransRefs, decoratorBeds):
     alignIdx = 0

@@ -15,8 +15,9 @@ from protmap.uniprot import UniprotAnnotTbl, canonicalAnnotEncode
 
 def parseArgs():
     desc = """
-    TransMap a subset of the Uniprot annotations to the genome
-    via protein and transcript alignments.
+    TransMap Uniprot annotations to the genome via protein and transcript
+    alignments.  The output will include all annotations that can be
+    mapped, for later filtering when building decorators.
 
     Resulting PSLs will have query name of isoId#annotRowIndex
     """
@@ -70,16 +71,9 @@ def createAnnotPsl(annotIdx, annot, canonProtSizes):
     psl.computeCounts()
     return psl
 
-# featType to use
-_featTypeToMap = frozenset([
-    "domain",
-    "zinc finger region"
-])
-
 def annotFilter(annot, canonProtSizes):
-    if annot.mainIsoAcc not in canonProtSizes:
-        return False  # no point, will not map
-    return annot.featType in _featTypeToMap
+    # no point in not in sizes, will not map
+    return annot.mainIsoAcc in canonProtSizes
 
 def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotCanonPslFh):
     for annotIdx in range(0, len(uniprotAnnotTbl.df)):

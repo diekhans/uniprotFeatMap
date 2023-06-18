@@ -9,7 +9,7 @@ gencodeGp = ${gencodePre}.pc_transcripts.gp
 gencodeMeta = ${gencodePre}.pc_metadata.tsv
 gencodeFa = ${gencodePre}.pc_transcripts.fa.gz
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
-decoAs =  ../../kent/src/hg/lib/decoration.as
+decoAs =  ../etc/uniprotDecoration.as
 bigGpAs =  ../../kent/src/hg/lib/bigGenePred.as
 
 
