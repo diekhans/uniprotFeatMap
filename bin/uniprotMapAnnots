@@ -28,6 +28,8 @@ def parseArgs():
                         help="""save the intermediate annotation to isoform PSL""")
     parser.add_argument("--annotTransPsl",
                         help="""save the intermediate annotation to transcript PSL""")
+    parser.add_argument("--check",  action="store_true",
+                        help="""validate PSLs alignments, useful for finding bugs""")
     parser.add_argument("uniprotAnnotsTsv",
                         help="Uniprot annotations TSV from uniprotToTab")
     parser.add_argument("isoCanonicalPsl",
@@ -96,31 +98,33 @@ def writeRefs(mapInfoTmp, annotTransRefFh):
             annotTransRefWrite(annotTransRefFh, row.srcQName, transcriptPos, row.srcTName, row.mappedPslLine)
 
 def pslMapAnnots(annotCanonPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
-                 annotGenomePslFh, annotTransRefFh, annotIsoPsl, annotTransPsl):
+                 annotGenomePslFh, annotTransRefFh, check, annotIsoPsl, annotTransPsl):
     mapInfoTmp = fileOps.tmpFileGet(prefix="mapinfo.")
+
+    checkOpt = ["-check"] if check else []
 
     # prot/prot -> prot/prot -> prot/prot
     cmd = [["pslMap", "-swapMap", "-inType=prot_prot", "-mapType=prot_prot",
-            annotCanonPsl, isoCanonicalPsl, "/dev/stdout"]]
+            annotCanonPsl, isoCanonicalPsl, "/dev/stdout"] + checkOpt]
     if annotIsoPsl is not None:
         cmd.append(["tee", annotIsoPsl])
 
     # prot/prot -> prot/NA -> NA/NA
     cmd.append(["pslMap", "-inType=prot_prot", "-mapType=prot_na",
-                "/dev/stdin", protTransPairedPsl, "/dev/stdout"])
+                "/dev/stdin", protTransPairedPsl, "/dev/stdout"] + checkOpt)
     if annotTransPsl is not None:
         cmd.append(["tee", annotTransPsl])
 
     # NA/NA -> NA/NA -> NA/NA
     cmd.append(["pslMap", "-inType=na_na", "-mapType=na_na",
-                "/dev/stdin", f"-mapInfo={mapInfoTmp}", transGenomePsl, "/dev/stdout"])
+                "/dev/stdin", f"-mapInfo={mapInfoTmp}", transGenomePsl, "/dev/stdout"] + checkOpt)
     pipettor.run(cmd, stdout=annotGenomePslFh)
 
     writeRefs(mapInfoTmp, annotTransRefFh)
     os.unlink(mapInfoTmp)
 
 def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
-                     transGenomePsl, annotGenomePsl, annotTransRefTsv,
+                     transGenomePsl, annotGenomePsl, annotTransRefTsv, check,
                      annotCanonPsl, annotIsoPsl, annotTransPsl):
     uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
     canonProtSizes = getCanonProtSizes(isoCanonicalPsl)
@@ -132,7 +136,7 @@ def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
         pslMapAnnots(annotCanonPslTmp, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
-                     annotGenomePslFh, annotTransRefFh, annotIsoPsl, annotTransPsl)
+                     annotGenomePslFh, annotTransRefFh, check, annotIsoPsl, annotTransPsl)
 
     if annotCanonPsl is None:
         os.unlink(annotCanonPslTmp)
@@ -140,7 +144,7 @@ def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
 
 def main(opts):
     uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.isoCanonicalPsl, opts.protTransPairedPsl, opts.transGenomePsl,
-                     opts.annotGenomePsl, opts.annotTransRefTsv,
+                     opts.annotGenomePsl, opts.annotTransRefTsv, opts.check,
                      opts.annotCanonPsl, opts.annotIsoPsl, opts.annotTransPsl)
 
 main(parseArgs())
