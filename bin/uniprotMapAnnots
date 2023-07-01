@@ -57,8 +57,9 @@ def getCanonProtSizes(isoCanonicalPsl):
 
 def createAnnotPsl(annotIdx, annot, canonProtSizes):
     qName = canonicalAnnotEncode(annot.mainIsoAcc, annotIdx)
+    # UniProt is 1-based, open-end
     tStart = annot.begin - 1
-    tEnd = annot.end
+    tEnd = annot.end - 1
     tSize = canonProtSizes[annot.mainIsoAcc]
 
     # some annotations go past the end of the protein
@@ -74,8 +75,15 @@ def createAnnotPsl(annotIdx, annot, canonProtSizes):
     return psl
 
 def annotFilter(annot, canonProtSizes):
-    # no point in not in sizes, will not map
-    return annot.mainIsoAcc in canonProtSizes
+    canonSize = canonProtSizes.get(annot.mainIsoAcc, None)
+    if canonSize is None:
+        # no point if not in sizes, will not map
+        return False
+    elif annot.begin > canonSize:  # 1-based
+        # some are completely off the end
+        return False
+    else:
+        return True
 
 def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotCanonPslFh):
     for annotIdx in range(0, len(uniprotAnnotTbl.df)):
@@ -133,6 +141,8 @@ def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
     annotTransRefFh = annotTransRefOpen(annotTransRefTsv)
     with fileOps.opengz(annotCanonPslTmp, 'w') as annotCanonPslFh:
         createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotCanonPslFh)
+    if check:
+        pipettor.run(["pslCheck", "-verbose=0", annotCanonPslTmp])
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
         pslMapAnnots(annotCanonPslTmp, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,

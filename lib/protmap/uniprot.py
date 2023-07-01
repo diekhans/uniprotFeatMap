@@ -5,6 +5,9 @@ Reads files create by uniprotToTab
 import pandas as pd
 from protmap import dropVersion
 
+# WARNING: UniProt is 1-based, open-end
+
+
 def splitMetaList(val):
     """ split strings like: ENST00000369413.8|ENST00000528909.1"""
     if val == "":
@@ -85,5 +88,5 @@ def canonicalAnnotDecode(name):
     try:
         canonId, annotIdx = name.split('#')
         return canonId, int(annotIdx)
-    except ValueError:
-        raise ValueError(f"invalid encode canonId and annotIdx: '{name}'")
+    except ValueError as ex:
+        raise ValueError(f"invalid encode canonId and annotIdx: '{name}'") from ex

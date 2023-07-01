@@ -55,8 +55,6 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds):
     fillColor = color.setAlpha(0.5)
     blocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     name = annot.shortFeatType
-    if annot.comment != "":
-        name += f" ({annot.comment})"
     bed = createDecoratorBed(name, annotPsl.tName, blocks,
                              color, annotTransRef,
                              "block", fillColor=fillColor, keywords=annotPsl.qName)

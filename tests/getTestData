@@ -7,9 +7,9 @@ set -beEu -o pipefail
 #      ./getTestData acc.tsv tmp
 #      cp tmp/*.{tsv,fa,tab,psl,gp,sizes} input/
 #      make -j 10 -k aligntest
-#      cp output/* expected/
+#      cp output/*.{psl,tids,tsv} expected/
 #      make -j 10 -k test
-#      cp output/* expected/
+#      cp output/*.{psl,tsv} expected/
 
 gencodeRel=43
 

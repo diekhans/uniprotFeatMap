@@ -1,2 +1,6 @@
+* Use getTestData to add new cases.
+see instructions at the top of the script
+
 * test cases
 ** P11137-1 no full alignments to match ENST00000199940.10
+** P30511-1, Q99732-1 have features starting off the end.
