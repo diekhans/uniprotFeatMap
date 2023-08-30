@@ -28,7 +28,7 @@ def parseArgs():
                         help="""save the intermediate annotation to isoform PSL""")
     parser.add_argument("--annotTransPsl",
                         help="""save the intermediate annotation to transcript PSL""")
-    parser.add_argument("--check",  action="store_true",
+    parser.add_argument("--check", action="store_true",
                         help="""validate PSLs alignments, useful for finding bugs""")
     parser.add_argument("uniprotAnnotsTsv",
                         help="Uniprot annotations TSV from uniprotToTab")

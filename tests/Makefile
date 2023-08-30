@@ -8,7 +8,7 @@ uniprotMapAnnots = ../bin/uniprotMapAnnots
 uniprotAnnotsToDecorators = ../bin/uniprotAnnotsToDecorators
 
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
-decoAs =  ../../kent/src/hg/lib/decoration.as
+decoAs = ../etc/uniprotDecoration.as
 
 all:
 	@echo "Note: targets are:"
@@ -95,7 +95,7 @@ testUniprotMapAnnots: mkout
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 
 testUniprotAnnotsToDecorators: mkout
-	${uniprotAnnotsToDecorators} input/swissprot.9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nprocs=16 input/swissprot.9606.annots.tab \
 	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
             output/$@.bed
 	diff expected/$@.bed output/$@.bed

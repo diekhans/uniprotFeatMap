@@ -3,9 +3,13 @@
 import sys
 import os.path as osp
 import argparse
+from functools import partial
+from multiprocessing import Pool
 import pandas as pd
+import pipettor
 from pycbio.sys import fileOps
-from pycbio.sys.svgcolors import SvgColors
+from pycbio.sys.color import Color
+from pycbio.sys.profile import Profile
 from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.bed import Bed, BedBlock
 
@@ -18,6 +22,12 @@ def parseArgs():
     and convert to decorators.
     """
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--nprocs", type=int, default=1,
+                        help="number of processes to use for tasks")
+    parser.add_argument("--batchSize", type=int, default=1000,
+                        help="size of batch to sent to task")
+    parser.add_argument("--trembl", action='store_true',
+                        help="is this trembl?")
     parser.add_argument("uniprotAnnotsTsv",
                         help="Uniprot annotations TSV from uniprotToTab")
     parser.add_argument("annotGenomePsl",
@@ -26,7 +36,47 @@ def parseArgs():
                         help="association of annotations to mapped transcripts")
     parser.add_argument("annotDecoratorBed",
                         help="annotation decorator BED file output")
-    return parser.parse_args()
+    profiler = Profile(parser)
+    opts = parser.parse_args()
+    profiler.setup(opts)
+    return opts
+
+###
+# color logic to match uniprot track, taken from
+# /hive/data/outside/otto/uniprot/doUniprot
+###
+
+# some feature types should not go into the bed name field.
+# for these features, we use the 'comment' as the bed name
+# e.g. "region of interest" is not very interesting, the actual
+# description is usually much more interesting.
+useComment = set(["domain", "chain", "region of interest", "topological domain", "short sequence motif"])
+
+TREMBLCOLOR = Color.fromRgb8Str("0,150,250")  # light blue
+SWISSPCOLOR = Color.fromRgb8Str("12,12,120")  # dark blue
+
+# mapping of annotations columns to colors
+featTypeColors = {
+    "modified residue": Color.fromRgb8Str("200,200,0"),
+    "glycosylation site": Color.fromRgb8Str("0,100,100"),
+    "disulfide bond": Color.fromRgb8Str("100,100,100"),
+    "topological domain": Color.fromRgb8Str("100,0,0"),
+    "zinc finger region": Color.fromRgb8Str("100,100,0"),
+    "transmembrane region": Color.fromRgb8Str("0,150,0"),  # dark green
+    "signal peptide": Color.fromRgb8Str("255,0,150"),  # light-red
+}
+commentColor = {
+    "Extracellular": Color.fromRgb8Str("0,110,180"),  # light-blue
+    "Cytoplasmic": Color.fromRgb8Str("255,150,0"),  # light orange
+}
+
+def getAnnotColor(annot, isTrembl):
+    if isTrembl:
+        return TREMBLCOLOR
+    color = commentColor.get(annot.comment, None)
+    if color is None:
+        color = featTypeColors.get(annot.featType, None)
+    return color if color is not None else SWISSPCOLOR
 
 def getAnnot(uniprotAnnotTbl, annotId):
     canonId, annotIdx = canonicalAnnotDecode(annotId)
@@ -41,28 +91,6 @@ def getAnnotTransRef(annotTransRefs, annotId, alignIdx):
         raise Exception(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
     return annotTransRef
 
-def createDecoratorBed(name, chrom, blocks, color, annotTransRef, style, *, fillColor=None, keywords="", glyph=""):
-    # extraCols are: decoratedItem, style, fillColor, keywords, glyphText
-    if fillColor is None:
-        fillColor = color
-    start, end = blocks[0].start, blocks[-1].end
-    transPosId = annotTransRef.transcriptPos + ':' + annotTransRef.transcriptId
-    return Bed(chrom, start, end, name, strand='+', thickStart=start, thickEnd=end, itemRgb=color.toRgb8Str(),
-               blocks=blocks, extraCols=[transPosId, style, fillColor.toRgba8Str(), keywords, glyph])
-
-def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds):
-    color = SvgColors.green
-    fillColor = color.setAlpha(0.5)
-    blocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
-    name = annot.shortFeatType
-    bed = createDecoratorBed(name, annotPsl.tName, blocks,
-                             color, annotTransRef,
-                             "block", fillColor=fillColor, keywords=annotPsl.qName)
-    decoratorBeds.append(bed)
-
-def buildAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):
-    mkMainAnnotDecorator(annotPsl, annot, annotTransRef, decoratorBeds)
-
 # shortFeatType to not use
 _shortFeatTypesToSkip = frozenset([
     'variant',
@@ -70,35 +98,89 @@ _shortFeatTypesToSkip = frozenset([
     'splicing',
     'biased'
 ])
+def includeAnnot(annot):
+    "filter for undesired annotations"
+    return annot.shortFeatType not in _shortFeatTypesToSkip
 
-def processAnnotation(annotPsl, annot, annotTransRef, decoratorBeds):
-    "if decorator should be made from annotation, build BED"
-    if annot.shortFeatType not in _shortFeatTypesToSkip:
-        buildAnnotation(annotPsl, annot, annotTransRef, decoratorBeds)
+def createDecoratorBed(annotPsl, annot, annotTransRef,
+                       name, color, fillColor, style,
+                       shortFeatType, featType, shortName, longName,
+                       comment, disease, *, glyph=None, thickStart=None, thickEnd=None):
+    "this determines the struct of the BED, with annotation options are supplied"
+    blocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
+    start, end = blocks[0].start, blocks[-1].end
+    decoratedItem = annotTransRef.transcriptPos + ':' + annotTransRef.transcriptId
+    if glyph is None:
+        glyph = ""
+    if fillColor is None:
+        fillColor = color
+    if thickStart is None:
+        thickStart = start
+    if thickEnd is None:
+        thickEnd = end
+    return Bed(annotPsl.tName, start, end, name,
+               strand=annotPsl.qStrand, thickStart=thickStart, thickEnd=thickEnd,
+               blocks=blocks, numStdCols=12,
+               itemRgb=color.toRgb8Str(),
+               extraCols=[decoratedItem, style, fillColor.toRgba8Str(), glyph,
+                          shortFeatType, featType, shortName, longName, comment, disease])
 
-def processAnnotations(uniprotAnnotTbl, annotGenomePsl, annotTransRefs, decoratorBeds):
+def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl):
+    color = getAnnotColor(annot, isTrembl)
+    fillColor = color.setAlpha(0.5)
+    return createDecoratorBed(annotPsl, annot, annotTransRef,
+                              annot.shortFeatType, color, fillColor, "block",
+                              annot.shortFeatType, annot.featType, annot.shortName, annot.longName,
+                              annot.comment, annot.disease)
+
+def buildAnnotation(annotPsl, annot, annotTransRef, isTrembl, decoratorBeds):
+    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl)
+    decoratorBeds.append(bed)
+
+def processAnnotationBatch(isTrembl, batch):
+    decoratorBeds = []
+    for annotPsl, annot, annotTransRef in batch:
+        buildAnnotation(annotPsl, annot, annotTransRef, isTrembl, decoratorBeds)
+    return decoratorBeds
+
+def annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, batchSize):
+    """return tuples of (annotPsl, annot, annotTransRef)"""
     alignIdx = 0
-    for annotPsl in PslReader(annotGenomePsl):
-        processAnnotation(annotPsl, getAnnot(uniprotAnnotTbl, annotPsl.qName),
-                          getAnnotTransRef(annotTransRefs, annotPsl.qName, alignIdx),
-                          decoratorBeds)
+    batch = []  # (alignIdx, psl)
+
+    for annotPsl in PslReader(annotGenomePslFile):
+        annot = getAnnot(uniprotAnnotTbl, annotPsl.qName)
+        if includeAnnot(annot):
+            batch.append((annotPsl, annot,
+                          getAnnotTransRef(annotTransRefs, annotPsl.qName, alignIdx)))
         alignIdx += 1
+        if len(batch) >= batchSize:
+            yield batch
+            batch = []
+    if len(batch) > 0:
+        yield batch
 
-def writeBeds(decoratorBeds, annotDecoratorBed):
-    with fileOps.AtomicFileCreate(annotDecoratorBed) as tmpBed:
-        with fileOps.opengz(tmpBed, 'w') as fh:
-            for annotBed in sorted(decoratorBeds, key=lambda b: (b.chrom, b.chromStart, b.chromEnd)):
-                annotBed.write(fh)
+def writeDecoratorBeds(batchBedsIter, annotDecoratorBed):
+    "write results from multiprocessing task as they come back via an iter"
+    with fileOps.AtomicFileCreate(annotDecoratorBed) as tmpDecoBed:
+        # also sort by target item and feature type for test reproducible
+        with pipettor.Popen(["sort", "-k1,1", "-k2,2n", "-k3,3n", "-k13,13n", "-k4,4n"], 'w', stdout=tmpDecoBed) as decoBedFh:
+            for batchBeds in batchBedsIter:
+                for bed in batchBeds:
+                    bed.write(decoBedFh)
 
-def uniprotAnnotsToDecorators(uniprotAnnotsTsv, annotGenomePsl, annotTransRefTsv, annotDecoratorBed):
+def uniprotAnnotsToDecorators(uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBed,
+                              isTrembl, nprocs, batchSize):
     uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
     annotTransRefs = pd.read_table(annotTransRefTsv)
-    decoratorBeds = []
-    processAnnotations(uniprotAnnotTbl, annotGenomePsl, annotTransRefs, decoratorBeds)
-    writeBeds(decoratorBeds, annotDecoratorBed)
+
+    with Pool(processes=nprocs) as pool:
+        batchBedsIter = pool.imap_unordered(partial(processAnnotationBatch, isTrembl),
+                                            annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, batchSize))
+        writeDecoratorBeds(batchBedsIter, annotDecoratorBed)
 
 def main(opts):
     uniprotAnnotsToDecorators(opts.uniprotAnnotsTsv, opts.annotGenomePsl, opts.annotTransRefTsv,
-                              opts.annotDecoratorBed)
+                              opts.annotDecoratorBed, opts.trembl, opts.nprocs, opts.batchSize)
 
 main(parseArgs())

@@ -39,3 +39,13 @@ genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v43.pc_transcripts.gp 
  USER=demo-markd jkmmake cgi >&log
  https://hgwdev-demo-markd.gi.ucsc.edu/
 
+* uniprotAnnotsToDecorators
+real	242m23.848s
+user	462m0.879s
+sys	2m47.443s
+
+../bin/uniprotAnnotsToDecorators --profile=deco.prof --profile-signal=12 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv /dev/null >&log&
+
+
+with nprocs=100
+

@@ -1,5 +1,5 @@
-table decoration
-"Browser extensible data (12 fields) plus information about what item this decorates and how."
+table uniprotDecoration
+"BED12 definition for Uniprot decorations, derived from decoration.as"
     (
     string chrom;      "Chromosome (or contig, scaffold, etc.)"
     uint   chromStart; "Start position in chromosome"
@@ -16,6 +16,12 @@ table decoration
     string decoratedItem; "Identity of the decorated item in chr:start-end:item_name format"
     string style;      "Draw style for the decoration (e.g. block, glyph)"
     string fillColor;  "Secondary color to use for filling decoration, blocks, supports RGBA"
-    lstring keywords;  "Keywords associated with the decoration"
     string glyphText;  "The glyph to draw in glyph mode; ignored for other styles"
+
+    string shortFeatType;  "Short feature  type, often group multiple feature types"
+    string featType;       "Type of feature"
+    string shortName;  "Short descriptive name of feature "
+    string longName;   "Descriptive name of feature"
+    string comment;   "Comment"
+    string disease;   "Disease for disease-related variants"
     )

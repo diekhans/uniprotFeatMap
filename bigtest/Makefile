@@ -18,7 +18,7 @@ gnsizes = ${gnpre}.sizes
 gnmeta = ${gnpre}.meta.tsv
 gnfa = ${gnpre}.fa.gz
 gnpsl = ${gnpre}.psl
-
+nprocs = $(shell nproc)
 
 all: ${algos:%=%_mkAlgo}
 	${MAKE} combineStatsCnts
@@ -155,5 +155,5 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	../bin/uniprotAnnotsToDecorators ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.tmp
+	nice ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.tmp
 	mv -f $@.tmp $@
