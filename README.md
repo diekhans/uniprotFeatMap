@@ -1,5 +1,9 @@
-## commands
+## mapping flow
 
+annot -> uniprotCanonical -> uniprotIsoform -> transcript -> genome
+
+
+## commands
 
 1. proteinTranscriptAlign - Align protein sequences to transcript RNAs with BLAT or BLAST. Creates a protein to NA PSL alignments, with some basic filtering.
    * input: protFa, transFa

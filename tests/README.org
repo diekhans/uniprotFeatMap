@@ -1,4 +1,4 @@
-* Use getTestData to add new cases.
+* Use bin/getTestData to add new cases.
 see instructions at the top of the script
 
 * test cases
