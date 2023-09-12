@@ -157,3 +157,11 @@ ${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
 	nice ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.tmp
 	mv -f $@.tmp $@
+
+# paranoid cleaning
+clean:
+	@echo "Error: to really clean up everything, use make realclean" >&2
+	@exit 1
+
+realclean:
+	rm -rf swissprotGencode isoCanon mapAnnots decorators

@@ -103,9 +103,8 @@ def includeAnnot(annot):
     "filter for undesired annotations"
     return annot.shortFeatType not in _shortFeatTypesToSkip
 
-def createDecoratorBed(annotPsl, annot, annotTransRef,
-                       name, color, fillColor, style,
-                       shortFeatType, featType, shortName, longName,
+def createDecoratorBed(annotPsl, annotTransRef, name, color, fillColor, style,
+                       uniprotAcc, uniprotType, shortFeatType, featType, shortName, longName,
                        comment, disease, *, glyph=None, thickStart=None, thickEnd=None):
     "this determines the struct of the BED, with annotation options are supplied"
     blocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
@@ -124,13 +123,16 @@ def createDecoratorBed(annotPsl, annot, annotTransRef,
                blocks=blocks, numStdCols=12,
                itemRgb=color.toRgb8Str(),
                extraCols=[decoratedItem, style, fillColor.toRgba8Str(), glyph,
-                          shortFeatType, featType, shortName, longName, comment, disease])
+                          uniprotAcc, uniprotType, shortFeatType, featType,
+                          shortName, longName, comment, disease])
 
 def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl):
     color = getAnnotColor(annot, isTrembl)
     fillColor = color.setAlpha(0.5)
-    return createDecoratorBed(annotPsl, annot, annotTransRef,
+    uniprotType = "TreMBL" if isTrembl else "SwissProt"
+    return createDecoratorBed(annotPsl, annotTransRef,
                               annot.shortFeatType, color, fillColor, "block",
+                              annot.acc, uniprotType,
                               annot.shortFeatType, annot.featType, annot.shortName, annot.longName,
                               annot.comment, annot.disease)
 

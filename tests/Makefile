@@ -70,10 +70,9 @@ testProtCanonBlatAlign: mkout
 
 uniprotMapAnnotsTests: testUniprotMapAnnots
 
+# intermediates saves for checking
 testUniprotMapAnnots: mkout
-	${uniprotMapAnnots} --annotCanonPsl=output/$@.annotCanon.psl \
-	    --annotIsoPsl=output/$@.annotIso.psl \
-	    --annotTransPsl=output/$@.annotTrans.psl \
+	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
 	    input/swissprot.9606.annots.tab \
 	    expected/testProtCanonBlatAlign.psl \
 	    expected/testUniprotGencodeSelectBasic.psl \
@@ -81,13 +80,13 @@ testUniprotMapAnnots: mkout
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
-	diff expected/$@.annotCanon.psl output/$@.annotCanon.psl
-	diff expected/$@.annotIso.psl output/$@.annotIso.psl
-	diff expected/$@.annotTrans.psl output/$@.annotTrans.psl
+	diff expected/$@.inter.annotCanon.psl output/$@.inter.annotCanon.psl
+	diff expected/$@.inter.annotIso.psl output/$@.inter.annotIso.psl
+	diff expected/$@.inter.annotTrans.psl output/$@.inter.annotTrans.psl
 	pslCheck -verbose=0 output/$@.psl
-	pslCheck -verbose=0 output/$@.annotCanon.psl
-	pslCheck -verbose=0 output/$@.annotIso.psl
-	pslCheck -verbose=0 output/$@.annotTrans.psl
+	pslCheck -verbose=0 output/$@.inter.annotCanon.psl
+	pslCheck -verbose=0 output/$@.inter.annotIso.psl
+	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 

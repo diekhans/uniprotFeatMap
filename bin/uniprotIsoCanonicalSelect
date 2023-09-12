@@ -17,9 +17,9 @@ def parseArgs():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("uniprotMetaTsv",
                         help="Uniprot metadata in TSV format")
-    parser.add_argument("isoCanonicalRawPsl",
+    parser.add_argument("isoCanonRawPsl",
                         help="protein alignment PSL")
-    parser.add_argument("isoCanonicalPsl",
+    parser.add_argument("isoCanonPsl",
                         help="paired alignments")
     parser.add_argument("problemLogTsv",
                         help="log file of issues")
@@ -37,9 +37,9 @@ def keepAlign(psl):
     "only keeping match thing base id. although maybe pre-filters"
     return dropUniportIsoformModifier(psl.qName) == dropUniportIsoformModifier(psl.tName)
 
-def loadAlignPsl(isoCanonicalRawPsl):
+def loadAlignPsl(isoCanonRawPsl):
     alignsByIso = defaultdict(list)  # by isoform id
-    for psl in PslReader(isoCanonicalRawPsl):
+    for psl in PslReader(isoCanonRawPsl):
         if keepAlign(psl):
             alignsByIso[psl.qName].append(psl)
     alignsByIso.default_factory = None
@@ -77,21 +77,21 @@ def writePairedPsl(fh, isoCanonicalPairs):
     for psl in sorted(isoCanonicalPairs, key=Psl.queryKey):
         psl.write(fh)
 
-def uniprotIsoCanonicalSelect(uniprotMetaTsv, isoCanonicalRawPsl, isoCanonicalPsl, problemLogTsv):
+def uniprotIsoCanonicalSelect(uniprotMetaTsv, isoCanonRawPsl, isoCanonPsl, problemLogTsv):
     uniprotMetaTbl = UniprotMetaTbl(uniprotMetaTsv)
-    alignsByIso = loadAlignPsl(isoCanonicalRawPsl)
+    alignsByIso = loadAlignPsl(isoCanonRawPsl)
 
     logFh = problemLogOpen(problemLogTsv)
 
     isoCanonicalPairs = selectIsoCanonAligns(alignsByIso)
     reportUnalignedIsos(uniprotMetaTbl, isoCanonicalPairs, logFh)
 
-    with fileOps.opengz(isoCanonicalPsl, 'w') as fh:
+    with fileOps.opengz(isoCanonPsl, 'w') as fh:
         writePairedPsl(fh, isoCanonicalPairs)
     logFh.close()
 
 def main(opts):
-    uniprotIsoCanonicalSelect(opts.uniprotMetaTsv, opts.isoCanonicalRawPsl, opts.isoCanonicalPsl,
+    uniprotIsoCanonicalSelect(opts.uniprotMetaTsv, opts.isoCanonRawPsl, opts.isoCanonPsl,
                               opts.problemLogTsv)
 
 main(parseArgs())

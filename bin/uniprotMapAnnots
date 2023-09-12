@@ -23,17 +23,11 @@ def parseArgs():
     Resulting PSLs will have query name of isoId#annotRowIndex
     """
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument("--annotCanonPsl",
-                        help="""save the intermediate annotation to canonical PSL""")
-    parser.add_argument("--annotIsoPsl",
-                        help="""save the intermediate annotation to isoform PSL""")
-    parser.add_argument("--annotTransPsl",
-                        help="""save the intermediate annotation to transcript PSL""")
-    parser.add_argument("--check", action="store_true",
-                        help="""validate PSLs alignments, useful for finding bugs""")
+    parser.add_argument("--interPrefix",
+                        help="""save the intermediate files to names starting ${iterPrefix}.${name}.psl  ${iterPrefix}.name.type""")
     parser.add_argument("uniprotAnnotsTsv",
                         help="Uniprot annotations TSV from uniprotToTab")
-    parser.add_argument("isoCanonicalPsl",
+    parser.add_argument("isoCanonPsl",
                         help="isoform to canonical paired alignments from uniprotIsoCanonicalSelect")
     parser.add_argument("protTransPairedPsl",
                         help="paired protein to transcript alignments from uniprotGencodeSelect")
@@ -49,10 +43,10 @@ def parseArgs():
     pipettor.setDefaultLogger(logging.getLogger())
     return opts
 
-def getCanonProtSizes(isoCanonicalPsl):
+def getCanonProtSizes(isoCanonPsl):
     # canonical is target
     canonProtSizes = {}
-    for psl in PslReader(isoCanonicalPsl):
+    for psl in PslReader(isoCanonPsl):
         canonProtSizes[psl.tName] = psl.tSize
     return canonProtSizes
 
@@ -106,56 +100,86 @@ def writeRefs(mapInfoTmp, annotTransRefFh):
             transcriptPos = f"{row.mappingTName}:{row.mappingTStart}-{row.mappingTEnd}"
             annotTransRefWrite(annotTransRefFh, row.srcQName, transcriptPos, row.srcTName, row.mappedPslLine)
 
-def pslMapAnnots(annotCanonPsl, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
-                 annotGenomePslFh, annotTransRefFh, check, annotIsoPsl, annotTransPsl):
-    mapInfoTmp = fileOps.tmpFileGet(prefix="mapinfo.")
+def mkAnnotToIsoCmd(annotCanonPsl, isoCanonPsl, annotIsoPsl, interPrefix):
+    """ create command to map annotations to protein isoform
+        prot/prot -> prot/prot -> prot/prot
+    """
+    cmd1 = ["pslMap", "-swapMap", "-inType=prot_prot", "-mapType=prot_prot", "-check",
+            annotCanonPsl, isoCanonPsl, annotIsoPsl]
+    cmd = [cmd1]
+    if interPrefix is not None:
+        cmd1.append(f"-mapInfo={interPrefix}annotIso.mapinfo.tsv")
+        cmd.append(["tee", f"{interPrefix}annotIso.psl"])
+    return cmd
 
-    checkOpt = ["-check"] if check else []
+def mkAnnotToTransCmd(annotIsoPsl, protTransPairedPsl, annotTransPsl, interPrefix):
+    """create command to map annotations to transcripts
+        prot/prot -> prot/NA -> NA/NA
+    """
+    cmd1 = ["pslMap", "-inType=prot_prot", "-mapType=prot_na", "-check",
+            annotIsoPsl, protTransPairedPsl, annotTransPsl]
+    cmd = [cmd1]
+    if interPrefix is not None:
+        cmd1.append(f"-mapInfo={interPrefix}annotTrans.mapinfo.tsv")
+        cmd.append(["tee", f"{interPrefix}annotTrans.psl"])
+    return cmd
+
+def mkAnnotToGenomeCmd(annotTransPsl, transGenomePsl, annotGenomePsl, annotGenomeMapInfo):
+    """create command to map annotations to genomes
+       NA/NA -> NA/NA -> NA/NA
+    """
+    cmd = ["pslMap", "-inType=na_na", "-mapType=na_na", "-check",
+           annotTransPsl, transGenomePsl, annotGenomePsl,
+           f"-mapInfo={annotGenomeMapInfo}"]
+    return [cmd]
+
+def pslMapAnnots(annotCanonPsl, isoCanonPsl, protTransPairedPsl, transGenomePsl,
+                 annotGenomePslFh, annotTransRefFh, interPrefix):
+    if interPrefix is not None:
+        annotGenomeMapInfo = f"{interPrefix}annotGenome.mapinfo.tsv"
+    else:
+        annotGenomeMapInfo = fileOps.tmpFileGet(prefix="annotGenome.", suffix=".mapinfo.tsv")
+
+    cmd = []
 
     # prot/prot -> prot/prot -> prot/prot
-    cmd = [["pslMap", "-swapMap", "-inType=prot_prot", "-mapType=prot_prot",
-            annotCanonPsl, isoCanonicalPsl, "/dev/stdout"] + checkOpt]
-    if annotIsoPsl is not None:
-        cmd.append(["tee", annotIsoPsl])
+    cmd += mkAnnotToIsoCmd(annotCanonPsl, isoCanonPsl, "/dev/stdout", interPrefix)
 
     # prot/prot -> prot/NA -> NA/NA
-    cmd.append(["pslMap", "-inType=prot_prot", "-mapType=prot_na",
-                "/dev/stdin", protTransPairedPsl, "/dev/stdout"] + checkOpt)
-    if annotTransPsl is not None:
-        cmd.append(["tee", annotTransPsl])
+    cmd += mkAnnotToTransCmd("/dev/stdin", protTransPairedPsl, "/dev/stdout", interPrefix)
 
     # NA/NA -> NA/NA -> NA/NA
-    cmd.append(["pslMap", "-inType=na_na", "-mapType=na_na",
-                "/dev/stdin", f"-mapInfo={mapInfoTmp}", transGenomePsl, "/dev/stdout"] + checkOpt)
+    cmd += mkAnnotToGenomeCmd("/dev/stdin", transGenomePsl, "/dev/stdout", annotGenomeMapInfo)
+
     pipettor.run(cmd, stdout=annotGenomePslFh)
+    writeRefs(annotGenomeMapInfo, annotTransRefFh)
 
-    writeRefs(mapInfoTmp, annotTransRefFh)
-    os.unlink(mapInfoTmp)
+    if interPrefix is None:
+        os.unlink(annotGenomeMapInfo)
 
-def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonicalPsl, protTransPairedPsl,
-                     transGenomePsl, annotGenomePsl, annotTransRefTsv, check,
-                     annotCanonPsl, annotIsoPsl, annotTransPsl):
+def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonPsl, protTransPairedPsl, transGenomePsl,
+                     annotGenomePsl, annotTransRefTsv, interPrefix):
     uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
-    canonProtSizes = getCanonProtSizes(isoCanonicalPsl)
+    canonProtSizes = getCanonProtSizes(isoCanonPsl)
 
-    annotCanonPslTmp = annotCanonPsl if annotCanonPsl is not None else fileOps.tmpFileGet("annots.", ".psl.tmp")
-    annotTransRefFh = annotTransRefOpen(annotTransRefTsv)
-    with fileOps.opengz(annotCanonPslTmp, 'w') as annotCanonPslFh:
+    if interPrefix is not None:
+        annotCanonPsl = f"{interPrefix}annotCanon.psl"
+    else:
+        annotCanonPsl = fileOps.tmpFileGet("annotCanon.", ".psl")
+
+    with fileOps.opengz(annotCanonPsl, 'w') as annotCanonPslFh:
         createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotCanonPslFh)
-    if check:
-        pipettor.run(["pslCheck", "-verbose=0", annotCanonPslTmp])
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
-        pslMapAnnots(annotCanonPslTmp, isoCanonicalPsl, protTransPairedPsl, transGenomePsl,
-                     annotGenomePslFh, annotTransRefFh, check, annotIsoPsl, annotTransPsl)
+        with annotTransRefOpen(annotTransRefTsv) as annotTransRefFh:
+            pslMapAnnots(annotCanonPsl, isoCanonPsl, protTransPairedPsl, transGenomePsl,
+                         annotGenomePslFh, annotTransRefFh, interPrefix)
 
-    if annotCanonPsl is None:
-        os.unlink(annotCanonPslTmp)
-    annotTransRefFh.close()
+    if interPrefix is None:
+        os.unlink(annotCanonPsl)
 
 def main(opts):
-    uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.isoCanonicalPsl, opts.protTransPairedPsl, opts.transGenomePsl,
-                     opts.annotGenomePsl, opts.annotTransRefTsv, opts.check,
-                     opts.annotCanonPsl, opts.annotIsoPsl, opts.annotTransPsl)
+    uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.isoCanonPsl, opts.protTransPairedPsl, opts.transGenomePsl,
+                     opts.annotGenomePsl, opts.annotTransRefTsv, opts.interPrefix)
 
 main(parseArgs())

@@ -27,7 +27,7 @@ def parseArgs():
                         help="alignment algorithm")
     parser.add_argument("uniprotFa",
                         help="uniprotFa FASTA")
-    parser.add_argument("isoCanonicalRawPsl",
+    parser.add_argument("isoCanonRawPsl",
                         help="alignments")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
@@ -57,7 +57,7 @@ def targetBuildDb(uniprotFa, canonicalFa, workDir):
     pipettor.run([osp.join(conf.blastDir, "formatdb"),
                   "-l", logFile, "-i", canonicalFa, "-p", "T"])
 
-def combineAligns(alignDir, isoCanonicalRawPsl):
+def combineAligns(alignDir, isoCanonRawPsl):
     "concatenate and sort by tName (canonical isoform))"
     prMsg("combining alignments")
     # discard not within the configure minimum identity and coverage.  Batch
@@ -67,9 +67,9 @@ def combineAligns(alignDir, isoCanonicalRawPsl):
                   ["pslCDnaFilter", "-verbose=0",
                    "-minCover=" + str(conf.isoCanconAlnMinCover),
                    "-minId=" + str(conf.isoCanconIsoAlnMinId),
-                   "/dev/stdin", "/dev/stdout"]], stdout=isoCanonicalRawPsl)
+                   "/dev/stdin", "/dev/stdout"]], stdout=isoCanonRawPsl)
 
-def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalRawPsl, algo, workDir):
+def uniprotIsoCanonicalAlign(uniprotFa, isoCanonRawPsl, algo, workDir):
     canonicalDbDir = osp.join(workDir, "canonicalDb")
     canonicalDbFa = osp.join(canonicalDbDir, "canonicalDb.fa")
     with runIfNotDone(canonicalDbDir, depends=uniprotFa) as do:
@@ -87,13 +87,13 @@ def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalRawPsl, algo, workDir):
             runBatch([uniprotIsoCanonicalAlignJob, algo], queriesDir, canonicalDbFa, alignDir,
                      osp.join(workDir, "batch"))
 
-    with runIfOutOfDate(isoCanonicalRawPsl, doneDepends=alignDir) as do:
+    with runIfOutOfDate(isoCanonRawPsl, doneDepends=alignDir) as do:
         if do:
-            with fileOps.AtomicFileCreate(isoCanonicalRawPsl) as tmpPsl:
+            with fileOps.AtomicFileCreate(isoCanonRawPsl) as tmpPsl:
                 combineAligns(alignDir, tmpPsl)
     prMsg("finished")
 
 def main(opts):
-    uniprotIsoCanonicalAlign(opts.uniprotFa, opts.isoCanonicalRawPsl, opts.algo, opts.workDir)
+    uniprotIsoCanonicalAlign(opts.uniprotFa, opts.isoCanonRawPsl, opts.algo, opts.workDir)
 
 main(parseArgs())
