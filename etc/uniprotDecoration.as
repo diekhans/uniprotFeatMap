@@ -21,7 +21,7 @@ table uniprotDecoration
     string shortFeatType;  "Short feature  type, often group multiple feature types"
     string featType;       "Type of feature"
     string shortName;  "Short descriptive name of feature "
-    string longName;   "Descriptive name of feature"
-    string comment;   "Comment"
+    lstring longName;   "Descriptive name of feature"
+    lstring comment;   "Comment"
     string disease;   "Disease for disease-related variants"
     )
