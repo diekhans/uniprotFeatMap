@@ -11,8 +11,8 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniprotMetaTbl, dropUniportIsoformModifier
 
 def parseArgs():
-    desc = """Filter alignments of uniprot isoforms to canonical. This includes
-    the canonical self-alignments.
+    desc = """Filter alignments of UniProt proteins to keep only the alignments
+    from to the canonical UniProt protein which has the annotations.
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("uniprotMetaTsv",

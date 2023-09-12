@@ -19,14 +19,15 @@ uniprotIsoCanonicalAlignJob = osp.join(osp.dirname(__file__), "uniprotIsoCanonic
 #    are often split
 
 def parseArgs():
-    desc = """produce mapping alignments of each uniprot iso to the canonical,
-    including a 1-to-1 mapping of the canonical."""
+    desc = """Produce mapping alignments of each UniProt isoform to the canonical isoform,
+    including a 1-to-1 mapping of the canonical.  Result are protein to protein PSL alignments.
+    """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--algo", choices=("blast", "blat"), default="blast",
                         help="alignment algorithm")
     parser.add_argument("uniprotFa",
                         help="uniprotFa FASTA")
-    parser.add_argument("isoCanonicalPsl",
+    parser.add_argument("isoCanonicalRawPsl",
                         help="alignments")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
@@ -34,7 +35,7 @@ def parseArgs():
 
 def getUniprotCanonicalFa(inFa, outFa):
     """
-    out canonical isoform records, which have headers like
+    Output canonical isoform records, which have headers like
     >P14060 isRefOf P14060
     """
     inCanonical = False
@@ -56,7 +57,7 @@ def targetBuildDb(uniprotFa, canonicalFa, workDir):
     pipettor.run([osp.join(conf.blastDir, "formatdb"),
                   "-l", logFile, "-i", canonicalFa, "-p", "T"])
 
-def combineAligns(alignDir, isoCanonicalPsl):
+def combineAligns(alignDir, isoCanonicalRawPsl):
     "concatenate and sort by tName (canonical isoform))"
     prMsg("combining alignments")
     # discard not within the configure minimum identity and coverage.  Batch
@@ -66,9 +67,9 @@ def combineAligns(alignDir, isoCanonicalPsl):
                   ["pslCDnaFilter", "-verbose=0",
                    "-minCover=" + str(conf.isoCanconAlnMinCover),
                    "-minId=" + str(conf.isoCanconIsoAlnMinId),
-                   "/dev/stdin", "/dev/stdout"]], stdout=isoCanonicalPsl)
+                   "/dev/stdin", "/dev/stdout"]], stdout=isoCanonicalRawPsl)
 
-def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, algo, workDir):
+def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalRawPsl, algo, workDir):
     canonicalDbDir = osp.join(workDir, "canonicalDb")
     canonicalDbFa = osp.join(canonicalDbDir, "canonicalDb.fa")
     with runIfNotDone(canonicalDbDir, depends=uniprotFa) as do:
@@ -86,13 +87,13 @@ def uniprotIsoCanonicalAlign(uniprotFa, isoCanonicalPsl, algo, workDir):
             runBatch([uniprotIsoCanonicalAlignJob, algo], queriesDir, canonicalDbFa, alignDir,
                      osp.join(workDir, "batch"))
 
-    with runIfOutOfDate(isoCanonicalPsl, doneDepends=alignDir) as do:
+    with runIfOutOfDate(isoCanonicalRawPsl, doneDepends=alignDir) as do:
         if do:
-            with fileOps.AtomicFileCreate(isoCanonicalPsl) as tmpPsl:
+            with fileOps.AtomicFileCreate(isoCanonicalRawPsl) as tmpPsl:
                 combineAligns(alignDir, tmpPsl)
     prMsg("finished")
 
 def main(opts):
-    uniprotIsoCanonicalAlign(opts.uniprotFa, opts.isoCanonicalPsl, opts.algo, opts.workDir)
+    uniprotIsoCanonicalAlign(opts.uniprotFa, opts.isoCanonicalRawPsl, opts.algo, opts.workDir)
 
 main(parseArgs())

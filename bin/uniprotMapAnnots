@@ -15,9 +15,10 @@ from protmap.uniprot import UniprotAnnotTbl, canonicalAnnotEncode
 
 def parseArgs():
     desc = """
-    TransMap Uniprot annotations to the genome via protein and transcript
-    alignments.  The output will include all annotations that can be
-    mapped, for later filtering when building decorators.
+    Map Uniprot annotations to the genome via protein and transcript
+    alignments.  The output will be a NA to NA PSL alignments of annotations
+    of all annotation types that are mapped.  They can be filtered later when
+    building decorators.
 
     Resulting PSLs will have query name of isoId#annotRowIndex
     """

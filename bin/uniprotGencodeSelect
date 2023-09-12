@@ -24,8 +24,7 @@ from protmap.uniprot import UniprotMetaTbl
 #     -
 
 def parseArgs():
-    desc = """Filter alignments to pair protein and transcript alignments
-
+    desc = """Filter protein to transcript PSL alignments to pair them based on gene.
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("gencodeMetaTsv",

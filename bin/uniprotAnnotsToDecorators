@@ -18,8 +18,9 @@ from protmap.uniprot import UniprotAnnotTbl, canonicalAnnotDecode
 
 def parseArgs():
     desc = """
-    Take mapped domain annotations alignments create by uniprotMapAnnots
-    and convert to decorators.
+    Convert domain annotations alignments create by uniprotMapAnnots
+    to a decorator BED file in uniprotDecoration.as format.  Possibly filtering
+    the results.
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--nprocs", type=int, default=1,
@@ -169,15 +170,35 @@ def writeDecoratorBeds(batchBedsIter, annotDecoratorBed):
                 for bed in batchBeds:
                     bed.write(decoBedFh)
 
+def processSingle(uniprotAnnotTbl, annotGenomePslFile, annotTransRefs, annotDecoratorBed,
+                  isTrembl, batchSize):
+    batchBeds = []
+    for batch in annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, batchSize):
+        batchBeds.append(processAnnotationBatch(isTrembl, batch))
+
+    writeDecoratorBeds(batchBeds, annotDecoratorBed)
+
+
+def processMulti(uniprotAnnotTbl, annotGenomePslFile, annotTransRefs, annotDecoratorBed,
+                 isTrembl, nprocs, batchSize):
+    with Pool(processes=nprocs) as pool:
+        batchBedsIter = pool.imap_unordered(partial(processAnnotationBatch, isTrembl),
+                                            annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, batchSize))
+        writeDecoratorBeds(batchBedsIter, annotDecoratorBed)
+
+
 def uniprotAnnotsToDecorators(uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBed,
                               isTrembl, nprocs, batchSize):
     uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
     annotTransRefs = pd.read_table(annotTransRefTsv)
 
-    with Pool(processes=nprocs) as pool:
-        batchBedsIter = pool.imap_unordered(partial(processAnnotationBatch, isTrembl),
-                                            annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, batchSize))
-        writeDecoratorBeds(batchBedsIter, annotDecoratorBed)
+    # special case one process makes profiling easier
+    if nprocs == 1:
+        processSingle(uniprotAnnotTbl, annotGenomePslFile, annotTransRefs, annotDecoratorBed,
+                      isTrembl, batchSize)
+    else:
+        processMulti(uniprotAnnotTbl, annotGenomePslFile, annotTransRefs, annotDecoratorBed,
+                     isTrembl, nprocs, batchSize)
 
 def main(opts):
     uniprotAnnotsToDecorators(opts.uniprotAnnotsTsv, opts.annotGenomePsl, opts.annotTransRefTsv,

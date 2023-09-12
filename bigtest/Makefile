@@ -18,7 +18,7 @@ gnsizes = ${gnpre}.sizes
 gnmeta = ${gnpre}.meta.tsv
 gnfa = ${gnpre}.fa.gz
 gnpsl = ${gnpre}.psl
-nprocs = $(shell nproc)
+nprocs = 64
 
 all: ${algos:%=%_mkAlgo}
 	${MAKE} combineStatsCnts
