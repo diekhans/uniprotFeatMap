@@ -20,10 +20,18 @@ outPsl="$4"
 mkdir -p $(dirname ${outPsl})
 outPslTmp=$outPsl.$(hostname).$$.tmp
 
+##
+# for debugging enable tee command
+##
+outUnchainedPsl=$(dirname  ${outPsl})/$(basename ${outPsl} .psl).unchained.psl
+saveUnchainedCmd=cat
+#saveUnchainedCmd="tee $outUnchainedPsl"
+
+
 # keep + strand with same acc and chain
 function filterChain() {
     tawk '$9 == "+" && gensub("^([A-Z0-9]+).*$", "\\1", 1, $10) == gensub("^([A-Z0-9]+).*$", "\\1", 1, $14)' |\
-         tee $(dirname  ${outPsl})/$(basename ${outPsl} .psl).unfilt.psl | pslMapPostChain /dev/stdin /dev/stdout
+          ${saveUnchainedCmd} | pslMapPostChain /dev/stdin /dev/stdout
 }
 
 if [ "${algo}" = "blast" ] ; then

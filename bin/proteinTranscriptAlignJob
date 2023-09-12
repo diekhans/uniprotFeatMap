@@ -21,9 +21,16 @@ outPsl="$4"
 mkdir -p $(dirname ${outPsl})
 outPslTmp=$outPsl.$(hostname).$$.tmp
 
+##
+# for debugging enable tee command
+##
+outUnchainedPsl=$(dirname  ${outPsl})/$(basename ${outPsl} .psl).unchained.psl
+saveUnchainedCmd=cat
+#saveUnchainedCmd="tee $outUnchainedPsl"
+
 # keep ++ strand
 function filterChain() {
-    tawk '$9 == "++"' | tee $(dirname  ${outPsl})/$(basename ${outPsl} .psl).unfilt.psl | pslMapPostChain /dev/stdin /dev/stdout
+    tawk '$9 == "++"' | ${saveUnchainedCmd} | pslMapPostChain /dev/stdin /dev/stdout
 }
 
 if [ "${algo}" = "blast" ] ; then

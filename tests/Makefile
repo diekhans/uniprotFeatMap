@@ -41,10 +41,6 @@ testUniprotIsoCanonicalSelectBasic: mkout
 
 define checkAlignments
 	pslStats -tsv -queries=input/swissprot.9606.sizes output/$@.psl output/$@.stats.tsv
-	cut -f 10,14 output/$@.work/aligns/*.psl | sort -u -k2,2 -k1,1 > output/$@.raw.tids
-	cut -f 10,14 output/$@.psl | sort -u -k2,2 -k1,1 > output/$@.filtered.tids
-	diff expected/$@.raw.tids output/$@.raw.tids
-	diff expected/$@.filtered.tids output/$@.filtered.tids
 	diff expected/$@.stats.tsv output/$@.stats.tsv
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
@@ -55,6 +51,7 @@ testProtTransBlastAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${proteinTranscriptAlign} --algo=blast input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
 	$(call checkAlignments)
+
 testProtTransBlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${proteinTranscriptAlign} --algo=blat input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
