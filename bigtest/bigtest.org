@@ -14,6 +14,7 @@ Traceback (most recent call last):
   File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/processes.py", line 424, in _raise_if_failed
     raise p.procExcept
 pipettor.exceptions.ProcessException: process exited 255: pslMap -inType=prot_prot -mapType=prot_na -check /dev/stdin swissprotGencode/swissprotGencode.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.mapinfo.tsv:
+
 Error: invalid PSL: O95831-1#2447:0-141 ENST00000675774.1:146-144 + mapped psl
 	O95831-1#2447 query block 1 start 141 >= qEnd 141
 	ENST00000675774.1 tStart 146 >= tEnd 144
@@ -24,3 +25,6 @@ Error: invalid PSL: O95831-1#2447:0-141 ENST00000675774.1:146-144 + mapped psl
 	ENST00000675774.1 target block 1 end 144 < tStart 146
 	ENST00000675774.1 target block 1 start 144 < previous block end 149
 BUG: invalid mapped PSL created, run with -verbose=2 for more details
+
+
+O95831-1#2447:0-141 & ENST00000675774.1:146-144

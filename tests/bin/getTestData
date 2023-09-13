@@ -5,11 +5,15 @@ set -beEu -o pipefail
 #      tmlr cut -f acc input/swissprot.9606.tab >acc.tsv
 #    add new swissprot accession to acc.tsv
 #      ./bin/getTestData acc.tsv tmp
+#    to include all
 #      cp tmp/*.{tsv,fa,tab,psl,gp,sizes} input/
 #      make -j 10 -k aligntest
 #      cp output/*.{psl,tsv} expected/
 #      make -j 10 -k test
 #      cp output/*.{psl,tsv,bed} expected/
+# this can also be run using just one uniprot accession, trimming down the
+# GENCODE results and appending.
+#
 
 gencodeRel=43
 

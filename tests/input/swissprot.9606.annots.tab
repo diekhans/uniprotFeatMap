@@ -1557,3 +1557,137 @@ P11137	P11137-1		modified residue	phos	67	68				notDisRelated			15536091					Pho
 P11137	P11137-1		modified residue	phos	323	324				notDisRelated								Phosphoserine
 P11137	P11137-1		modified residue	phos	354	355				notDisRelated								Phosphoserine
 P11137	P11137-1		modified residue	phos	386	387				notDisRelated								Phosphoserine
+O95831	O95831-1		transit peptide	trans pep	1	55				notDisRelated			15775970,16365034					Mitochondrion
+O95831	O95831-1	PRO_0000401935	propeptide	propep	55	102				notDisRelated			16365034					Removed in mature form
+O95831	O95831-1	PRO_0000022030	chain	chain	102	614				noEvidence				Apoptosis-inducing factor 1, mitochondrial	AIF	AIF; PDCD8; Programmed cell death protein 8; 1; 2; 3; 4; 5; 6; AIF; AIF2; AIFsh; AIFsh2; AIFsh3; AIF-exB		
+O95831	O95831-1		region of interest	interest	100	128				notDisRelated								Disordered
+O95831	O95831-1		region of interest	interest	134	484				notDisRelated								FAD-dependent oxidoreductase
+O95831	O95831-1		region of interest	interest	513	555				notDisRelated								Disordered
+O95831	O95831-1		short sequence motif	motif	1	32				notDisRelated								Mitochondrial localization signal
+O95831	O95831-1		short sequence motif	motif	63	90				notDisRelated								Mitochondrial localization signal
+O95831	O95831-1		short sequence motif	motif	446	452				notDisRelated								Nuclear localization signal
+O95831	O95831-1		compositionally biased region	biased	514	547				notDisRelated								Polar residues
+O95831	O95831-1		binding site	bind	138	143				notDisRelated			12198487,23217327,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	164	166				notDisRelated			12198487,23217327,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	172	173				notDisRelated			12198487,23217327,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	177	178				notDisRelated			12198487,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	196	197				notDisRelated			24914854					
+O95831	O95831-1		binding site	bind	233	234				notDisRelated			12198487,23217327,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	285	286				notDisRelated			12198487,23217327,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	308	312				notDisRelated			24914854					
+O95831	O95831-1		binding site	bind	336	337				notDisRelated			24914854					
+O95831	O95831-1		binding site	bind	342	343				notDisRelated								
+O95831	O95831-1		binding site	bind	399	400				notDisRelated			24914854					
+O95831	O95831-1		binding site	bind	438	439				notDisRelated			12198487,23217327,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	453	455				notDisRelated			24914854					
+O95831	O95831-1		binding site	bind	454	456				notDisRelated			12198487,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	483	484				notDisRelated			12198487,23217327,24914854,27178839,27818101					
+O95831	O95831-1		binding site	bind	483	484				notDisRelated			24914854					
+O95831	O95831-1		binding site	bind	493	494				notDisRelated			24914854					
+O95831	O95831-1		binding site	bind	583	584				notDisRelated			24914854					
+O95831	O95831-1		modified residue	phos	105	106				notDisRelated								Phosphothreonine
+O95831	O95831-1		modified residue	modif	109	110				notDisRelated								N6-succinyllysine
+O95831	O95831-1		modified residue	phos	116	117				notDisRelated								Phosphoserine
+O95831	O95831-1		modified residue	phos	118	119				notDisRelated								Phosphoserine
+O95831	O95831-1		modified residue	phos	268	269				notDisRelated								Phosphoserine
+O95831	O95831-1		modified residue	phos	292	293				notDisRelated								Phosphoserine
+O95831	O95831-1		modified residue	phos	371	372				notDisRelated								Phosphoserine
+O95831	O95831-1		modified residue	acetyl	388	389				notDisRelated								N6-acetyllysine
+O95831	O95831-1		modified residue	phos	521	522				notDisRelated								Phosphothreonine
+O95831	O95831-1		modified residue	phos	524	525				notDisRelated								Phosphoserine
+O95831	O95831-1		modified residue	phos	530	531				notDisRelated								Phosphoserine
+O95831	O95831-1		modified residue	acetyl	593	594				notDisRelated								N6-acetyllysine
+O95831	O95831-1		cross-link	cross-link	255	256				notDisRelated			22103349					Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in ubiquitin
+O95831	O95831-1	VSP_046248	splice variant	splicing	1	353				notDisRelated			16365034					In isoform 5.
+O95831	O95831-1	VSP_004357	splice variant	splicing	36	323				notDisRelated								In isoform 2.
+O95831	O95831-1	VSP_022953	splice variant	splicing	36	83	GNLFQRWHVPLELQMTRQMASSGASGGKIDNSVLVLIVGLSTVGAGA	VVQSHHLGSPSRSLASTGASGKDGSNLVYFLIVGATVTGAGVY		notDisRelated			14702039,15489334					In isoform 3.
+O95831	O95831-1	VSP_060785	splice variant	splicing	37	44	NLFQRWH	LQDYERG		notDisRelated								In isoform 6.
+O95831	O95831-1	VSP_060786	splice variant	splicing	44	614				notDisRelated								In isoform 6.
+O95831	O95831-1	VSP_043637	splice variant	splicing	323	325	AR	DI		notDisRelated			16644725					In isoform 4.
+O95831	O95831-1	VSP_043638	splice variant	splicing	325	614				notDisRelated			16644725					In isoform 4.
+O95831	O95831-1	VAR_063827	sequence variant	variant	201	202			rs387906500	disRelated	Combined oxidative phosphorylation deficiency 6	COXPD6	20362274					higher DNA binding affinity, partially impaired flavin binding and association with increased parthanatos-linked cell death
+O95831	O95831-1	VAR_083739	sequence variant	variant	235	236	Q	H	rs377527583	disRelated	Spondyloepimetaphyseal dysplasia, X-linked, with hypomyelinating leukodystrophy	SEMDHL	28842795					severe decrease of protein expression
+O95831	O95831-1	VAR_083740	sequence variant	variant	237	238	D	G	rs1202786652	disRelated	Spondyloepimetaphyseal dysplasia, X-linked, with hypomyelinating leukodystrophy	SEMDHL	28842795					
+O95831	O95831-1	VAR_083741	sequence variant	variant	237	238	D	V	rs1202786652	disRelated	Spondyloepimetaphyseal dysplasia, X-linked, with hypomyelinating leukodystrophy	SEMDHL	28842795					
+O95831	O95831-1	VAR_072791	sequence variant	variant	243	244	V	L	rs1603225138	disRelated	Combined oxidative phosphorylation deficiency 6	COXPD6	25583628,27178839					reduced protein amount in muscle compared to controls; no effect on reduction with NADH; strongly decreased NADH oxidase activity; no effect on dimerization; no effect on DNA-binding
+O95831	O95831-1	VAR_076211	sequence variant	variant	260	261	T	A	rs863225432	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					
+O95831	O95831-1	VAR_083067	sequence variant	variant	262	263	G	S	rs1603224817	disRelated			25934856,27178839					Probable disease-associated variant found in patient with mitochondrial encephalomyopathy with moderate clinical severity and slow progressive course despite early onset as well as and cerebellar involvement; decreased protein level; strongly decreased redox potential; strongly decreased NADH oxidase activity; no effect on DNA-binding
+O95831	O95831-1	VAR_067334	sequence variant	variant	308	309	G	E	rs1603224226	disRelated	Combined oxidative phosphorylation deficiency 6	COXPD6	22019070,26004228,27178839					with prenatal ventriculomegaly and severe postnatal encephalomyopathy; no effect on redox potential; slowered reduction with NADH; strongly decreased NADH oxidase activity; strongly decreased NADH oxidase activity; no effect on DNA-binding; decreased interaction with CHCHDE
+O95831	O95831-1	VAR_083068	sequence variant	variant	338	339	G	E	rs1603223152	disRelated	Combined oxidative phosphorylation deficiency 6	COXPD6	26173962,27178839					with early-onset severe motor neuron involvement; decreased protein levels; decreased oxidoreductase activity on cytochrome C; slowered reduction with NADH; strongly decreased NADH oxidase activity; strongly decreased NADH oxidase activity; no effect on DNA-binding
+O95831	O95831-1	VAR_076212	sequence variant	variant	344	345	L	F	rs184474885	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					unknown pathological significance
+O95831	O95831-1	VAR_076213	sequence variant	variant	360	361	G	R	rs724160026	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					unknown pathological significance
+O95831	O95831-1	VAR_076214	sequence variant	variant	422	423	R	Q	rs724160021	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					
+O95831	O95831-1	VAR_076215	sequence variant	variant	422	423	R	W	rs724160020	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					
+O95831	O95831-1	VAR_076216	sequence variant	variant	430	431	R	C	rs1223488720	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					unknown pathological significance
+O95831	O95831-1	VAR_076217	sequence variant	variant	451	452	R	Q	rs863225431	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					
+O95831	O95831-1	VAR_076218	sequence variant	variant	472	473	A	V		disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					unknown pathological significance
+O95831	O95831-1	VAR_076219	sequence variant	variant	475	476	P	L	rs724160022	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					unknown pathological significance
+O95831	O95831-1	VAR_069468	sequence variant	variant	493	494	E	V	rs281864468	disRelated	Charcot-Marie-Tooth disease, X-linked recessive, 4, with or without cerebellar ataxia	CMTX4	23217327,26004228					increases affinity for NADH and electron transfer activity; increases affinity for DNA, resulting in increased apoptosis; no effect on interaction with CHCHD4
+O95831	O95831-1	VAR_076220	sequence variant	variant	498	499	V	M	rs724160023	disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					unknown pathological significance
+O95831	O95831-1	VAR_076221	sequence variant	variant	591	592	I	M		disRelated	Deafness, X-linked, 5, with peripheral neuropathy	DFNX5	25986071					unknown pathological significance
+O95831	O95831-1		mutagenesis site	mutagen	196	197	W	A		notDisRelated			27818101					Increases protein dimerization at lower NADH levels.
+O95831	O95831-1		mutagenesis site	mutagen	413	431	EIDSDFGGFRVNAELQAR	AIDSDFGGFAVNAELQAA		notDisRelated			24914854					Disrupts dimerization. Lower efficiency in stabilizing charge-transfer complexes upon coenzyme reduction.
+O95831	O95831-1		mutagenesis site	mutagen	443	446	YDI	ADA		notDisRelated			27818101					Disrupts dimerization. Disrupts dimerization; when associated with A-477.
+O95831	O95831-1		mutagenesis site	mutagen	454	455	H	A		notDisRelated			27818101					Allows dimerization in absence of NADH.
+O95831	O95831-1		mutagenesis site	mutagen	477	478	W	A		notDisRelated			27818101					Disrupts dimerization; when associated with A-443--445-A.
+O95831	O95831-1		mutagenesis site	mutagen	480	481	S	A		notDisRelated			27818101					Allows dimerization in absence of NADH.
+O95831	O95831-1		mutagenesis site	mutagen	485	486	D	A		notDisRelated			27818101					Increases protein dimerization at lower NADH levels.
+O95831	O95831-1		mutagenesis site	mutagen	529	530	R	A		notDisRelated			27818101					Increases protein dimerization at lower NADH levels.
+O95831	O95831-1		mutagenesis site	mutagen	531	532	E	A		notDisRelated			27818101					Increases protein dimerization at lower NADH levels.
+O95831	O95831-1		mutagenesis site	mutagen	533	534	E	A		notDisRelated			27818101					Increases protein dimerization at lower NADH levels.
+O95831	O95831-1		mutagenesis site	mutagen	535	536	E	A		notDisRelated			27818101					Increases protein dimerization at lower NADH levels.
+O95831	O95831-1		strand	beta	130	139				notDisRelated								
+O95831	O95831-1		helix	helix	141	154				notDisRelated								
+O95831	O95831-1		strand	beta	158	163				notDisRelated								
+O95831	O95831-1		strand	beta	164	168				notDisRelated								
+O95831	O95831-1		helix	helix	173	177				notDisRelated								
+O95831	O95831-1		helix	helix	178	181				notDisRelated								
+O95831	O95831-1		helix	helix	187	191				notDisRelated								
+O95831	O95831-1		strand	beta	192	195				notDisRelated								
+O95831	O95831-1		strand	beta	200	207				notDisRelated								
+O95831	O95831-1		helix	helix	208	211				notDisRelated								
+O95831	O95831-1		turn	turn	214	220				notDisRelated								
+O95831	O95831-1		strand	beta	224	229				notDisRelated								
+O95831	O95831-1		strand	beta	233	238				notDisRelated								
+O95831	O95831-1		turn	turn	238	242				notDisRelated								
+O95831	O95831-1		strand	beta	242	246				notDisRelated								
+O95831	O95831-1		strand	beta	250	259				notDisRelated								
+O95831	O95831-1		strand	beta	262	265				notDisRelated								
+O95831	O95831-1		helix	helix	268	272				notDisRelated								
+O95831	O95831-1		helix	helix	275	280				notDisRelated								
+O95831	O95831-1		strand	beta	281	284				notDisRelated								
+O95831	O95831-1		helix	helix	287	300				notDisRelated								
+O95831	O95831-1		strand	beta	301	307				notDisRelated								
+O95831	O95831-1		helix	helix	310	327				notDisRelated								
+O95831	O95831-1		strand	beta	329	334				notDisRelated								
+O95831	O95831-1		strand	beta	335	339				notDisRelated								
+O95831	O95831-1		turn	turn	339	344				notDisRelated								
+O95831	O95831-1		helix	helix	346	359				notDisRelated								
+O95831	O95831-1		strand	beta	362	365				notDisRelated								
+O95831	O95831-1		strand	beta	369	376				notDisRelated								
+O95831	O95831-1		strand	beta	378	384				notDisRelated								
+O95831	O95831-1		strand	beta	388	397				notDisRelated								
+O95831	O95831-1		strand	beta	400	403				notDisRelated								
+O95831	O95831-1		helix	helix	407	411				notDisRelated								
+O95831	O95831-1		turn	turn	416	419				notDisRelated								
+O95831	O95831-1		strand	beta	420	423				notDisRelated								
+O95831	O95831-1		strand	beta	427	431				notDisRelated								
+O95831	O95831-1		strand	beta	433	436				notDisRelated								
+O95831	O95831-1		helix	helix	437	440				notDisRelated								
+O95831	O95831-1		strand	beta	440	445				notDisRelated								
+O95831	O95831-1		turn	turn	445	448				notDisRelated								
+O95831	O95831-1		strand	beta	448	451				notDisRelated								
+O95831	O95831-1		helix	helix	455	469				notDisRelated								
+O95831	O95831-1		turn	turn	469	472				notDisRelated								
+O95831	O95831-1		strand	beta	481	488				notDisRelated								
+O95831	O95831-1		strand	beta	491	497				notDisRelated								
+O95831	O95831-1		strand	beta	504	510				notDisRelated								
+O95831	O95831-1		strand	beta	513	516				notDisRelated								
+O95831	O95831-1		helix	helix	517	525				notDisRelated								
+O95831	O95831-1		helix	helix	529	534				notDisRelated								
+O95831	O95831-1		strand	beta	538	543				notDisRelated								
+O95831	O95831-1		strand	beta	562	570				notDisRelated								
+O95831	O95831-1		strand	beta	572	581				notDisRelated								
+O95831	O95831-1		helix	helix	585	595				notDisRelated								
+O95831	O95831-1		helix	helix	601	606				notDisRelated								
+O95831	O95831-1		helix	helix	606	609				notDisRelated								
