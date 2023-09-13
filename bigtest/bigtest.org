@@ -1,51 +1,26 @@
 
-* get metadata
-cd data
-zcat gencode.v43.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} />/{print gensub("^>([A-Z0-9.]+).*", "\\1", "g")}' > gencode.v43.pc_transcripts.ids.tsv
-tmlr join -j transcriptId -f gencode.v43.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV43/hgcImport/data/gencode.tsv >gencode.v43.pc_transcripts.meta.tsv
-zcat gencode.v43.pc_transcripts.fa.gz |sed 's/|/ /g' |faSize -detailed stdin > gencode.v43.pc_transcripts.sizes
-
-fgrep -f gencode.v43.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV43/hgcImport/data/gencode.gp > gencode.v43.pc_transcripts.gp
-genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v43.pc_transcripts.gp gencode.v43.pc_transcripts.psl
-
-* make does all
-
-* mapping stats
-
-| dataset          | algo  | filt   | stats  |  aln0 |   aln1 |  alnN |
-|------------------+-------+--------+--------+-------+--------+-------|
-| swissprotGencode | blat  | raw    | qstats |   586 |   2235 | 39602 |
-| swissprotGencode | blast | raw    | qstats |   632 |   3022 | 38769 |
-| swissprotGencode | blat  | paired | qstats | 23006 |   3755 | 15662 |
-| swissprotGencode | blast | paired | qstats | 23004 |   3845 | 15574 |
-| swissprotGencode | blat  | raw    | tstats |   670 |  18957 | 91652 |
-| swissprotGencode | blast | raw    | tstats |  1926 |  22867 | 86486 |
-| swissprotGencode | blat  | paired | tstats |  2249 | 109029 |     0 |
-| swissprotGencode | blast | paired | tstats |  4380 | 106898 |     0 |
-
-
-| dataset  | algo  | filt   | stats  | aln0 |  aln1 | alnN |
-|----------+-------+--------+--------+------+-------+------|
-| isoCanon | blat  | raw    | qstats |  188 | 41830 |  405 |
-| isoCanon | blast | raw    | qstats | 2342 | 39720 |  361 |
-| isoCanon | blat  | paired | qstats |  188 | 42234 |    0 |
-| isoCanon | blast | paired | qstats | 2342 | 40080 |    0 |
-
-
-* debug
+* hub
  https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 
 
  USER=demo-markd jkmmake cgi >&log
  https://hgwdev-demo-markd.gi.ucsc.edu/
 
-* uniprotAnnotsToDecorators
-real	242m23.848s
-user	462m0.879s
-sys	2m47.443s
-
-../bin/uniprotAnnotsToDecorators --profile=deco.prof --profile-signal=12 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv /dev/null >&log&
-
-
-with nprocs=100
-
+* 
+../bin/uniprotMapAnnots ../data/swissprot.9606.annots.tab isoCanon/isoCanon.blat.paired.psl swissprotGencode/swissprotGencode.blat.paired.psl	../data/gencode.v43.pc_transcripts.psl \
+            mapAnnots/mapAnnots.blat.psl.hgwdev.346193.tmp mapAnnots/mapAnnots.blat.ref.tsv --interPrefix=mapAnnots/mapAnnots.blat.inter/blat.iter.
+failure: pslMap -swapMap -inType=prot_prot -mapType=prot_prot -check mapAnnots/mapAnnots.blat.inter/blat.iter.annotCanon.psl isoCanon/isoCanon.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotIso.mapinfo.tsv | tee mapAnnots/mapAnnots.blat.inter/blat.iter.annotIso.psl | pslMap -inType=prot_prot -mapType=prot_na -check /dev/stdin swissprotGencode/swissprotGencode.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.mapinfo.tsv | tee mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.psl | pslMap -inType=na_na -mapType=na_na -check /dev/stdin ../data/gencode.v43.pc_transcripts.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotGenome.mapinfo.tsv >mapAnnots/mapAnnots.blat.psl.hgwdev.346193.tmp.hgwdev.346201.tmp.tmp 2>[DataReader]
+Traceback (most recent call last):
+  File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/processes.py", line 424, in _raise_if_failed
+    raise p.procExcept
+pipettor.exceptions.ProcessException: process exited 255: pslMap -inType=prot_prot -mapType=prot_na -check /dev/stdin swissprotGencode/swissprotGencode.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.mapinfo.tsv:
+Error: invalid PSL: O95831-1#2447:0-141 ENST00000675774.1:146-144 + mapped psl
+	O95831-1#2447 query block 1 start 141 >= qEnd 141
+	ENST00000675774.1 tStart 146 >= tEnd 144
+	ENST00000675774.1 target block 0 start 146 >= tEnd 144
+	ENST00000675774.1 target block 0 end 149 > tEnd 144
+	ENST00000675774.1 target block 1 start 144 < tStart 146
+	ENST00000675774.1 target block 1 start 144 >= tEnd 144
+	ENST00000675774.1 target block 1 end 144 < tStart 146
+	ENST00000675774.1 target block 1 start 144 < previous block end 149
+BUG: invalid mapped PSL created, run with -verbose=2 for more details
