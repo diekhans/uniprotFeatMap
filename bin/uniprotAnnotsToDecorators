@@ -14,7 +14,7 @@ from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.bed import Bed, BedBlock
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniprotAnnotTbl, canonicalAnnotDecode
+from protmap.uniprot import UniprotAnnotTbl
 
 def parseArgs():
     desc = """
@@ -78,13 +78,6 @@ def getAnnotColor(annot, isTrembl):
     if color is None:
         color = featTypeColors.get(annot.featType, None)
     return color if color is not None else SWISSPCOLOR
-
-def getAnnot(uniprotAnnotTbl, annotId):
-    canonId, annotIdx = canonicalAnnotDecode(annotId)
-    annot = uniprotAnnotTbl.df.iloc[annotIdx]
-    if canonId != annot.mainIsoAcc:
-        raise Exception(f"annotId '{annotId}' do not match annotation record '{annot.mainIsoAcc}' at row {annotIdx}")
-    return annot
 
 def getAnnotTransRef(annotTransRefs, annotId, alignIdx):
     annotTransRef = annotTransRefs[annotTransRefs.alignIdx == alignIdx].iloc[0]
@@ -152,7 +145,7 @@ def annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, 
     batch = []  # (alignIdx, psl)
 
     for annotPsl in PslReader(annotGenomePslFile):
-        annot = getAnnot(uniprotAnnotTbl, annotPsl.qName)
+        annot = uniprotAnnotTbl.getByAnnotId(annotPsl.qName)
         if includeAnnot(annot):
             batch.append((annotPsl, annot,
                           getAnnotTransRef(annotTransRefs, annotPsl.qName, alignIdx)))

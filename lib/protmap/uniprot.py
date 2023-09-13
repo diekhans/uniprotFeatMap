@@ -25,7 +25,7 @@ class UniprotMetaTbl:
     def __init__(self, uniprotMetaTsv):
         self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
         if "orgName" not in self.df.columns:
-            raise Exception("column 'orgName' not found, is this a UnIprot metadata TSV: " + uniprotMetaTsv)
+            raise Exception(f"column 'orgName' not found, is this a UnIprot metadata TSV: {uniprotMetaTsv}")
 
         # index by gene and transcript ids
         self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
@@ -80,13 +80,13 @@ class UniprotAnnotTbl:
         if "featType" not in self.df.columns:
             raise Exception("column 'featType' not found, is this a UnIprot annotations TSV: " + uniprotAnnotsTsv)
 
+        # add a unique, reproducible annotation id in the form mainIsoAcc#annotIdx, where the annotIdx is
+        # the relative index of the annotation for that acc.
+        self.df["annotId"] = self.df.mainIsoAcc.astype(str) + "#" + self.df.groupby("mainIsoAcc").cumcount().astype(str)
 
-def canonicalAnnotEncode(canonId, annotIdx):
-    return canonId + "#" + str(annotIdx)
-
-def canonicalAnnotDecode(name):
-    try:
-        canonId, annotIdx = name.split('#')
-        return canonId, int(annotIdx)
-    except ValueError as ex:
-        raise ValueError(f"invalid encode canonId and annotIdx: '{name}'") from ex
+    def getByAnnotId(self, annotId):
+        annots = self.df[self.df.annotId == annotId]
+        if len(annots) == 0:
+            print(self.df.to_string(index=False))
+            raise Exception(f"annotId '{annotId}' not found in annotation table")
+        return annots.iloc[0]

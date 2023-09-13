@@ -11,7 +11,7 @@ from pycbio.tsv import TsvReader
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniprotAnnotTbl, canonicalAnnotEncode
+from protmap.uniprot import UniprotAnnotTbl
 
 def parseArgs():
     desc = """
@@ -50,8 +50,9 @@ def getCanonProtSizes(isoCanonPsl):
         canonProtSizes[psl.tName] = psl.tSize
     return canonProtSizes
 
-def createAnnotPsl(annotIdx, annot, canonProtSizes):
-    qName = canonicalAnnotEncode(annot.mainIsoAcc, annotIdx)
+def createAnnotPsl(annot, canonProtSizes):
+    # qName will have the annotId in the form  mainIsoAcc#annotIdx
+
     # UniProt is 1-based, open-end
     tStart = annot.begin - 1
     tEnd = annot.end - 1
@@ -62,7 +63,7 @@ def createAnnotPsl(annotIdx, annot, canonProtSizes):
         tEnd = tSize
     qSize = tEnd - tStart
 
-    psl = Psl(qName=qName, qSize=qSize, qStart=0, qEnd=qSize,
+    psl = Psl(qName=annot.annotId, qSize=qSize, qStart=0, qEnd=qSize,
               tName=annot.mainIsoAcc, tSize=tSize, tStart=tStart, tEnd=tEnd,
               strand='+')
     psl.addBlock(PslBlock(qStart=0, tStart=tStart, size=qSize))
@@ -81,10 +82,9 @@ def annotFilter(annot, canonProtSizes):
         return True
 
 def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotCanonPslFh):
-    for annotIdx in range(0, len(uniprotAnnotTbl.df)):
-        annot = uniprotAnnotTbl.df.iloc[annotIdx]
+    for _, annot in uniprotAnnotTbl.df.iterrows():
         if annotFilter(annot, canonProtSizes):
-            createAnnotPsl(annotIdx, annot, canonProtSizes).write(annotCanonPslFh)
+            createAnnotPsl(annot, canonProtSizes).write(annotCanonPslFh)
 
 def annotTransRefOpen(annotTransRefTsv):
     annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
