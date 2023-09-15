@@ -7,10 +7,11 @@ set -beEu -o pipefail
 #      ./bin/getTestData acc.tsv tmp
 #    to include all
 #      cp tmp/*.{tsv,fa,tab,psl,gp,sizes} input/
-#      make -j 10 -k aligntest
+#      make -j 10 -k aligntest >&log
 #      cp output/*.{psl,tsv} expected/
-#      make -j 10 -k test
+#      make -j 10 -k test >&log
 #      cp output/*.{psl,tsv,bed} expected/
+
 # this can also be run using just one uniprot accession, trimming down the
 # GENCODE results and appending.
 #

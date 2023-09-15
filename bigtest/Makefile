@@ -145,7 +145,7 @@ mapAnnotsRevTsv = ${mapAnnotsAlgoPre}.ref.tsv
 
 # uncomment to sae debugging intermediates
 mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
-mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.iter.
+mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
 mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
