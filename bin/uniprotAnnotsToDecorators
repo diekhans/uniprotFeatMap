@@ -4,7 +4,7 @@ import sys
 import os.path as osp
 import argparse
 from functools import partial
-from multiprocessing import Pool
+import multiprocessing as mp
 import pandas as pd
 import pipettor
 from pycbio.sys import fileOps
@@ -130,8 +130,9 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl):
                               annot.comment, annot.disease)
 
 def buildAnnotation(annotPsl, annot, annotTransRef, isTrembl, decoratorBeds):
+    "converts BEDs to strings so this work is distributed"
     bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl)
-    decoratorBeds.append(bed)
+    decoratorBeds.append(str(bed))
 
 def processAnnotationBatch(isTrembl, batch):
     decoratorBeds = []
@@ -142,7 +143,7 @@ def processAnnotationBatch(isTrembl, batch):
 def annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, batchSize):
     """return tuples of (annotPsl, annot, annotTransRef)"""
     alignIdx = 0
-    batch = []  # (alignIdx, psl)
+    batch = []
 
     for annotPsl in PslReader(annotGenomePslFile):
         annot = uniprotAnnotTbl.getByAnnotId(annotPsl.qName)
@@ -163,7 +164,7 @@ def writeDecoratorBeds(batchBedsIter, annotDecoratorBed):
         with pipettor.Popen(["sort", "-k1,1", "-k2,2n", "-k3,3n", "-k13,13n", "-k4,4n"], 'w', stdout=tmpDecoBed) as decoBedFh:
             for batchBeds in batchBedsIter:
                 for bed in batchBeds:
-                    bed.write(decoBedFh)
+                    print(bed, file=decoBedFh)
 
 def processSingle(uniprotAnnotTbl, annotGenomePslFile, annotTransRefs, annotDecoratorBed,
                   isTrembl, batchSize):
@@ -176,7 +177,7 @@ def processSingle(uniprotAnnotTbl, annotGenomePslFile, annotTransRefs, annotDeco
 
 def processMulti(uniprotAnnotTbl, annotGenomePslFile, annotTransRefs, annotDecoratorBed,
                  isTrembl, nprocs, batchSize):
-    with Pool(processes=nprocs) as pool:
+    with mp.Pool(processes=nprocs) as pool:
         batchBedsIter = pool.imap_unordered(partial(processAnnotationBatch, isTrembl),
                                             annotGenomeBatchReader(uniprotAnnotTbl, annotTransRefs, annotGenomePslFile, batchSize))
         writeDecoratorBeds(batchBedsIter, annotDecoratorBed)

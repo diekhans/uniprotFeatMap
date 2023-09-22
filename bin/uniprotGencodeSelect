@@ -98,10 +98,11 @@ def pairTransByUniprotGeneName(gencodeMeta, uniprotMetaTbl, transId, aligns, log
     protMetas = uniprotMetaTbl.getGeneNameMetas(geneName)
     if protMetas is None:
         return None
-    protAlign = selectAlignByProtAccs(aligns, frozenset(protMetas.mainIsoAcc))
+    mainIsoAccs = frozenset({p.mainIsoAcc for p in protMetas})
+    protAlign = selectAlignByProtAccs(aligns, mainIsoAccs)
     if protAlign is None:
         problemLog(logFh, "no_uniprot_gene_name_aligns", transId, gencodeMeta.getTransType(transId),
-                   geneName, ",".join(protMetas.mainIsoAcc))
+                   geneName, ",".join(mainIsoAccs))
     return protAlign
 
 ###

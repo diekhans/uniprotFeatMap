@@ -6,54 +6,50 @@
  USER=demo-markd jkmmake cgi >&log
  https://hgwdev-demo-markd.gi.ucsc.edu/
 
-* bad psl
-../bin/uniprotMapAnnots ../data/swissprot.9606.annots.tab isoCanon/isoCanon.blat.paired.psl swissprotGencode/swissprotGencode.blat.paired.psl	../data/gencode.v43.pc_transcripts.psl \
-            mapAnnots/mapAnnots.blat.psl.hgwdev.221939.tmp mapAnnots/mapAnnots.blat.ref.tsv --interPrefix=mapAnnots/mapAnnots.blat.inter/blat.iter.
-failure: pslMap -swapMap -inType=prot_prot -mapType=prot_prot -check mapAnnots/mapAnnots.blat.inter/blat.iter.annotCanon.psl isoCanon/isoCanon.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotIso.mapinfo.tsv | tee mapAnnots/mapAnnots.blat.inter/blat.iter.annotIso.psl | pslMap -inType=prot_prot -mapType=prot_na -check /dev/stdin swissprotGencode/swissprotGencode.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.mapinfo.tsv | tee mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.psl | pslMap -inType=na_na -mapType=na_na -check /dev/stdin ../data/gencode.v43.pc_transcripts.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotGenome.mapinfo.tsv >mapAnnots/mapAnnots.blat.psl.hgwdev.221939.tmp.hgwdev.221955.tmp.tmp 2>[DataReader]
-Traceback (most recent call last):
-  File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/processes.py", line 424, in _raise_if_failed
-    raise p.procExcept
-pipettor.exceptions.ProcessException: process exited 255: pslMap -inType=prot_prot -mapType=prot_na -check /dev/stdin swissprotGencode/swissprotGencode.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.mapinfo.tsv:
-Error: invalid PSL: O95831-1#43:0-141 ENST00000675774.1:146-144 + mapped psl
-	O95831-1#43 query block 1 start 141 >= qEnd 141
-	ENST00000675774.1 tStart 146 >= tEnd 144
-	ENST00000675774.1 target block 0 start 146 >= tEnd 144
-	ENST00000675774.1 target block 0 end 149 > tEnd 144
-	ENST00000675774.1 target block 1 start 144 < tStart 146
-	ENST00000675774.1 target block 1 start 144 >= tEnd 144
-	ENST00000675774.1 target block 1 end 144 < tStart 146
-	ENST00000675774.1 target block 1 start 144 < previous block end 149
-BUG: invalid mapped PSL created, run with -verbose=2 for more details
+ * 
+markd     73480  70541  19 763504 835264 3341056 100  0.0 S    3       21:35 python3 ../bin/uniprotAnnotsToDecorators --nprocs=64 --batchSize=10000 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blast.psl mapAnnots/mapAnnots.blast.ref.tsv decorators/swissprot-gencode.v43.blast.decorators.bed.hgwdev.70541.tmp
 
-Traceback (most recent call last):
-  File "/hive/users/markd/kznf/projs/bed-decorators/domainDecorators/bigtest/../bin/uniprotMapAnnots", line 185, in <module>
-    main(parseArgs())
-  File "/hive/users/markd/kznf/projs/bed-decorators/domainDecorators/bigtest/../bin/uniprotMapAnnots", line 182, in main
-    uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.isoCanonPsl, opts.protTransPairedPsl, opts.transGenomePsl,
-  File "/hive/users/markd/kznf/projs/bed-decorators/domainDecorators/bigtest/../bin/uniprotMapAnnots", line 175, in uniprotMapAnnots
-    pslMapAnnots(annotCanonPsl, isoCanonPsl, protTransPairedPsl, transGenomePsl,
-  File "/hive/users/markd/kznf/projs/bed-decorators/domainDecorators/bigtest/../bin/uniprotMapAnnots", line 154, in pslMapAnnots
-    pipettor.run(cmd, stdout=annotGenomePslFh)
-  File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/__init__.py", line 32, in run
-    Pipeline(cmds, stdin=stdin, stdout=stdout, stderr=stderr, logger=logger, logLevel=logLevel).wait()
-  File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/processes.py", line 471, in wait
-    self._wait_guts()
-  File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/processes.py", line 464, in _wait_guts
-    self._raise_if_failed()
-  File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/processes.py", line 427, in _raise_if_failed
-    raise ex
-  File "/cluster/home/markd/opt/centos7.0/x86_64/lib/python3.11/site-packages/pipettor/processes.py", line 424, in _raise_if_failed
-    raise p.procExcept
-pipettor.exceptions.ProcessException: process exited 255: pslMap -inType=prot_prot -mapType=prot_na -check /dev/stdin swissprotGencode/swissprotGencode.blat.paired.psl /dev/stdout -mapInfo=mapAnnots/mapAnnots.blat.inter/blat.iter.annotTrans.mapinfo.tsv:
-Error: invalid PSL: O95831-1#43:0-141 ENST00000675774.1:146-144 + mapped psl
-	O95831-1#43 query block 1 start 141 >= qEnd 141
-	ENST00000675774.1 tStart 146 >= tEnd 144
-	ENST00000675774.1 target block 0 start 146 >= tEnd 144
-	ENST00000675774.1 target block 0 end 149 > tEnd 144
-	ENST00000675774.1 target block 1 start 144 < tStart 146
-	ENST00000675774.1 target block 1 start 144 >= tEnd 144
-	ENST00000675774.1 target block 1 end 144 < tStart 146
-	ENST00000675774.1 target block 1 start 144 < previous block end 149
-BUG: invalid mapped PSL created, run with -verbose=2 for more details
+* best batch size
+ ../bin/uniprotAnnotsToDecorators --nprocs=64 --batchSize=10000 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv decorators/swissprot-gencode.v43.blat.decorators.bed.hgwdev.70540.tmp
+
+nice  ../bin/uniprotAnnotsToDecorators --nprocs=64 --batchSize=500 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv /dev/null >&500.log
 
 
+(nice time ../bin/uniprotAnnotsToDecoratorsDebug --nprocs=64 --batchSize=500 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv 500.debug.bed)  >&500.log &
+
+* time make testUniprotAnnotsToDecorators
+** before
+real    0m7.470s    0m6.636s    0m6.588s
+user    0m10.200s   0m10.140    0m9.783s
+
+** indexes
+real	0m7.158s      0m6.349s      0m5.950s
+user	0m10.472s     0m9.797s      0m9.479s
+
+** annotId index as dict
+real	0m3.629s  0m3.597s 0m3.703s
+user	0m6.721s  0m6.891s 0m6.703s
+
+
+
+* profile
+../bin/uniprotAnnotsToDecorators --profile=prof.stats --nprocs=1 input/swissprot.9606.annots.tab \
+    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
+            output/testUniprotAnnotsToDecorators.bed
+
+profStats --sort=cumtime --report=basic --stripDirs prof.stats prof.cumtime.basic.rept
+profStats --sort=cumtime --report=callers --stripDirs prof.stats prof.cumtime.callers.rept
+profStats --sort=cumtime --report=callees --stripDirs prof.stats prof.cumtime.callees.rept
+
+majority of time in:
+annotGenomeBatchReader
+
+uniprotAnnotsToDecorators:143(annotGenomeBatchReader)->
+ncalls  tottime  cumtime
+   1    0.000    0.000  psl.py:510(__init__)
+7612    0.003    0.278  psl.py:513(__iter__)
+7611    0.031    3.978  uniprot.py:92(getByAnnotId)
+4980    0.052    2.980  uniprotAnnotsToDecorators:82(getAnnotTransRef)
+7611    0.014    0.193  uniprotAnnotsToDecorators:95(includeAnnot)
+7612    0.001    0.001  {built-in method builtins.len}
+4980    0.001    0.001  {method 'append' of 'list' objects}
