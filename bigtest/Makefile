@@ -5,6 +5,7 @@ MAKEFLAGS += -rR
 
 tmpext = $(shell hostname).$(shell echo $${PPID}).tmp
 
+time = time -p
 
 algos = blat blast
 swissprotGencodeFilts = raw paired
@@ -85,11 +86,11 @@ protGeneAlnTmp = ${protGeneAlgoPre}.${tmpext}
 ${protGeneAlgoPre}.raw.psl:
 	@mkdir -p $(dir $@)
 	rm -rf ${protGeneAlnTmp}
-	../bin/proteinTranscriptAlign --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmp}
+	${time} ../bin/proteinTranscriptAlign --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmp}
 	mv -f $@.${tmpext} $@
 
 ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
-	../bin/uniprotGencodeSelect ${gnmeta} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
+	${time} ../bin/uniprotGencodeSelect ${gnmeta} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -127,12 +128,12 @@ isoCanonAlnTmp = ${isoCanonAlgoPre}.${tmpext}
 ${isoCanonAlgoPre}.raw.psl:
 	@mkdir -p $(dir $@)
 	rm -rf ${isoCanonAlnTmp}
-	../bin/uniprotIsoCanonicalAlign --algo=${algo} ${spfa} $@.${tmpext} ${isoCanonAlnTmp}
+	${time} ../bin/uniprotIsoCanonicalAlign --algo=${algo} ${spfa} $@.${tmpext} ${isoCanonAlnTmp}
 	find ${isoCanonAlnTmp}/aligns/ -name '*.psl' | xargs cat > ${isoCanonAlgoPre}.realraw.psl
 	mv -f $@.${tmpext} $@
 
 ${isoCanonAlgoPre}.paired.psl: ${isoCanonAlgoPre}.raw.psl
-	../bin/uniprotIsoCanonicalSelect ${spmeta} $< $@.${tmpext} ${isoCanonAlgoPre}.paired.problems.tsv
+	${time} ../bin/uniprotIsoCanonicalSelect ${spmeta} $< $@.${tmpext} ${isoCanonAlgoPre}.paired.problems.tsv
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -152,7 +153,7 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 
 ${mapAnnotsPsl}: ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	../bin/uniprotMapAnnots ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
+	${time} ../bin/uniprotMapAnnots ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
             $@.${tmpext} ${mapAnnotsRevTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -167,7 +168,7 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	nice ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.${tmpext}
+	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 # paranoid cleaning
