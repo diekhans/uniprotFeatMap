@@ -84,18 +84,13 @@ class UniprotAnnotTbl:
         if "featType" not in self.df.columns:
             raise Exception("column 'featType' not found, is this a UnIprot annotations TSV: " + uniprotAnnotsTsv)
 
-        # add a unique, reproducible annotation id in the form mainIsoAcc#annotIdx, where the annotIdx is
+        # Add a unique, reproducible annotation id in the form mainIsoAcc#annotIdx, where the annotIdx is
         # the relative index of the annotation for that acc.
         self.df["annotId"] = self.df.mainIsoAcc.astype(str) + "#" + self.df.groupby("mainIsoAcc").cumcount().astype(str)
-        #self.df.set_index('annotId', inplace=True, drop=False, verify_integrity=True)
+
         self.annotIdIdx = buildDfUniqueIndex(self.df, "annotId")
 
     def getByAnnotId(self, annotId):
-        #annots = self.df[self.df.index == annotId]
-        #if len(annots) == 0:
-        #    raise Exception(f"annotId '{annotId}' not found in annotation table")
-        #return annots.iloc[0]
-
         annot = self.annotIdIdx.get(annotId)
         if annot is None:
             raise Exception(f"annotId '{annotId}' not found in annotation table")

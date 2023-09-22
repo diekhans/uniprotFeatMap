@@ -3,7 +3,7 @@
 annot -> uniprotCanonical -> uniprotIsoform -> transcript -> genome
 
 
-## commands
+## Commands:
 
 1. proteinTranscriptAlign - Align protein sequences to transcript RNAs with BLAT or BLAST. Creates a protein to NA PSL alignments, with some basic filtering.
    * input: protFa, transFa
@@ -22,6 +22,12 @@ annot -> uniprotCanonical -> uniprotIsoform -> transcript -> genome
    * output: annotGenomePsl, annotTransRefTsv
 1. uniprotAnnotsToDecorators - Convert domain annotations alignments create by uniprotMapAnnots to a decorator BED file in uniprotDecoration.as format.  Possibly filtering the results.
    * input: uniprotAnnotsTsv, annotGenomePsl, annotTransRefTsv
-   * output: annotDecoratorBed
+   * output: annotDecoratorBedFile
    
    
+
+## Notes:
+
+* It was less that statisifying using Pandas for this.  It was a bit slower than read into objects
+  and dict indexes were still needed.  Pandas also bring in some heavy-weight stuff, like BLAS
+  threads.

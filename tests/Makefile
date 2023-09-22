@@ -1,5 +1,10 @@
 SHELL = /bin/bash -beEu -o pipefail
 
+# used nprocs= to change number of processes
+ifeq (${nprocs},)
+  nprocs = 8
+endif
+
 proteinTranscriptAlign = ../bin/proteinTranscriptAlign 
 uniprotGencodeSelect = ../bin/uniprotGencodeSelect
 uniprotIsoCanonicalAlign = ../bin/uniprotIsoCanonicalAlign
@@ -91,7 +96,7 @@ testUniprotMapAnnots: mkout
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 
 testUniprotAnnotsToDecorators: mkout
-	${uniprotAnnotsToDecorators} --nprocs=16 input/swissprot.9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.annots.tab \
 	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
             output/$@.bed
 	diff expected/$@.bed output/$@.bed
