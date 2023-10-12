@@ -1,8 +1,9 @@
 """
-Reads files create by uniprotToTab
+Reads files create by uniprotToTab, and other uniport support
 """
 
 import pandas as pd
+from pycbio.sys.color import Color
 from protmap import dropVersion, buildDfUniqueIndex, buildDfMultiIndex
 
 # WARNING: UniProt is 1-based, open-end
@@ -95,3 +96,163 @@ class UniprotAnnotTbl:
         if annot is None:
             raise Exception(f"annotId '{annotId}' not found in annotation table")
         return annot
+
+######
+# The below code is derived from kent/src/hg/utils/otto/uniprot/doUniprot; if
+# this converges, we can turn this into a library.
+######
+
+def isMutagenesis(annot):
+    return annot.featType == "mutagenesis site"
+
+def isVariant(annot):
+    return annot.featType == "sequence variant"
+
+
+###
+# color logic to match uniprot track
+###
+
+TREMBLCOLOR = Color.fromRgb8Str("0,150,250")  # light blue
+SWISSPCOLOR = Color.fromRgb8Str("12,12,120")  # dark blue
+
+# mapping of annotations columns to colors
+featTypeColors = {
+    "modified residue": Color.fromRgb8Str("200,200,0"),
+    "glycosylation site": Color.fromRgb8Str("0,100,100"),
+    "disulfide bond": Color.fromRgb8Str("100,100,100"),
+    "topological domain": Color.fromRgb8Str("100,0,0"),
+    "zinc finger region": Color.fromRgb8Str("100,100,0"),
+    "transmembrane region": Color.fromRgb8Str("0,150,0"),  # dark green
+    "signal peptide": Color.fromRgb8Str("255,0,150"),  # light-red
+}
+commentColor = {
+    "Extracellular": Color.fromRgb8Str("0,110,180"),  # light-blue
+    "Cytoplasmic": Color.fromRgb8Str("255,150,0"),  # light orange
+}
+
+def getAnnotColor(annot, isTrembl):
+    if isTrembl:
+        return TREMBLCOLOR
+    color = commentColor.get(annot.comment, None)
+    if color is None:
+        color = featTypeColors.get(annot.featType, None)
+    return color if color is not None else SWISSPCOLOR
+
+# some feature types should not go into the bed name field.
+# for these features, we use the 'comment' as the bed name
+# e.g. "region of interest" is not very interesting, the actual
+# description is usually much more interesting.
+useCommentFeatType = frozenset(["domain", "chain", "region of interest", "topological domain", "short sequence motif"])
+
+# some very common disease codes are not in the diseases.txt file
+disShortNames = {
+    "hepatocellular carcinoma": "HepatocC",
+    "a hepatocellular carcinoma": "HepatocC",
+    "a hepatocellular carcinoma sample": "HepatocC",
+    "hepatocellular carcinomas": "HepatocC",
+    "ovarian cancer": "OvC",
+    "colon cancer": "ColC",
+    "colorectal cancer": "ColrectC",
+    "hepatoblastoma": "HepatoBl",
+    "a sporadic cancer": "sporadic",
+    "sporadic cancers": "sporadic",
+    "non-small cell lung cancer cell lines": "NSCLC-CL",
+    "a colon cancer cell line": "ColC-CL"
+}
+
+def shortenDisCode(code):
+    "shorten some disease names are not shortened yet by UniProt. "
+    newCodes = []
+    if code != "":
+        for splitCode in code.split(" and "):
+            newCodes.append(disShortNames.get(splitCode, splitCode))
+    return newCodes
+
+def getDiseaseBedName(annot):
+    "bed name field for disease mutation"
+    disCodes = shortenDisCode(annot.disCode)
+    disName = ",".join(disCodes)
+    if len(disName) > 30:
+        disName = disName[:30] + "..."
+    name = "%s-%sdel" % (annot.begin, annot.end)
+    if (len(disCodes) > 0) and ("strain" not in disName):
+        name += " in %s" % disName
+    return name
+
+def getVarationBedName(annot):
+    name = "%s%s%s" % (annot.origAa, annot.begin, annot.mutAa)
+    if len(name) > 20:
+        name = "%daa to %daa" % (len(annot.origAa), len(annot.mutAa))
+    return name
+
+def makeChainRangeName(annot):
+    "trembl doesn't have comments for chains so make one up"
+    # NOT USED FOR DECORATORS
+    # doUniprot does this when no comment for chain, however we this doesn't
+    # make sense when we have decorators on differ isoforms.  We leave
+    # the code here just in case common code is created and getCommentBedName
+    # updated to handle both cases
+    return "%s:%s-%s" % (annot.acc, str(annot.begin), str(annot.end))
+
+def getCommentBedName(annot):
+    name = annot.comment
+    if name == "":
+        name = annot.featType
+    if name == "Intrinsically disordered":
+        name = "Disordered"
+    return name
+
+def getAnnotBedLongName(annot):   # noqa:C901
+    "get name to use in BED, based on doUniprot"
+    # set the bed name field to a disease, to the mutation or something else
+    if (isMutagenesis(annot) or isVariant(annot)):
+        if (annot.origAa == ""):
+            return getDiseaseBedName(annot)
+        else:
+            return getVarationBedName(annot)
+    if annot.featType in useCommentFeatType:
+        return getCommentBedName(annot)
+    if annot.featType == "signal peptide":
+        return "Signal peptide"
+    if annot.featType == "lipid moiety-binding region":
+        return "Lipidation"
+    if annot.featType == "transmembrane region":
+        return "Transmembrane"
+    if annot.comment == "Nuclear localization signal":
+        return "Nuclear loc"
+    if annot.comment == "Involved in receptor recognition and/or post-binding events":
+        return "Recept recog"
+    if annot.comment == "Fibronectin type-III":
+        return "FibronectIII"
+
+    # more general rules
+    if annot.comment.startswith("Zinc finger protein "):
+        return annot.comment.replace("Zinc finger protein ", "ZF-")
+    if annot.comment.startswith("Necessary for the"):
+        return annot.comment.replace("Necessary for the ", "")
+    if annot.comment.startswith("Interaction with "):
+        return annot.comment.replace("Interaction with ", "Int:")
+    if annot.comment.startswith("Involved in the"):
+        return annot.comment.replace("Involved in the ", "")
+    if annot.comment.startswith("Required for "):
+        return annot.comment.replace("Required for ", "")
+    if annot.comment.startswith("Cleavage; by host "):
+        return "Cleave:" + annot.comment.split()[-1]
+    if annot.comment == "Receptor-binding motif; binding to human ACE2":
+        return "binds ACE2"
+
+    # chain annotations
+    if annot.longName != "":
+        return annot.longName
+    if annot.shortName != "":
+        return annot.shortName
+
+    return annot.shortFeatType
+
+def getAnnotBedName(annot):
+    "get BED name, adjust if too long"
+    name = getAnnotBedLongName(annot)
+    if len(name) > 17:
+        name = name[:14] + "..."
+    return name

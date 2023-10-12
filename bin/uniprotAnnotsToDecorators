@@ -5,17 +5,17 @@ import os
 import os.path as osp
 import argparse
 import multiprocessing as mp
+from collections import namedtuple
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 import pandas as pd
 import pipettor
 from pycbio.sys import fileOps
-from pycbio.sys.color import Color
 from pycbio.sys.profile import Profile
 from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.bed import Bed, BedBlock
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniprotAnnotTbl
+from protmap.uniprot import UniprotAnnotTbl, getAnnotColor, getAnnotBedName
 
 def parseArgs():
     desc = """
@@ -43,53 +43,17 @@ def parseArgs():
     profiler.setup(opts)
     return opts
 
-###
-# color logic to match uniprot track, taken from
-# /hive/data/outside/otto/uniprot/doUniprot
-###
-
-# some feature types should not go into the bed name field.
-# for these features, we use the 'comment' as the bed name
-# e.g. "region of interest" is not very interesting, the actual
-# description is usually much more interesting.
-useComment = set(["domain", "chain", "region of interest", "topological domain", "short sequence motif"])
-
-TREMBLCOLOR = Color.fromRgb8Str("0,150,250")  # light blue
-SWISSPCOLOR = Color.fromRgb8Str("12,12,120")  # dark blue
-
-# mapping of annotations columns to colors
-featTypeColors = {
-    "modified residue": Color.fromRgb8Str("200,200,0"),
-    "glycosylation site": Color.fromRgb8Str("0,100,100"),
-    "disulfide bond": Color.fromRgb8Str("100,100,100"),
-    "topological domain": Color.fromRgb8Str("100,0,0"),
-    "zinc finger region": Color.fromRgb8Str("100,100,0"),
-    "transmembrane region": Color.fromRgb8Str("0,150,0"),  # dark green
-    "signal peptide": Color.fromRgb8Str("255,0,150"),  # light-red
-}
-commentColor = {
-    "Extracellular": Color.fromRgb8Str("0,110,180"),  # light-blue
-    "Cytoplasmic": Color.fromRgb8Str("255,150,0"),  # light orange
-}
-
-def getAnnotColor(annot, isTrembl):
-    if isTrembl:
-        return TREMBLCOLOR
-    color = commentColor.get(annot.comment, None)
-    if color is None:
-        color = featTypeColors.get(annot.featType, None)
-    return color if color is not None else SWISSPCOLOR
-
 # shortFeatType to not use
-_shortFeatTypesToSkip = frozenset([
+shortFeatTypesToSkip = frozenset([
     'variant',
     'conflict',
     'splicing',
     'biased'
 ])
+
 def includeAnnot(annot):
     "filter for undesired annotations"
-    return annot.shortFeatType not in _shortFeatTypesToSkip
+    return annot.shortFeatType not in shortFeatTypesToSkip
 
 def createDecoratorBed(annotPsl, annotTransRef, name, color, fillColor, style,
                        uniprotAcc, uniprotType, shortFeatType, featType, shortName, longName,
@@ -114,6 +78,21 @@ def createDecoratorBed(annotPsl, annotTransRef, name, color, fillColor, style,
                           uniprotAcc, uniprotType, shortFeatType, featType,
                           shortName, longName, comment, disease])
 
+def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl):
+    color = getAnnotColor(annot, isTrembl)
+    fillColor = color.setAlpha(0.5)
+    uniprotType = "TreMBL" if isTrembl else "SwissProt"
+    return createDecoratorBed(annotPsl, annotTransRef,
+                              getAnnotBedName(annot), color, fillColor, "block",
+                              annot.acc, uniprotType,
+                              annot.shortFeatType, annot.featType, annot.shortName, annot.longName,
+                              annot.comment, annot.disease)
+
+def buildAnnotation(annotPsl, annot, annotTransRef, isTrembl, decoratorBedLines):
+    "converts BEDs to strings so this work is distributed"
+    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl)
+    decoratorBedLines.append(str(bed))
+
 class AnnotTransRefs:
     """look up transcript for a PSL row"""
     def __init__(self, annotTransRefTsv):
@@ -125,21 +104,6 @@ class AnnotTransRefs:
         if annotId != annotTransRef.annotId:
             raise Exception(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
         return annotTransRef
-
-def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl):
-    color = getAnnotColor(annot, isTrembl)
-    fillColor = color.setAlpha(0.5)
-    uniprotType = "TreMBL" if isTrembl else "SwissProt"
-    return createDecoratorBed(annotPsl, annotTransRef,
-                              annot.shortFeatType, color, fillColor, "block",
-                              annot.acc, uniprotType,
-                              annot.shortFeatType, annot.featType, annot.shortName, annot.longName,
-                              annot.comment, annot.disease)
-
-def buildAnnotation(annotPsl, annot, annotTransRef, isTrembl, decoratorBedLines):
-    "converts BEDs to strings so this work is distributed"
-    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl)
-    decoratorBedLines.append(str(bed))
 
 class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the

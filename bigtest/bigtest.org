@@ -1,55 +1,44 @@
 
 * hub
- https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
+https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 
 
  USER=demo-markd jkmmake cgi >&log
  https://hgwdev-demo-markd.gi.ucsc.edu/
 
- * 
-markd     73480  70541  19 763504 835264 3341056 100  0.0 S    3       21:35 python3 ../bin/uniprotAnnotsToDecorators --nprocs=64 --batchSize=10000 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blast.psl mapAnnots/mapAnnots.blast.ref.tsv decorators/swissprot-gencode.v43.blast.decorators.bed.hgwdev.70541.tmp
-
-* best batch size
- ../bin/uniprotAnnotsToDecorators --nprocs=64 --batchSize=10000 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv decorators/swissprot-gencode.v43.blat.decorators.bed.hgwdev.70540.tmp
-
-nice  ../bin/uniprotAnnotsToDecorators --nprocs=64 --batchSize=500 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv /dev/null >&500.log
-
-
-(nice time ../bin/uniprotAnnotsToDecoratorsDebug --nprocs=64 --batchSize=500 ../data/swissprot.9606.annots.tab mapAnnots/mapAnnots.blat.psl mapAnnots/mapAnnots.blat.ref.tsv 500.debug.bed)  >&500.log &
-
-* time make testUniprotAnnotsToDecorators
-** before
-real    0m7.470s    0m6.636s    0m6.588s
-user    0m10.200s   0m10.140    0m9.783s
-
-** indexes
-real	0m7.158s      0m6.349s      0m5.950s
-user	0m10.472s     0m9.797s      0m9.479s
-
-** annotId index as dict
-real	0m3.629s  0m3.597s 0m3.703s
-user	0m6.721s  0m6.891s 0m6.703s
+* filters
+name=4
+19	shortFeatType
+20	featType	
+21	shortName									
+22	longName	
 
 
 
-* profile
-../bin/uniprotAnnotsToDecorators --profile=prof.stats --nprocs=1 input/swissprot.9606.annots.tab \
-    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
-            output/testUniprotAnnotsToDecorators.bed
+ cut -f4   decorators/swissprot-gencode.v43.blat.decorators.bed  |sort -u >names.lst
+ cut -f20   decorators/swissprot-gencode.v43.blat.decorators.bed  |sort -u >featType.lst
+ cut -f4,20 decorators/swissprot-gencode.v43.blat.decorators.bed |sort -u >name-featType.lst
 
-profStats --sort=cumtime --report=basic --stripDirs prof.stats prof.cumtime.basic.rept
-profStats --sort=cumtime --report=callers --stripDirs prof.stats prof.cumtime.callers.rept
-profStats --sort=cumtime --report=callees --stripDirs prof.stats prof.cumtime.callees.rept
+** case
+acetyl	domain
+acetyl	modified residue
+acetyl	mutagenesis site
+acetyl	region of interest
+acetyl	site
 
-majority of time in:
-annotGenomeBatchReader
+tawk ($4=="acetyl" && $20== "domain")' decorators/swissprot-gencode.v43.blat.decorators.bed |head -200 > acetyl-domain.bed
+ 
+* max tracks
+** /gbdb/hg38/uniprot/unipDomain.bb
 
-uniprotAnnotsToDecorators:143(annotGenomeBatchReader)->
-ncalls  tottime  cumtime
-   1    0.000    0.000  psl.py:510(__init__)
-7612    0.003    0.278  psl.py:513(__iter__)
-7611    0.031    3.978  uniprot.py:92(getByAnnotId)
-4980    0.052    2.980  uniprotAnnotsToDecorators:82(getAnnotTransRef)
-7611    0.014    0.193  uniprotAnnotsToDecorators:95(includeAnnot)
-7612    0.001    0.001  {built-in method builtins.len}
-4980    0.001    0.001  {method 'append' of 'list' objects}
+/gbdb/hg38/uniprot/unipStruct.bb
+name=4,  annotationType =22
+
+acetyla
+bigBedToBed -header /gbdb/hg38/uniprot/unipDomain.bb stdout | tawk 'NR==1||/acetyla/' |head -2000 > acetyla.max.tsv
+
+* swissprot.9606.annots.tab
+featType 4
+shortFeatType 5
+
+cut -f 4,5 ../data/swissprot.9606.annots.tab | sort -u >sp.type.lst

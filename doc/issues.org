@@ -1,5 +1,13 @@
 * read-through genes not handled well
 
+* doUniprot make featType more readable,
+maybe add this to comment?
+if annot.featType == "sequence variant":
+    annoType = "Naturally occurring sequence variant"
+elif annot.featType == "mutagenesis site":
+    annoType = "Experimental mutation of amino acids"
+
+
 
 * JC:
 I'm looking at ZNF91, say ENST00000300619.12 (I think that's the right number of 0s).  You can find a chunk at chr19:23,359,411-23,361,872.  It looks like you don't map any zinc fingers for the first roughly 2.4kb of that exon, whereas PFAM and the cross-mapped Uniprot domains do report them there.  Are you more confident in your mappings?
