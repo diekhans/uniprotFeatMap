@@ -12,6 +12,7 @@ from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniprotAnnotTbl
+from protmap.annotTransRef import annotTransRefCreate, annotTransRefWrite
 
 def parseArgs():
     desc = """
@@ -85,14 +86,6 @@ def createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotCanonPslFh):
     for _, annot in uniprotAnnotTbl.df.iterrows():
         if annotFilter(annot, canonProtSizes):
             createAnnotPsl(annot, canonProtSizes).write(annotCanonPslFh)
-
-def annotTransRefOpen(annotTransRefTsv):
-    annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
-    fileOps.prRowv(annotTransRefFh, "annotId", "transcriptPos", "transcriptId", "alignIdx")
-    return annotTransRefFh
-
-def annotTransRefWrite(annotTransRefFh, annotId, transcriptPos, transcriptId, alignIdx):
-    fileOps.prRowv(annotTransRefFh, annotId, transcriptPos, transcriptId, alignIdx)
 
 def writeRefs(mapInfoTmp, annotTransRefFh):
     for row in TsvReader(mapInfoTmp):
@@ -171,7 +164,7 @@ def uniprotMapAnnots(uniprotAnnotsTsv, isoCanonPsl, protTransPairedPsl, transGen
         createAnnotPsls(uniprotAnnotTbl, canonProtSizes, annotCanonPslFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
-        with annotTransRefOpen(annotTransRefTsv) as annotTransRefFh:
+        with annotTransRefCreate(annotTransRefTsv) as annotTransRefFh:
             pslMapAnnots(annotCanonPsl, isoCanonPsl, protTransPairedPsl, transGenomePsl,
                          annotGenomePslFh, annotTransRefFh, interPrefix)
 

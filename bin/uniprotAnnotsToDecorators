@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
-import os
 import os.path as osp
 import argparse
 import multiprocessing as mp
 from collections import namedtuple
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-import pandas as pd
 import pipettor
 from pycbio.sys import fileOps
 from pycbio.sys.profile import Profile
@@ -17,6 +14,7 @@ from pycbio.hgdata.bed import Bed, BedBlock
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniprotAnnotTbl, getAnnotColor, getAnnotBedName
 from protmap.gencode import GencodeData
+from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping
 
 
@@ -107,7 +105,7 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl):
 
 def makeFeatIndelGlyph(featIndel, annotPsl, annot, annotTransRef, isTrembl):
     "make glyph for a particular INDEN in the annotation "
-    print("@",featIndel)
+    print("@", featIndel)
     return None
 
 def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl):
@@ -126,18 +124,6 @@ def buildAnnotation(transPsl, annotPsl, annot, annotTransRef, isTrembl, decorato
     decoratorBeds.append(bed)
     glyphBeds = mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl)
     decoratorBeds.extend(glyphBeds)
-
-class AnnotTransRefs:
-    """look up transcript for a PSL row"""
-    def __init__(self, annotTransRefTsv):
-        self.df = pd.read_table(annotTransRefTsv)
-        self.df.set_index('alignIdx', inplace=True, drop=False, verify_integrity=True)
-
-    def get(self, annotId, alignIdx):
-        annotTransRef = self.df[self.df.index == alignIdx].iloc[0]
-        if annotId != annotTransRef.annotId:
-            raise Exception(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
-        return annotTransRef
 
 class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the
