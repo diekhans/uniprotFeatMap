@@ -1,4 +1,6 @@
 import pandas as pd
+from collections import defaultdict
+from pycbio.hgdata.psl import PslReader
 
 class GencodeMetadata:
     def __init__(self, gencodeMetaTsv):
@@ -31,3 +33,17 @@ class GencodeMetadata:
 
     def getTransType(self, transId):
         return self.getTrans(transId).transcriptType
+
+class GencodeData:
+    "all annotations"
+    def __init__(self, gencodePsl):
+        self.byTransId = defaultdict(list)   # older gencode PAR had same transcript ids
+        for psl in PslReader(gencodePsl):
+            self.byTransId[psl.qName].append(psl)
+        self.byTransId.default_factory = None
+
+    def get(self, transId, chrom):
+        for psl in self.byTransId.get(transId, ()):
+            if psl.tName == chrom:
+                return psl
+        raise Exception(f"transcript '{transId}' on chrom '{chrom}' not found in GENCODE annotations")

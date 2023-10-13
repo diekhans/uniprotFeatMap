@@ -96,7 +96,7 @@ testUniprotMapAnnots: mkout
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 
 testUniprotAnnotsToDecorators: mkout
-	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/gencode.v43.psl input/swissprot.9606.annots.tab \
 	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
             output/$@.bed
 	diff expected/$@.bed output/$@.bed

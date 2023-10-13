@@ -3,7 +3,7 @@ Reads files create by uniprotToTab, and other uniport support
 """
 
 import pandas as pd
-from pycbio.sys.color import Color
+from pycbio.sys.svgcolors import SvgColors
 from protmap import dropVersion, buildDfUniqueIndex, buildDfMultiIndex
 
 # WARNING: UniProt is 1-based, open-end
@@ -110,25 +110,26 @@ def isVariant(annot):
 
 
 ###
-# color logic to match uniprot track
+# color logic to match uniprot track, however colors for overlay are not visiable
+# with track colors, so these are adjusted. Also use named colors.
 ###
 
-TREMBLCOLOR = Color.fromRgb8Str("0,150,250")  # light blue
-SWISSPCOLOR = Color.fromRgb8Str("12,12,120")  # dark blue
+TREMBLCOLOR = SvgColors.lightyellow   # was 0,150,250 light blue (dodgerblue)
+SWISSPCOLOR = SvgColors.orange         # was 12,12,120 dark blue (navy)
 
 # mapping of annotations columns to colors
 featTypeColors = {
-    "modified residue": Color.fromRgb8Str("200,200,0"),
-    "glycosylation site": Color.fromRgb8Str("0,100,100"),
-    "disulfide bond": Color.fromRgb8Str("100,100,100"),
-    "topological domain": Color.fromRgb8Str("100,0,0"),
-    "zinc finger region": Color.fromRgb8Str("100,100,0"),
-    "transmembrane region": Color.fromRgb8Str("0,150,0"),  # dark green
-    "signal peptide": Color.fromRgb8Str("255,0,150"),  # light-red
+    "modified residue": SvgColors.goldenrod,   # was 200,200,0
+    "glycosylation site": SvgColors.teal,      # was 0,100,100
+    "disulfide bond": SvgColors.dimgray,       # was 100,100,100
+    "topological domain": SvgColors.maroon,    # was 100,0,0
+    "zinc finger region": SvgColors.olive,     # was 100,100,0
+    "transmembrane region": SvgColors.green,   # was 0,150,0
+    "signal peptide": SvgColors.deeppink,      # was 255,0,150 light-red
 }
 commentColor = {
-    "Extracellular": Color.fromRgb8Str("0,110,180"),  # light-blue
-    "Cytoplasmic": Color.fromRgb8Str("255,150,0"),  # light orange
+    "Extracellular": SvgColors.darkcyan,       # was 0,110,180 light-blue
+    "Cytoplasmic": SvgColors.darkorange,       # was 255,150,0 light orange
 }
 
 def getAnnotColor(annot, isTrembl):

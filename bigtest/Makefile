@@ -168,7 +168,7 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.${tmpext}
+	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 ${gnpsl} ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 # paranoid cleaning
