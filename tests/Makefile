@@ -15,6 +15,9 @@ uniprotAnnotsToDecorators = ../bin/uniprotAnnotsToDecorators
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
 decoAs = ../etc/uniprotDecoration.as
 
+testHubFiles = empty.html genomes.txt hub.txt trackDb.txt
+testHubFilesOutput = ${testHubFiles:%=output/%}
+
 all:
 	@echo "Note: targets are:"
 	@echo "      make test"
@@ -95,12 +98,21 @@ testUniprotMapAnnots: mkout
 
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 
-testUniprotAnnotsToDecorators: mkout
+testUniprotAnnotsToDecorators: mkout output/gencode.v43.bb ${testHubFilesOutput}
 	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/gencode.v43.psl input/swissprot.9606.annots.tab \
 	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
             output/$@.bed
 	diff expected/$@.bed output/$@.bed
 	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
+
+# gene track can can be used to validate decorators
+output/gencode.v43.bb: input/gencode.v43.gp
+	genePredToBed $< /dev/stdout | sort -k1,1 -k2,2n >output/gencode.v43.bed
+	bedToBigBed -type=bed12 -tab output/gencode.v43.bed ${chromSizes} $@
+
+output/%: hub-files/%
+	mkdir -p $(dir $@)
+	cp -f $< $@
 
 mkout:
 	@mkdir -p output

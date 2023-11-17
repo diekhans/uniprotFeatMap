@@ -18,8 +18,8 @@ table uniprotDecoration
     string fillColor;  "Secondary color to use for filling decoration, blocks, supports RGBA"
     string glyph;  "The glyph to draw in glyph mode; ignored for other styles"
 
+    string dataSet;     "SwissProt (manual annotation) or TrEMBL (automated automated)"
     string uniprotAcc;  "UniProt accession" 
-    string uniprotType;  "UniProt database"
     string shortFeatType;  "Short feature  type, often group multiple feature types"
     string featType;       "Type of feature"
     string shortName;  "Short descriptive name of feature "

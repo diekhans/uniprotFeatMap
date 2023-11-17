@@ -1,0 +1,19 @@
+track gencode_deco_test
+html ../empty.html
+shortLabel GENCODE Deco
+longLabel GENCODE Deco Test
+description GENCODE Deco Test
+type bigBed 12
+group genes
+color 12,12,120
+priority 3
+visibility pack
+searchIndex name
+bigDataUrl gencode.v43.bb
+labelFields name
+defaultLabelFields name
+labelSeperator " / "
+mouseOver name: $name
+decorator.default.mouseOver Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
+decorator.default.bigDataUrl testUniprotAnnotsToDecorators.bb
+
