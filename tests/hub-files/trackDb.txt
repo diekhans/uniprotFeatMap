@@ -16,4 +16,5 @@ labelSeperator " / "
 mouseOver name: $name
 decorator.default.mouseOver Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
 decorator.default.bigDataUrl testUniprotAnnotsToDecorators.bb
+decorator.default.filterValues.shortFeatType domain,zinc finger,enzyme act site
 

@@ -7,14 +7,12 @@ if annot.featType == "sequence variant":
 elif annot.featType == "mutagenesis site":
     annoType = "Experimental mutation of amino acids"
 
-
-
-* JC:
-I'm looking at ZNF91, say ENST00000300619.12 (I think that's the right number of 0s).  You can find a chunk at chr19:23,359,411-23,361,872.  It looks like you don't map any zinc fingers for the first roughly 2.4kb of that exon, whereas PFAM and the cross-mapped Uniprot domains do report them there.  Are you more confident in your mappings?
-
 * uniprotIsoCanonicalAlign
 Has this note:
 - Don't filter for minimum alignment coverage to get alt isoforms, which are often split
 but doe filter some.  Maybe these alignments should be chained
 
 * could uniprotIsoCanonicalAlign and uniprotIsoCanonicalSelect be combined?
+
+* TODO don't align outside of CDS
+ENST00000697273.1, in test set, is a NMD, but aligns into UTR.

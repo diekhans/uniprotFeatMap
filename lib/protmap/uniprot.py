@@ -140,6 +140,9 @@ def getAnnotColor(annot, isTrembl):
         color = featTypeColors.get(annot.featType, None)
     return color if color is not None else SWISSPCOLOR
 
+def getProblemColor(annot, isTrembl):
+    return SvgColors.red
+
 # some feature types should not go into the bed name field.
 # for these features, we use the 'comment' as the bed name
 # e.g. "region of interest" is not very interesting, the actual

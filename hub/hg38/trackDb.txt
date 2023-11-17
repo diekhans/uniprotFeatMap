@@ -17,6 +17,7 @@ labelSeperator " / "
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
 decorator.default.mouseOver Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
 decorator.default.bigDataUrl swissprot-gencode.v43.blat.bb
+decorator.default.filterValues.shortFeatType domain,zinc finger,enzyme act site
 
 
 track gencodeV43_blast_deco
@@ -38,3 +39,4 @@ labelSeperator " / "
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
 decorator.default.mouseOver Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
 decorator.default.bigDataUrl swissprot-gencode.v43.blast.bb
+decorator.default.filterValues.shortFeatType domain,zinc finger,enzyme act site

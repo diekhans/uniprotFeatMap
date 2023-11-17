@@ -13,7 +13,7 @@ from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.bed import Bed, BedBlock
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniprotAnnotTbl, getAnnotColor, getAnnotBedName
+from protmap.uniprot import UniprotAnnotTbl, getAnnotColor, getProblemColor, getAnnotBedName
 from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping
@@ -59,17 +59,20 @@ class BedPlusColumns(namedtuple("BedPlusColumns",
     "extra BED columns"
     __slots__ = ()
 
-# shortFeatType to not use
-shortFeatTypesToSkip = frozenset([
-    'variant',
-    'conflict',
-    'splicing',
-    'biased'
+##
+# Note: for now, greatly limit the features until we can
+# determine how to better group them. There are 43 short
+# feature types.
+##
+shortFeatTypeInclude = frozenset([
+    "domain",
+    "zinc finger",
+    "enzyme act site",
 ])
 
 def includeAnnot(annot):
-    "filter for undesired annotations"
-    return annot.shortFeatType not in shortFeatTypesToSkip
+    "filter for desired annotations"
+    return annot.shortFeatType in shortFeatTypeInclude
 
 def createDecoratorBed(chrom, strand, bedBlocks, annotTransRef, name, color, fillColor, style,
                        uniprotAcc, isTrembl, shortFeatType, featType, shortName, longName,
@@ -105,9 +108,10 @@ def makeGlyph(tStart, tEnd, namePre, color, annotPsl, annot, annotTransRef, isTr
                               annot.comment, annot.disease, glyph="triangle")
 
 
-def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl):
-    color = getAnnotColor(annot, isTrembl)
-    fillColor = color.setAlpha(0.5)
+def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl, featIndels):
+    annotColor = getAnnotColor(annot, isTrembl)
+    fillColor = annotColor.setAlpha(0.5)
+    color = annotColor if len(featIndels) == 0 else getProblemColor(annot, isTrembl)
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     return createDecoratorBed(annotPsl.tName, annotPsl.qStrand, bedBlocks, annotTransRef,
                               getAnnotBedName(annot), color, fillColor, "block",
@@ -151,20 +155,22 @@ def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl):
     else:
         yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl)
 
-def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl):
+def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl, featIndels):
     "produces glyphs to mark were annotations are broken in the mappings"
     glyphBeds = []
-    for featIndel in analyzeFeatureMapping(transPsl, annotPsl):
+    for featIndel in featIndels:
         glyphBeds.extend(makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl))
     return glyphBeds
 
 
 def buildAnnotation(transPsl, annotPsl, annot, annotTransRef, isTrembl, decoratorBeds):
     "converts BEDs to strings so this work is distributed"
-    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl)
+    featIndels = analyzeFeatureMapping(transPsl, annotPsl)
+    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl, featIndels)
     decoratorBeds.append(bed)
-    glyphBeds = mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl)
-    decoratorBeds.extend(glyphBeds)
+    if len(featIndels) > 0:
+        glyphBeds = mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl, featIndels)
+        decoratorBeds.extend(glyphBeds)
 
 class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the

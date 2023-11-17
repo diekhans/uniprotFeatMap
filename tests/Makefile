@@ -102,8 +102,8 @@ testUniprotAnnotsToDecorators: mkout output/gencode.v43.bb ${testHubFilesOutput}
 	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/gencode.v43.psl input/swissprot.9606.annots.tab \
 	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
             output/$@.bed
-	diff expected/$@.bed output/$@.bed
 	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
+	diff expected/$@.bed output/$@.bed
 
 # gene track can can be used to validate decorators
 output/gencode.v43.bb: input/gencode.v43.gp
