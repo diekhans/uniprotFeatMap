@@ -138,6 +138,7 @@ no_uniprot_aligned	ENST00000555289.5	protein_coding_CDS_not_defined
 no_uniprot_aligned	ENST00000557093.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000558725.5	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000561229.1	protein_coding_CDS_not_defined		
+no_uniprot_aligned	ENST00000575426.1	nonsense_mediated_decay		
 no_uniprot_aligned	ENST00000576334.1	protein_coding		
 no_uniprot_aligned	ENST00000592493.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000593379.1	protein_coding_CDS_not_defined		

@@ -13,6 +13,3 @@ Has this note:
 but doe filter some.  Maybe these alignments should be chained
 
 * could uniprotIsoCanonicalAlign and uniprotIsoCanonicalSelect be combined?
-
-* TODO don't align outside of CDS
-ENST00000697273.1, in test set, is a NMD, but aligns into UTR.

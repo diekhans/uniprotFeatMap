@@ -6,7 +6,8 @@ import glob
 import pipettor
 from pycbio.distrib.parasol import Para
 from pycbio.sys import fileOps
-from protmap import conf, prMsg, getDoneFile
+from protmap import conf, prMsg
+from protmap.depends import getDoneFile
 
 
 def queryGetSplitPrefix(queriesDir):

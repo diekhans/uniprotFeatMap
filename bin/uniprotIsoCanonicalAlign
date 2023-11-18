@@ -9,7 +9,7 @@ from pycbio.sys import fileOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap import conf, prMsg
-from protmap.depend import runIfNotDone, runIfOutOfDate
+from protmap.depends import runIfNotDone, runIfOutOfDate
 from protmap.align import querySplit, runBatch
 
 uniprotIsoCanonicalAlignJob = osp.join(osp.dirname(__file__), "uniprotIsoCanonicalAlignJob")

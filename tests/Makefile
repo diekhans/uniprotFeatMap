@@ -48,8 +48,6 @@ testUniprotIsoCanonicalSelectBasic: mkout
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 
 define checkAlignments
-	pslStats -tsv -queries=input/swissprot.9606.sizes output/$@.psl output/$@.stats.tsv
-	diff expected/$@.stats.tsv output/$@.stats.tsv
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 endef

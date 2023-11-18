@@ -3,12 +3,14 @@
 import sys
 import os.path as osp
 import argparse
+import re
 import pipettor
+from Bio import SeqIO
 from pycbio.sys import fileOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap import conf, prMsg
-from protmap.depend import runIfNotDone, runIfOutOfDate
+from protmap.depends import runIfNotDone, runIfOutOfDate
 from protmap.align import querySplit, runBatch
 
 proteinTranscriptAlignJob = osp.join(osp.dirname(__file__), "proteinTranscriptAlignJob")
@@ -21,6 +23,8 @@ proteinTranscriptAlignJob = osp.join(osp.dirname(__file__), "proteinTranscriptAl
 def parseArgs():
     desc = """Align protein sequences to transcript RNAs with BLAT or BLAST.
     Creates a protein to NA PSL alignments, with some basic filtering.
+    UTR is hard masked to prevent alignment outside of CDS without changing
+    sequence size.
 
     Program can rerun to finish up after manual parasol recovery, checking
     for the state of the result files.  After returning a files could,
@@ -39,15 +43,41 @@ def parseArgs():
                         help="temporary directory used by parasol run")
     return parser.parse_args()
 
+def parseFastaHeaderCds(parts):
+    for elem in parts:
+        m = re.search("^CDS:([0-9]+)-([0-9]+)$", elem)
+        if m is not None:
+            return int(m.group(1)) - 1, int(m.group(2))  # zero-based
+    return None
+
+def parseFastaHeader(rec):
+    """parse the fasta, returning new id and CDS coordinates (or None if no CDS)
+      >ENST00000641515.2|ENSG00000186092.7|OTTHUMG00000001094.4|OTTHUMT00000003223.4|OR4F5-201|OR4F5|2618|UTR5:1-60|CDS:61-1041|UTR3:1042-2618|
+    """
+    parts = rec.id.split('|')
+    cds = parseFastaHeaderCds(parts)
+    return parts[0], cds
+
+def maskUtr(seq, cds):
+    return (cds[0] * 'N') + seq[cds[0]:cds[1]] + ((len(seq) - cds[1]) * 'N')
+
+def editFastaRec(rec, outFh):
+    transId, cds = parseFastaHeader(rec)
+    if cds is not None:
+        print(">" + transId, file=outFh)
+        print(maskUtr(rec.seq, cds), file=outFh)
+
+
 def editFasta(inFa, outFa):
     """
-    decompress and split GENCODE FASTA headers like
-    >ENST00000641515.2|ENSG00000186092.7|OTTHUMG00000001094.4|OTTHUMT00000003223.4|OR4F5-201|OR4F5|2618|UTR5:1-60|CDS:61-1041|UTR3:1042-2618|
+    Decompress and parse GENCODE FASTA headers to get basic id. The UTR
+    regions will be masked, sequences without CDS noted in the header are
+    discarded.
     """
     with fileOps.opengz(inFa) as inFh:
         with open(outFa, 'w') as outFh:
-            for line in inFh:
-                print(line.replace('|', ' ').strip(), file=outFh)
+            for rec in SeqIO.parse(inFh, "fasta"):
+                editFastaRec(rec, outFh)
 
 def targetBuildDb(transFa, transDbFa, workDir):
     prMsg("building target transcript database")
