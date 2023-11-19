@@ -37,11 +37,11 @@ class UniprotMetaTbl:
 
         self.byGeneAccDf = self.df.explode('ensemblGeneAccs')
         self.byGeneAccDf.rename(columns={'ensemblGeneAccs': 'ensemblGeneAcc'}, inplace=True)
-        self.byGeneAccDf.set_index('ensemblGeneAcc', inplace=True, drop=False, verify_integrity=True)
+        self.byGeneAccDf.set_index('ensemblGeneAcc', inplace=True, drop=False, verify_integrity=False)
 
         self.byTranscriptAccDf = self.df.explode('ensemblTransAccs')
         self.byTranscriptAccDf.rename(columns={'ensemblTransAccs': 'ensemblTransAcc'}, inplace=True)
-        self.byTranscriptAccDf.set_index('ensemblTransAcc', inplace=True, drop=False, verify_integrity=True)
+        self.byTranscriptAccDf.set_index('ensemblTransAcc', inplace=True, drop=False, verify_integrity=False)
 
         # with only one isoform: acc == mainIsoAcc, and isoIds are empty
         # for multiple isoforms: mainIsoAcc is canonical and isoIds are other isoforms.

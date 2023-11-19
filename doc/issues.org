@@ -12,4 +12,6 @@ Has this note:
 - Don't filter for minimum alignment coverage to get alt isoforms, which are often split
 but doe filter some.  Maybe these alignments should be chained
 
-* could uniprotIsoCanonicalAlign and uniprotIsoCanonicalSelect be combined?
+* should uniprotIsoCanonicalAlign and uniprotIsoCanonicalSelect be combined?
+
+* TFDP2: no annotations

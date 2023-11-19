@@ -8,79 +8,36 @@ tmpext = $(shell hostname).$(shell echo $${PPID}).tmp
 time = time -p
 
 algos = blat blast
-swissprotGencodeFilts = raw paired
-isoCanonFilts = raw paired
 
 sppre = ../data/swissprot.9606
 spmeta= ${sppre}.tab
 spannot= ${sppre}.annots.tab
 spfa = ${sppre}.fa.gz
 
-# rebuild this, as spfa changes
-spsizes = ${sppre}.sizes
-
-gnpre = ../data/gencode.v43.pc_transcripts
-gnsizes = ${gnpre}.sizes
+gnver = v44
+gnpre = ../data/gencode.${gnver}.pc_transcripts
 gnmeta = ${gnpre}.meta.tsv
 gnfa = ${gnpre}.fa.gz
 gnpsl = ${gnpre}.psl
 nprocs = 64
 
 all: ${algos:%=%_mkAlgo}
-	${MAKE} combineStatsCnts
 	cd ../hub && ${MAKE}
-%_mkAlgo: ${spsizes}
-	${MAKE} mkFilt algo=$*
+%_mkAlgo:
+	${MAKE} mkAlgo algo=$*
 	${MAKE} mkUniprotMapAnnots mkDecorators algo=$*
 
-mkFilt: ${swissprotGencodeFilts:%=%_mkProtGeneFilt} ${isoCanonFilts:%=%_mkIsoCanonFilt}
-
-%_mkProtGeneFilt: mkProtGeneAln
-	${MAKE} mkProtGeneStats algo=${algo} filt=$*
-%_mkIsoCanonFilt: mkIsoCanonAlgoAln
-	${MAKE} mkIsoCanonStats algo=${algo} filt=$*
-
-${spsizes}: ${spfa}
-	faSize -detailed ${spfa} > $@.${tmpext}
-	mv -f  $@.${tmpext} $@
-
-combineStatsCnts: swissprotGencode/swissprotGencode.stats-cnt.tsv \
-		  isoCanon/isoCanon.stats-cnt.tsv
-
-##
-# swissprotGencode stats
-# algo=, filt=
-##
-protGeneAlgoPre = swissprotGencode/swissprotGencode.${algo}
-protGenePre = ${protGeneAlgoPre}.${filt}
-protGeneAln = ${protGenePre}.psl
-
-mkProtGeneStats: ${protGenePre}.qstats.tsv  ${protGenePre}.ostats.tsv ${protGenePre}.tstats.tsv \
-	${protGenePre}.qstats-cnt.tsv ${protGenePre}.tstats-cnt.tsv
-
-${protGenePre}.qstats.tsv: ${protGeneAln}
-	pslStats -tsv -queryStats -queries=${spsizes} ${protGeneAln} $@
-
-${protGenePre}.tstats.tsv: ${protGeneAln}
-	pslSwap ${protGeneAln} stdout | pslStats -tsv -queryStats -queries=${gnsizes} /dev/stdin $@
-
-${protGenePre}.ostats.tsv: ${protGeneAln}
-	pslStats -tsv -overallStats -queries=${spsizes} ${protGeneAln} $@
-
-${protGenePre}.%-cnt.tsv: ${protGenePre}.%.tsv
-	./bin/countQStats swissprotGencode ${algo} ${filt} $* $< $@
-
-# done in a second pass
-swissprotGencode/swissprotGencode.stats-cnt.tsv: \
-		$(foreach algo,${algos},$(foreach filt,${swissprotGencodeFilts},swissprotGencode/swissprotGencode.${algo}.${filt}.qstats-cnt.tsv)) \
-		$(foreach algo,${algos},$(foreach filt,${swissprotGencodeFilts},swissprotGencode/swissprotGencode.${algo}.${filt}.tstats-cnt.tsv))
-	tmlr cat $^ | tmlr sort -f stats -r filt > $@
+mkAlgo: mkProtGeneAln mkUniprotMapAnnots mkDecorators
 
 
 ##
 # swissprotGencode alignment
 #   algo=
 ##
+protGeneAlgoPre = swissprotGencode/swissprotGencode.${algo}
+protGenePre = ${protGeneAlgoPre}.${filt}
+protGeneAln = ${protGenePre}.psl
+
 mkProtGeneAln: ${protGeneAlgoPre}.raw.psl
 protGeneAlnTmp = ${protGeneAlgoPre}.${tmpext}
 ${protGeneAlgoPre}.raw.psl:
@@ -95,33 +52,13 @@ ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
 	mv -f $@.${tmpext} $@
 
 ##
-# isoCanon stats
-# algo=, filt=
-## 
+# isoCanon alignment
+#   algo=
+##
 isoCanonAlgoPre = isoCanon/isoCanon.${algo}
 isoCanonPre = ${isoCanonAlgoPre}.${filt}
 isoCanonAln = ${isoCanonPre}.psl
 
-mkIsoCanonStats: ${isoCanonPre}.qstats.tsv ${isoCanonPre}.ostats.tsv ${isoCanonPre}.qstats-cnt.tsv
-
-${isoCanonPre}.qstats.tsv: ${isoCanonAln}
-	pslStats -tsv -queryStats -queries=${spsizes} ${isoCanonAln} $@
-
-${isoCanonPre}.ostats.tsv: ${isoCanonAln}
-	pslStats -tsv -overallStats -queries=${spsizes} ${isoCanonAln} $@
-
-${isoCanonPre}.%-cnt.tsv: ${isoCanonPre}.%.tsv
-	./bin/countQStats isoCanon ${algo} ${filt} $* $< $@
-
-# done in a second pass
-isoCanon/isoCanon.stats-cnt.tsv: \
-		$(foreach algo,${algos},$(foreach filt,${isoCanonFilts},isoCanon/isoCanon.${algo}.${filt}.qstats-cnt.tsv))
-	tmlr cat $^ | tmlr sort -f stats -r filt > $@
-
-##
-# isoCanon alignment
-#   algo=
-##
 mkIsoCanonAlgoAln: ${isoCanonAlgoPre}.raw.psl
 isoCanonAlnTmp = ${isoCanonAlgoPre}.${tmpext}
 
@@ -145,9 +82,9 @@ mapAnnotsPsl = ${mapAnnotsAlgoPre}.psl
 mapAnnotsRevTsv = ${mapAnnotsAlgoPre}.ref.tsv
 
 # uncomment to sae debugging intermediates
-mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
-mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
-mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
+#mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
+#mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
+#mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
@@ -161,14 +98,15 @@ ${mapAnnotsPsl}: ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.pai
 ##
 # make decorators
 ##
-decoratorsAlgoPre = decorators/swissprot-gencode.v43.${algo}
+decoratorsAlgoPre = decorators/swissprot-gencode.${gnver}.${algo}
 decoratorsBed = ${decoratorsAlgoPre}.decorators.bed
+decoratorsTypesTsv = ${decoratorsAlgoPre}.decorators.types.tsv
 
 mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 ${gnpsl} ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.${tmpext}
+	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} ${gnpsl} ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 # paranoid cleaning

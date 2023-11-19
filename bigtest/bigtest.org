@@ -2,43 +2,15 @@
 * hub
 https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 
+* build:
+cd data
+cp uniprot/tab/swissprot.9606.* .
+cp /hive/data/genomes/hg38/bed/gencodeV44/hgcImport/data/release_44/gencode.v44.pc_transcripts.fa.gz .
 
- USER=demo-markd jkmmake cgi >&log
- https://hgwdev-demo-markd.gi.ucsc.edu/
+zcat gencode.v44.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} />/{print gensub("^>([A-Z0-9.]+).*", "\\1", "g")}' > gencode.v44.pc_transcripts.ids.tsv
+tmlr join -j transcriptId -f gencode.v44.pc_transcripts.ids.tsv  /hive/data/genomes/hg38/bed/gencodeV44/hgcImport/data/gencode.tsv >gencode.v44.pc_transcripts.meta.tsv
 
-* filters
-name=4
-19	shortFeatType
-20	featType	
-21	shortName									
-22	longName	
+fgrep -f gencode.v44.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV44/hgcImport/data/gencode.gp > gencode.v44.pc_transcripts.gp
+genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v44.pc_transcripts.gp gencode.v44.pc_transcripts.psl
 
 
-
- cut -f4   decorators/swissprot-gencode.v43.blat.decorators.bed  |sort -u >names.lst
- cut -f20   decorators/swissprot-gencode.v43.blat.decorators.bed  |sort -u >featType.lst
- cut -f4,20 decorators/swissprot-gencode.v43.blat.decorators.bed |sort -u >name-featType.lst
-
-** case
-acetyl	domain
-acetyl	modified residue
-acetyl	mutagenesis site
-acetyl	region of interest
-acetyl	site
-
-tawk ($4=="acetyl" && $20== "domain")' decorators/swissprot-gencode.v43.blat.decorators.bed |head -200 > acetyl-domain.bed
- 
-* max tracks
-** /gbdb/hg38/uniprot/unipDomain.bb
-
-/gbdb/hg38/uniprot/unipStruct.bb
-name=4,  annotationType =22
-
-acetyla
-bigBedToBed -header /gbdb/hg38/uniprot/unipDomain.bb stdout | tawk 'NR==1||/acetyla/' |head -2000 > acetyla.max.tsv
-
-* swissprot.9606.annots.tab
-featType 4
-shortFeatType 5
-
-cut -f 4,5 ../data/swissprot.9606.annots.tab | sort -u >sp.type.lst

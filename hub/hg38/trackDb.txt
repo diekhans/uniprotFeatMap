@@ -1,30 +1,30 @@
-track gencodeV43_blat_deco
+track gencodeV44_blat_deco
 html ../empty.html
-shortLabel gencodeV43 BLAT deco
-longLabel gencodeV43 BLAT deco
-description gencodeV43 BLAT deco
+shortLabel gencodeV44 BLAT deco
+longLabel gencodeV44 BLAT deco
+description gencodeV44 BLAT deco
 type bigGenePred
 group genes
 #itemRgb on
 color 12,12,120
-priority 3
+priority 2
 visibility pack
 searchIndex name,geneName,geneName2
-bigDataUrl gencode.v43.bb
+bigDataUrl gencode.v44.bb
 labelFields name,name2,geneName,geneName2
 defaultLabelFields geneName2
 labelSeperator " / "
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
 decorator.default.mouseOver Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
-decorator.default.bigDataUrl swissprot-gencode.v43.blat.bb
+decorator.default.bigDataUrl swissprot-gencode.v44.blat.bb
 decorator.default.filterValues.shortFeatType domain,zinc finger,enzyme act site
 
 
-track gencodeV43_blast_deco
+track gencodeV44_blast_deco
 html ../empty.html
-shortLabel gencodeV43 BLAST deco
-longLabel gencodeV43 BLAST deco
-description gencodeV43 BLAST deco
+shortLabel gencodeV44 BLAST deco
+longLabel gencodeV44 BLAST deco
+description gencodeV44 BLAST deco
 type bigGenePred
 group genes
 #itemRgb on
@@ -32,11 +32,11 @@ color 12,12,120
 priority 3
 visibility pack
 searchIndex name,geneName,geneName2
-bigDataUrl gencode.v43.bb
+bigDataUrl gencode.v44.bb
 labelFields name,name2,geneName
 defaultLabelFields geneName2
 labelSeperator " / "
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
 decorator.default.mouseOver Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
-decorator.default.bigDataUrl swissprot-gencode.v43.blast.bb
+decorator.default.bigDataUrl swissprot-gencode.v44.blast.bb
 decorator.default.filterValues.shortFeatType domain,zinc finger,enzyme act site

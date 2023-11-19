@@ -238,7 +238,6 @@ def processSingle(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTra
     featTypes = writeDecoratorBeds(batchBedsIters, annotDecoratorBedFile)
     return featTypes
 
-
 def processMulti(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
                  isTrembl, nprocs, batchSize):
     with mp.Pool(processes=nprocs, initializer=workerInit,
@@ -252,7 +251,7 @@ def writeFeatTypes(featTypes, featTypesTsv):
     with open(featTypesTsv, 'w') as fh:
         fileOps.prRowv(fh, "featType", "shortFeatType")
         for ft in sorted(featTypes):
-            fileOps.prRowv(fh, ft.featType, ft.shortFeatType)
+            fileOps.prRowv(fh, ft[0], ft[1])
 
 def uniprotAnnotsToDecorators(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
                               isTrembl, nprocs, batchSize, featTypesTsv):

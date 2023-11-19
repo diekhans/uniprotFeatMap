@@ -21,7 +21,6 @@ from protmap.uniprot import UniprotMetaTbl
 #     already filtered for ++ strand and minimal coverage of protein
 #   - goal to find the best alignment for each transcript:
 #     - uniprot entry list best covering align of the protein.
-#     -
 
 def parseArgs():
     desc = """Filter protein to transcript PSL alignments to pair them based on gene.
