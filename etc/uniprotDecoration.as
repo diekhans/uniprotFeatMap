@@ -20,6 +20,7 @@ table uniprotDecoration
 
     string dataSet;     "SwissProt (manual annotation) or TrEMBL (automated automated)"
     string uniprotAcc;  "UniProt accession" 
+    string description; "Description of annotation or disruption"
     string shortFeatType;  "Short feature  type, often group multiple feature types"
     string featType;       "Type of feature"
     string shortName;  "Short descriptive name of feature "

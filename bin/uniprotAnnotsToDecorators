@@ -7,6 +7,7 @@ import multiprocessing as mp
 from collections import namedtuple
 import pipettor
 from pycbio.sys import fileOps
+from pycbio.sys.symEnum import SymEnum
 from pycbio.sys.profile import Profile
 from pycbio.sys.svgcolors import SvgColors
 from pycbio.hgdata.psl import PslReader
@@ -17,6 +18,11 @@ from protmap.uniprot import UniprotAnnotTbl, getAnnotColor, getProblemColor, get
 from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping
+
+class DataSet(SymEnum):
+    SwissProt = 1
+    TrEMBL = 2
+
 
 def parseArgs():
     desc = """
@@ -29,8 +35,8 @@ def parseArgs():
                         help="number of processes to use for tasks")
     parser.add_argument("--batchSize", type=int, default=1000,
                         help="size of batch to sent to task")
-    parser.add_argument("--trembl", action='store_true',
-                        help="is this trembl?")
+    parser.add_argument("--dataset", type=DataSet, choices=DataSet, default=DataSet.SwissProt,
+                        help="Is the UniProt dataset SwissProt or TrEMBL?")
     parser.add_argument("--featTypesTsv",
                         help="output unique short and full feature types for constructing track filters")
     parser.add_argument("transGenomePsl",
@@ -53,7 +59,7 @@ FEAT_SHORT_INS_THRESHOLD = 4
 
 class BedPlusColumns(namedtuple("BedPlusColumns",
                                 ("decoratedItem", "style", "fillColor",
-                                 "glyph", "dataSet", "uniprotAcc",
+                                 "glyph", "dataSet", "uniprotAcc", "description",
                                  "shortFeatType", "featType", "shortName",
                                  "longName", "comment", "disease"))):
     "extra BED columns"
@@ -75,12 +81,11 @@ def includeAnnot(annot):
     return annot.shortFeatType in shortFeatTypeInclude
 
 def createDecoratorBed(chrom, strand, bedBlocks, annotTransRef, name, color, fillColor, style,
-                       uniprotAcc, isTrembl, shortFeatType, featType, shortName, longName,
+                       dataSet, uniprotAcc, description, shortFeatType, featType, shortName, longName,
                        comment, disease, *, glyph=None, thickStart=None, thickEnd=None):
     "This creates a decorator BED, with annotation options are supplied."
     start, end = bedBlocks[0].start, bedBlocks[-1].end
     decoratedItem = annotTransRef.transcriptPos + ':' + annotTransRef.transcriptId
-    dataSet = "TreMBL" if isTrembl else "SwissProt"
     if glyph is None:
         glyph = ""
     if fillColor is None:
@@ -90,7 +95,7 @@ def createDecoratorBed(chrom, strand, bedBlocks, annotTransRef, name, color, fil
     if thickEnd is None:
         thickEnd = end
     extraCols = BedPlusColumns(decoratedItem, style, fillColor.toRgba8Str(), glyph,
-                               dataSet, uniprotAcc, shortFeatType, featType,
+                               dataSet, uniprotAcc, description, shortFeatType, featType,
                                shortName, longName, comment, disease)
     return Bed(chrom, start, end, name,
                strand=strand, thickStart=thickStart, thickEnd=thickEnd,
@@ -98,86 +103,99 @@ def createDecoratorBed(chrom, strand, bedBlocks, annotTransRef, name, color, fil
                itemRgb=color.toRgb8Str(),
                extraCols=extraCols)
 
-def makeGlyph(tStart, tEnd, namePre, color, annotPsl, annot, annotTransRef, isTrembl):
+def makeBlockDeco(chrom, strand, bedBlocks, annotTransRef, name, color, fillColor,
+                  dataSet, uniprotAcc, description, shortFeatType, featType, shortName, longName,
+                  comment, disease):
+    return createDecoratorBed(chrom, strand, bedBlocks, annotTransRef, name, color, fillColor, "block",
+                              dataSet, uniprotAcc, description, shortFeatType, featType, shortName, longName,
+                              comment, disease)
+
+def makeGlyphDeco(tStart, tEnd, namePre, description, color, annotPsl, annot, annotTransRef, dataSet):
     bedBlocks = [BedBlock(tStart, tEnd)]
     return createDecoratorBed(annotPsl.tName, annotPsl.qStrand, bedBlocks, annotTransRef,
                               namePre + getAnnotBedName(annot), color, color, "glyph",
-                              annot.acc, isTrembl,
+                              dataSet, annot.acc, description,
                               annot.shortFeatType, annot.featType,
                               namePre + annot.shortName, namePre + annot.longName,
                               annot.comment, annot.disease, glyph="triangle")
 
 
-def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl, featIndels):
-    annotColor = getAnnotColor(annot, isTrembl)
+def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, dataSet, featIndels):
+    description = annot.featType
+    annotColor = getAnnotColor(annot, dataSet)
     fillColor = annotColor.setAlpha(0.5)
-    color = annotColor if len(featIndels) == 0 else getProblemColor(annot, isTrembl)
+    color = annotColor if len(featIndels) == 0 else getProblemColor(annot, dataSet)
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
-    return createDecoratorBed(annotPsl.tName, annotPsl.qStrand, bedBlocks, annotTransRef,
-                              getAnnotBedName(annot), color, fillColor, "block",
-                              annot.acc, isTrembl,
-                              annot.shortFeatType, annot.featType,
-                              annot.shortName, annot.longName,
-                              annot.comment, annot.disease)
+    return makeBlockDeco(annotPsl.tName, annotPsl.qStrand, bedBlocks, annotTransRef,
+                         getAnnotBedName(annot), color, fillColor,
+                         dataSet, annot.acc, description,
+                         annot.shortFeatType, annot.featType,
+                         annot.shortName, annot.longName,
+                         annot.comment, annot.disease)
 
-def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl):
-    yield makeGlyph(featIndel.tStart, featIndel.tEnd,
-                    f"del {featIndel.length}: ", SvgColors.red, annotPsl, annot, annotTransRef, isTrembl)
+def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet):
+    name = f"del {featIndel.length}: "
+    description = name
+    yield makeGlyphDeco(featIndel.tStart, featIndel.tEnd,
+                        name, description, SvgColors.red, annotPsl, annot, annotTransRef, dataSet)
 
-def makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl):
+def makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet):
     pos = featIndel.tStart + (featIndel.length // 2)
-    yield makeGlyph(pos, pos + 1,
-                    f"ins {featIndel.length}: ", SvgColors.red, annotPsl, annot, annotTransRef, isTrembl)
+    name = f"ins {featIndel.length}: "
+    description = name
+    yield makeGlyphDeco(pos, pos + 1,
+                        name, description, SvgColors.red, annotPsl, annot, annotTransRef, dataSet)
 
-def makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl):
+def makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet):
     # make long bar
     namePre = f"ins {featIndel.length}: "
+    name = namePre + getAnnotBedName(annot)
+    description = name
     color = SvgColors.red
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
-    yield createDecoratorBed(annotPsl.tName, annotPsl.qStrand, bedBlocks, annotTransRef,
-                             namePre + getAnnotBedName(annot), color, color, "block",
-                             annot.acc, isTrembl,
-                             namePre + annot.shortFeatType, annot.featType,
-                             annot.shortName, annot.longName,
-                             annot.comment, annot.disease)
+    yield makeBlockDeco(annotPsl.tName, annotPsl.qStrand, bedBlocks, annotTransRef,
+                        name, color, color,
+                        dataSet, annot.acc, description,
+                        annot.shortFeatType, annot.featType,
+                        annot.shortName, annot.longName,
+                        annot.comment, annot.disease)
 
-def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl):
+def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet):
     if featIndel.length <= FEAT_SHORT_INS_THRESHOLD:
-        yield from makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl)
+        yield from makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet)
     else:
-        yield from makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl)
+        yield from makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet)
 
-def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl):
+def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet):
     """Make glyphs or block for a particular INDEL in the annotation. A generator
     so more than one can be returned"""
     if featIndel.isFeatDel:
-        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl)
+        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet)
     else:
-        yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl)
+        yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet)
 
-def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl, featIndels):
+def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, dataSet, featIndels):
     "produces glyphs to mark were annotations are broken in the mappings"
     glyphBeds = []
     for featIndel in featIndels:
-        glyphBeds.extend(makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, isTrembl))
+        glyphBeds.extend(makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, dataSet))
     return glyphBeds
 
-
-def buildAnnotation(transPsl, annotPsl, annot, annotTransRef, isTrembl, decoratorBeds):
+def buildAnnotation(transPsl, annotPsl, annot, annotTransRef, dataSet, decoratorBeds):
     "converts BEDs to strings so this work is distributed"
     featIndels = analyzeFeatureMapping(transPsl, annotPsl)
-    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, isTrembl, featIndels)
+    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, dataSet, featIndels)
     decoratorBeds.append(bed)
     if len(featIndels) > 0:
-        glyphBeds = mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, isTrembl, featIndels)
+        glyphBeds = mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, dataSet, featIndels)
         decoratorBeds.extend(glyphBeds)
 
 class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the
     processing to the pool sub-process"""
 
-    def __init__(self, transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, isTrembl):
-        self.isTrembl = isTrembl
+    def __init__(self, transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, dataSet):
+        self.dataSet = dataSet
         self.transGenomeAlns = GencodeData(transGenomePsl)
         self.uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
         self.annotTransRefs = AnnotTransRefs(annotTransRefTsv)
@@ -189,13 +207,13 @@ class AnnotationProcessor:
             if includeAnnot(annot):
                 annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
                 transPsl = self.transGenomeAlns.get(annotTransRef.transcriptId, annotPsl.tName)
-                buildAnnotation(transPsl, annotPsl, annot, annotTransRef, self.isTrembl, decoratorBeds)
+                buildAnnotation(transPsl, annotPsl, annot, annotTransRef, self.dataSet, decoratorBeds)
         return decoratorBeds
 
-def workerInit(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, isTrembl):
+def workerInit(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, dataSet):
     "sub-process setup"
     global gAnnotationProcessor
-    gAnnotationProcessor = AnnotationProcessor(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, isTrembl)
+    gAnnotationProcessor = AnnotationProcessor(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, dataSet)
 
 def worker(alignBatch):
     "sub-process worker"
@@ -229,8 +247,8 @@ def writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile):
 
 
 def processSingle(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
-                  isTrembl, batchSize):
-    workerInit(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, isTrembl)
+                  dataSet, batchSize):
+    workerInit(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, dataSet)
     batchBedsIters = []
     for alignBatch in annotGenomeBatchReader(annotGenomePslFile, batchSize):
         batchBedsIters.append(worker(alignBatch))
@@ -239,9 +257,9 @@ def processSingle(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTra
     return featTypes
 
 def processMulti(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
-                 isTrembl, nprocs, batchSize):
+                 dataSet, nprocs, batchSize):
     with mp.Pool(processes=nprocs, initializer=workerInit,
-                 initargs=(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, isTrembl)) as pool:
+                 initargs=(transGenomePsl, uniprotAnnotsTsv, annotTransRefTsv, dataSet)) as pool:
         batchBedsIter = pool.imap_unordered(worker,
                                             annotGenomeBatchReader(annotGenomePslFile, batchSize))
         featTypes = writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile)
@@ -254,20 +272,20 @@ def writeFeatTypes(featTypes, featTypesTsv):
             fileOps.prRowv(fh, ft[0], ft[1])
 
 def uniprotAnnotsToDecorators(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
-                              isTrembl, nprocs, batchSize, featTypesTsv):
+                              dataSet, nprocs, batchSize, featTypesTsv):
     # special case one process makes profiling easier
     if nprocs == 1:
         featTypes = processSingle(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
-                                  isTrembl, batchSize)
+                                  dataSet, batchSize)
     else:
         featTypes = processMulti(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
-                                 isTrembl, nprocs, batchSize)
+                                 dataSet, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
 
 def main(opts):
     uniprotAnnotsToDecorators(opts.transGenomePsl, opts.uniprotAnnotsTsv, opts.annotGenomePsl, opts.annotTransRefTsv,
-                              opts.annotDecoratorBedFile, opts.trembl, opts.nprocs, opts.batchSize,
+                              opts.annotDecoratorBedFile, opts.dataset, opts.nprocs, opts.batchSize,
                               opts.featTypesTsv)
 
 if __name__ == '__main__':
