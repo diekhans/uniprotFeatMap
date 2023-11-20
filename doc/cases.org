@@ -1,0 +1,28 @@
+* ZNF90 chr19:20,077,994-20,127,018
+** no problems, shows non-functional transcript
+* ZNF649 chr19:51,889,518-51,905,595
+** zinc fingers: chr19:51,890,559-51,891,889
+*** ENST00000600738.5
+**** clean alignment across alt-intron
+**** blat alignment errors, drop two
+**** blast breaks domain
+** KRAB chr19:51,896,250-51,897,298
+good, some partial transcripts
+* ZNF91 chr19:23,304,991-23,310,573
+No uniprot annotations
+* ZNF682  chr19:19997058-20039465
+ENST00000397162.5 has an different start codon, which breaks KRAB
+* ZNF486 chr19:20,165,270-20,201,240
+** no problems
+* ZNF774 chr15:90,351,864-90,363,283
+NMD transcript with broken domains
+transcript without zinc fingers
+* ZNF429 chr19:21,499,700-21,559,736
+shows transcript with missing ZNFs
+ENST00000597078.5 blast missing KRAB
+* ZNF534 chr19:52,429,148-52,442,499
+two incomplete KRAB domains on transcripts
+blast misses incomplete KRABS
+
+* BRAC1 chr17:43,044,295-43,125,300
+turn on all features to show overload
