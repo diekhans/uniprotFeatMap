@@ -20,11 +20,13 @@ table uniprotDecoration
 
     string dataSet;     "SwissProt (manual annotation) or TrEMBL (automated automated)"
     string uniprotAcc;  "UniProt accession" 
+    string category;  "Category symbolic name"
+    string categoryName;  "Category descriptive name"
     string description; "Description of annotation or disruption"
     string shortFeatType;  "Short feature  type, often group multiple feature types"
     string featType;       "Type of feature"
     string shortName;  "Short descriptive name of feature "
     lstring longName;   "Descriptive name of feature"
     lstring comment;   "Comment"
-    string disease;   "Disease for disease-related variants"
+    lstring disease;   "Disease for disease-related variants"
     )

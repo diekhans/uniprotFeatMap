@@ -4,10 +4,15 @@ Reads files create by uniprotToTab, and other uniport support
 
 import pandas as pd
 from pycbio.sys.svgcolors import SvgColors
+from pycbio.sys.symEnum import SymEnum
 from protmap import dropVersion, buildDfUniqueIndex, buildDfMultiIndex
 
 # WARNING: UniProt is 1-based, open-end
 
+
+class UniProtDataSet(SymEnum):
+    SwissProt = 1
+    TrEMBL = 2
 
 def splitMetaList(val):
     """ split strings like: ENST00000369413.8|ENST00000528909.1"""
@@ -26,7 +31,7 @@ class UniprotMetaTbl:
     def __init__(self, uniprotMetaTsv):
         self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
         if "orgName" not in self.df.columns:
-            raise Exception(f"column 'orgName' not found, is this a UnIprot metadata TSV: {uniprotMetaTsv}")
+            raise Exception(f"column 'orgName' not found, is this a UnProt metadata TSV: {uniprotMetaTsv}")
         self.df.set_index('acc', inplace=True, drop=False, verify_integrity=True)
         self.geneNameIdx = buildDfMultiIndex(self.df, "geneName")
 
@@ -110,12 +115,12 @@ def isVariant(annot):
 
 
 ###
-# color logic to match uniprot track, however colors for overlay are not visiable
+# color logic to match uniprot track, however colors for overlay are not visible
 # with track colors, so these are adjusted. Also use named colors.
 ###
 
-TREMBLCOLOR = SvgColors.lightyellow   # was 0,150,250 light blue (dodgerblue)
-SWISSPCOLOR = SvgColors.orange         # was 12,12,120 dark blue (navy)
+TREMBLCOLOR = SvgColors.darkseagreen   # was 0,150,250 light blue (dodgerblue)
+SWISSPCOLOR = SvgColors.forestgreen    # was 12,12,120 dark blue (navy)
 
 # mapping of annotations columns to colors
 featTypeColors = {
@@ -132,8 +137,8 @@ commentColor = {
     "Cytoplasmic": SvgColors.darkorange,       # was 255,150,0 light orange
 }
 
-def getAnnotColor(annot, isTrembl):
-    if isTrembl:
+def getAnnotColor(annot, dataSet):
+    if dataSet == UniProtDataSet.TrEMBL:
         return TREMBLCOLOR
     color = commentColor.get(annot.comment, None)
     if color is None:
@@ -260,3 +265,37 @@ def getAnnotBedName(annot):
     if len(name) > 17:
         name = name[:14] + "..."
     return name
+
+def getAnnotCategory(annot):  # noqa: C901
+    "return a symbolic and description; from uniport trackDb"
+    if annot.featType in ["mutagenesis site", "sequence variant"]:
+        return ("unipMut", "Mutation")
+    elif annot.featType in ["splice variant"]:
+        return ("unipSplice", "Splice variant")
+    elif annot.featType in ["strand", "helix", "coiled-coil region", "turn"]:
+        return ("unipStruct", "Protein Structure")
+    elif annot.featType in ["transmembrane region"]:
+        # suggested by Regeneron: create four subtracks, for the subcell. localization indicators
+        return ("unipLocTransMemb", "Transmembrane Domain")
+    elif annot.comment in ["Extracellular"]:
+        return ("unipLocExtra", "Extracellular Domain")
+    elif annot.comment in ["Cytoplasmic"]:
+        return ("unipLocCytopl", "Cytoplasmic Domains")
+    elif annot.featType in ["signal peptide"]:
+        return ("unipLocSignal", "Signal Peptide")
+    elif annot.featType in ["chain"]:
+        return ("unipChain", "Polypeptide Chains")
+    elif annot.featType in ["repeat"]:
+        return ("unipRepeat", "Repeat")
+    elif annot.featType == "sequence conflict":
+        return ("unipConflict", "Sequence Conflict")
+    elif annot.featType in ["disulfide bond"]:
+        return ("unipDisulfBond", "Disulfide Bond")
+    elif annot.featType in ["domain", "zinc finger region", "topological domain"]:
+        return ("unipDomain", "Domain")
+    elif annot.featType in ["glycosylation site", "modified residue", "lipid moiety-binding region"]:
+        return ("unipModif", "Amino Acid Modification")
+    elif annot.featType in ["region of interest"]:
+        return ("unipInterest", "Regions of Interest")
+    else:
+        return ("unipOther", "Other Annotation")

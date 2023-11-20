@@ -15,3 +15,8 @@ but doe filter some.  Maybe these alignments should be chained
 * should uniprotIsoCanonicalAlign and uniprotIsoCanonicalSelect be combined?
 
 * TFDP2: no annotations
+
+*  ENST00000235310.7 (in tests) seems to get multiple similar domains
+
+* add category
+* add source transcript

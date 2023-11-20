@@ -15,9 +15,13 @@ labelFields name,name2,geneName,geneName2
 defaultLabelFields geneName2
 labelSeperator " / "
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
-decorator.default.mouseOver Description: $description <br> Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
 decorator.default.bigDataUrl swissprot-gencode.v44.blat.bb
-decorator.default.filterValues.shortFeatType domain,zinc finger,enzyme act site
+decorator.default.mouseOver name: $name<br> categoryName: $categoryName<br> uniprotAcc: $uniprotAcc<br> \
+                            description: $description<br> shortFeatType: $shortFeatType<br> \
+                            featType: $featType<br> shortName: $shortName<br> longName: $longName<br> \
+                            comment: $comment<br> disease: $disease
+decorator.default.filterValuesDefault.categoryName Domain
+decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Regions of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation
 
 
 track gencodeV44_blast_deco
@@ -37,6 +41,14 @@ labelFields name,name2,geneName
 defaultLabelFields geneName2
 labelSeperator " / "
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
-decorator.default.mouseOver Description: $description <br> Feature: $shortFeatType / $featType <br> Name: $longName <br> Comment: $comment
+decorator.default.mouseOver name: $name<br> categoryName: $categoryName<br> uniprotAcc: $uniprotAcc<br> \
+                            description: $description<br> shortFeatType: $shortFeatType<br> \
+                            featType: $featType<br> shortName: $shortName<br> longName: $longName<br> \
+                            comment: $comment<br> disease: $disease
 decorator.default.bigDataUrl swissprot-gencode.v44.blast.bb
-decorator.default.filterValues.shortFeatType domain,zinc finger,enzyme act site
+decorator.default.mouseOver name: $name<br> categoryName: $categoryName<br> uniprotAcc: $uniprotAcc<br> \
+                            description: $description<br> shortFeatType: $shortFeatType<br> \
+                            featType: $featType<br> shortName: $shortName<br> longName: $longName<br> \
+                            comment: $comment<br> disease: $disease
+decorator.default.filterValuesDefault.categoryName Domain
+decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Regions of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation

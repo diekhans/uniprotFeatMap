@@ -1,4 +1,33 @@
-featType	shortFeatType
-active site	enzyme act site
-domain	domain
-zinc finger region	zinc finger
+category	categoryName	featType	shortFeatType
+unipChain	Polypeptide Chains	chain	chain
+unipConflict	Sequence Conflict	sequence conflict	conflict
+unipDisulfBond	Disulfide Bond	disulfide bond	disulf bond
+unipDomain	Domain	domain	domain
+unipDomain	Domain	topological domain	topo
+unipDomain	Domain	zinc finger region	zinc finger
+unipInterest	Regions of Interest	region of interest	interest
+unipLocCytopl	Cytoplasmic Domains	topological domain	topo
+unipLocExtra	Extracellular Domain	topological domain	topo
+unipLocSignal	Signal Peptide	signal peptide	signal pep
+unipLocTransMemb	Transmembrane Domain	transmembrane region	transmem
+unipModif	Amino Acid Modification	glycosylation site	glyco
+unipModif	Amino Acid Modification	lipid moiety-binding region	lipid
+unipModif	Amino Acid Modification	modified residue	acetyl
+unipModif	Amino Acid Modification	modified residue	modif
+unipModif	Amino Acid Modification	modified residue	phos
+unipMut	Mutation	mutagenesis site	mutagen
+unipMut	Mutation	sequence variant	variant
+unipOther	Other Annotation	active site	enzyme act site
+unipOther	Other Annotation	binding site	bind
+unipOther	Other Annotation	compositionally biased region	biased
+unipOther	Other Annotation	cross-link	cross-link
+unipOther	Other Annotation	initiator methionine	init Met
+unipOther	Other Annotation	intramembrane region	intramem
+unipOther	Other Annotation	peptide	peptide
+unipOther	Other Annotation	short sequence motif	motif
+unipOther	Other Annotation	site	site
+unipOther	Other Annotation	transit peptide	trans pep
+unipRepeat	Repeat	repeat	repeat
+unipStruct	Protein Structure	helix	helix
+unipStruct	Protein Structure	strand	beta
+unipStruct	Protein Structure	turn	turn
