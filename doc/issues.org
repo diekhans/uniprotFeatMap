@@ -14,9 +14,25 @@ but doe filter some.  Maybe these alignments should be chained
 
 * should uniprotIsoCanonicalAlign and uniprotIsoCanonicalSelect be combined?
 
+* TODO add source transcript
+
 * TFDP2: no annotations
+* ENST00000235310.7 (in tests) seems to get multiple similar domains
 
-*  ENST00000235310.7 (in tests) seems to get multiple similar domains
+* ZNF649
+** zinc fingers: chr19:51,890,559-51,891,889
+*** ENST00000600738.5
+**** clean alignment across alt-intron
+**** blat alignment errors, drop two
+**** blast breaks domain
+** KRAB chr19:51,896,250-51,897,298
+good, some partial transcripts
 
-* add category
-* add source transcript
+* ZNF90
+
+* ZNF91
+* ZNF486
+* ZNF774
+* ZNF429
+*  ZNF534
+
