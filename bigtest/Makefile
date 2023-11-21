@@ -81,7 +81,7 @@ mapAnnotsAlgoPre = mapAnnots/mapAnnots.${algo}
 mapAnnotsPsl = ${mapAnnotsAlgoPre}.psl
 mapAnnotsRevTsv = ${mapAnnotsAlgoPre}.ref.tsv
 
-# uncomment to sae debugging intermediates
+# uncomment to see debugging intermediates
 #mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
 #mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
 #mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
