@@ -9,7 +9,6 @@
 ** KRAB chr19:51,896,250-51,897,298
 good, some partial transcripts
 * ZNF91 chr19:23,304,991-23,310,573
-No uniprot annotations
 * ZNF682  chr19:19997058-20039465
 ENST00000397162.5 has an different start codon, which breaks KRAB
 * ZNF486 chr19:20,165,270-20,201,240
@@ -26,3 +25,5 @@ blast misses incomplete KRABS
 
 * BRAC1 chr17:43,044,295-43,125,300
 turn on all features to show overload
+
+* nortchlb - bad canonica
