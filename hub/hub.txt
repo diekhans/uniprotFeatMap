@@ -1,6 +1,6 @@
-hub deco_test
-shortLabel Decorators
-longLabel  Decorators Test
+hub uniport_decorators
+shortLabel UniProt Decorators
+longLabel  UniProt Feature Decorators
 genomesFile genomes.txt
 email markd@ucsc.edu
 descriptionUrl empty.html

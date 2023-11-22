@@ -254,8 +254,8 @@ def processMulti(transGenomePsl, uniprotAnnotsTsv, annotGenomePslFile, annotTran
     return featTypes
 
 def writeFeatTypes(featTypes, featTypesTsv):
-    with open(featTypesTsv, 'w') as fh:
-        fileOps.prRowv(fh, "category", "categoryName","featType", "shortFeatType")
+    with fileOps.opengz(featTypesTsv, 'w') as fh:
+        fileOps.prRowv(fh, "category", "categoryName", "featType", "shortFeatType")
         for ft in sorted(featTypes):
             fileOps.prRowv(fh, *ft)
 

@@ -43,34 +43,11 @@ protGeneAlnTmp = ${protGeneAlgoPre}.${tmpext}
 ${protGeneAlgoPre}.raw.psl:
 	@mkdir -p $(dir $@)
 	rm -rf ${protGeneAlnTmp}
-	${time} ../bin/proteinTranscriptAlign --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmp}
+	${time} ../bin/uniprotProteinTranscriptAlign --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmp}
 	mv -f $@.${tmpext} $@
 
 ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
 	${time} ../bin/uniprotGencodeSelect ${gnmeta} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
-	pslCheck $@.${tmpext}
-	mv -f $@.${tmpext} $@
-
-##
-# isoCanon alignment
-#   algo=
-##
-isoCanonAlgoPre = isoCanon/isoCanon.${algo}
-isoCanonPre = ${isoCanonAlgoPre}.${filt}
-isoCanonAln = ${isoCanonPre}.psl
-
-mkIsoCanonAlgoAln: ${isoCanonAlgoPre}.raw.psl
-isoCanonAlnTmp = ${isoCanonAlgoPre}.${tmpext}
-
-${isoCanonAlgoPre}.raw.psl:
-	@mkdir -p $(dir $@)
-	rm -rf ${isoCanonAlnTmp}
-	${time} ../bin/uniprotIsoCanonicalAlign --algo=${algo} ${spfa} $@.${tmpext} ${isoCanonAlnTmp}
-	find ${isoCanonAlnTmp}/aligns/ -name '*.psl' | xargs cat > ${isoCanonAlgoPre}.realraw.psl
-	mv -f $@.${tmpext} $@
-
-${isoCanonAlgoPre}.paired.psl: ${isoCanonAlgoPre}.raw.psl
-	${time} ../bin/uniprotIsoCanonicalSelect ${spmeta} $< $@.${tmpext} ${isoCanonAlgoPre}.paired.problems.tsv
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -88,9 +65,9 @@ mapAnnotsRevTsv = ${mapAnnotsAlgoPre}.ref.tsv
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
-${mapAnnotsPsl}: ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl
+${mapAnnotsPsl}: ${spannot} ${protGeneAlgoPre}.paired.psl
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ../bin/uniprotMapAnnots ${spannot} ${isoCanonAlgoPre}.paired.psl ${protGeneAlgoPre}.paired.psl	${gnpsl} \
+	${time} ../bin/uniprotMapAnnots ${spannot} ${protGeneAlgoPre}.paired.psl ${gnpsl} \
             $@.${tmpext} ${mapAnnotsRevTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -115,4 +92,4 @@ clean:
 	@exit 1
 
 realclean:
-	rm -rf swissprotGencode isoCanon mapAnnots decorators
+	rm -rf swissprotGencode mapAnnots decorators

@@ -1,25 +1,10 @@
 reason	transcriptId	transcriptType	key	uniprotId
-no_uniprot_trans_id_aligns	ENST00000199940.10	protein_coding	ENST00000199940.10	P11137-1
-no_uniprot_trans_id_aligns	ENST00000216923.5	protein_coding	ENST00000216923.5	Q9NTW7-1
-no_uniprot_trans_id_aligns	ENST00000346617.8	protein_coding	ENST00000346617.8	Q9NTW7-1
-no_uniprot_trans_id_aligns	ENST00000371515.8	protein_coding	ENST00000371515.8	Q9NTW7-1
-no_uniprot_gene_id_aligns	ENST00000199940.10	protein_coding	ENSG00000078018.22	P11137-1
-no_uniprot_gene_id_aligns	ENST00000216923.5	protein_coding	ENSG00000020256.20	Q9NTW7-1
-no_uniprot_gene_id_aligns	ENST00000346617.8	protein_coding	ENSG00000020256.20	Q9NTW7-1
-no_uniprot_gene_id_aligns	ENST00000371515.8	protein_coding	ENSG00000020256.20	Q9NTW7-1
-no_uniprot_gene_id_aligns	ENST00000452717.1	protein_coding	ENSG00000078018.22	P11137-1
-no_uniprot_gene_name_aligns	ENST00000199940.10	protein_coding	MAP2	P11137-1
-no_uniprot_gene_name_aligns	ENST00000216923.5	protein_coding	ZFP64	Q9NTW7-1
-no_uniprot_gene_name_aligns	ENST00000346617.8	protein_coding	ZFP64	Q9NTW7-1
-no_uniprot_gene_name_aligns	ENST00000371515.8	protein_coding	ZFP64	Q9NTW7-1
-no_uniprot_gene_name_aligns	ENST00000452717.1	protein_coding	MAP2	P11137-1
-no_uniprot_paired	ENST00000199940.10	protein_coding		
-no_uniprot_paired	ENST00000216923.5	protein_coding		
-no_uniprot_paired	ENST00000346617.8	protein_coding		
-no_uniprot_paired	ENST00000371515.8	protein_coding		
-no_uniprot_paired	ENST00000452717.1	protein_coding		
+no_uniprot_aligned	ENST00000199940.10	protein_coding		
+no_uniprot_aligned	ENST00000216923.5	protein_coding		
 no_uniprot_aligned	ENST00000342322.8	protein_coding		
+no_uniprot_aligned	ENST00000346617.8	protein_coding		
 no_uniprot_aligned	ENST00000359076.7	protein_coding		
+no_uniprot_aligned	ENST00000371515.8	protein_coding		
 no_uniprot_aligned	ENST00000376848.8	protein_coding		
 no_uniprot_aligned	ENST00000383515.6	protein_coding		
 no_uniprot_aligned	ENST00000383516.8	protein_coding		
@@ -48,6 +33,7 @@ no_uniprot_aligned	ENST00000446604.6	protein_coding_CDS_not_defined
 no_uniprot_aligned	ENST00000447400.5	protein_coding		
 no_uniprot_aligned	ENST00000448064.1	protein_coding		
 no_uniprot_aligned	ENST00000448448.2	protein_coding_CDS_not_defined		
+no_uniprot_aligned	ENST00000452717.1	protein_coding		
 no_uniprot_aligned	ENST00000452916.1	protein_coding		
 no_uniprot_aligned	ENST00000454646.5	protein_coding		
 no_uniprot_aligned	ENST00000454779.5	protein_coding		

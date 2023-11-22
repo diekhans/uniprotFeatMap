@@ -6,9 +6,13 @@ import glob
 import pipettor
 from pycbio.distrib.parasol import Para
 from pycbio.sys import fileOps
-from protmap import conf, prMsg
+from protmap import conf
 from protmap.depends import getDoneFile
 
+def buildBlastTransIndex(transFa, workDir):
+    logFile = osp.join(workDir, "formatdb.log")
+    pipettor.run([osp.join(conf.blastDir, "formatdb"),
+                  "-l", logFile, "-i", transFa, "-p", "F"])
 
 def queryGetSplitPrefix(queriesDir):
     return osp.join(queriesDir, "query")
@@ -16,14 +20,25 @@ def queryGetSplitPrefix(queriesDir):
 def queryListSplitFas(queriesDir):
     return sorted(glob.glob(queryGetSplitPrefix(queriesDir) + "*"))
 
-def querySplit(queryFa, queriesDir):
-    prMsg("split query proteins")
+def _querySplitWriter(inFaFh, outFaFh, filterFunc):
+    incl = False
+    for line in inFaFh:
+        if line.startswith('>'):
+            incl = filterFunc(line)
+        if incl:
+            outFaFh.write(line)
+
+def querySplit(queryFa, queriesDir, *, filterFunc, approxSize=25000):
     fileOps.ensureDir(queriesDir)
-    pipettor.run(["faSplit", "about", queryFa, 2500, queryGetSplitPrefix(queriesDir)])
+    # make sure there are no old files that could corrupt
+    fileOps.rmFiles(*queryListSplitFas(queriesDir))
+    with fileOps.opengz(queryFa) as inFaFh:
+        with pipettor.Popen(["faSplit", "about", "/dev/stdin", approxSize, queryGetSplitPrefix(queriesDir)], 'w') as outFaFh:
+            _querySplitWriter(inFaFh, outFaFh, filterFunc)
 
 def makeJobFile(alignCmd, queriesDir, targetDbFa, alignDir, alignBatchDir):
     jobFile = osp.join(alignBatchDir, "jobs.para")
-    with open(jobFile, 'w') as fh:
+    with fileOps.opengz(jobFile, 'w') as fh:
         for queryFa in queryListSplitFas(queriesDir):
             outPsl = osp.join(alignDir, osp.basename(queryFa) + ".psl")
             print(*alignCmd, targetDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
@@ -33,7 +48,6 @@ def makeJobFile(alignCmd, queriesDir, targetDbFa, alignDir, alignBatchDir):
 
 def runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
     "alignCmdPre is list of program and initial arguments"
-    prMsg("running alignment batch")
     fileOps.ensureDir(alignBatchDir)
     jobFile = makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
     para = Para(conf.paraHost, jobFile, paraDir=alignBatchDir, retries=2)

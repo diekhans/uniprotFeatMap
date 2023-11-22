@@ -14,12 +14,9 @@ if annot.featType == "sequence variant":
 elif annot.featType == "mutagenesis site":
     annoType = "Experimental mutation of amino acids"
 
-* uniprotIsoCanonicalAlign
-Has this note:
-- Don't filter for minimum alignment coverage to get alt isoforms, which are often split
-but doe filter some.  Maybe these alignments should be chained
 
-* should uniprotIsoCanonicalAlign and uniprotIsoCanonicalSelect be combined?
+* percent-identity doesn't seem very sane from blastToPsl for protein to RNH gene (RNH1?)
+
 * should proteinTranscriptAlign and uniprotGencodeSelect be combined
 
 * TODO add source transcript
@@ -38,3 +35,17 @@ blast misses incomplete KRABS found by blat
 
 
 * intersect with Max tracks to find issues
+
+* convert from prMsg to using python loggin
+
+* in uniprotMapAnnots, it seems it is should check for end past end protein:
+
+Warning: Q9BXI3 annotation extends past end of protein: 369 > 368
+Warning: Q96P26-1 annotation extends past end of protein: 611 > 610
+Warning: Q96P26-1 annotation extends past end of protein: 611 > 610
+Warning: Q9H0P0-4 annotation extends past end of protein: 337 > 336
+ 
+
+  
+* It was less than satisfying using Pandas:
+It was a bit slower than read into objects and dict indexes were still needed.  Pandas also bring in some heavy-weight stuff, like BLAS  threads.
