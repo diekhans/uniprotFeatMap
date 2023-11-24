@@ -20,8 +20,9 @@ table uniprotDecoration
 
     string dataSet;     "SwissProt (manual annotation) or TrEMBL (automated automated)"
     string uniprotAcc;  "UniProt accession" 
-    string category;  "Category symbolic name"
-    string categoryName;  "Category descriptive name"
+    string transMatchStatus; "Is the transcript list as a matching the canonical Uniprot yes: match, maybe: match different version, no: doesn't match"
+    string category;  "Feature category symbolic name"
+    string categoryName;  "Feature category descriptive name"
     string description; "Description of annotation or disruption"
     string shortFeatType;  "Short feature  type, often group multiple feature types"
     string featType;       "Type of feature"

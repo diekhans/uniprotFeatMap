@@ -1,3 +1,6 @@
+* use __init__. buildDfMultiIndex got genes and transcirpt id columns
+or just drop pandas
+
 * read-through genes not handled well
 
 * is "canonical" a good term for the matched GENCODE mRNA
@@ -59,3 +62,5 @@ Warning: P20848 does not map to any transcript
   
 * It was less than satisfying using Pandas:
 It was a bit slower than read into objects and dict indexes were still needed.  Pandas also bring in some heavy-weight stuff, like BLAS  threads.
+
+*  make use uniProt vs uniprot is consistent

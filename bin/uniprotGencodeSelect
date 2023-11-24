@@ -10,7 +10,7 @@ from pycbio.hgdata.psl import Psl, PslReader
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap import dropVersion
 from protmap.gencode import GencodeMetadata
-from protmap.uniprot import UniprotMetaTbl
+from protmap.uniprot import UniProtMetaTbl
 
 # Terminology
 #    xxxId is id with version
@@ -139,7 +139,7 @@ def writePairedPsl(fh, protTransPaired):
 
 def proteinTranscriptAlign(gencodeMetaTsv, uniprotMetaTsv, protTransPsl, protTransPairedPsl, problemLogTsv):
     gencodeMeta = GencodeMetadata(gencodeMetaTsv)
-    uniprotMetaTbl = UniprotMetaTbl(uniprotMetaTsv)
+    uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
     alignsByTrans = loadProtTransPsl(uniprotMetaTbl, protTransPsl)
     pairedByTrans = {}
 

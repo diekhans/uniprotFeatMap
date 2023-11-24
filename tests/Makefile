@@ -22,6 +22,7 @@ all:
 	@echo "      make fulltest"
 	@echo "      make aligntest"
 	@echo "      make clean"
+	@exit 1
 
 
 test: uniprotGencodeSelectTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests
@@ -72,9 +73,9 @@ testUniprotMapAnnots: mkout
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
 
 testUniprotAnnotsToDecorators: mkout output/gencode.v43.bb ${testHubFilesOutput}
-	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/gencode.v43.psl input/swissprot.9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
 	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
-            output/$@.bed --featTypesTsv=output/$@.types.tsv
+            input/gencode.v43.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv

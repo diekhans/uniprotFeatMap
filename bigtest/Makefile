@@ -56,7 +56,7 @@ ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
 ##
 mapAnnotsAlgoPre = mapAnnots/mapAnnots.${algo}
 mapAnnotsPsl = ${mapAnnotsAlgoPre}.psl
-mapAnnotsRevTsv = ${mapAnnotsAlgoPre}.ref.tsv
+mapAnnotsRefTsv = ${mapAnnotsAlgoPre}.ref.tsv
 
 # uncomment to see debugging intermediates
 #mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
@@ -68,7 +68,7 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 ${mapAnnotsPsl}: ${spannot} ${protGeneAlgoPre}.paired.psl
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
 	${time} ../bin/uniprotMapAnnots ${spannot} ${protGeneAlgoPre}.paired.psl ${gnpsl} \
-            $@.${tmpext} ${mapAnnotsRevTsv} ${mapAnnotsInterOpt}
+            $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -83,7 +83,8 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} ${gnpsl} ${spannot} ${mapAnnotsPsl} ${mapAnnotsRevTsv} $@.${tmpext}
+	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
+	    ${spmeta} ${spannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gnpsl} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 # paranoid cleaning

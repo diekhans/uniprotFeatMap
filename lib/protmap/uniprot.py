@@ -14,6 +14,12 @@ class UniProtDataSet(SymEnum):
     SwissProt = 1
     TrEMBL = 2
 
+class TransMatchStatus(SymEnum):
+    no = 0
+    maybe =  1
+    yes = 2
+
+
 def splitMetaList(val):
     """ split strings like: ENST00000369413.8|ENST00000528909.1"""
     if val == "":
@@ -26,7 +32,7 @@ def splitDropVersion(idents):
 def dropUniportIsoformModifier(acc):
     return acc.split('-')[0]
 
-class UniprotMetaTbl:
+class UniProtMetaTbl:
     """reads swissprot.9606.tab, trembl.9606.tab"""
     def __init__(self, uniprotMetaTsv):
         self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
@@ -36,7 +42,9 @@ class UniprotMetaTbl:
         self.geneNameIdx = buildDfMultiIndex(self.df, "geneName")
 
         # index by gene and transcript ids
+        self.df['ensemblGeneIds'] = self.df.ensemblGene.apply(splitMetaList)
         self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
+        self.df['ensemblTransIds'] = self.df.ensemblTrans.apply(splitMetaList)
         self.df['ensemblTransAccs'] = self.df.ensemblTrans.apply(splitDropVersion)
         self.df['isoIds'] = self.df.isoIds.apply(splitMetaList)
 
@@ -82,8 +90,18 @@ class UniprotMetaTbl:
     def getGeneNameMetas(self, geneName):
         return self.geneNameIdx.get(geneName)
 
+def uniprotParseAnnotId(annotId):
+    "parse the annotation id into its parts: 'Q9BXI3#0' -> ('Q9BXI3' 0)"
+    parts = annotId.rsplit('#', 1)
+    if len(parts) != 2:
+        raise Exception(f"invalid annotation id: '{annotId}'")
+    return parts
 
-class UniprotAnnotTbl:
+def uniprotAnnotIdToAcc(annotId):
+    "parse the annotation id into accession: 'Q9BXI3#0' -> 'Q9BXI3'"
+    return uniprotParseAnnotId(annotId)[0]
+
+class UniProtAnnotTbl:
     """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
     def __init__(self, uniprotAnnotsTsv):
         self.df = pd.read_table(uniprotAnnotsTsv, keep_default_na=False)
@@ -299,3 +317,12 @@ def getAnnotCategory(annot):  # noqa: C901
         return ("unipInterest", "Regions of Interest")
     else:
         return ("unipOther", "Other Annotation")
+
+def calcTransMatchStatus(uniprotMeta, transId):
+    "determine match of transcript to GENCODE based on what transcripts are listed in metadata"
+    if transId in uniprotMeta.ensemblTransIds:
+        return TransMatchStatus.yes
+    elif dropVersion(transId) in uniprotMeta.ensemblTransAccs:
+        return TransMatchStatus.maybe
+    else:
+        return TransMatchStatus.no

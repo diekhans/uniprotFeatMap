@@ -12,7 +12,7 @@ from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap import prMsg
-from protmap.uniprot import UniprotAnnotTbl
+from protmap.uniprot import UniProtAnnotTbl
 from protmap.annotTransRef import annotTransRefCreate, annotTransRefWrite
 
 def parseArgs():
@@ -89,11 +89,14 @@ def createAnnotPsls(uniprotAnnotTbl, protSizes, annotCanonPslFh):
         if annotFilter(annot, protSizes):
             createAnnotPsl(annot, protSizes).write(annotCanonPslFh)
 
-def writeRefs(mapInfoTmp, annotTransRefFh):
-    for row in TsvReader(mapInfoTmp):
-        if row.mappedPslLine != "":
-            transcriptPos = f"{row.mappingTName}:{row.mappingTStart}-{row.mappingTEnd}"
-            annotTransRefWrite(annotTransRefFh, row.srcQName, transcriptPos, row.srcTName, row.mappedPslLine)
+def writeRef(annotGenomeMapInfo, annotTransRefFh):
+    transcriptPos = f"{annotGenomeMapInfo.mappingTName}:{annotGenomeMapInfo.mappingTStart}-{annotGenomeMapInfo.mappingTEnd}"
+    annotTransRefWrite(annotTransRefFh, annotGenomeMapInfo.srcQName, transcriptPos, annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine)
+
+def writeRefs(annotGenomeMapInfoTsv, annotTransRefFh):
+    for annotGenomeMapInfo in TsvReader(annotGenomeMapInfoTsv):
+        if annotGenomeMapInfo.mappedPslLine != "":
+            writeRef(annotGenomeMapInfo, annotTransRefFh)
 
 def mkAnnotToTransCmd(annotIsoPsl, protTransPairedPsl, annotTransPsl, interPrefix):
     """create command to map annotations to transcripts
@@ -139,7 +142,7 @@ def pslMapAnnots(annotCanonPsl, protTransPairedPsl, transGenomePsl,
 
 def uniprotMapAnnots(uniprotAnnotsTsv, protTransPairedPsl, transGenomePsl,
                      annotGenomePsl, annotTransRefTsv, interPrefix):
-    uniprotAnnotTbl = UniprotAnnotTbl(uniprotAnnotsTsv)
+    uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
     protSizes = getProtSizes(protTransPairedPsl)
 
     if interPrefix is not None:
