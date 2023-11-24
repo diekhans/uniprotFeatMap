@@ -45,6 +45,16 @@ Warning: Q96P26-1 annotation extends past end of protein: 611 > 610
 Warning: Q96P26-1 annotation extends past end of protein: 611 > 610
 Warning: Q9H0P0-4 annotation extends past end of protein: 337 > 336
  
+* uniprotMapAnnots warnings should maybe be written to problem file; also why is does not map repeat?
+Warning: P30511-1 annotation extends past end of protein: 353..354 > 346
+Warning: Q99732-1 annotation extends past end of protein: 174..175 > 161
+Warning: P20848 does not map to any transcript
+Warning: P20848 does not map to any transcript
+Warning: P20848 does not map to any transcript
+Warning: P20848 does not map to any transcript
+Warning: P20848 does not map to any transcript
+Warning: P20848 does not map to any transcript
+Warning: P20848 does not map to any transcript
 
   
 * It was less than satisfying using Pandas:
