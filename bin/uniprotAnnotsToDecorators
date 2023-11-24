@@ -13,7 +13,7 @@ from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.bed import Bed, BedBlock
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet
+from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
 from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotBedName, getAnnotCategory, calcTransMatchStatus
 from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
@@ -121,7 +121,12 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataS
     description = annot.featType
     annotColor = getAnnotColor(annot, dataSet)
     fillColor = annotColor.setAlpha(0.5)
-    color = annotColor if len(featIndels) == 0 else getProblemColor(annot, dataSet)
+    if len(featIndels) > 0:
+        color = getProblemColor(annot, dataSet)
+    elif transMatchStatus != TransMatchStatus.no:
+        color = SvgColors.deepskyblue
+    else:
+        color = SvgColors.black
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     return makeBlockDeco(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
                          getAnnotBedName(annot), color, fillColor,
