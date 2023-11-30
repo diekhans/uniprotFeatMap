@@ -1,7 +1,11 @@
+* drop FEAT_SHORT_INS_THRESHOLD, be consistent
+
+
 * use __init__. buildDfMultiIndex got genes and transcirpt id columns
 or just drop pandas
 
 * read-through genes not handled well
+could be handled by projection annotations
 
 * is "canonical" a good term for the matched GENCODE mRNA
 

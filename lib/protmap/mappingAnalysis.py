@@ -26,13 +26,13 @@ def _isIntron(transPsl, tStart, tEnd):
 
 def _analyzeStart(annotPsl):
     if annotPsl.blocks[0].qStart > 0:
-        yield FeatureIndel(True, annotPsl.blocks[0].qStart,
+        yield FeatureIndel(True, annotPsl.blocks[0].qStart,#FIXME: wrong, needs to be realtive to qStart
                            0, annotPsl.blocks[0].qStart,
                            annotPsl.blocks[0].tStart, annotPsl.blocks[0].tStart)
 
 def _analyzeEnd(annotPsl):
     if annotPsl.blocks[-1].qEnd < annotPsl.qSize:
-        yield FeatureIndel(True, annotPsl.qSize - annotPsl.blocks[-1].qEnd,
+        yield FeatureIndel(True, annotPsl.qSize - annotPsl.blocks[-1].qEnd,#WRONG if strand
                            annotPsl.blocks[-1].qEnd, annotPsl.qSize,
                            annotPsl.blocks[-1].tEnd, annotPsl.blocks[-1].tEnd)
 
@@ -40,11 +40,11 @@ def _analyzeBlock(transPsl, annotPsl, iBlk):
     blk = annotPsl.blocks[iBlk]
     nextBlk = annotPsl.blocks[iBlk + 1]
     if blk.qEnd < nextBlk.qStart:
-        yield FeatureIndel(True, nextBlk.qStart - blk.qEnd,
+        yield FeatureIndel(True, (nextBlk.qStart - blk.qEnd),
                            blk.qEnd, nextBlk.qStart,
                            blk.tEnd, nextBlk.tStart)
     if (blk.tEnd < nextBlk.tStart) and (not _isIntron(transPsl, blk.tEnd, nextBlk.tStart)):
-        yield FeatureIndel(False, nextBlk.tStart - blk.tEnd,
+        yield FeatureIndel(False, (nextBlk.tStart - blk.tEnd),
                            blk.qEnd, nextBlk.qStart,
                            blk.tEnd, nextBlk.tStart)
 

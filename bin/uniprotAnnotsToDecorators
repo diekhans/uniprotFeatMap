@@ -4,13 +4,14 @@ import sys
 import os.path as osp
 import argparse
 import multiprocessing as mp
-from collections import namedtuple
 import pipettor
 from pycbio.sys import fileOps
 from pycbio.sys.profile import Profile
 from pycbio.sys.svgcolors import SvgColors
 from pycbio.hgdata.psl import PslReader
-from pycbio.hgdata.bed import Bed, BedBlock
+from pycbio.hgdata.bed import encodeRow
+from pycbio.hgdata.decoration import Decoration, BedBlock, Glyph
+from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
@@ -51,19 +52,9 @@ def parseArgs():
     profiler.setup(opts)
     return opts
 
-# threshold for generating one glyph rather than two for insertion
+# threshold for generating one glyph rather than a block for insertion
 FEAT_SHORT_INS_THRESHOLD = 4
 
-class BedPlusColumns(namedtuple("BedPlusColumns",
-                                ("decoratedItem", "style", "fillColor",
-                                 "glyph", "dataSet", "uniprotAcc", "transMatchStatus",
-                                 "category", "categoryName", "description",
-                                 "shortFeatType", "featType", "shortName",
-                                 "longName", "comment", "disease"))):
-    "extra BED columns"
-    __slots__ = ()
-
-##
 # Note: for now, greatly limit the features until we can
 # determine how to better group them. There are 43 short
 # feature types.
@@ -82,40 +73,41 @@ def includeAnnot(annot):
     "filter for desired annotations"
     return annot.shortFeatType not in _shortFeatTypesToSkip
 
+def xrefToItemArgs(annotTransRef):
+    "turns xref return into [name, start, end]"
+    coords = Coords.parse(annotTransRef.transcriptPos)
+    return annotTransRef.transcriptId, coords.start, coords.end
 
-def createDecoratorBed(chrom, strand, bedBlocks, annot, annotTransRef, transMatchStatus, name, color, fillColor, style,
-                       dataSet, description, *, glyph=None, thickStart=None, thickEnd=None):
-    "This creates a decorator BED, with annotation options are supplied."
-    start, end = bedBlocks[0].start, bedBlocks[-1].end
-    decoratedItem = annotTransRef.transcriptPos + ':' + annotTransRef.transcriptId
-    if glyph is None:
-        glyph = ""
-    if fillColor is None:
-        fillColor = color
-    if thickStart is None:
-        thickStart = start
-    if thickEnd is None:
-        thickEnd = end
-    category, categoryName = getAnnotCategory(annot)
-    extraCols = BedPlusColumns(decoratedItem, style, fillColor.toRgba8Str(), glyph,
-                               dataSet, annot.acc, transMatchStatus, category, categoryName, description,
-                               annot.shortFeatType, annot.featType, annot.shortName, annot.longName,
-                               annot.comment, annot.disease)
-    return Bed(chrom, start, end, name,
-               strand=strand, thickStart=thickStart, thickEnd=thickEnd,
-               blocks=bedBlocks, numStdCols=12,
-               itemRgb=color.toRgb8Str(),
-               extraCols=extraCols)
+class UniprotDecoration(Decoration):
+    """hold a decoration BED + extra data"""
 
-def makeBlockDeco(chrom, strand, bedBlocks, annot, annotTransRef, transMatchStatus, name, color, fillColor,
+    def __init__(self, chrom, strand, bedBlocks, annot, annotTransRef, transMatchStatus, name, color,
+                 dataSet, description, *, fillColor=None, glyph=None):
+        super(UniprotDecoration, self).__init__(chrom, bedBlocks[0].start, bedBlocks[-1].end, name,
+                                                *xrefToItemArgs(annotTransRef),
+                                                strand=strand, itemRgb=color, blocks=bedBlocks,
+                                                fillColor=fillColor)
+        self.annot = annot
+        self.transMatchStatus = transMatchStatus
+        self.dataSet = dataSet
+        self.description = description
+        self.category, self.categoryName = getAnnotCategory(self.annot)
+
+    def toRow(self):
+        return super().toRow() + encodeRow([self.dataSet, self.annot.acc, self.transMatchStatus, self.category, self.categoryName,
+                                            self.description, self.annot.shortFeatType, self.annot.featType,
+                                            self.annot.shortName, self.annot.longName, self.annot.comment, self.annot.disease])
+
+def makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks, name, color, fillColor,
                   dataSet, description):
-    return createDecoratorBed(chrom, strand, bedBlocks, annot, annotTransRef, transMatchStatus, name, color, fillColor, "block",
-                              dataSet, description)
+    return UniprotDecoration(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
+                             name, color, dataSet, description, fillColor=fillColor)
 
-def makeGlyphDeco(tStart, tEnd, name, description, color, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    bedBlocks = [BedBlock(tStart, tEnd)]
-    return createDecoratorBed(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
-                              name, color, color, "glyph", dataSet, description, glyph="triangle")
+
+def makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, color, description, dataSet):
+    bedBlocks = [BedBlock(pos, pos + 1)]
+    return UniprotDecoration(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
+                             name, color, dataSet, description, glyph=Glyph.Triangle)
 
 def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataSet, featIndels):
     description = annot.featType
@@ -128,22 +120,22 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataS
     else:
         color = SvgColors.black
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
-    return makeBlockDeco(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
+    return makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,
                          getAnnotBedName(annot), color, fillColor,
                          dataSet, description)
 
 def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     name = f"del {featIndel.length}: "
-    description = name
-    yield makeGlyphDeco(featIndel.tStart, featIndel.tEnd,
-                        name, description, SvgColors.red, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
+    pos = (featIndel.tStart + featIndel.tEnd) // 2
+    yield makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, SvgColors.red,
+                        dataSet, name)
 
 def makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    pos = featIndel.tStart + (featIndel.length // 2)
+    #FIXME: just do a block
+    pos = (featIndel.tStart + featIndel.tEnd) // 2
     name = f"ins {featIndel.length}: " + getAnnotBedName(annot)
     description = name
-    yield makeGlyphDeco(pos, pos + 1,
-                        name, description, SvgColors.red, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
+    yield makeGlyphDeco(pos, pos + 1, name, description, SvgColors.red, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
 
 def makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     # make long bar
@@ -152,7 +144,7 @@ def makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchSt
     description = name
     color = SvgColors.red
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
-    yield makeBlockDeco(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
+    yield makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,
                         name, color, color, dataSet, description)
 
 def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
@@ -243,8 +235,7 @@ def writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile):
             for batchBeds in batchBedsIter:
                 for bed in batchBeds:
                     bed.write(decoBedFh)
-                    featTypes.add((bed.extraCols.category, bed.extraCols.categoryName,
-                                   bed.extraCols.featType, bed.extraCols.shortFeatType))
+                    featTypes.add((bed.category, bed.categoryName, bed.annot.featType, bed.annot.shortFeatType))
     return featTypes
 
 

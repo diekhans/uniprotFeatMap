@@ -16,7 +16,7 @@ class UniProtDataSet(SymEnum):
 
 class TransMatchStatus(SymEnum):
     no = 0
-    maybe =  1
+    maybe = 1
     yes = 2
 
 
