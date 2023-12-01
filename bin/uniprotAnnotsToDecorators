@@ -15,7 +15,7 @@ from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
-from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotShortDescriptiveName, getAnnotCategory, calcTransMatchStatus
+from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus
 from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping
@@ -53,20 +53,9 @@ def parseArgs():
     profiler.setup(opts)
     return opts
 
-# threshold for generating one glyph rather than a block for insertion
-FEAT_SHORT_INS_THRESHOLD = 4
-
-# Note: for now, greatly limit the features until we can
-# determine how to better group them. There are 43 short
-# feature types.
 ##
-shortFeatTypeInclude = frozenset([
-    "domain",
-    "zinc finger",
-    "enzyme act site",
-])
-
-# shortFeatType to not use
+# shortFeatType to not include in track.
+#
 _shortFeatTypesToSkip = frozenset([
     'splicing',
 ])
@@ -112,11 +101,11 @@ def makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, c
 
 def getBedName(annot):
     "function that can be change to get names"
-    return getAnnotShortDescriptiveName(annot)
+    return getAnnotDescriptiveName(annot)
 
 def getDescription(annot):
     "function that can be change to get better long description"
-    return getAnnotShortDescriptiveName(annot) + " " + annot.shortFeatType
+    return getAnnotDescriptiveName(annot) + " " + annot.shortFeatType
 
 def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataSet, featIndels):
     description = getDescription(annot)
@@ -140,28 +129,13 @@ def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus
     yield makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, SvgColors.red,
                         dataSet, description)
 
-def makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    #FIXME: just do a block
-    pos = (featIndel.tStart + featIndel.tEnd) // 2
+def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     name = f"ins {featIndel.length}: " + getBedName(annot)
-    description = f"insertion of {featIndel.length} bases in " + getDescription(annot)
-    yield makeGlyphDeco(pos, pos + 1, name, description, SvgColors.red, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
-
-def makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    # make long bar
-    namePre = f"ins {featIndel.length}: "
-    name = namePre + getBedName(annot)
     description = f"insertion of {featIndel.length} bases in " + getDescription(annot)
     color = SvgColors.red
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
     yield makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,
                         name, color, color, dataSet, description)
-
-def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    if featIndel.length <= FEAT_SHORT_INS_THRESHOLD:
-        yield from makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
-    else:
-        yield from makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
 
 def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     """Make glyphs or block for a particular INDEL in the annotation. A generator
