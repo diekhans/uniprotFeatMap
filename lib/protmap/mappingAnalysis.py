@@ -25,14 +25,16 @@ def _isIntron(transPsl, tStart, tEnd):
     return False
 
 def _analyzeStart(annotPsl):
-    if annotPsl.blocks[0].qStart > 0:
-        yield FeatureIndel(True, annotPsl.blocks[0].qStart,#FIXME: wrong, needs to be realtive to qStart
+    if annotPsl.qStart > 0:
+        # unaligned before first block
+        yield FeatureIndel(True, annotPsl.qStart,
                            0, annotPsl.blocks[0].qStart,
                            annotPsl.blocks[0].tStart, annotPsl.blocks[0].tStart)
 
 def _analyzeEnd(annotPsl):
-    if annotPsl.blocks[-1].qEnd < annotPsl.qSize:
-        yield FeatureIndel(True, annotPsl.qSize - annotPsl.blocks[-1].qEnd,#WRONG if strand
+    if annotPsl.qEnd < annotPsl.qSize:
+        # unaligned after last block
+        yield FeatureIndel(True, annotPsl.qSize - annotPsl.qEnd,
                            annotPsl.blocks[-1].qEnd, annotPsl.qSize,
                            annotPsl.blocks[-1].tEnd, annotPsl.blocks[-1].tEnd)
 
