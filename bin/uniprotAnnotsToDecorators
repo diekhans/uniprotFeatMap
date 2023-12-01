@@ -100,11 +100,11 @@ def makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, c
                              name, color, dataSet, description, glyph=Glyph.Triangle)
 
 def getBedName(annot):
-    "function that can be change to get names"
-    return getAnnotDescriptiveName(annot)
+    "change this function to get a different BED name (MUST be <= 255 characters)"
+    return annot.shortFeatType
 
 def getDescription(annot):
-    "function that can be change to get better long description"
+    "change this function to get a different description"
     return getAnnotDescriptiveName(annot) + " " + annot.shortFeatType
 
 def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataSet, featIndels):
