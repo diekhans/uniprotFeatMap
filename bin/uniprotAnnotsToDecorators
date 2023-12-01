@@ -105,7 +105,7 @@ def getBedName(annot):
 
 def getDescription(annot):
     "change this function to get a different description"
-    return getAnnotDescriptiveName(annot) + " " + annot.shortFeatType
+    return getAnnotDescriptiveName(annot)
 
 def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataSet, featIndels):
     description = getDescription(annot)
