@@ -15,10 +15,11 @@ from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
-from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotBedName, getAnnotCategory, calcTransMatchStatus
+from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotShortDescriptiveName, getAnnotCategory, calcTransMatchStatus
 from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping
+
 
 def parseArgs():
     desc = """
@@ -109,8 +110,16 @@ def makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, c
     return UniprotDecoration(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
                              name, color, dataSet, description, glyph=Glyph.Triangle)
 
+def getBedName(annot):
+    "function that can be change to get names"
+    return getAnnotShortDescriptiveName(annot)
+
+def getDescription(annot):
+    "function that can be change to get better long description"
+    return getAnnotShortDescriptiveName(annot) + " " + annot.shortFeatType
+
 def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataSet, featIndels):
-    description = annot.featType
+    description = getDescription(annot)
     annotColor = getAnnotColor(annot, dataSet)
     fillColor = annotColor.setAlpha(0.5)
     if len(featIndels) > 0:
@@ -121,27 +130,28 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataS
         color = SvgColors.black
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     return makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,
-                         getAnnotBedName(annot), color, fillColor,
+                         getBedName(annot), color, fillColor,
                          dataSet, description)
 
 def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    name = f"del {featIndel.length}: "
+    name = f"del {featIndel.length}: " + getBedName(annot)
+    description = f"deletion of {featIndel.length} bases in " + getDescription(annot)
     pos = (featIndel.tStart + featIndel.tEnd) // 2
     yield makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, SvgColors.red,
-                        dataSet, name)
+                        dataSet, description)
 
 def makeFeatShortInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     #FIXME: just do a block
     pos = (featIndel.tStart + featIndel.tEnd) // 2
-    name = f"ins {featIndel.length}: " + getAnnotBedName(annot)
-    description = name
+    name = f"ins {featIndel.length}: " + getBedName(annot)
+    description = f"insertion of {featIndel.length} bases in " + getDescription(annot)
     yield makeGlyphDeco(pos, pos + 1, name, description, SvgColors.red, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
 
 def makeFeatLongInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     # make long bar
     namePre = f"ins {featIndel.length}: "
-    name = namePre + getAnnotBedName(annot)
-    description = name
+    name = namePre + getBedName(annot)
+    description = f"insertion of {featIndel.length} bases in " + getDescription(annot)
     color = SvgColors.red
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
     yield makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,

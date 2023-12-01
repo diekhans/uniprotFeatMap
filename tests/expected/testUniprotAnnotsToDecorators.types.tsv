@@ -5,7 +5,7 @@ unipDisulfBond	Disulfide Bond	disulfide bond	disulf bond
 unipDomain	Domain	domain	domain
 unipDomain	Domain	topological domain	topo
 unipDomain	Domain	zinc finger region	zinc finger
-unipInterest	Regions of Interest	region of interest	interest
+unipInterest	Region of Interest	region of interest	interest
 unipLocCytopl	Cytoplasmic Domains	topological domain	topo
 unipLocExtra	Extracellular Domain	topological domain	topo
 unipLocSignal	Signal Peptide	signal peptide	signal pep

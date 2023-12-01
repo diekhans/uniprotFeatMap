@@ -9,7 +9,6 @@ from protmap import dropVersion, buildDfUniqueIndex, buildDfMultiIndex
 
 # WARNING: UniProt is 1-based, open-end
 
-
 class UniProtDataSet(SymEnum):
     SwissProt = 1
     TrEMBL = 2
@@ -230,7 +229,7 @@ def getCommentBedName(annot):
         name = "Disordered"
     return name
 
-def getAnnotBedLongName(annot):   # noqa:C901
+def getAnnotDescriptiveName(annot):   # noqa:C901
     "get name to use in BED, based on doUniprot"
     # set the bed name field to a disease, to the mutation or something else
     if (isMutagenesis(annot) or isVariant(annot)):
@@ -277,9 +276,9 @@ def getAnnotBedLongName(annot):   # noqa:C901
 
     return annot.shortFeatType
 
-def getAnnotBedName(annot):
+def getAnnotShortDescriptiveName(annot):
     "get BED name, adjust if too long"
-    name = getAnnotBedLongName(annot)
+    name = getAnnotDescriptiveName(annot)
     if len(name) > 17:
         name = name[:14] + "..."
     return name
@@ -314,7 +313,7 @@ def getAnnotCategory(annot):  # noqa: C901
     elif annot.featType in ["glycosylation site", "modified residue", "lipid moiety-binding region"]:
         return ("unipModif", "Amino Acid Modification")
     elif annot.featType in ["region of interest"]:
-        return ("unipInterest", "Regions of Interest")
+        return ("unipInterest", "Region of Interest")
     else:
         return ("unipOther", "Other Annotation")
 
