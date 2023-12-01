@@ -23,7 +23,7 @@ table uniprotDecoration
     string transMatchStatus; "Is the transcript list as a matching the canonical Uniprot yes: match, maybe: match different version, no: doesn't match"
     string category;  "Feature category symbolic name"
     string categoryName;  "Feature category descriptive name"
-    string description; "Description of annotation or disruption"
+    lstring description; "Description of annotation or disruption"
     string shortFeatType;  "Short feature  type, often group multiple feature types"
     string featType;       "Type of feature"
     string shortName;  "Short descriptive name of feature "
