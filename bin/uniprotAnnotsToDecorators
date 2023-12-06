@@ -15,7 +15,7 @@ from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
-from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus
+from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus, getColorUses
 from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping
@@ -25,6 +25,30 @@ UNIPROT_OTHER_ISO_OUTLINE_COLOR = SvgColors.black
 FEAT_INSERTION_COLOR = SvgColors.red
 FEAT_DELETION_COLOR = SvgColors.red
 
+def makeColorDesc(color, info):
+    colorName = SvgColors.getName(color)
+    colorRgb = color.toRgb8Str() if color.alpha is None else color.toRgba8Str()
+    return f"{info:<36} {colorName:<14} {colorRgb}"
+
+class HelpColors(argparse.Action):
+    "generate a help message on colors"
+    def __call__(self, parser, namespace, values, option_string=None):
+        descs = [makeColorDesc(UNIPROT_TRANS_MATCH_OUTLINE_COLOR,
+                               "matched transcript outline"),
+                 makeColorDesc(UNIPROT_OTHER_ISO_OUTLINE_COLOR,
+                               "other isoform transcript outline"),
+                 makeColorDesc(FEAT_INSERTION_COLOR,
+                               "feature insertion"),
+                 makeColorDesc(FEAT_DELETION_COLOR,
+                               "feature deletion")]
+        for (color, info) in getColorUses():
+            descs.append(makeColorDesc(color, info))
+        print("Color usage:")
+        for desc in descs:
+            print("   ", desc)
+        parser.exit()
+
+
 def parseArgs():
     desc = """
     Convert domain annotations alignments create by uniprotMapAnnots
@@ -32,6 +56,8 @@ def parseArgs():
     the results.
     """
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('--help-colors', action=HelpColors, nargs=0,
+                        help='Show description of colors used, mostly for producing documentation')
     parser.add_argument("--nprocs", type=int, default=1,
                         help="number of processes to use for tasks")
     parser.add_argument("--batchSize", type=int, default=1000,

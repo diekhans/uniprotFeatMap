@@ -361,3 +361,13 @@ def calcTransMatchStatus(uniprotMeta, transId):
         return TransMatchStatus.maybe
     else:
         return TransMatchStatus.no
+
+def getColorUses():
+    "list of tuples of (color, use_description)"
+    uses = [(SWISSPCOLOR, "SwissProt base"),
+            (TREMBLCOLOR, "TrEMBL base")]
+    for info, color in featTypeColors.items():
+        uses.append((color, info))
+    for info, color in commentColor.items():
+        uses.append((color, info))
+    return uses

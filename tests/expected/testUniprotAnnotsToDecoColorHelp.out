@@ -1,0 +1,16 @@
+Color usage:
+    matched transcript outline           deepskyblue    0,191,255
+    other isoform transcript outline     black          0,0,0
+    feature insertion                    red            255,0,0
+    feature deletion                     red            255,0,0
+    SwissProt base                       forestgreen    34,139,34
+    TrEMBL base                          darkseagreen   143,188,143
+    modified residue                     goldenrod      218,165,32
+    glycosylation site                   teal           0,128,128
+    disulfide bond                       dimgray        105,105,105
+    topological domain                   maroon         128,0,0
+    zinc finger region                   olive          128,128,0
+    transmembrane region                 green          0,128,0
+    signal peptide                       deeppink       255,20,147
+    Extracellular                        darkcyan       0,139,139
+    Cytoplasmic                          darkorange     255,140,0

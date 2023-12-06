@@ -70,7 +70,8 @@ testUniprotMapAnnots: mkout
 	pslCheck -verbose=0 output/$@.psl
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
-uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators
+uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators \
+	testUniprotAnnotsToDecoColorHelp
 
 testUniprotAnnotsToDecorators: mkout output/gencode.v43.bb ${testHubFilesOutput}
 	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
@@ -79,6 +80,10 @@ testUniprotAnnotsToDecorators: mkout output/gencode.v43.bb ${testHubFilesOutput}
 	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
+
+testUniprotAnnotsToDecoColorHelp: mkout
+	${uniprotAnnotsToDecorators} --help-colors >output/$@.out
+	diff expected/$@.out output/$@.out
 
 # gene track can can be used to validate decorators
 output/gencode.v43.bb: input/gencode.v43.gp

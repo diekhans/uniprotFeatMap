@@ -67,3 +67,5 @@ It was a bit slower than read into objects and dict indexes were still needed.  
 *  make use uniProt vs uniprot is consistent
 
 * default to adjacent
+
+* rather than special color cases, can TrEMBL uses a different share or outline
