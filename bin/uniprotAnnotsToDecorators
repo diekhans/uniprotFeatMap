@@ -20,6 +20,10 @@ from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping
 
+UNIPROT_TRANS_MATCH_OUTLINE_COLOR = SvgColors.deepskyblue
+UNIPROT_OTHER_ISO_OUTLINE_COLOR = SvgColors.black
+FEAT_INSERTION_COLOR = SvgColors.red
+FEAT_DELETION_COLOR = SvgColors.red
 
 def parseArgs():
     desc = """
@@ -113,10 +117,10 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataS
     fillColor = annotColor.setAlpha(0.5)
     if len(featIndels) > 0:
         color = getProblemColor(annot, dataSet)
-    elif transMatchStatus != TransMatchStatus.no:
-        color = SvgColors.deepskyblue
+    elif transMatchStatus in (TransMatchStatus.yes, TransMatchStatus.maybe):
+        color = UNIPROT_TRANS_MATCH_OUTLINE_COLOR
     else:
-        color = SvgColors.black
+        color = UNIPROT_OTHER_ISO_OUTLINE_COLOR
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     return makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,
                          getBedName(annot), color, fillColor,
@@ -126,13 +130,13 @@ def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus
     name = f"del {featIndel.length}: " + getBedName(annot)
     description = f"deletion of {featIndel.length} bases in " + getDescription(annot)
     pos = (featIndel.tStart + featIndel.tEnd) // 2
-    yield makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, SvgColors.red,
+    yield makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, FEAT_DELETION_COLOR,
                         dataSet, description)
 
 def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     name = f"ins {featIndel.length}: " + getBedName(annot)
     description = f"insertion of {featIndel.length} bases in " + getDescription(annot)
-    color = SvgColors.red
+    color = FEAT_INSERTION_COLOR
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
     yield makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,
                         name, color, color, dataSet, description)

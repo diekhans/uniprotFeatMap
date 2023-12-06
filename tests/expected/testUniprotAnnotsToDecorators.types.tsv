@@ -1,33 +1,33 @@
 category	categoryName	featType	shortFeatType
-unipChain	Polypeptide Chains	chain	chain
-unipConflict	Sequence Conflict	sequence conflict	conflict
-unipDisulfBond	Disulfide Bond	disulfide bond	disulf bond
-unipDomain	Domain	domain	domain
-unipDomain	Domain	topological domain	topo
-unipDomain	Domain	zinc finger region	zinc finger
-unipInterest	Region of Interest	region of interest	interest
-unipLocCytopl	Cytoplasmic Domains	topological domain	topo
-unipLocExtra	Extracellular Domain	topological domain	topo
-unipLocSignal	Signal Peptide	signal peptide	signal pep
-unipLocTransMemb	Transmembrane Domain	transmembrane region	transmem
-unipModif	Amino Acid Modification	glycosylation site	glyco
-unipModif	Amino Acid Modification	lipid moiety-binding region	lipid
-unipModif	Amino Acid Modification	modified residue	acetyl
-unipModif	Amino Acid Modification	modified residue	modif
-unipModif	Amino Acid Modification	modified residue	phos
-unipMut	Mutation	mutagenesis site	mutagen
-unipMut	Mutation	sequence variant	variant
-unipOther	Other Annotation	active site	enzyme act site
-unipOther	Other Annotation	binding site	bind
-unipOther	Other Annotation	compositionally biased region	biased
-unipOther	Other Annotation	cross-link	cross-link
-unipOther	Other Annotation	initiator methionine	init Met
-unipOther	Other Annotation	intramembrane region	intramem
-unipOther	Other Annotation	peptide	peptide
-unipOther	Other Annotation	short sequence motif	motif
-unipOther	Other Annotation	site	site
-unipOther	Other Annotation	transit peptide	trans pep
-unipRepeat	Repeat	repeat	repeat
-unipStruct	Protein Structure	helix	helix
-unipStruct	Protein Structure	strand	beta
-unipStruct	Protein Structure	turn	turn
+Mut	Mutation	mutagenesis site	mutagen
+Mut	Mutation	sequence variant	variant
+Struct	Protein Structure	helix	helix
+Struct	Protein Structure	strand	beta
+Struct	Protein Structure	turn	turn
+LocTransMemb	Transmembrane Domain	transmembrane region	transmem
+LocExtra	Extracellular Domain	topological domain	topo
+LocCytopl	Cytoplasmic Domains	topological domain	topo
+LocSignal	Signal Peptide	signal peptide	signal pep
+Chain	Polypeptide Chains	chain	chain
+Repeat	Repeat	repeat	repeat
+Conflict	Sequence Conflict	sequence conflict	conflict
+DisulfBond	Disulfide Bond	disulfide bond	disulf bond
+Domain	Domain	domain	domain
+Domain	Domain	topological domain	topo
+Domain	Domain	zinc finger region	zinc finger
+Modif	Amino Acid Modification	glycosylation site	glyco
+Modif	Amino Acid Modification	lipid moiety-binding region	lipid
+Modif	Amino Acid Modification	modified residue	acetyl
+Modif	Amino Acid Modification	modified residue	modif
+Modif	Amino Acid Modification	modified residue	phos
+Interest	Region of Interest	region of interest	interest
+Other	Other Annotation	active site	enzyme act site
+Other	Other Annotation	binding site	bind
+Other	Other Annotation	compositionally biased region	biased
+Other	Other Annotation	cross-link	cross-link
+Other	Other Annotation	initiator methionine	init Met
+Other	Other Annotation	intramembrane region	intramem
+Other	Other Annotation	peptide	peptide
+Other	Other Annotation	short sequence motif	motif
+Other	Other Annotation	site	site
+Other	Other Annotation	transit peptide	trans pep

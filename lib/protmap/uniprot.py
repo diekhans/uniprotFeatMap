@@ -4,7 +4,7 @@ Reads files create by uniprotToTab, and other uniport support
 
 import pandas as pd
 from pycbio.sys.svgcolors import SvgColors
-from pycbio.sys.symEnum import SymEnum
+from pycbio.sys.symEnum import SymEnum, auto
 from protmap import dropVersion, buildDfUniqueIndex, buildDfMultiIndex
 
 # WARNING: UniProt is 1-based, open-end
@@ -12,6 +12,24 @@ from protmap import dropVersion, buildDfUniqueIndex, buildDfMultiIndex
 class UniProtDataSet(SymEnum):
     SwissProt = 1
     TrEMBL = 2
+
+class UniProtCategory(SymEnum):
+    "categories assign my Max in genomic UniProt tracks"
+    Mut = auto()
+    Splice = auto()
+    Struct = auto()
+    LocTransMemb = auto()
+    LocExtra = auto()
+    LocCytopl = auto()
+    LocSignal = auto()
+    Chain = auto()
+    Repeat = auto()
+    Conflict = auto()
+    DisulfBond = auto()
+    Domain = auto()
+    Modif = auto()
+    Interest = auto()
+    Other = auto()
 
 class TransMatchStatus(SymEnum):
     no = 0
@@ -154,13 +172,31 @@ commentColor = {
     "Cytoplasmic": SvgColors.darkorange,       # was 255,150,0 light orange
 }
 
-def getAnnotColor(annot, dataSet):
-    if dataSet == UniProtDataSet.TrEMBL:
-        return TREMBLCOLOR
+def getAnnotColorSwissport(annot):
     color = commentColor.get(annot.comment, None)
     if color is None:
         color = featTypeColors.get(annot.featType, None)
     return color if color is not None else SWISSPCOLOR
+
+# TrEMBL categories to provide special coloring
+_tremblColorCategories = frozenset((
+    UniProtCategory.LocSignal,
+    UniProtCategory.LocExtra,
+    UniProtCategory.LocTransMemb,
+    UniProtCategory.LocCytopl,
+))
+
+def getAnnotColorTrembl(annot):
+    if getAnnotCategory(annot)(annot)[0] in _tremblColorCategories:
+        return getAnnotColorSwissport(annot)
+    else:
+        return TREMBLCOLOR
+
+def getAnnotColor(annot, dataSet):
+    if dataSet == UniProtDataSet.SwissProt:
+        return getAnnotColorSwissport(annot)
+    else:
+        return getAnnotColorTrembl(annot)
 
 def getProblemColor(annot, isTrembl):
     return SvgColors.red
@@ -286,36 +322,36 @@ def getAnnotShortDescriptiveName(annot):
 def getAnnotCategory(annot):  # noqa: C901
     "return a symbolic and description; from uniport trackDb"
     if annot.featType in ["mutagenesis site", "sequence variant"]:
-        return ("unipMut", "Mutation")
+        return (UniProtCategory.Mut, "Mutation")
     elif annot.featType in ["splice variant"]:
-        return ("unipSplice", "Splice variant")
+        return (UniProtCategory.Splice, "Splice variant")
     elif annot.featType in ["strand", "helix", "coiled-coil region", "turn"]:
-        return ("unipStruct", "Protein Structure")
+        return (UniProtCategory.Struct, "Protein Structure")
     elif annot.featType in ["transmembrane region"]:
         # suggested by Regeneron: create four subtracks, for the subcell. localization indicators
-        return ("unipLocTransMemb", "Transmembrane Domain")
+        return (UniProtCategory.LocTransMemb, "Transmembrane Domain")
     elif annot.comment in ["Extracellular"]:
-        return ("unipLocExtra", "Extracellular Domain")
+        return (UniProtCategory.LocExtra, "Extracellular Domain")
     elif annot.comment in ["Cytoplasmic"]:
-        return ("unipLocCytopl", "Cytoplasmic Domains")
+        return (UniProtCategory.LocCytopl, "Cytoplasmic Domains")
     elif annot.featType in ["signal peptide"]:
-        return ("unipLocSignal", "Signal Peptide")
+        return (UniProtCategory.LocSignal, "Signal Peptide")
     elif annot.featType in ["chain"]:
-        return ("unipChain", "Polypeptide Chains")
+        return (UniProtCategory.Chain, "Polypeptide Chains")
     elif annot.featType in ["repeat"]:
-        return ("unipRepeat", "Repeat")
+        return (UniProtCategory.Repeat, "Repeat")
     elif annot.featType == "sequence conflict":
-        return ("unipConflict", "Sequence Conflict")
+        return (UniProtCategory.Conflict, "Sequence Conflict")
     elif annot.featType in ["disulfide bond"]:
-        return ("unipDisulfBond", "Disulfide Bond")
+        return (UniProtCategory.DisulfBond, "Disulfide Bond")
     elif annot.featType in ["domain", "zinc finger region", "topological domain"]:
-        return ("unipDomain", "Domain")
+        return (UniProtCategory.Domain, "Domain")
     elif annot.featType in ["glycosylation site", "modified residue", "lipid moiety-binding region"]:
-        return ("unipModif", "Amino Acid Modification")
+        return (UniProtCategory.Modif, "Amino Acid Modification")
     elif annot.featType in ["region of interest"]:
-        return ("unipInterest", "Region of Interest")
+        return (UniProtCategory.Interest, "Region of Interest")
     else:
-        return ("unipOther", "Other Annotation")
+        return (UniProtCategory.Other, "Other Annotation")
 
 def calcTransMatchStatus(uniprotMeta, transId):
     "determine match of transcript to GENCODE based on what transcripts are listed in metadata"
