@@ -69,8 +69,7 @@ It was a bit slower than read into objects and dict indexes are still needed.  P
 
 * default to adjacent
 
-* rather than special color cases, can TrEMBL uses a different share or outline
-
+* rather than special color cases, can TrEMBL uses a different shade or outline
 
 * URGENT why didn't split alignment block get chained
 in test set at chr19:51,890,708-51,890,879 ENST00000600738.5

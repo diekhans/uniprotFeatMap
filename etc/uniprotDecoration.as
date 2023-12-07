@@ -19,8 +19,9 @@ table uniprotDecoration
     string glyph;  "The glyph to draw in glyph mode; ignored for other styles"
 
     string dataSet;     "SwissProt (manual annotation) or TrEMBL (automated automated)"
-    string uniprotAcc;  "UniProt accession" 
-    string transMatchStatus; "Is the transcript list as a matching the canonical Uniprot yes: match, maybe: match different version, no: doesn't match"
+    string uniprotAcc;  "UniProt accession"
+    string transMatchStatus; "Does the transcript matching the canonical Uniprot"
+    string annotStatus;   "For features, either 'good' or 'problem', for INDEL annotations, the type of INDEL"
     string category;  "Feature category symbolic name"
     string categoryName;  "Feature category descriptive name"
     lstring description; "Description of annotation or disruption"

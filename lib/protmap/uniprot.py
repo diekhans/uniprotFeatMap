@@ -32,10 +32,9 @@ class UniProtCategory(SymEnum):
     Other = auto()
 
 class TransMatchStatus(SymEnum):
-    no = 0
-    maybe = 1
-    yes = 2
-
+    same_version = auto()
+    diff_version = auto()
+    other_isoform = auto()
 
 def splitMetaList(val):
     """ split strings like: ENST00000369413.8|ENST00000528909.1"""
@@ -356,11 +355,11 @@ def getAnnotCategory(annot):  # noqa: C901
 def calcTransMatchStatus(uniprotMeta, transId):
     "determine match of transcript to GENCODE based on what transcripts are listed in metadata"
     if transId in uniprotMeta.ensemblTransIds:
-        return TransMatchStatus.yes
+        return TransMatchStatus.same_version
     elif dropVersion(transId) in uniprotMeta.ensemblTransAccs:
-        return TransMatchStatus.maybe
+        return TransMatchStatus.diff_version
     else:
-        return TransMatchStatus.no
+        return TransMatchStatus.other_isoform
 
 def getColorUses():
     "list of tuples of (color, use_description)"
