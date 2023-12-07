@@ -18,7 +18,7 @@ from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, Tra
 from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus, getColorUses
 from protmap.gencode import GencodeData
 from protmap.annotTransRef import AnnotTransRefs
-from protmap.mappingAnalysis import analyzeFeatureMapping
+from protmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
 
 UNIPROT_TRANS_MATCH_OUTLINE_COLOR = SvgColors.deepskyblue
 UNIPROT_OTHER_ISO_OUTLINE_COLOR = SvgColors.black
@@ -152,28 +152,33 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataS
                          getBedName(annot), color, fillColor,
                          dataSet, description)
 
+def getIndelName(featIndel, annot):
+    return f"{featIndel.indelType}_{featIndel.length}_" + getBedName(annot)
+
+def getIndelDesc(featIndel, annot):
+    indelText = getFeatureIndelText(featIndel.indelType)
+    return f"{indelText} of {featIndel.length} bases in " + getDescription(annot)
+
 def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    name = f"del {featIndel.length}: " + getBedName(annot)
-    description = f"deletion of {featIndel.length} bases in " + getDescription(annot)
     pos = (featIndel.tStart + featIndel.tEnd) // 2
-    yield makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, FEAT_DELETION_COLOR,
-                        dataSet, description)
+    yield makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos,
+                        getIndelName(featIndel, annot), FEAT_DELETION_COLOR,
+                        dataSet, getIndelDesc(featIndel, annot))
 
 def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
-    name = f"ins {featIndel.length}: " + getBedName(annot)
-    description = f"insertion of {featIndel.length} bases in " + getDescription(annot)
     color = FEAT_INSERTION_COLOR
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
     yield makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks,
-                        name, color, color, dataSet, description)
+                        getIndelName(featIndel, annot), color, color,
+                        dataSet, getIndelDesc(featIndel, annot))
 
 def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet):
     """Make glyphs or block for a particular INDEL in the annotation. A generator
     so more than one can be returned"""
-    if featIndel.isFeatDel:
-        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
-    else:
+    if featIndel.indelType == FeatureIndelType.insert:
         yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
+    else:
+        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transMatchStatus, dataSet)
 
 def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, transMatchStatus, dataSet, featIndels):
     "produces glyphs to mark were annotations are broken in the mappings"

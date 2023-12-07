@@ -2,9 +2,26 @@
 Analyze mappings of features to transcripts.
 """
 from collections import namedtuple
+from pycbio.sys.symEnum import SymEnum, auto
+
+class FeatureIndelType(SymEnum):
+    del_5p = auto()
+    del_3p = auto()
+    del_int = auto()
+    insert = auto()
+
+_featIndelText = {
+    FeatureIndelType.del_5p: "5' deletion",
+    FeatureIndelType.del_3p: "5' deletion",
+    FeatureIndelType.del_int: "internal deletion",
+    FeatureIndelType.insert: "insertion"
+}
+
+def getFeatureIndelText(indelType):
+    return _featIndelText[indelType]
 
 class FeatureIndel(namedtuple("FeatureIndel",
-                              ("isFeatDel", "length",
+                              ("indelType", "length",
                                "tStart", "tEnd",
                                ))):
     """Describes an INDEL.  For featDel, length is bases deleted, for inst it
@@ -25,23 +42,33 @@ def _isIntron(transPsl, tStart, tEnd):
 def _analyzeStart(annotPsl):
     if annotPsl.qStart > 0:
         # unaligned before start of query
-        tPos = annotPsl.blocks[0].tStart if annotPsl.qStrand == '+' else annotPsl.blocks[-1].tEnd
-        yield FeatureIndel(True, annotPsl.qStart, tPos, tPos)
+        if annotPsl.qStrand == '+':
+            tPos = annotPsl.blocks[0].tStart
+            indelType = FeatureIndelType.del_5p
+        else:
+            tPos = annotPsl.blocks[-1].tEnd
+            indelType = FeatureIndelType.del_3p
+        yield FeatureIndel(indelType, annotPsl.qStart, tPos, tPos)
 
 def _analyzeEnd(annotPsl):
     if annotPsl.qEnd < annotPsl.qSize:
         # unaligned after last block
-        tPos = annotPsl.blocks[-1].tEnd if annotPsl.qStrand == '+' else annotPsl.blocks[0].tStart
-        yield FeatureIndel(True, annotPsl.qSize - annotPsl.qEnd, tPos, tPos)
+        if annotPsl.qStrand == '+':
+            tPos = annotPsl.blocks[-1].tEnd
+            indelType = FeatureIndelType.del_3p
+        else:
+            tPos = annotPsl.blocks[0].tStart
+            indelType = FeatureIndelType.del_5p
+        yield FeatureIndel(indelType, annotPsl.qSize - annotPsl.qEnd, tPos, tPos)
 
 def _analyzeBlock(transPsl, annotPsl, iBlk):
     blk = annotPsl.blocks[iBlk]
     nextBlk = annotPsl.blocks[iBlk + 1]
     if blk.qEnd < nextBlk.qStart:
-        yield FeatureIndel(True, (nextBlk.qStart - blk.qEnd),
+        yield FeatureIndel(FeatureIndelType.del_int, (nextBlk.qStart - blk.qEnd),
                            blk.tEnd, nextBlk.tStart)
     if (blk.tEnd < nextBlk.tStart) and (not _isIntron(transPsl, blk.tEnd, nextBlk.tStart)):
-        yield FeatureIndel(False, (nextBlk.tStart - blk.tEnd),
+        yield FeatureIndel(FeatureIndelType.insert, (nextBlk.tStart - blk.tEnd),
                            blk.tEnd, nextBlk.tStart)
 
 def _analyzeBlocks(transPsl, annotPsl):
@@ -58,15 +85,4 @@ def analyzeFeatureMapping(transPsl, annotPsl):
     unmapped regions of feature or insertions in
     feature that don't correspond to introns in
     transcripts."""
-    #return tuple(_featureIndelGen(transPsl, annotPsl))
-
-    v = tuple(_featureIndelGen(transPsl, annotPsl))
-
-    if (transPsl.qName == "ENST00000697272.1") and (len(v) > 0):
-        import pipettor#fixme
-        print("*", str(annotPsl))
-        print(pipettor.runout(["pslFmt"], stdin=pipettor.DataWriter(str(annotPsl) + '\n')))
-        for x in v:
-            print(x)
-        print()
-    return v#tmp
+    return tuple(_featureIndelGen(transPsl, annotPsl))
