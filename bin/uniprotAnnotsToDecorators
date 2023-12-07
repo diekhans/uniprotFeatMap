@@ -125,7 +125,7 @@ def makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, bedBlocks, n
 
 
 def makeGlyphDeco(annotPsl, annot, annotTransRef, transMatchStatus, pos, name, color, dataSet, description):
-    bedBlocks = [BedBlock(pos, pos + 1)]
+    bedBlocks = [BedBlock(pos, pos)]
     return UniprotDecoration(annotPsl.tName, annotPsl.qStrand, bedBlocks, annot, annotTransRef, transMatchStatus,
                              name, color, dataSet, description, glyph=Glyph.Triangle)
 

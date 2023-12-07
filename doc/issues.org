@@ -1,3 +1,6 @@
+#+STARTUP: nologdone
+#+TODO: TODO ACTIVE URGENT PAUSED | DONE CANCELED
+
 * use __init__. buildDfMultiIndex got genes and transcirpt id columns
 or just drop pandas
 
@@ -62,10 +65,12 @@ Warning: P20848 does not map to any transcript
 
   
 * It was less than satisfying using Pandas:
-It was a bit slower than read into objects and dict indexes were still needed.  Pandas also bring in some heavy-weight stuff, like BLAS  threads.
-
-*  make use uniProt vs uniprot is consistent
+It was a bit slower than read into objects and dict indexes are still needed.  Pandas also bring in some heavy-weight stuff, like BLAS  threads.
 
 * default to adjacent
 
 * rather than special color cases, can TrEMBL uses a different share or outline
+
+
+* URGENT why didn't split alignment block get chained
+in test set at chr19:51,890,708-51,890,879 ENST00000600738.5
