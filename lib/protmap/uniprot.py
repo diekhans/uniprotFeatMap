@@ -2,6 +2,8 @@
 Reads files create by uniprotToTab, and other uniport support
 """
 
+import os
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
 import pandas as pd
 from pycbio.sys.svgcolors import SvgColors
 from pycbio.sys.symEnum import SymEnum, auto

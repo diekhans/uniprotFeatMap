@@ -2,20 +2,22 @@
 File that cross-references mapped annotations to transcript metadata
 """
 
-import os
 from pycbio.sys import fileOps
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-import pandas as pd
+from pycbio.tsv import TsvReader
 
 class AnnotTransRefs:
     """look up transcript for a PSL row"""
     def __init__(self, annotTransRefTsv):
-        self.df = pd.read_table(annotTransRefTsv)
-        self.df.set_index('alignIdx', inplace=True, drop=False, verify_integrity=True)
+        self.byAlignIdx = {}
+        for row in TsvReader(annotTransRefTsv, typeMap={"alignIdx": int}):
+            self._readRow(row)
+
+    def _readRow(self, row):
+        self.byAlignIdx[row.alignIdx] = row
 
     def get(self, annotId, alignIdx):
-        annotTransRef = self.df[self.df.index == alignIdx].iloc[0]
-        if annotId != annotTransRef.annotId:
+        annotTransRef = self.byAlignIdx[alignIdx]
+        if annotTransRef.annotId != annotId:
             raise Exception(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
         return annotTransRef
 
