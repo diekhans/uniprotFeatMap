@@ -1,20 +1,28 @@
-import pandas as pd
 from collections import defaultdict
+from pycbio.tsv import TsvReader
 from pycbio.hgdata.psl import PslReader
 
 class GencodeMetadata:
     def __init__(self, gencodeMetaTsv):
-        self.df = pd.read_table(gencodeMetaTsv, keep_default_na=False)
-        self.df.set_index("transcriptId", inplace=True, drop=False, verify_integrity=True)
+        self.byTranscriptId = {}
+        self.codingTransIds = set()
+        for row in TsvReader(gencodeMetaTsv):
+            self._readRow(row)
+        self.codingTransIds = sorted(self.codingTransIds)
+
+    def _readRow(self, row):
+        self.byTranscriptId[row.transcriptId] = row
+        if row.transcriptClass == 'coding':
+            self.codingTransIds.add(row.transcriptId)
 
     def _doGetTrans(self, transId):
         # handle PAR_Y ids (e.g. ENST00000359512.8_PAR_Y)
         if transId.endswith("_PAR_Y"):
             transId = transId.split('_', 1)[0]
-        transes = self.df[self.df.index == transId]
-        if len(transes) == 0:
-            raise Exception(f"can't find GENCODE metadata for '{transId}'")
-        return transes.iloc[0]
+        try:
+            return self.byTranscriptId.get(transId)
+        except Exception as ex:
+            raise Exception(f"can't find GENCODE metadata for '{transId}'") from ex
 
     def getTrans(self, transId):
         try:
@@ -29,7 +37,7 @@ class GencodeMetadata:
         return self.getTrans(transId).geneName
 
     def getCodingTransIds(self):
-        return list(self.df[self.df.transcriptClass == 'coding'].transcriptId)
+        return self.codingTransIds
 
     def getTransType(self, transId):
         return self.getTrans(transId).transcriptType
