@@ -89,7 +89,7 @@ def pairTransByUniprotGeneId(gencodeMeta, uniprotMetaTbl, transId, aligns, logFh
     protAlign = selectAlignByProtAccs(aligns, frozenset([pm.mainIsoAcc for pm in protMetas]))
     if protAlign is None:
         problemLog(logFh, "no_uniprot_gene_id_aligns", transId, gencodeMeta.getTransType(transId),
-                   geneId, ",".join(protMetas.mainIsoAcc))
+                   geneId, ",".join([pm.mainIsoAcc for pm in protMetas]))
     return protAlign
 
 def pairTransByUniprotGeneName(gencodeMeta, uniprotMetaTbl, transId, aligns, logFh):

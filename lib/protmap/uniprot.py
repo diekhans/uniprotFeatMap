@@ -84,18 +84,21 @@ class UniProtMetaTbl:
         addValuesToMultiIdx(self.byIsoId, row.isoIds, row)
 
     def getByAcc(self, acc):
+        "Error if not found"
         try:
             return self.byAcc[acc]
         except KeyError as ex:
             raise KeyError(f"acc not found {acc}") from ex
 
     def getByIsoId(self, isoId):
+        "Error if not found"
         try:
             return self.byIsoId[isoId]
         except KeyError as ex:
             raise KeyError(f"isoId not found {isoId}") from ex
 
     def getTransMeta(self, transAcc):
+        "None if not found"
         protMetas = self.byTranscriptAcc.get(transAcc)
         if protMetas is None:
             return None
@@ -104,13 +107,12 @@ class UniProtMetaTbl:
         return protMetas[0]
 
     def getGeneAccMetas(self, geneAcc):
-        protMetas = self.byGeneAcc.get(geneAcc)
-        if len(protMetas) == 0:
-            return None
-        return protMetas
+        "list or None if not found"
+        return self.byGeneAcc.get(geneAcc)
 
     def getGeneNameMetas(self, geneName):
-        return self.geneNameIdx.get(geneName)
+        "list or None if not found"
+        return self.byGeneName.get(geneName)
 
 def uniprotParseAnnotId(annotId):
     "parse the annotation id into its parts: 'Q9BXI3#0' -> ('Q9BXI3' 0)"
