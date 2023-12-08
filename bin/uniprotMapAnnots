@@ -85,7 +85,7 @@ def annotFilter(annot, protSizes):
         return True
 
 def createAnnotPsls(uniprotAnnotTbl, protSizes, annotCanonPslFh):
-    for _, annot in uniprotAnnotTbl.df.iterrows():
+    for annot in uniprotAnnotTbl:
         if annotFilter(annot, protSizes):
             createAnnotPsl(annot, protSizes).write(annotCanonPslFh)
 

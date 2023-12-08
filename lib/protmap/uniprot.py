@@ -2,12 +2,11 @@
 Reads files create by uniprotToTab, and other uniport support
 """
 
-import os
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-import pandas as pd
+from collections import defaultdict
 from pycbio.sys.svgcolors import SvgColors
 from pycbio.sys.symEnum import SymEnum, auto
-from protmap import dropVersion, buildDfUniqueIndex, buildDfMultiIndex
+from pycbio.tsv import TsvReader
+from protmap import dropVersion
 
 # WARNING: UniProt is 1-based, open-end
 
@@ -50,57 +49,62 @@ def splitDropVersion(idents):
 def dropUniportIsoformModifier(acc):
     return acc.split('-')[0]
 
+def addUniqueToIdx(idx, key, value):
+    if key in idx:
+        raise KeyError(f"key '{key}' already in unique index")
+    idx[key] = value
+
+def addValuesToMultiIdx(idx, keys, value):
+    for key in keys:
+        idx[key].append(value)
+
 class UniProtMetaTbl:
     """reads swissprot.9606.tab, trembl.9606.tab"""
     def __init__(self, uniprotMetaTsv):
-        self.df = pd.read_table(uniprotMetaTsv, keep_default_na=False)
-        if "orgName" not in self.df.columns:
-            raise Exception(f"column 'orgName' not found, is this a UnProt metadata TSV: {uniprotMetaTsv}")
-        self.df.set_index('acc', inplace=True, drop=False, verify_integrity=True)
-        self.geneNameIdx = buildDfMultiIndex(self.df, "geneName")
+        self.byAcc = {}
+        self.byMainIsoAcc = {}
+        self.byGeneName = defaultdict(list)
+        self.byGeneAcc = defaultdict(list)
+        self.byTranscriptAcc = defaultdict(list)
+        self.byIsoId = defaultdict(list)
+        for row in TsvReader(uniprotMetaTsv):
+            self._readRow(row)
 
-        # index by gene and transcript ids
-        self.df['ensemblGeneIds'] = self.df.ensemblGene.apply(splitMetaList)
-        self.df['ensemblGeneAccs'] = self.df.ensemblGene.apply(splitDropVersion)
-        self.df['ensemblTransIds'] = self.df.ensemblTrans.apply(splitMetaList)
-        self.df['ensemblTransAccs'] = self.df.ensemblTrans.apply(splitDropVersion)
-        self.df['isoIds'] = self.df.isoIds.apply(splitMetaList)
-
-        self.byGeneAccDf = self.df.explode('ensemblGeneAccs')
-        self.byGeneAccDf.rename(columns={'ensemblGeneAccs': 'ensemblGeneAcc'}, inplace=True)
-        self.byGeneAccDf.set_index('ensemblGeneAcc', inplace=True, drop=False, verify_integrity=False)
-
-        self.byTranscriptAccDf = self.df.explode('ensemblTransAccs')
-        self.byTranscriptAccDf.rename(columns={'ensemblTransAccs': 'ensemblTransAcc'}, inplace=True)
-        self.byTranscriptAccDf.set_index('ensemblTransAcc', inplace=True, drop=False, verify_integrity=False)
-
-        # with only one isoform: acc == mainIsoAcc, and isoIds are empty
-        # for multiple isoforms: mainIsoAcc is canonical and isoIds are other isoforms.
-        # Build an index by isoId which is
-        self.df['allIsoIds'] = self.df.apply(lambda row: row.isoIds + [row.mainIsoAcc], axis=1)
-        self.byIsoId = self.df.explode('allIsoIds')
-        self.byIsoId.rename(columns={'allIsoIds': 'isoId'}, inplace=True)
-        self.byIsoId.set_index('isoId', inplace=True, drop=False, verify_integrity=True)
+    def _readRow(self, row):
+        setattr(row, 'ensemblGeneIds', splitMetaList(row.ensemblGene))
+        setattr(row, 'ensemblGeneAccs', splitDropVersion(row.ensemblGene))
+        setattr(row, 'ensemblTransIds', splitMetaList(row.ensemblTrans))
+        setattr(row, 'ensemblTransAccs', splitDropVersion(row.ensemblTrans))
+        setattr(row, 'isoIds', splitMetaList(row.isoIds))
+        addUniqueToIdx(self.byAcc, row.acc, row)
+        addUniqueToIdx(self.byMainIsoAcc, row.mainIsoAcc, row)
+        self.byGeneName[row.geneName].append(row)
+        addValuesToMultiIdx(self.byGeneAcc, row.ensemblGeneAccs, row)
+        addValuesToMultiIdx(self.byTranscriptAcc, row.ensemblTransIds, row)
+        addValuesToMultiIdx(self.byIsoId, row.isoIds, row)
 
     def getByAcc(self, acc):
-        return self.df[self.df.index == acc].iloc[0]
+        try:
+            return self.byAcc[acc]
+        except KeyError as ex:
+            raise KeyError(f"acc not found {acc}") from ex
 
     def getByIsoId(self, isoId):
         try:
-            return self.byIsoId[self.byIsoId.index == isoId].iloc[0]
-        except IndexError as ex:
-            raise IndexError(f"isoId not found {isoId}") from ex
+            return self.byIsoId[isoId]
+        except KeyError as ex:
+            raise KeyError(f"isoId not found {isoId}") from ex
 
     def getTransMeta(self, transAcc):
-        protMetas = self.byTranscriptAccDf[self.byTranscriptAccDf.index == transAcc]
-        if len(protMetas) == 0:
+        protMetas = self.byTranscriptAcc.get(transAcc)
+        if protMetas is None:
             return None
         if len(protMetas) > 1:
             raise Exception(f"more than one protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
-        return protMetas.iloc[0]
+        return protMetas[0]
 
     def getGeneAccMetas(self, geneAcc):
-        protMetas = self.byGeneAccDf[self.byGeneAccDf.index == geneAcc]
+        protMetas = self.byGeneAcc.get(geneAcc)
         if len(protMetas) == 0:
             return None
         return protMetas
@@ -119,21 +123,26 @@ def uniprotAnnotIdToAcc(annotId):
     "parse the annotation id into accession: 'Q9BXI3#0' -> 'Q9BXI3'"
     return uniprotParseAnnotId(annotId)[0]
 
-class UniProtAnnotTbl:
+class UniProtAnnotTbl(list):
     """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
     def __init__(self, uniprotAnnotsTsv):
-        self.df = pd.read_table(uniprotAnnotsTsv, keep_default_na=False)
-        if "featType" not in self.df.columns:
-            raise Exception("column 'featType' not found, is this a UnIprot annotations TSV: " + uniprotAnnotsTsv)
+        self.byAnnotId = {}
+        mainIsoNextId = defaultdict(int)
+        for row in TsvReader(uniprotAnnotsTsv, typeMap={"begin": int, "end": int}):
+            self._readRow(row, mainIsoNextId)
 
+    def _readRow(self, row, mainIsoNextId):
         # Add a unique, reproducible annotation id in the form mainIsoAcc#annotIdx, where the annotIdx is
         # the relative index of the annotation for that acc.
-        self.df["annotId"] = self.df.mainIsoAcc.astype(str) + "#" + self.df.groupby("mainIsoAcc").cumcount().astype(str)
+        annotId = row.mainIsoAcc + '#' + str(mainIsoNextId[row.mainIsoAcc])
+        mainIsoNextId[row.mainIsoAcc] += 1
 
-        self.annotIdIdx = buildDfUniqueIndex(self.df, "annotId")
+        setattr(row, "annotId", annotId)
+        self.byAnnotId[annotId] = row
+        self.append(row)
 
     def getByAnnotId(self, annotId):
-        annot = self.annotIdIdx.get(annotId)
+        annot = self.byAnnotId.get(annotId)
         if annot is None:
             raise Exception(f"annotId '{annotId}' not found in annotation table")
         return annot

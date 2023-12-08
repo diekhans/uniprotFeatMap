@@ -49,7 +49,7 @@ def problemLog(logFh, reason, transcriptId, transcriptType, key=None, uniprotId=
 def keepAlign(uniprotMetaTbl, psl):
     # only keep alignments from main SwissProt isoform, as alt-isoforms are
     # not annotated
-    return not uniprotMetaTbl.df.mainIsoAcc.isin([psl.qName]).empty
+    return psl.qName in uniprotMetaTbl.byMainIsoAcc
 
 def loadProtTransPsl(uniprotMetaTbl, protTransPsl):
     alignsByTrans = defaultdict(list)  # by stable trans id
@@ -86,7 +86,7 @@ def pairTransByUniprotGeneId(gencodeMeta, uniprotMetaTbl, transId, aligns, logFh
     protMetas = uniprotMetaTbl.getGeneAccMetas(dropVersion(geneId))
     if protMetas is None:
         return None
-    protAlign = selectAlignByProtAccs(aligns, frozenset(protMetas.mainIsoAcc))
+    protAlign = selectAlignByProtAccs(aligns, frozenset([pm.mainIsoAcc for pm in protMetas]))
     if protAlign is None:
         problemLog(logFh, "no_uniprot_gene_id_aligns", transId, gencodeMeta.getTransType(transId),
                    geneId, ",".join(protMetas.mainIsoAcc))
