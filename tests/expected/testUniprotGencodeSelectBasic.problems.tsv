@@ -6,6 +6,7 @@ no_uniprot_aligned	ENST00000346617.8	protein_coding
 no_uniprot_aligned	ENST00000359076.7	protein_coding		
 no_uniprot_aligned	ENST00000371515.8	protein_coding		
 no_uniprot_aligned	ENST00000376848.8	protein_coding		
+no_uniprot_aligned	ENST00000380150.2	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000383515.6	protein_coding		
 no_uniprot_aligned	ENST00000383516.8	protein_coding		
 no_uniprot_aligned	ENST00000383626.6	protein_coding		
@@ -55,6 +56,7 @@ no_uniprot_aligned	ENST00000468678.1	protein_coding_CDS_not_defined
 no_uniprot_aligned	ENST00000469777.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000470729.5	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000470816.5	protein_coding_CDS_not_defined		
+no_uniprot_aligned	ENST00000470819.2	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000471048.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000471304.5	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000471619.5	protein_coding_CDS_not_defined		
@@ -126,6 +128,7 @@ no_uniprot_aligned	ENST00000558725.5	protein_coding_CDS_not_defined
 no_uniprot_aligned	ENST00000561229.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000575426.1	nonsense_mediated_decay		
 no_uniprot_aligned	ENST00000576334.1	protein_coding		
+no_uniprot_aligned	ENST00000577854.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000592493.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000593379.1	protein_coding_CDS_not_defined		
 no_uniprot_aligned	ENST00000593395.1	protein_coding_CDS_not_defined		

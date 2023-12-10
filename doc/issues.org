@@ -1,6 +1,27 @@
 #+STARTUP: nologdone
 #+TODO: TODO ACTIVE URGENT PAUSED | DONE CANCELED
 
+* URGENT why didn't split alignment block get chained
+in test set at chr19:51,890,708-51,890,879 ENST00000600738.5
+
+** gencode protein alignment
+uniprotProteinTranscriptAlign - makes aligns, maybe change to only align matched transcripts
+uniprotGencodeSelect - filters alignments, maybe change to build non-matched by projection
+or should these be merged
+
+
+* URGENT need to check multi-cystronic gene handling
+CDKN2A: P42771 and Q8N726
+
+* URGENT Other uniprot domain types
+** should these be classified as domains or filtered by default:
+https://www.uniprot.org/keywords/KW-9994
+
+** P42771 - repeat ANK 1..4
+https://www.uniprot.org/keywords/KW-0040
+
+
+
 * It was less than satisfying using Pandas, so it was removed with a huge speedup
 with pandas, time of test uniprotAnnotsToDecorators --nprocs=1
 real	0m6.944s
@@ -77,13 +98,12 @@ Warning: P20848 does not map to any transcript
 
 * rather than special color cases, can TrEMBL uses a different shade or outline
 
-* URGENT why didn't split alignment block get chained
-in test set at chr19:51,890,708-51,890,879 ENST00000600738.5
-
-* URGENT need to check multi-cystronic gene handling
-
 * Interesting cases
 ** chr1:11,658,702-11,658,804
 frame-shifted protein; looks good, but this the display ideal?
 
-* no swissprot mappings
+* no swissprot domains mappings
+** BRAC2
+P51587 - SwissProt
+no annotations classified as "domain", but have repeat
+

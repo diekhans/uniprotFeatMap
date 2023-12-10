@@ -8,7 +8,8 @@ set -beEu -o pipefail
 #    to include all
 #      cp tmp/*.{tsv,fa,tab,psl,gp,sizes} input/
 #      make -j 10 -k aligntest >&log
-#      cp output/*.{psl,tsv} expected/
+#      cp output/*.psl expected/
+#    repeat until we have all updated
 #      make -j 10 -k test >&log
 #      cp output/*.{psl,tsv,bed} expected/
 
