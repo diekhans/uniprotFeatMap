@@ -1,4 +1,10 @@
-SHELL = /bin/bash -beEu -o pipefail
+root = ..
+include ${root}/defs.mk
+
+# used nprocs= to change number of processes
+ifeq (${nprocs},)
+  nprocs = 64
+endif
 
 MAKEFLAGS += -rR
 .PRECIOUS: %
@@ -19,7 +25,7 @@ gnpre = ../data/gencode.${gnver}.pc_transcripts
 gnmeta = ${gnpre}.meta.tsv
 gnfa = ${gnpre}.fa.gz
 gnpsl = ${gnpre}.psl
-nprocs = 64
+
 
 all: ${algos:%=%_mkAlgo}
 	cd ../hub && ${MAKE}
@@ -43,11 +49,11 @@ protGeneAlnTmp = ${protGeneAlgoPre}.${tmpext}
 ${protGeneAlgoPre}.raw.psl:
 	@mkdir -p $(dir $@)
 	rm -rf ${protGeneAlnTmp}
-	${time} ../bin/uniprotProteinTranscriptAlign --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmp}
+	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmp}
 	mv -f $@.${tmpext} $@
 
 ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
-	${time} ../bin/uniprotGencodeSelect ${gnmeta} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
+	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -67,7 +73,7 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 
 ${mapAnnotsPsl}: ${spannot} ${protGeneAlgoPre}.paired.psl
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ../bin/uniprotMapAnnots ${spannot} ${protGeneAlgoPre}.paired.psl ${gnpsl} \
+	${time} ${uniprotMapAnnots} ${spannot} ${protGeneAlgoPre}.paired.psl ${gnpsl} \
             $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -83,7 +89,7 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ../bin/uniprotAnnotsToDecorators --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
+	${time} ${uniprotAnnotsToDecorators} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
 	    ${spmeta} ${spannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gnpsl} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 

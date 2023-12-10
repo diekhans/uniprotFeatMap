@@ -1,16 +1,12 @@
-SHELL = /bin/bash -beEu -o pipefail
+root = ..
+include ${root}/defs.mk
 
 # used nprocs= to change number of processes
 ifeq (${nprocs},)
   nprocs = 8
 endif
 
-uniprotProteinTranscriptAlign = ../bin/uniprotProteinTranscriptAlign 
-uniprotGencodeSelect = ../bin/uniprotGencodeSelect
-uniprotMapAnnots = ../bin/uniprotMapAnnots
-uniprotAnnotsToDecorators = ../bin/uniprotAnnotsToDecorators
-
-chromSizes = /hive/data/genomes/hg38/chrom.sizes
+chromSizes = input/hg38.sizes
 decoAs = ../etc/uniprotDecoration.as
 
 testHubFiles = empty.html genomes.txt hub.txt trackDb.txt
@@ -25,16 +21,16 @@ all:
 	@exit 1
 
 
-test: uniprotGencodeSelectTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests
+test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests
 	@echo "Note to test alignments use: make fulltest" >&2
 
 fulltest: test aligntest
 aligntest: protTransAlignTests
 
-uniprotGencodeSelectTests: testUniprotGencodeSelectBasic
+uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapBasic
 
-testUniprotGencodeSelectBasic: mkout
-	${uniprotGencodeSelect} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransBlastAlign.psl output/$@.psl output/$@.problems.tsv
+testUniprotProteinTranscriptMapBasic: mkout
+	${uniprotProteinTranscriptMap} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransBlastAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 	pslCheck -verbose=0 output/$@.psl
@@ -61,7 +57,7 @@ uniprotMapAnnotsTests: testUniprotMapAnnots
 testUniprotMapAnnots: mkout
 	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
 	    input/swissprot.9606.annots.tab \
-	    expected/testUniprotGencodeSelectBasic.psl \
+	    expected/testUniprotProteinTranscriptMapBasic.psl \
 	    input/gencode.v43.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
