@@ -107,3 +107,8 @@ frame-shifted protein; looks good, but this the display ideal?
 P51587 - SwissProt
 no annotations classified as "domain", but have repeat
 
+* should be no need to pre-filter GENCODE metadata, annotations and alignments for protein coding:
+they should just be ignored
+see bigtest/bigtest.org
+
+* modify uniprotProteinTranscriptAlign to only blat/blast to matched transcripts

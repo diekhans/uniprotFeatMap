@@ -25,6 +25,7 @@ gnpre = ../data/gencode.${gnver}.pc_transcripts
 gnmeta = ${gnpre}.meta.tsv
 gnfa = ${gnpre}.fa.gz
 gnpsl = ${gnpre}.psl
+gnpg = ${gnpre}.gp
 
 
 all: ${algos:%=%_mkAlgo}

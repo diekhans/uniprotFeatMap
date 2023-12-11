@@ -9,25 +9,35 @@ from pycbio.hgdata.psl import Psl, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap import dropVersion
-from protmap.gencode import GencodeMetadata
-from protmap.uniprot import UniProtMetaTbl
+from protmap.gencode import GencodeMetaTbl, GencodeDataTbl, gencodeMakeCdsPsl
+from protmap.uniprot import UniProtMetaTbl, dropUniportIsoformModifier
 
 # Terminology
 #    xxxId is id with version
 #    xxxAcc is id without version
 #
 # Algorithm:
-#   - start with alignments of uniprot proteins to GENCODE coding transcript,
-#     already filtered for ++ strand and minimal coverage of protein
-#   - goal to find the best alignment for each transcript:
-#     - uniprot entry list best covering align of the protein.
+#   - Start with alignments of uniprot proteins to match (list in metadats)
+#     GENCODE coding transcripts.  These are already filtered for ++ strand
+#     and minimal coverage of protein.
+#   - If multiple alignments to a matched transcript, pick best one.
+#   - Project the matched alignments to other transcript isoforms.  This
+#     doesn't consider gene, which allows project to read-through transcripts.
+#     Only CDS on other isoforms will have proteins mapped to it by making the
+#     UTR unaligned to the genome.
 
 def parseArgs():
-    desc = """Filter protein to transcript PSL alignments to pair them based on gene.
-    """
+    desc = """Filter protein to PSL transcript alignments to pair them based
+    on being the listed transcript in UniProt.  Project the primary alignments
+    to other transcript isoforms using the genomic coordinates."""
+
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("gencodeMetaTsv",
                         help="GENCODE metadata in TSV format UCSC import (not table), which includes tags")
+    parser.add_argument("gencodeGp",
+                        help="GENCODE annotations in GenePred format")
+    parser.add_argument("gencodePsl",
+                        help="GENCODE annotations in PSL format")
     parser.add_argument("uniprotMetaTsv",
                         help="Uniprot metadata in TSV format")
     parser.add_argument("protTransPsl",
@@ -46,119 +56,106 @@ def problemLogOpen(problemLogTsv):
 def problemLog(logFh, reason, transcriptId, transcriptType, key=None, uniprotId=None):
     fileOps.prRowv(logFh, reason, transcriptId, transcriptType, key, uniprotId)
 
-def keepAlign(uniprotMetaTbl, psl):
-    # only keep alignments from main SwissProt isoform, as alt-isoforms are
-    # not annotated
-    return psl.qName in uniprotMetaTbl.byMainIsoAcc
+##
+# data loading, etc
+##
+def keepCanonicalAlign(uniprotMetaTbl, psl):
+    """Only keep alignments from canonical SwissProt isoform, as alt-isoforms to
+    a matched transcript"""
+    uniprotMeta = uniprotMetaTbl.getByAcc(dropUniportIsoformModifier(psl.qName))
+    return ((psl.qName == uniprotMeta.mainIsoAcc) and
+            (dropVersion(psl.tName) in uniprotMeta.ensemblTransAccs))
 
-def loadProtTransPsl(uniprotMetaTbl, protTransPsl):
-    alignsByTrans = defaultdict(list)  # by stable trans id
-    for psl in PslReader(protTransPsl):
-        if keepAlign(uniprotMetaTbl, psl):
-            alignsByTrans[psl.tName].append(psl)
-    alignsByTrans.default_factory = None
-    return alignsByTrans
+def loadFitlerProtTransPsl(uniprotMetaTbl, protTransPslFile):
+    """load aligned PSL and group by SwissProt """
+    alignsByProt = defaultdict(list)
+    for psl in PslReader(protTransPslFile):
+        if keepCanonicalAlign(uniprotMetaTbl, psl):
+            alignsByProt[psl.qName].append(psl)
+    alignsByProt.default_factory = None
+    return alignsByProt
 
-def selectAlignByProtAccs(aligns, protAccs):
-    protAligns = [psl for psl in aligns if psl.qName in protAccs]
-    if len(protAligns) == 0:
-        return None
+def writePsls(psls, pslFile):
+    with fileOps.opengz(pslFile, 'w') as pslFh:
+        for psl in sorted(psls, key=Psl.targetKey):
+            psl.write(pslFh)
+
+###
+# select alignments of canonical proteins to matched transcripts
+###
+def selectCanonicalProtTransAligns(alignsByProt):
     # most coverage of query
-    return sorted(protAligns, key=lambda psl: -psl.queryAligned())[0]
+    return [sorted(aligns, key=lambda psl: -psl.queryAligned())[0]
+            for aligns in alignsByProt.values()]
 
 ###
-# functions that are applied to get the best matching alignment based
-# on various ways to obtain proteins associated with a transcript.
+# Project alignments from UniProt matched transcripts to transcripts isoforms
+# that are not matched UniProt.
 ###
 
-def pairTransByUniprotTransId(gencodeMeta, uniprotMetaTbl, transId, aligns, logFh):
-    protMeta = uniprotMetaTbl.getTransMeta(dropVersion(transId))
-    if protMeta is None:
-        return None
-    protAlign = selectAlignByProtAccs(aligns, [protMeta.mainIsoAcc])
-    if protAlign is None:
-        problemLog(logFh, "no_uniprot_trans_id_aligns", transId, gencodeMeta.getTransType(transId),
-                   transId, protMeta.mainIsoAcc)
-    return protAlign
+def isUnmatchedMRna(uniprotMetaTbl, transcriptId):
+    "should this transcript have an unmatched projected alignment built?"
+    return (dropVersion(transcriptId) not in uniprotMetaTbl.ensemblTransAccs)
 
-def pairTransByUniprotGeneId(gencodeMeta, uniprotMetaTbl, transId, aligns, logFh):
-    geneId = gencodeMeta.getGeneId(transId)
-    protMetas = uniprotMetaTbl.getGeneAccMetas(dropVersion(geneId))
-    if protMetas is None:
-        return None
-    protAlign = selectAlignByProtAccs(aligns, frozenset([pm.mainIsoAcc for pm in protMetas]))
-    if protAlign is None:
-        problemLog(logFh, "no_uniprot_gene_id_aligns", transId, gencodeMeta.getTransType(transId),
-                   geneId, ",".join([pm.mainIsoAcc for pm in protMetas]))
-    return protAlign
+def writeMRnaGenomeCdsAlign(gencodeDataTbl, transcriptId, tmpPslFh):
+    for entry in gencodeDataTbl.getEntries(transcriptId):
+        gencodeMakeCdsPsl(entry.alignPsl, entry.annotGp).write(tmpPslFh)
 
-def pairTransByUniprotGeneName(gencodeMeta, uniprotMetaTbl, transId, aligns, logFh):
-    geneName = gencodeMeta.getGeneName(transId)
-    protMetas = uniprotMetaTbl.getGeneNameMetas(geneName)
-    if protMetas is None:
-        return None
-    mainIsoAccs = frozenset({p.mainIsoAcc for p in protMetas})
-    protAlign = selectAlignByProtAccs(aligns, mainIsoAccs)
-    if protAlign is None:
-        problemLog(logFh, "no_uniprot_gene_name_aligns", transId, gencodeMeta.getTransType(transId),
-                   geneName, ",".join(mainIsoAccs))
-    return protAlign
+def makeUnmatchMRnaGenomeCdsAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl):
+    tmpPslFile = fileOps.tmpFileGet("unmatchedCds-genome", suffix=".psl")
+    with open(tmpPslFile, 'w') as tmpPslFh:
+        for transcriptId in sorted(gencodeMetaTbl.codingTransIds):
+            if isUnmatchedMRna(uniprotMetaTbl, transcriptId):
+                writeMRnaGenomeCdsAlign(gencodeDataTbl, transcriptId, tmpPslFh)
+    return tmpPslFile
 
-###
-# processing of alignments
-###
-def selectUniprotTransPairs(gencodeMeta, uniprotMetaTbl, selectFunc, alignsByTrans, pairedByTrans, logFh):
-    """Select alignments base on a function that pairs a protein to a
-    transcript by some criteria.  Call this function in order of most strict to least
-    strict functions.  Only one alignment is kept per transcript.  The
-    alignments are moved from alignsByTrans to pairedByTrans as the are select and return.
-    """
-    protTransPaired = []
-    transIds = sorted(alignsByTrans.keys())  # copy due to modification
-    for transId in transIds:
-        selectedAln = selectFunc(gencodeMeta, uniprotMetaTbl, transId, alignsByTrans[transId], logFh)
-        if selectedAln is not None:
-            protTransPaired.append(selectedAln)
-            pairedByTrans[transId] = alignsByTrans[transId]
-            del alignsByTrans[transId]
-    return protTransPaired
+def pslMapCanonicalUnmatches(canonPslFile, cdsPslFile):
+    # canonPslFile ->
+    pass#
 
-def reportUnpairedTranscripts(gencodeMeta, alignsByTrans, logFh):
+def projectUniPortAlignments(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl, canonicalMatchedAligns):
+    # mapping pipeline is:
+    #   port->matchTrans => matchTrans->genome => genome->isoTrans => prot->isoTrans
+
+    protMatchTrans = fileOps.tmpFileGet("canon.psl")
+    writePsls(canonicalMatchedAligns, canonPslFile)
+
+    unmatchedGenomePslFile = makeUnmatchMRnaGenomeCdsAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl)
+
+
+##
+# output
+##
+def reportUnpairedTranscripts(gencodeMetaTbl, alignsByTrans, logFh):
     for transId in sorted(alignsByTrans.keys()):
-        problemLog(logFh, "no_uniprot_paired", transId, gencodeMeta.getTransType(transId))
+        problemLog(logFh, "no_uniprot_paired", transId, gencodeMetaTbl.getTransType(transId))
 
-def reportUnalignedTranscripts(gencodeMeta, alignsByTrans, pairedByTrans, logFh):
+def reportUnalignedTranscripts(gencodeMetaTbl, alignsByTrans, pairedByTrans, logFh):
     alignedTransIds = set(alignsByTrans.keys()) | set(pairedByTrans.keys())
-    unalignedTransIds = set(gencodeMeta.getCodingTransIds()) - alignedTransIds
+    unalignedTransIds = set(gencodeMetaTbl.getCodingTransIds()) - alignedTransIds
     for transId in sorted(unalignedTransIds):
-        problemLog(logFh, "no_uniprot_aligned", transId, gencodeMeta.getTransType(transId))
+        problemLog(logFh, "no_uniprot_aligned", transId, gencodeMetaTbl.getTransType(transId))
 
-def writePairedPsl(fh, protTransPaired):
-    for psl in sorted(protTransPaired, key=Psl.targetKey):
-        psl.write(fh)
-
-def proteinTranscriptAlign(gencodeMetaTsv, uniprotMetaTsv, protTransPsl, protTransPairedPsl, problemLogTsv):
-    gencodeMeta = GencodeMetadata(gencodeMetaTsv)
+def proteinTranscriptAlign(gencodeMetaTsv, gencodeGpFile, gencodePslFile, uniprotMetaTsv, protTransPslFile, protTransPairedPslFile, problemLogTsv):
+    gencodeMetaTbl = GencodeMetaTbl(gencodeMetaTsv)
+    gencodeDataTbl = GencodeDataTbl(gencodePslFile, gencodeGpFile)
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
-    alignsByTrans = loadProtTransPsl(uniprotMetaTbl, protTransPsl)
-    pairedByTrans = {}
+
+    alignsByProt = loadFitlerProtTransPsl(uniprotMetaTbl, protTransPslFile)
+    canonicalMatchedAligns = selectCanonicalProtTransAligns(alignsByProt)
+    protTransPairAligns = projectUniPortAlignments(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl, canonicalMatchedAligns)
 
     logFh = problemLogOpen(problemLogTsv)
 
-    # alignsByTrans is cleared as alignments add to protTransPaired
-    protTransPaired = selectUniprotTransPairs(gencodeMeta, uniprotMetaTbl, pairTransByUniprotTransId, alignsByTrans, pairedByTrans, logFh)
-    protTransPaired += selectUniprotTransPairs(gencodeMeta, uniprotMetaTbl, pairTransByUniprotGeneId, alignsByTrans, pairedByTrans, logFh)
-    protTransPaired += selectUniprotTransPairs(gencodeMeta, uniprotMetaTbl, pairTransByUniprotGeneName, alignsByTrans, pairedByTrans, logFh)
+    #reportUnpairedTranscripts(gencodeMetaTbl, alignsByTrans, logFh)
+    #reportUnalignedTranscripts(gencodeMetaTbl, alignsByTrans, pairedByTrans, logFh)
 
-    reportUnpairedTranscripts(gencodeMeta, alignsByTrans, logFh)
-    reportUnalignedTranscripts(gencodeMeta, alignsByTrans, pairedByTrans, logFh)
-
-    with fileOps.opengz(protTransPairedPsl, 'w') as fh:
-        writePairedPsl(fh, protTransPaired)
+    writePsls(protTransPaired, protTransPairedPsl)
     logFh.close()
 
 def main(opts):
-    proteinTranscriptAlign(opts.gencodeMetaTsv, opts.uniprotMetaTsv, opts.protTransPsl, opts.protTransPairedPsl,
+    proteinTranscriptAlign(opts.gencodeMetaTsv, opts.gencodeGp, opts.gencodePsl,
+                           opts.uniprotMetaTsv, opts.protTransPsl, opts.protTransPairedPsl,
                            opts.problemLogTsv)
 
 main(parseArgs())

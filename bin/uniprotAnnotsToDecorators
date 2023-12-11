@@ -16,7 +16,7 @@ from pycbio.hgdata.coords import Coords
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
 from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus, getColorUses
-from protmap.gencode import GencodeData
+from protmap.gencode import GencodeDataTbl
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
 
@@ -209,13 +209,13 @@ class AnnotationProcessor:
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
         self.uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
         self.annotTransRefs = AnnotTransRefs(annotTransRefTsv)
-        self.transGenomeAlns = GencodeData(transGenomePsl)
+        self.transGenomeAlns = GencodeDataTbl(transGenomePsl)
 
     def _buildAnnotation(self, annotPsl, annot, alignIdx, decoratorBeds):
         annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
         uniprotMeta = self.uniprotMetaTbl.getByAcc(annot.acc)
         transMatchStatus = calcTransMatchStatus(uniprotMeta, annotTransRef.transcriptId)
-        transPsl = self.transGenomeAlns.get(annotTransRef.transcriptId, annotPsl.tName)
+        transPsl = self.transGenomeAlns.getAlign(annotTransRef.transcriptId, annotPsl.tName)
         buildAnnotation(transPsl, annotPsl, annot, annotTransRef, transMatchStatus, self.dataSet, decoratorBeds)
 
     def processBatch(self, alignBatch):
