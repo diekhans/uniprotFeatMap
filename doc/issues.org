@@ -1,5 +1,5 @@
 #+STARTUP: nologdone
-#+TODO: TODO ACTIVE URGENT PAUSED | DONE CANCELED
+#+TODO: TODO ACTIVE IMPORTANT URGENT PAUSED | DONE CANCELED
 
 * URGENT why didn't split alignment block get chained
 in test set at chr19:51,890,708-51,890,879 ENST00000600738.5
@@ -112,3 +112,5 @@ they should just be ignored
 see bigtest/bigtest.org
 
 * modify uniprotProteinTranscriptAlign to only blat/blast to matched transcripts
+
+* IMPORTANT Adam F. feedback: domain ends might a bit unsure, so indicate the amount of truncation.
