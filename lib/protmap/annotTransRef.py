@@ -24,7 +24,7 @@ class AnnotTransRefs:
 def annotTransRefCreate(annotTransRefTsv):
     "create a new ref TSV, and write header"
     annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
-    fileOps.prRowv(annotTransRefFh, "annotId", "transcriptPos", "transcriptId", "alignIdx")
+    annotTransRefWrite(annotTransRefFh, "annotId", "transcriptPos", "transcriptId", "alignIdx")
     return annotTransRefFh
 
 def annotTransRefWrite(annotTransRefFh, annotId, transcriptPos, transcriptId, alignIdx):

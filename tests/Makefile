@@ -54,7 +54,7 @@ testProtTransBlatAlign: mkout
 
 uniprotMapAnnotsTests: testUniprotMapAnnots
 
-# intermediates saves for checking
+# intermediates saved for checking
 testUniprotMapAnnots: mkout
 	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
 	    input/swissprot.9606.annots.tab \

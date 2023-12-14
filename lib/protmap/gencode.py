@@ -12,9 +12,12 @@ from protmap import dropVersion
 # Note: multiple annotation of a transcript is not needed in current
 # GenCode, but will be needed for RefSeq, so leave logic here.
 
-def isTargetedTranscriptType(gencodeMeta):
+_codingTranscriptTypes = frozenset(["protein_coding",
+                                    "nonsense_mediated_decay"])
+
+def isCodingTranscriptType(gencodeMeta):
     "is this transcript one that we should map with swissport?"
-    return gencodeMeta.transcriptType == "protein_coding"
+    return gencodeMeta.transcriptType in _codingTranscriptTypes
 
 class GencodeMetaTbl(list):
     def __init__(self, gencodeMetaTsv):
@@ -27,7 +30,7 @@ class GencodeMetaTbl(list):
     def _readRow(self, row):
         self.byTranscriptId[row.transcriptId] = row
         self.byTranscriptAcc[dropVersion(row.transcriptId)] = row
-        if isTargetedTranscriptType(row):
+        if isCodingTranscriptType(row):
             self.codingTransIds.add(row.transcriptId)
 
     def _doGetTrans(self, transId):
