@@ -1,8 +1,13 @@
+import sys
+import os.path as osp
 from collections import defaultdict
 from pycbio.tsv import TsvReader
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 from pycbio.hgdata.genePred import GenePredReader
 from pycbio.hgdata.rangeFinder import RangeFinder
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from protmap import dropVersion
 
 # Note: multiple annotation of a transcript is not needed in current
 # GenCode, but will be needed for RefSeq, so leave logic here.
@@ -14,12 +19,14 @@ def isTargetedTranscriptType(gencodeMeta):
 class GencodeMetaTbl(list):
     def __init__(self, gencodeMetaTsv):
         self.byTranscriptId = {}
+        self.byTranscriptAcc = {}
         self.codingTransIds = set()
         for row in TsvReader(gencodeMetaTsv):
             self._readRow(row)
 
     def _readRow(self, row):
         self.byTranscriptId[row.transcriptId] = row
+        self.byTranscriptAcc[dropVersion(row.transcriptId)] = row
         if isTargetedTranscriptType(row):
             self.codingTransIds.add(row.transcriptId)
 
@@ -47,6 +54,9 @@ class GencodeMetaTbl(list):
     def getCodingTransIds(self):
         return self.codingTransIds
 
+    def getCodingTransAccSet(self):
+        return frozenset([dropVersion(transId) for transId in self.getCodingTransIds()])
+
     def getTransType(self, transId):
         return self.getTrans(transId).transcriptType
 
@@ -63,32 +73,10 @@ class GencodeDataTbl:
         # older GENCODEs and RefSeq will have same transcript ids for PARs, so a list is required
         self.byTransId = defaultdict(list)
         self._loadAligns(gencodePsl)
-        self._loadAnnots(gencodeGp)
+        if gencodeGp is not None:
+            self._loadAnnots(gencodeGp)
         self.byTransId.default_factory = None
         self.rangeIdx = None
-
-    def findEntries(self, transId):
-        return self.byTransId.get(transId, ())
-
-    def getEntries(self, transId, chrom):
-        entries = self.findEntries(transId, chrom)
-        if len(entries) is None:
-            raise Exception(f"GENCODE not found for '{transId}'")
-        return entries
-
-    def findEntry(self, transId, chrom):
-        # handle multi-location entries
-        entries = self.byTransId.get(transId, ())
-        for entry in entries:
-            if entries.alignPsl.tName == chrom:
-                return entry
-        return None
-
-    def getEntry(self, transId, chrom):
-        entry = self.findEntry(transId, chrom)
-        if entry is None:
-            raise Exception(f"GENCODE not found for '{transId}' on chrom '{chrom}'")
-        return entry
 
     def _loadAligns(self, gencodePsl):
         for psl in PslReader(gencodePsl):
@@ -96,7 +84,7 @@ class GencodeDataTbl:
 
     def _loadAnnots(self, gencodeGp):
         for gp in GenePredReader(gencodeGp):
-            entry = self.getEntry(gencodeGp.name, gencodeGp.chrom)
+            entry = self.getEntry(gp.name, gp.chrom)
             entry.annotGp = gp
 
     def _buildRangeIdx(self):
@@ -104,6 +92,29 @@ class GencodeDataTbl:
         for entries in self.byTransId.values():
             for entry in entries:
                 self.rangeIdx.add(entry.alignPsl.tName, entry.alignPsl.tStart, entry.alignPsl.tEnd)
+
+    def findEntries(self, transId):
+        return self.byTransId.get(transId, ())
+
+    def getEntries(self, transId):
+        entries = self.findEntries(transId)
+        if len(entries) is None:
+            raise Exception(f"GENCODE metadata not found for '{transId}'")
+        return entries
+
+    def findEntry(self, transId, chrom):
+        # handle multi-location entries
+        entries = self.byTransId.get(transId, ())
+        for entry in entries:
+            if entry.alignPsl.tName == chrom:
+                return entry
+        return None
+
+    def getEntry(self, transId, chrom):
+        entry = self.findEntry(transId, chrom)
+        if entry is None:
+            raise Exception(f"GENCODE metadata not found for '{transId}' on chrom '{chrom}'")
+        return entry
 
     def getAlign(self, transId, chrom):
         return self.getEntry(transId, chrom).alignPsl
@@ -143,9 +154,6 @@ def gencodeMakeCdsPsl(gp, psl):
                         strand=psl.strand)
     _addCdsPslBlocks(gp, psl, cdsPsl)
 
-    # fixup bounds
-    cdsPsl.tStart = cdsPsl.blocks[0].tStartPlus
-    cdsPsl.tEnd = cdsPsl.blocks[-1].tEndPlus
-    cdsPsl.qStart = cdsPsl.blocks[0].qStartPlus
-    cdsPsl.qEnd = cdsPsl.blocks[-1].qEndPlus
+    cdsPsl.updateBounds()
+    cdsPsl.updateCounts()
     return cdsPsl

@@ -80,7 +80,7 @@ class UniProtMetaTbl:
         addUniqueToIdx(self.byMainIsoAcc, row.mainIsoAcc, row)
         self.byGeneName[row.geneName].append(row)
         addValuesToMultiIdx(self.byGeneAcc, row.ensemblGeneAccs, row)
-        addValuesToMultiIdx(self.byTranscriptAcc, row.ensemblTransIds, row)
+        addValuesToMultiIdx(self.byTranscriptAcc, row.ensemblTransAccs, row)
         addValuesToMultiIdx(self.byIsoId, row.isoIds, row)
 
     def getByAcc(self, acc):
@@ -113,6 +113,9 @@ class UniProtMetaTbl:
     def getGeneNameMetas(self, geneName):
         "list or None if not found"
         return self.byGeneName.get(geneName)
+
+    def getMatchEnsemblAccSet(self):
+        return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
 def uniprotParseAnnotId(annotId):
     "parse the annotation id into its parts: 'Q9BXI3#0' -> ('Q9BXI3' 0)"

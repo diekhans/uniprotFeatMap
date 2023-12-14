@@ -114,3 +114,9 @@ see bigtest/bigtest.org
 * modify uniprotProteinTranscriptAlign to only blat/blast to matched transcripts
 
 * IMPORTANT Adam F. feedback: domain ends might a bit unsure, so indicate the amount of truncation.
+
+* uniprotMapAnnots use something like uniprotProteinTranscriptMap  mkPslMapCmd and add check option
+
+* should NMD being include?
+
+* look at cases in/testUniprotProteinTranscriptMapBasic.problems.tsv

@@ -30,7 +30,8 @@ aligntest: protTransAlignTests
 uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapBasic
 
 testUniprotProteinTranscriptMapBasic: mkout
-	${uniprotProteinTranscriptMap} input/gencode.v43.metadata.tsv input/swissprot.9606.tab expected/testProtTransBlastAlign.psl output/$@.psl output/$@.problems.tsv
+	${uniprotProteinTranscriptMap} input/gencode.v43.metadata.tsv input/gencode.v43.gp input/gencode.v43.psl \
+		input/swissprot.9606.tab expected/testProtTransBlastAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 	pslCheck -verbose=0 output/$@.psl
