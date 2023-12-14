@@ -25,7 +25,7 @@ gnpre = ../data/gencode.${gnver}.pc_transcripts
 gnmeta = ${gnpre}.meta.tsv
 gnfa = ${gnpre}.fa.gz
 gnpsl = ${gnpre}.psl
-gnpg = ${gnpre}.gp
+gngp = ${gnpre}.gp
 
 
 all: ${algos:%=%_mkAlgo}
@@ -54,7 +54,7 @@ ${protGeneAlgoPre}.raw.psl:
 	mv -f $@.${tmpext} $@
 
 ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
-	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
+	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 

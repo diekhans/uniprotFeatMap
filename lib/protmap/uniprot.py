@@ -69,6 +69,10 @@ class UniProtMetaTbl:
         self.byIsoId = defaultdict(list)
         for row in TsvReader(uniprotMetaTsv):
             self._readRow(row)
+        self.byGeneName.default_factory = None
+        self.byGeneAcc.default_factory = None
+        self.byTranscriptAcc.default_factory = None
+        self.byIsoId.default_factory = None
 
     def _readRow(self, row):
         setattr(row, 'ensemblGeneIds', splitMetaList(row.ensemblGene))

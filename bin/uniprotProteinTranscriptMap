@@ -160,15 +160,26 @@ def reportUnalignedUniprots(uniprotMetaTbl, matchedCdsToTransAligns, logFh):
     for uniprotId in sorted(unalignedUniprotIds):
         problemLog(logFh, "uniprot_not_aligned", uniprotId=uniprotId)
 
+def _reportUnmappedTranscript(gencodeMetaTbl, uniprotMetaTbl, unmappedTransAccs, reason, transAcc, logFh):
+    transRec = gencodeMetaTbl.byTranscriptAcc.get(transAcc)
+    transId = transRec.transcriptId if transRec is not None else None
+    uniprotMetas = uniprotMetaTbl.byTranscriptAcc.get(transAcc)
+    if transId is None:
+        problemLog(logFh, "transcript_not_in_gene_set", transId, None, uniprotMetas[0].mainIsoAcc)
+    elif uniprotMetas is None:
+        problemLog(logFh, reason, transId, gencodeMetaTbl.getTransType(transId), None)
+    else:
+        for uniprotMeta in uniprotMetas:
+            problemLog(logFh, reason, transId, gencodeMetaTbl.getTransType(transId), uniprotMeta.mainIsoAcc)
+
 def _reportUnmappedTranscripts(gencodeMetaTbl, uniprotMetaTbl, unmappedTransAccs, reason, logFh):
     for transAcc in sorted(unmappedTransAccs):
-        transId = gencodeMetaTbl.byTranscriptAcc[transAcc].transcriptId
-        for uniprotMeta in uniprotMetaTbl.byTranscriptAcc[transAcc]:
-            problemLog(logFh, reason, transId, gencodeMetaTbl.getTransType(transId), uniprotMeta.mainIsoAcc)
+        _reportUnmappedTranscript(gencodeMetaTbl, uniprotMetaTbl, unmappedTransAccs, reason, transAcc, logFh)
 
 def reportUnpairedMatchedTrans(gencodeMetaTbl, uniprotMetaTbl, matchedCdsTransAligns, logFh):
     alignedTransAccs = _getTNameSet(matchedCdsTransAligns)
     unmappedTransAccs = uniprotMetaTbl.getMatchEnsemblAccSet() - alignedTransAccs
+
     _reportUnmappedTranscripts(gencodeMetaTbl, uniprotMetaTbl, unmappedTransAccs, "matched_trans_not_mapped", logFh)
 
 def reportUnpairedUnmatchedTrans(gencodeMetaTbl, uniprotMetaTbl, unmatchedCdsToTransAligns, logFh):
