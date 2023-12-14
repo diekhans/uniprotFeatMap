@@ -60,9 +60,10 @@ testUniprotMapAnnots: mkout
 	    input/swissprot.9606.annots.tab \
 	    expected/testUniprotProteinTranscriptMapBasic.psl \
 	    input/gencode.v43.psl \
-            output/$@.psl output/$@.ref.tsv
+            output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
+	diff expected/$@.problems.tsv output/$@.problems.tsv
 	diff expected/$@.inter.annotTrans.psl output/$@.inter.annotTrans.psl
 	pslCheck -verbose=0 output/$@.psl
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl

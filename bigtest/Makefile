@@ -41,20 +41,21 @@ mkAlgo: mkProtGeneAln mkUniprotMapAnnots mkDecorators
 # swissprotGencode alignment
 #   algo=
 ##
-protGeneAlgoPre = swissprotGencode/swissprotGencode.${algo}
-protGenePre = ${protGeneAlgoPre}.${filt}
-protGeneAln = ${protGenePre}.psl
+protGenePre = swissprotGencode/swissprotGencode.${algo}
+protGeneRawAln = ${protGenePre}.raw.psl
+protGenePairedAln = ${protGenePre}.paired.psl
+protGenePairProbTsv = ${protGenePre}.paired.problems.tsv
+protGeneAlnTmpDir = ${protGenePre}.${tmpext}
 
-mkProtGeneAln: ${protGeneAlgoPre}.raw.psl
-protGeneAlnTmp = ${protGeneAlgoPre}.${tmpext}
-${protGeneAlgoPre}.raw.psl:
+mkProtGeneAln: ${protGeneRawAln} ${protGenePairedAln}
+${protGeneRawAln}: ${spfa} ${gnfa}
 	@mkdir -p $(dir $@)
-	rm -rf ${protGeneAlnTmp}
-	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmp}
+	rm -rf ${protGeneAlnTmpDir}
+	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmpDir}
 	mv -f $@.${tmpext} $@
 
-${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
-	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${spmeta} $< $@.${tmpext} ${protGeneAlgoPre}.paired.problems.tsv
+${protGenePairedAln}: ${protGeneRawAln}
+	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${spmeta} $< $@.${tmpext} ${protGenePairProbTsv}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -64,6 +65,7 @@ ${protGeneAlgoPre}.paired.psl: ${protGeneAlgoPre}.raw.psl
 mapAnnotsAlgoPre = mapAnnots/mapAnnots.${algo}
 mapAnnotsPsl = ${mapAnnotsAlgoPre}.psl
 mapAnnotsRefTsv = ${mapAnnotsAlgoPre}.ref.tsv
+mapAnnotsProblemsTsv = ${mapAnnotsAlgoPre}.problems.tsv
 
 # uncomment to see debugging intermediates
 #mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
@@ -72,10 +74,10 @@ mapAnnotsRefTsv = ${mapAnnotsAlgoPre}.ref.tsv
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
-${mapAnnotsPsl}: ${spannot} ${protGeneAlgoPre}.paired.psl
+${mapAnnotsPsl}: ${spannot} ${protGenePairedAln}
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ${uniprotMapAnnots} ${spannot} ${protGeneAlgoPre}.paired.psl ${gnpsl} \
-            $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsInterOpt}
+	${time} ${uniprotMapAnnots} ${spannot} ${protGenePairedAln} ${gnpsl} \
+            $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsProblemsTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
