@@ -1,10 +1,6 @@
 reason	transcriptId	transcriptType	uniprotId
 uniprot_not_aligned			P20848
-matched_trans_not_mapped	ENST00000199940.10	protein_coding	P11137-1
-matched_trans_not_mapped	ENST00000216923.5	protein_coding	Q9NTW7-1
-matched_trans_not_mapped	ENST00000346617.8	protein_coding	Q9NTW7-1
 matched_trans_not_mapped	ENST00000359076.7	protein_coding	P30511-1
-matched_trans_not_mapped	ENST00000371515.8	protein_coding	Q9NTW7-1
 matched_trans_not_mapped	ENST00000376848.8	protein_coding	P30511-1
 matched_trans_not_mapped	ENST00000383515.6	protein_coding	P30511-1
 matched_trans_not_mapped	ENST00000420067.5	protein_coding	P30511-1

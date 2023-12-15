@@ -297,6 +297,51 @@ O95831	O95831-1		strand	beta	572	581				notDisRelated
 O95831	O95831-1		helix	helix	585	595				notDisRelated								
 O95831	O95831-1		helix	helix	601	606				notDisRelated								
 O95831	O95831-1		helix	helix	606	609				notDisRelated								
+Q9UL58	Q9UL58-1	PRO_0000047459	chain	chain	1	518				noEvidence				Zinc finger protein 215	BAZ-2	BAZ-2; BAZ2; ZKSCAN11; BWSCR2-associated zinc finger protein 2; Zinc finger protein with KRAB and SCAN domains 11; 1; 2		
+Q9UL58	Q9UL58-1		domain	domain	48	127				notDisRelated								SCAN box
+Q9UL58	Q9UL58-1		domain	domain	164	238				notDisRelated								KRAB
+Q9UL58	Q9UL58-1		zinc finger region	zinc finger	379	402				notDisRelated								C2H2-type 1
+Q9UL58	Q9UL58-1		zinc finger region	zinc finger	407	430				notDisRelated								C2H2-type 2
+Q9UL58	Q9UL58-1		zinc finger region	zinc finger	462	485				notDisRelated								C2H2-type 3
+Q9UL58	Q9UL58-1		zinc finger region	zinc finger	490	513				notDisRelated								C2H2-type 4
+Q9UL58	Q9UL58-1	VSP_054156	splice variant	splicing	269	305	GENWLYRNQKKWDINLPQEAFIPETIYTEEEDFECS	DGVSLLLPRLEYNDAVSAHCNLHLWVQVILLPQPPE		notDisRelated			15489334					In isoform 2.
+Q9UL58	Q9UL58-1	VSP_054157	splice variant	splicing	305	518				notDisRelated			15489334					In isoform 2.
+Q9UL58	Q9UL58-1	VAR_057405	sequence variant	variant	36	37	N	S	rs11041107	noEvidence								
+Q9UL58	Q9UL58-1	VAR_057406	sequence variant	variant	38	39	V	I	rs35111903	noEvidence								
+Q9UL58	Q9UL58-1	VAR_024200	sequence variant	variant	119	120	M	V	rs11041108	noEvidence								
+Q9UL58	Q9UL58-1	VAR_057407	sequence variant	variant	263	264	S	F	rs11041115	noEvidence								
+Q9UL58	Q9UL58-1	VAR_060423	sequence variant	variant	323	324	V	L	rs2239730	notDisRelated			10762538					
+Q9UL58	Q9UL58-1	VAR_021890	sequence variant	variant	376	377	M	V	rs2239729	noEvidence								
+O43361	O43361	PRO_0000274397	chain	chain	1	779				noEvidence				Zinc finger protein 749				
+O43361	O43361		domain	domain	8	102				notDisRelated								KRAB
+O43361	O43361		zinc finger region	zinc finger	152	175				notDisRelated								C2H2-type 1; degenerate
+O43361	O43361		zinc finger region	zinc finger	196	219				notDisRelated								C2H2-type 2; degenerate
+O43361	O43361		zinc finger region	zinc finger	224	247				notDisRelated								C2H2-type 3; degenerate
+O43361	O43361		zinc finger region	zinc finger	252	275				notDisRelated								C2H2-type 4; degenerate
+O43361	O43361		zinc finger region	zinc finger	298	321				notDisRelated								C2H2-type 5
+O43361	O43361		zinc finger region	zinc finger	326	349				notDisRelated								C2H2-type 6
+O43361	O43361		zinc finger region	zinc finger	354	377				notDisRelated								C2H2-type 7
+O43361	O43361		zinc finger region	zinc finger	382	405				notDisRelated								C2H2-type 8
+O43361	O43361		zinc finger region	zinc finger	410	433				notDisRelated								C2H2-type 9
+O43361	O43361		zinc finger region	zinc finger	438	461				notDisRelated								C2H2-type 10
+O43361	O43361		zinc finger region	zinc finger	483	506				notDisRelated								C2H2-type 11
+O43361	O43361		zinc finger region	zinc finger	511	534				notDisRelated								C2H2-type 12
+O43361	O43361		zinc finger region	zinc finger	556	579				notDisRelated								C2H2-type 13; degenerate
+O43361	O43361		zinc finger region	zinc finger	584	607				notDisRelated								C2H2-type 14
+O43361	O43361		zinc finger region	zinc finger	612	635				notDisRelated								C2H2-type 15
+O43361	O43361		zinc finger region	zinc finger	640	663				notDisRelated								C2H2-type 16
+O43361	O43361		zinc finger region	zinc finger	668	691				notDisRelated								C2H2-type 17; atypical
+O43361	O43361		zinc finger region	zinc finger	696	719				notDisRelated								C2H2-type 18
+O43361	O43361		zinc finger region	zinc finger	751	774				notDisRelated								C2H2-type 19; degenerate
+O43361	O43361		modified residue	acetyl	466	467				notDisRelated								N6-acetyllysine
+O43361	O43361		modified residue	acetyl	539	540				notDisRelated								N6-acetyllysine
+O43361	O43361		cross-link	cross-link	761	762				notDisRelated								Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in SUMO2
+O43361	O43361		cross-link	cross-link	768	769				notDisRelated								Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in SUMO2
+O43361	O43361	VAR_030278	sequence variant	variant	243	244	Q	R	rs12986235	noEvidence								
+O43361	O43361	VAR_030279	sequence variant	variant	405	406	A	T	rs2240038	noEvidence								
+O43361	O43361	VAR_030280	sequence variant	variant	771	772	I	R	rs7246856	noEvidence								
+O43361	O43361		sequence conflict	conflict	177	178				notDisRelated								In Ref. 2; AK122794.
+O43361	O43361		sequence conflict	conflict	679	680	Y	C		notDisRelated								In Ref. 2; AK122794.
 P14060	P14060		initiator methionine	init Met	1	2				notDisRelated			2779585					Removed
 P14060	P14060	PRO_0000087774	chain	chain	2	374				noEvidence				3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 1	3-beta-HSD I	3-beta-HSD I; 3BH; HSDB3A; Steroid Delta-isomerase; Trophoblast antigen FDO161G; Delta-5-3-ketosteroid isomerase; Dihydrotestosterone oxidoreductase; 3-beta-hydroxysteroid 3-dehydrogenase; 3-beta-hydroxy-5-ene steroid dehydrogenase; 3-beta-hydroxy-Delta(5)-steroid dehydrogenase; 3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type I		
 P14060	P14060		transmembrane region	transmem	288	309				notDisRelated								Helical
@@ -577,6 +622,23 @@ P20848	P20848		sequence conflict	conflict	67	77	ELADLSQTSN	SWLIYHNQH		notDisRela
 P20848	P20848		sequence conflict	conflict	89	90	A	R		notDisRelated								In Ref. 1; AAA51544.
 P20848	P20848		sequence conflict	conflict	229	230	H	R		notDisRelated								In Ref. 1; AAA51544 and 2; AGI62067.
 P20848	P20848		sequence conflict	conflict	403	405	DD	EY		notDisRelated								In Ref. 1; AAA51544.
+Q9NQX6	Q9NQX6	PRO_0000047535	chain	chain	1	464				noEvidence				Zinc finger protein 331	RITA	RITA; ZNF361; ZNF463; Zinc finger protein 361; Zinc finger protein 463; C2H2-like zinc finger protein rearranged in thyroid adenomas		
+Q9NQX6	Q9NQX6		domain	domain	6	79				notDisRelated								KRAB
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	131	154				notDisRelated								C2H2-type 1
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	159	182				notDisRelated								C2H2-type 2
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	187	210				notDisRelated								C2H2-type 3
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	215	238				notDisRelated								C2H2-type 4
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	243	266				notDisRelated								C2H2-type 5
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	271	294				notDisRelated								C2H2-type 6
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	299	322				notDisRelated								C2H2-type 7
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	327	350				notDisRelated								C2H2-type 8
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	355	378				notDisRelated								C2H2-type 9
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	383	406				notDisRelated								C2H2-type 10
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	411	434				notDisRelated								C2H2-type 11
+Q9NQX6	Q9NQX6		zinc finger region	zinc finger	439	462				notDisRelated								C2H2-type 12
+Q9NQX6	Q9NQX6		cross-link	cross-link	109	110				notDisRelated								Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in SUMO2
+Q9NQX6	Q9NQX6		cross-link	cross-link	400	401				notDisRelated								Glycyl lysine isopeptide (Lys-Gly) (interchain with G-Cter in SUMO2
+Q9NQX6	Q9NQX6		sequence conflict	conflict	59	60	E	K		notDisRelated								In Ref. 3; AAH09433.
 Q8N139	Q8N139-1	PRO_0000250672	chain	chain	1	1618				noEvidence				ATP-binding cassette sub-family A member 6	1	1; 2; 3; ABCA6delta-139		
 Q8N139	Q8N139-1		transmembrane region	transmem	31	52				notDisRelated								Helical
 Q8N139	Q8N139-1		transmembrane region	transmem	222	243				notDisRelated								Helical

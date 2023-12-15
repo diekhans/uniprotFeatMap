@@ -6,10 +6,10 @@ set -beEu -o pipefail
 #    add new swissprot accession to acc.tsv
 #      ./bin/getTestData acc.tsv tmp
 #    to include all
-#      cp tmp/*.{tsv,fa,tab,psl,gp,sizes} input/
+#      cp tmp/*. input/
 #      make -j 10 -k aligntest >&log
 #      cp output/*.psl expected/
-#    repeat until we have all updated
+#    repeat until we have all updated (3 times)
 #      make -j 10 -k test >&log
 #      cp output/*.{psl,tsv,bed} expected/
 
@@ -60,3 +60,5 @@ faSomeRecords ${gnfa} ${gnoutpre}.fa.ids.tmp ${gnoutpre}.pc_transcripts.fa
 awk '/^>/{print gensub(">([A-Z0-9.]+).*$", "\\1", 1)}' ${gnoutpre}.pc_transcripts.fa > ${gnoutpre}.trans.acc.tmp
 fgrep -f ${gnoutpre}.trans.acc.tmp ${gndir}/gencode.gp > ${gnoutpre}.gp
 genePredToPsl ${chromSizes} ${gnoutpre}.gp ${gnoutpre}.psl
+
+rm -f ${outdir}/*.tmp

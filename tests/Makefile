@@ -27,21 +27,9 @@ test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDeco
 fulltest: test aligntest
 aligntest: protTransAlignTests
 
-uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapBasic
-
-testUniprotProteinTranscriptMapBasic: mkout
-	${uniprotProteinTranscriptMap} input/gencode.v43.metadata.tsv input/gencode.v43.gp input/gencode.v43.psl \
-		input/swissprot.9606.tab expected/testProtTransBlastAlign.psl output/$@.psl output/$@.problems.tsv
-	diff expected/$@.psl output/$@.psl
-	diff expected/$@.problems.tsv output/$@.problems.tsv
-	pslCheck -verbose=0 output/$@.psl
-
-define checkAlignments
-	diff expected/$@.psl output/$@.psl
-	pslCheck -verbose=0 output/$@.psl
-endef
-
+###
 protTransAlignTests: testProtTransBlastAlign testProtTransBlatAlign
+
 testProtTransBlastAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${uniprotProteinTranscriptAlign} --algo=blast input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
@@ -51,7 +39,22 @@ testProtTransBlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${uniprotProteinTranscriptAlign} --algo=blat input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
 	$(call checkAlignments)
+####
+uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapBasic
 
+testUniprotProteinTranscriptMapBasic: mkout
+	${uniprotProteinTranscriptMap} input/gencode.v43.metadata.tsv input/gencode.v43.gp input/gencode.v43.psl \
+		input/swissprot.9606.tab expected/testProtTransBlatAlign.psl output/$@.psl output/$@.problems.tsv
+	diff expected/$@.psl output/$@.psl
+	diff expected/$@.problems.tsv output/$@.problems.tsv
+	pslCheck -verbose=0 output/$@.psl
+
+define checkAlignments
+	diff expected/$@.psl output/$@.psl
+	pslCheck -verbose=0 output/$@.psl
+endef
+
+###
 uniprotMapAnnotsTests: testUniprotMapAnnots
 
 # intermediates saved for checking
@@ -68,6 +71,7 @@ testUniprotMapAnnots: mkout
 	pslCheck -verbose=0 output/$@.psl
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
+###
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators \
 	testUniprotAnnotsToDecoColorHelp
 
@@ -89,7 +93,7 @@ output/gencode.v43.bb: input/gencode.v43.gp
 	bedToBigBed -type=bed12 -tab output/gencode.v43.bed ${chromSizes} $@
 
 output/%: hub-files/%
-	mkdir -p $(dir $@)
+	@mkdir -p $(dir $@)
 	cp -f $< $@
 
 mkout:

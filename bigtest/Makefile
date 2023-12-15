@@ -68,9 +68,9 @@ mapAnnotsRefTsv = ${mapAnnotsAlgoPre}.ref.tsv
 mapAnnotsProblemsTsv = ${mapAnnotsAlgoPre}.problems.tsv
 
 # uncomment to see debugging intermediates
-#mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
-#mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
-#mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
+mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
+mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
+mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
