@@ -92,14 +92,14 @@ class UniProtMetaTbl:
         try:
             return self.byAcc[acc]
         except KeyError as ex:
-            raise KeyError(f"acc not found {acc}") from ex
+            raise KeyError(f"UniProt acc not found {acc}") from ex
 
     def getByIsoId(self, isoId):
         "Error if not found"
         try:
             return self.byIsoId[isoId]
         except KeyError as ex:
-            raise KeyError(f"isoId not found {isoId}") from ex
+            raise KeyError(f"UniProt isoId not found {isoId}") from ex
 
     def getTransMeta(self, transAcc):
         "None if not found"
@@ -107,7 +107,7 @@ class UniProtMetaTbl:
         if protMetas is None:
             return None
         if len(protMetas) > 1:
-            raise Exception(f"more than one protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
+            raise Exception(f"more than one UniProt protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
         return protMetas[0]
 
     def getGeneAccMetas(self, geneAcc):

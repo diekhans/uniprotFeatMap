@@ -102,7 +102,7 @@ Warning: P20848 does not map to any transcript
 ** chr1:11,658,702-11,658,804
 frame-shifted protein; looks good, but this the display ideal?
 
-* no swissprot domains mappings
+* should other classes besides domains be defaulted
 ** BRAC2
 P51587 - SwissProt
 no annotations classified as "domain", but have repeat
@@ -111,12 +111,21 @@ no annotations classified as "domain", but have repeat
 they should just be ignored
 see bigtest/bigtest.org
 
-* modify uniprotProteinTranscriptAlign to only blat/blast to matched transcripts
-
 * IMPORTANT Adam F. feedback: domain ends might a bit unsure, so indicate the amount of truncation.
+use orange or yellow?
 
-* should NMD being include?
+* better color for other iosform okay status?
+black looks weird
 
-* look at cases in/testUniprotProteinTranscriptMapBasic.problems.tsv
+* look a problem report cases
 
-* add problem report to mappAnnots instead of stderr
+* option to exclude CDS truncated cases
+useful in visual QC to look for weird cases
+
+* mark both ends of internal breakage
+
+* issues:
+** chr19:51,877,172-51,877,490 ENST00000451628.9
+why is domain truncated here
+also says 5' truncation, looks like 3'
+

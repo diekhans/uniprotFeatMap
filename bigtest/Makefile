@@ -34,28 +34,34 @@ all: ${algos:%=%_mkAlgo}
 	${MAKE} mkAlgo algo=$*
 	${MAKE} mkUniprotMapAnnots mkDecorators algo=$*
 
-mkAlgo: mkProtGeneAln mkUniprotMapAnnots mkDecorators
+mkAlgo: mkProtTransAln mkUniprotMapAnnots mkDecorators
 
 
 ##
 # swissprotGencode alignment
 #   algo=
 ##
-protGenePre = swissprotGencode/swissprotGencode.${algo}
-protGeneRawAln = ${protGenePre}.raw.psl
-protGenePairedAln = ${protGenePre}.paired.psl
-protGenePairProbTsv = ${protGenePre}.paired.problems.tsv
-protGeneAlnTmpDir = ${protGenePre}.${tmpext}
+protTransPre = swissprotGencode/swissprotGencode.${algo}
+protTransRawAln = ${protTransPre}.raw.psl
+protTransPairedAln = ${protTransPre}.paired.psl
+protTransPairProbTsv = ${protTransPre}.paired.problems.tsv
+protTransAlnTmpDir = ${protTransPre}.${tmpext}
 
-mkProtGeneAln: ${protGeneRawAln} ${protGenePairedAln}
-${protGeneRawAln}: ${spfa} ${gnfa}
-	@mkdir -p $(dir $@)
-	rm -rf ${protGeneAlnTmpDir}
-	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protGeneAlnTmpDir}
+# uncomment to see debugging intermediates
+protTransInterDir = ${protTransAlgoPre}.inter
+protTransInterPre = ${protTransInterDir}/${algo}.inter.
+protTransInterOpt = --interPrefix=${protTransInterPre}
+
+
+mkProtTransAln: ${protTransRawAln} ${protTransPairedAln}
+${protTransRawAln}: ${spfa} ${gnfa}
+	@mkdir -p $(dir $@) ${protTransInterDir}
+	rm -rf ${protTransAlnTmpDir}
+	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protTransAlnTmpDir}
 	mv -f $@.${tmpext} $@
 
-${protGenePairedAln}: ${protGeneRawAln}
-	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${spmeta} $< $@.${tmpext} ${protGenePairProbTsv}
+${protTransPairedAln}: ${protTransRawAln}
+	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${spmeta} $< $@.${tmpext} ${protTransPairProbTsv}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -74,9 +80,9 @@ mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
-${mapAnnotsPsl}: ${spannot} ${protGenePairedAln}
+${mapAnnotsPsl}: ${spannot} ${protTransPairedAln}
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ${uniprotMapAnnots} ${spannot} ${protGenePairedAln} ${gnpsl} \
+	${time} ${uniprotMapAnnots} ${spannot} ${protTransPairedAln} ${gnpsl} \
             $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsProblemsTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
