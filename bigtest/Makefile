@@ -14,16 +14,16 @@ tmpext = $(shell hostname).$(shell echo $${PPID}).tmp
 time = time -p
 
 algos = blat blast
+taxid = 9606
 
-sppre = ../data/swissprot.9606
-spmeta= ${sppre}.tab
-spannot= ${sppre}.annots.tab
-spfa = ${sppre}.fa.gz
+up_divisions = swissprot trembl
+up_dataset_swissprot = SwissProt
+up_dataset_trembl = TrEMBL
 
-gnver = v44
-gnpre = ../data/gencode.${gnver}.pc_transcripts
+gnver = v45
+gnpre = ../data/gencode.${gnver}
 gnmeta = ${gnpre}.meta.tsv
-gnfa = ${gnpre}.fa.gz
+gnfa = ${gnpre}.pc_transcripts.fa.gz
 gnpsl = ${gnpre}.psl
 gngp = ${gnpre}.gp
 
@@ -32,16 +32,32 @@ all: ${algos:%=%_mkAlgo}
 	cd ../hub && ${MAKE}
 %_mkAlgo:
 	${MAKE} mkAlgo algo=$*
-	${MAKE} mkUniprotMapAnnots mkDecorators algo=$*
+mkAlgo: ${up_divisions:%=%_mkDivision}
+	#${MAKE} amergeDecorators algo=$*
 
-mkAlgo: mkProtTransAln mkUniprotMapAnnots mkDecorators
-
+%_mkDivision:
+	${MAKE} mkDivision algo=${algo} div=$*
 
 ##
-# swissprotGencode alignment
+# processing on an division and alignment algorithm 
 #   algo=
+#   div=
 ##
-protTransPre = swissprotGencode/swissprotGencode.${algo}
+
+uppre = ../data/${div}.${taxid}
+upmeta= ${uppre}.tab
+upannot= ${uppre}.annots.tab
+upfa = ${uppre}.fa.gz
+mkDivision: mkProtTransAln mkUniprotMapAnnots mkDecorators
+
+
+##
+# protein/transcript alignment
+#   algo=
+#   div=
+##
+dataset = ${up_dataset_${div}}
+protTransPre = protTransAln/${dataset}/protTrans_Aln.${algo}
 protTransRawAln = ${protTransPre}.raw.psl
 protTransPairedAln = ${protTransPre}.paired.psl
 protTransPairProbTsv = ${protTransPre}.paired.problems.tsv
@@ -54,21 +70,21 @@ protTransInterOpt = --interPrefix=${protTransInterPre}
 
 
 mkProtTransAln: ${protTransRawAln} ${protTransPairedAln}
-${protTransRawAln}: ${spfa} ${gnfa}
+${protTransRawAln}: ${upfa} ${gnfa}
 	@mkdir -p $(dir $@) ${protTransInterDir}
 	rm -rf ${protTransAlnTmpDir}
-	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${spfa} ${gnfa} $@.${tmpext} ${protTransAlnTmpDir}
+	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${upfa} ${gnfa} $@.${tmpext} ${protTransAlnTmpDir}
 	mv -f $@.${tmpext} $@
 
 ${protTransPairedAln}: ${protTransRawAln}
-	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${spmeta} $< $@.${tmpext} ${protTransPairProbTsv}
+	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${upmeta} $< $@.${tmpext} ${protTransPairProbTsv}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 ##
 # map annotations
 ##
-mapAnnotsAlgoPre = mapAnnots/mapAnnots.${algo}
+mapAnnotsAlgoPre = mapAnnots/${dataset}/mapAnnots.${algo}
 mapAnnotsPsl = ${mapAnnotsAlgoPre}.psl
 mapAnnotsRefTsv = ${mapAnnotsAlgoPre}.ref.tsv
 mapAnnotsProblemsTsv = ${mapAnnotsAlgoPre}.problems.tsv
@@ -80,9 +96,9 @@ mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
-${mapAnnotsPsl}: ${spannot} ${protTransPairedAln}
+${mapAnnotsPsl}: ${upannot} ${protTransPairedAln}
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ${uniprotMapAnnots} ${spannot} ${protTransPairedAln} ${gnpsl} \
+	${time} ${uniprotMapAnnots} ${upannot} ${protTransPairedAln} ${gnpsl} \
             $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsProblemsTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -90,16 +106,16 @@ ${mapAnnotsPsl}: ${spannot} ${protTransPairedAln}
 ##
 # make decorators
 ##
-decoratorsAlgoPre = decorators/swissprot-gencode.${gnver}.${algo}
+decoratorsAlgoPre = decorators/${dataset}/uniprot-gencode.${gnver}.${algo}
 decoratorsBed = ${decoratorsAlgoPre}.decorators.bed
 decoratorsTypesTsv = ${decoratorsAlgoPre}.decorators.types.tsv
 
 mkDecorators: ${decoratorsBed}
 
-${decoratorsBed}: ${spannot} ${mapAnnotsPsl}
+${decoratorsBed}: ${upannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ${uniprotAnnotsToDecorators} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
-	    ${spmeta} ${spannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gnpsl} $@.${tmpext}
+	${time} ${uniprotAnnotsToDecorators} --dataset=${dataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
+	    ${upmeta} ${upannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gnpsl} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 # paranoid cleaning
@@ -108,4 +124,4 @@ clean:
 	@exit 1
 
 realclean:
-	rm -rf swissprotGencode mapAnnots decorators
+	rm -rf prot_trans_aln mapAnnots decorators

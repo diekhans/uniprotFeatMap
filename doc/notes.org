@@ -10,62 +10,14 @@ makeUniProtPsl.sh
  USER=demo-markd jkmmake cgi >&log
  https://hgwdev-demo-markd.gi.ucsc.edu/
 * 
-ln -s /hive/data/outside/otto/uniprot/ data/
 
-uniprot/tab/
-
-  -rw-rw-rw-  1 max protein  65144175 Mar 29 01:22 swissprot.9606.annots.tab
-  -rw-rw-rw-  1 max protein   7240156 Mar 29 01:22 swissprot.9606.fa.gz
-  -rw-rw-rw-  1 max protein 119982930 Mar 29 01:22 swissprot.9606.refs.tab
-  -rw-rw-rw-  1 max protein  20707542 Mar 29 01:22 swissprot.9606.tab
-
-
-  
+* gencode:
 
 * data
-** data/uniprot/tab/swissprot.9606.tab 
-dataset	acc	mainIsoAcc	orgName	orgCommon	taxonId	name	accList	protFullNames	protShortNames	protAltFullNames	protAltShortNames	geneName	geneSynonyms	isoNames	geneOrdLocus	geneOrf	hgncSym	hgncId	refSeq	refSeqProt	entrezGene	ensemblGene	ensemblProt	ensemblTrans	kegg	emblMrna	emblMrnaProt	emblDna	emblDnaProt	pdb	ec	uniGene	omimGene	omimPhenotype	subCellLoc	functionText	isoIds
-Swiss-Prot	P14060	P14060	Homo sapiens	Human	9606	3BHS1_HUMAN	P14060|A8K691|Q14545|Q8IV65	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 1		3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type I|3-beta-hydroxy-5-ene steroid dehydrogenase|3-beta-hydroxy-Delta(5)-steroid dehydrogenase|3-beta-hydroxysteroid 3-dehydrogenase|Delta-5-3-ketosteroid isomerase|Dihydrotestosterone oxidoreductase|Steroid Delta-isomerase|Trophoblast antigen FDO161G	3-beta-HSD I	HSD3B1	3BH|HSDB3A				HSD3B1	HGNC:5217	NM_000862.2|NM_001328615.1	NP_000853.1|NP_001315544.1	3283	ENSG00000203857.10	ENSP00000358421.3|ENSP00000432268.1	ENST00000369413.8|ENST00000528909.1	hsa:3283	M27137|X53321|M35493|X55997|S45679|AK291556|BC031999	AAA36015.1|CAA37408.1|AAA51538.1|CAA39469.1|AAB23543.1|BAF84245.1|AAH31999.1				5.3.3.1|1.1.1.210|1.1.1.270|1.1.1.145		109715		Endoplasmic reticulum membrane|Mitochondrion membrane	A bifunctional enzyme responsible for the oxidation and isomerization of 3beta-hydroxy-Delta(5)-steroid precursors to 3-oxo-Delta(4)-steroids, an essential step in steroid hormone biosynthesis. Specifically catalyzes the conversion of pregnenolone to progesterone, 17alpha-hydroxypregnenolone to 17alpha-hydroxyprogesterone, dehydroepiandrosterone (DHEA) to 4-androstenedione, and androstenediol to testosterone. Additionally, catalyzes the interconversion between 3beta-hydroxy and 3-oxo-5alpha-androstane steroids controlling the bioavalability of the active forms. Specifically converts dihydrotestosterone to its inactive form 5alpha-androstanediol, that does not bind androgen receptor/AR. Also converts androstanedione, a precursor of testosterone and estrone, to epiandrosterone (PubMed:1401999, PubMed:2139411). Expected to use NAD(+) as preferred electron donor for the 3beta-hydroxy-steroid dehydrogenase activity and NADPH for the 3-ketosteroid reductase activity (Probable).	
-Swiss-Prot	P26439	P26439-1	Homo sapiens	Human	9606	3BHS2_HUMAN	P26439|A2RRA5|Q16010|Q53GD4|Q6AI10|Q6LDB9|Q99890|Q9UD08	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 2		3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type II|3-beta-HSD adrenal and gonadal type	3-beta-HSD II	HSD3B2	HSDB3B				HSD3B2	HGNC:5218	NM_000198.3|NM_001166120.1	NP_000189.1|NP_001159592.1	3284	ENSG00000203859.10	ENSP00000445122.1|ENSP00000358424.3	ENST00000543831.5|ENST00000369416.4	hsa:3284	M67466|CR627415|AK222997|BC038419|BC131488	AAA36016.1|CAH10504.1|BAD96717.1|AAH38419.1|AAI31489.1				5.3.3.1|1.1.1.145		613890	201810	Endoplasmic reticulum membrane|Mitochondrion membrane	3-beta-HSD is a bifunctional enzyme, that catalyzes the oxidative conversion of Delta(5)-ene-3-beta-hydroxy steroid, and the oxidative conversion of ketosteroids. The 3-beta-HSD enzymatic system plays a crucial role in the biosynthesis of all classes of hormonal steroids.	P26439-2
-Swiss-Prot	Q9BXI3	Q9BXI3	Homo sapiens	Human	9606	5NT1A_HUMAN	Q9BXI3|Q3SYB9|Q5TG98|Q9BWT8	Cytosolic 5'-nucleotidase 1A	cN1A	5'-deoxynucleotidase|Cytosolic 5'-nucleotidase IA	cN-I|cN-IA	NT5C1A					NT5C1A	HGNC:17819	NM_032526.2	NP_115915.1	84618	ENSG00000116981.4	ENSP00000235628.1	ENST00000235628.2	hsa:84618	AF331801|AY028778|BC103879|BC103880	AAK01294.1|AAK30000.1|AAI03880.1|AAI03881.1				3.1.3.89|3.1.3.99|3.1.3.5		610525		Cytoplasm	Catalyzes the hydrolysis of ribonucleotide and deoxyribonucleotide monophosphates, releasing inorganic phosphate and the corresponding nucleoside (PubMed:11133996, PubMed:7599155, PubMed:8967393, PubMed:34814800). AMP is the major substrate but can also hydrolyze dCMP and IMP (PubMed:11133996, PubMed:7599155, PubMed:8967393, PubMed:34814800).	
-Swiss-Prot	Q96P26	Q96P26-1	Homo sapiens	Human	9606	5NT1B_HUMAN	Q96P26|B5MCR0|B7ZVX7|Q53RX2|Q8N9W3|Q8NA26|Q96DU5|Q96KE6|Q96M25|Q96SA3	Cytosolic 5'-nucleotidase 1B	cN1B	Autoimmune infertility-related protein|Cytosolic 5'-nucleotidase IB	cN-IB	NT5C1B	AIRP			ORFFKSG85	NT5C1B	HGNC:17818	NM_001199087.1|NM_001199086.1|NM_001199104.1|NM_001199088.1|NM_001002006.2|NM_033253.3	NP_001186016.1|NP_001002006.1|NP_001186017.1|NP_150278.2|NP_001186015.1|NP_001186033.1	93034|100526794	ENSG00000185013.17	ENSP00000305979.4|ENSP00000352904.2	ENST00000359846.6|ENST00000304081.9	hsa:100526794|hsa:93034	AF356185|AF417165|AK093234|AK093464|AK057444|BC136387|BC171761|AF352326|AJ295254	AAK39108.1|AAL11910.1|BAC04103.1|BAC04174.1|BAB71489.1|AAI36388.1|AAI71761.1|AAK83285.1|CAC44363.1				3.1.3.5		610526		Cytoplasm	Catalyzes the hydrolysis of nucleotide monophosphates, releasing inorganic phosphate and the corresponding nucleoside, AMP is the major substrate.	Q96P26-2|Q96P26-3|Q96P26-4
-Swiss-Prot	Q9H0P0	Q9H0P0-4	Homo sapiens	Human	9606	5NT3A_HUMAN	Q9H0P0|A8K253|B2RAA5|B8ZZC4|Q6IPZ1|Q6NXS6|Q7L3G6|Q9P0P5|Q9UC42|Q9UC43|Q9UC44|Q9UC45	Cytosolic 5'-nucleotidase 3A		7-methylguanosine phosphate-specific 5'-nucleotidase|Cytosolic 5'-nucleotidase 3|Cytosolic 5'-nucleotidase III|Pyrimidine 5'-nucleotidase 1|Uridine 5'-monophosphate hydrolase 1|p36	7-methylguanosine nucleotidase|cN-III|P5'N-1|P5N-1|PN-I	NT5C3A	NT5C3|P5N1|UMPH1			ORFHSPC233	NT5C3A	HGNC:17820	NM_016489.12|NM_001002009.2|NM_001002010.2|XM_011515409.2|NM_001166118.2	NP_001002010.1|NP_001159590.1|NP_001002009.1|NP_057573.2|XP_011513711.1	51251	ENSG00000122643.23	ENSP00000496364.1|ENSP00000387166.1	ENST00000643244.1|ENST00000409467.6	hsa:51251	AF312735|AL136716|AK290118|AK314109|CR533518|BC013292|BC015856|BC066914|BC071652|AF151067	AAG33630.1|CAB66650.1|BAF82807.1|BAG36802.1|CAG38549.1|AAH13292.2|AAH15856.2|AAH66914.1|AAH71652.2|AAF36153.1			2CN1|2JGA|2VKQ	3.1.3.91|3.1.3.5		606224	266120	Cytoplasm|Endoplasmic reticulum	Nucleotidase which shows specific activity towards cytidine monophosphate (CMP) and 7-methylguanosine monophosphate (m(7)GMP) (PubMed:24603684). CMP seems to be the preferred substrate (PubMed:15968458).	Q9H0P0-1|Q9H0P0-2|Q9H0P0-3
-Swiss-Prot	Q969T7	Q969T7-1	Homo sapiens	Human	9606	5NT3B_HUMAN	Q969T7|A8MWB9|C9JKC4|Q7L3B7	7-methylguanosine phosphate-specific 5'-nucleotidase	7-methylguanosine nucleotidase	Cytosolic 5'-nucleotidase 3B|Cytosolic 5'-nucleotidase III-like protein|N(7)-methylguanylate 5'-phosphatase	cN-III-like protein	NT5C3B	NT5C3L				NT5C3B	HGNC:28300	NM_052935.4	NP_443167.4	115024	ENSG00000141698.17	ENSP00000389948.2	ENST00000435506.7	hsa:115024	BC013742|BC014132|BC016971|BC067788	AAH13742.2|AAH14132.2|AAH16971.2|AAH67788.1			7ZEE|7ZEH|7ZEG	3.1.3.91|3.1.3.5		620041		Cytoplasm	Specifically hydrolyzes 7-methylguanosine monophosphate (m(7)GMP) to 7-methylguanosine and inorganic phosphate (PubMed:23223233, PubMed:24603684). The specific activity for m(7)GMP may protect cells against undesired salvage of m(7)GMP and its incorporation into nucleic acids (PubMed:23223233). Also has weak activity for CMP (PubMed:23223233, PubMed:24603684). UMP and purine nucleotides are poor substrates (PubMed:23223233).	Q969T7-2
-Swiss-Prot	O95336	O95336	Homo sapiens	Human	9606	6PGL_HUMAN	O95336	6-phosphogluconolactonase	6PGL			PGLS					PGLS	HGNC:8903	NM_012088.2	NP_036220.1	25796	ENSG00000130313.7	ENSP00000252603.1	ENST00000252603.7	hsa:25796	AJ243972|BC014006|AF091091	CAB57866.1|AAH14006.1|AAC72960.1				3.1.1.31		604951		Cytoplasm	Hydrolysis of 6-phosphogluconolactone to 6-phosphogluconate.	
-Swiss-Prot	P20848	P20848	Homo sapiens	Human	9606	A1ATR_HUMAN	P20848|A0A0G2JPK4|S4UD68	Alpha-1-antitrypsin-related protein		Protease inhibitor 1-like|Serpin A2		SERPINA2	ARGS|ATR|PIL|SERPINA2P				SERPINA2	HGNC:8985	NM_006220.2	NP_006211.2	390502	ENSG00000274821.5	ENSP00000477957.2	ENST00000616052.3	hsa:390502	JX680599	AGI62067.1						107410		Endoplasmic reticulum	Putative serine protease inhibitor.	
-Swiss-Prot	P01009	P01009-1	Homo sapiens	Human	9606	A1AT_HUMAN	P01009|A6PX14|B2RDQ8|Q0PVP5|Q13672|Q53XB8|Q5U0M1|Q7M4R2|Q86U18|Q86U19|Q96BF9|Q96ES1|Q9P1P0|Q9UCE6|Q9UCM3	Alpha-1-antitrypsin		Alpha-1 protease inhibitor|Alpha-1-antiproteinase|Serpin A1		SERPINA1	AAT|PI			ORFPRO0684|ORFPRO2209	SERPINA1	HGNC:8941	NM_001127707.1|NM_001002236.2|NM_001002235.2|NM_001127702.1|NM_001127706.1|NM_001127703.1|NM_000295.4|NM_001127705.1|NM_001127700.1|XM_017021370.1|NM_001127704.1|NM_001127701.1	NP_001121174.1|NP_000286.3|NP_001121173.1|NP_001121176.1|XP_016876859.1|NP_001121178.1|NP_001002236.1|NP_001121175.1|NP_001121172.1|NP_001121177.1|NP_001002235.1|NP_001121179.1	5265	ENSG00000197249.14	ENSP00000386094.1|ENSP00000490054.1|ENSP00000408474.1|ENSP00000348068.4|ENSP00000376802.4|ENSP00000385960.4|ENSP00000416066.1|ENSP00000416354.3|ENSP00000451525.1|ENSP00000376803.4|ENSP00000390299.1	ENST00000437397.5|ENST00000355814.8|ENST00000440909.5|ENST00000393088.8|ENST00000636712.1|ENST00000489769.1|ENST00000404814.8|ENST00000402629.1|ENST00000448921.5|ENST00000393087.9|ENST00000449399.7	hsa:5265	K01396|X01683|M11465|DQ682455|AF113676|AF130068|BX161449|BX247968|BX248002|BX248257|AK315637|BT019455|BC011991|BC015642|X02920|V00496|M26123	AAB59375.1|CAA25838.1|AAA51546.1|ABG73380.1|AAF29581.1|AAG35496.1|CAD61914.1|CAD62306.1|CAD62334.1|CAD62585.1|BAG38005.1|AAV38262.1|AAH11991.1|AAH15642.1|CAA26677.1|CAA23755.1|AAA51545.1			1PSI|3CWL|2QUG|7API|1D5S|2D26|3DRM|3NE4|5NBV|3NDF|1QMB|1IZ2|1QLP|3CWM|1EZX|3DRU|7NPL|6I7U|5NBU|6ROD|1OPH|1OO8|3NDD|8API|4PYW|6I4V|1KCT|3T1P|6IAY|6HX4|7NPK|1HP7|9API|7AEL|5IO1|1ATU			107400	613490	Secreted|Endoplasmic reticulum|Secreted|Extracellular space|Extracellular matrix	Inhibitor of serine proteases. Its primary target is elastase, but it also has a moderate affinity for plasmin and thrombin. Irreversibly inhibits trypsin, chymotrypsin and plasminogen activator. The aberrant form inhibits insulin-induced NO synthesis in platelets, decreases coagulation time and has proteolytic activity against insulin and plasmin.|Molecule 'Short peptide from AAT': Reversible chymotrypsin inhibitor. It also inhibits elastase, but not trypsin. Its major physiological function is the protection of the lower respiratory tract against proteolytic destruction by human leukocyte elastase (HLE).	P01009-2|P01009-3
-
-
-** data/uniprot/tab/swissprot.9606.annots.tab 
-acc	mainIsoAcc	varId	featType	shortFeatType	begin	end	origAa	mutAa	dbSnpId	disRelated	disease	disCode	pmid	longName	shortName	syns	subCellLoc	comment
-P14060	P14060		initiator methionine	init Met	1	2				notDisRelated			2779585					Removed
-P14060	P14060	PRO_0000087774	chain	chain	2	374				noEvidence				3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 1	3-beta-HSD I	3-beta-HSD I; 3BH; HSDB3A; Steroid Delta-isomerase; Trophoblast antigen FDO161G; Delta-5-3-ketosteroid isomerase; Dihydrotestosterone oxidoreductase; 3-beta-hydroxysteroid 3-dehydrogenase; 3-beta-hydroxy-5-ene steroid dehydrogenase; 3-beta-hydroxy-Delta(5)-steroid dehydrogenase; 3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type I		
-P14060	P14060		transmembrane region	transmem	288	309				notDisRelated								Helical
-P14060	P14060		active site	enzyme act site	159	160				notDisRelated								Proton donor
-P14060	P14060		binding site	bind	10	16				notDisRelated								
-P14060	P14060		binding site	bind	155	156				notDisRelated								
-P14060	P14060		binding site	bind	159	160				notDisRelated								
-P14060	P14060	VAR_048096	sequence variant	variant	54	55	T	I	rs3088283	noEvidence								
-P14060	P14060	VAR_048097	sequence variant	variant	71	72	R	I	rs4986952	noEvidence								
-
-** data/uniprot/tab/swissprot.9606.fa.gz
->P14060 isRefOf P14060
->P26439-1 isRefOf P26439
->P26439-2
->Q9BXI3 isRefOf Q9BXI3
->Q96P26-1 isRefOf Q96P26
 
 * samples
-head -200 data/uniprot/tab/swissprot.9606.tab  > samples/swissprot.9606.tab 
-head -200 data/uniprot/tab/swissprot.9606.annots.tab  > samples/swissprot.9606.annots.tab 
-zcat data/uniprot/tab/swissprot.9606.fa.gz |head -200 > samples/swissprot.9606.fa
-
-head -200 data/uniprot/tab/trembl.9606.tab  > samples/trembl.9606.tab 
-head -200 data/uniprot/tab/trembl.9606.annots.tab  > samples/trembl.9606.annots.tab 
-zcat data/uniprot/tab/trembl.9606.fa.gz |head -200 > samples/trembl.9606.fa
 
 * geneName
-ensemblTrans
 
 * algorithm:
 - gencode protein coding RNAs
@@ -83,102 +35,4 @@ ensemblTrans
   filter based on either
   hgncSym or hgncId,  ensemblGene, ensemblTrans
 
-
-* aligning all isoforms to all transcripts seems problematic
-  
-* building gencode to genome PSLs
-  
-* test alignment issues
-** WARNING: no alignments found for 'P11137-1' to matched transcript 'ENST00000199940.10'
-ENST00000199940.10 / ENSG00000078018.22 [P11137-4]
-canonical is 'P11137-1', which has a large exon not in P11137-4
-
-raw BLAST alignes
-| qName    | qSize | tName              | tStart | tEnd |  ident | qCover | repMatch | tCover |
-| P11137-1 |  1827 | ENST00000199940.10 |    440 | 1190 | 0.7208 | 0.1314 |   0.0000 | 0.1071 |
-| P11137-1 |  1827 | ENST00000199940.10 |    491 | 2117 | 0.6982 | 0.2720 |   0.0000 | 0.2218 |
-| P11137-2 |   471 | ENST00000199940.10 |    440 | 2117 | 0.9958 | 1.0000 |   0.0000 | 0.2102 |
-| P11137-3 |  1823 | ENST00000199940.10 |    440 | 1190 | 0.7292 | 0.1317 |   0.0000 | 0.1071 |
-| P11137-3 |  1823 | ENST00000199940.10 |    491 | 2117 | 0.6982 | 0.2726 |   0.0000 | 0.2218 |
-
-* feature types
-tmlr --tsvlite uniq -g featType,shortFeatType,comment ../../data/swissprot.9606.annots.tab  >annots.uniq-comment.tsv
-
-** possible types:
-| featType             | shortFeatType   |
-|----------------------+-----------------|
-| topological domain   | topo            |
-| transmembrane region | transmem        |
-| active site          | enzyme act site |
-| binding site         | bind            |
-| glycosylation site   | glyco           |
-| domain               | domain          |
-| zinc finger region   | zinc finger     |
-| DNA-binding region   | DNA-binding     |
-| domain               | phos            |
-| domain               | lipo            |
-| domain               | acetyl          |
-
-
-
-tmlr --tsvlite join -j shortFeatType -f shortFeat.tsv ../../data/swissprot.9606.annots.tab | \
-tmlr --tsvlite uniq -g featType,shortFeatType,comment >annots.uniq-comment.tsv
-
-tmlr --tsvlite join -j featType -f feat.tsv ../../data/swissprot.9606.annots.tab | \
-tmlr --tsvlite uniq -g featType,shortFeatType,comment >annots.uniq-feat.tsv
-
-* mappings
-| step | srcQName     | srcQStart | srcQEnd | srcQSize | srcTName          | srcTStart | srcTEnd | srcStrand | srcAligned | mappingQName      | mappingQStart | mappingQEnd | mappingTName      | mappingTStart | mappingTEnd | mappingStrand | mappingId | mappedQName  | mappedQStart | mappedQEnd | mappedTName       | mappedTStart | mappedTEnd | mappedStrand | mappedAligned | qStartTrunc | qEndTrunc | mappedPslLine |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
-|    1 | Q8N139-1#481 |         0 |     237 |      237 | Q8N139-1          |       477 |     714 | +         |        237 | Q8N139-1          |             0 |         635 | Q8N139-2          |             0 |         635 | +             |        56 | Q8N139-1#481 |            0 |        158 | Q8N139-2          |          477 |        635 | +            |           158 |           0 |        79 |             0 |
-|    1 | Q8N139-1#481 |         0 |     237 |      237 | Q8N139-1          |       477 |     714 | +         |        237 | Q8N139-1          |             0 |        1617 | Q8N139-1          |             0 |        1617 | +             |        55 | Q8N139-1#481 |            0 |        237 | Q8N139-1          |          477 |        714 | +            |           237 |           0 |         0 |             1 |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
-|    2 | Q8N139-1#481 |         0 |     158 |      237 | Q8N139-2          |       477 |     635 | +         |        158 |                   |               |             |                   |               |             |               |           |              |              |            |                   |              |            |              |               |             |           |               |
-|    2 | Q8N139-1#481 |         0 |     237 |      237 | Q8N139-1          |       477 |     714 | +         |        237 | Q8N139-1          |             0 |        1617 | ENST00000284425.7 |           196 |        5047 | ++            |        11 | Q8N139-1#481 |            0 |        237 | ENST00000284425.7 |          673 |        910 | +            |           237 |           0 |         0 |             0 |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
-|    3 | Q8N139-1#481 |         0 |     237 |      237 | ENST00000284425.7 |       673 |     910 | +         |        237 | ENST00000284425.7 |             0 |        5321 | chr17             |      69078701 |    69141895 | -             |        51 | Q8N139-1#481 |            0 |        237 | chr17             |     69133717 |   69134725 | -            |           237 |           0 |         0 |             0 |
-|    3 | Q8N139-1#482 |         0 |     227 |      227 | ENST00000284425.7 |      1483 |    1710 | +         |        227 | ENST00000284425.7 |             0 |        5321 | chr17             |      69078701 |    69141895 | -             |        51 | Q8N139-1#482 |            0 |        227 | chr17             |     69115467 |   69123387 | -            |           227 |           0 |         0 |             1 |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
-
-% fgrep Q8N139-1 expected/*Blat*.psl | cut -f1,10-100 | tabFmt 
-expected/testProtCanonBlatAlign.psl: Q8N139-1 1617 0   1617 Q8N139-1          1617 0   1617 1 1617, 0,   0,
-expected/testProtCanonBlatAlign.psl: Q8N139-2 637  0   635  Q8N139-1          1617 0   635  1 635,  0,   0,
-expected/testProtCanonBlatAlign.psl: Q8N139-3 185  0   153  Q8N139-1          1617 0   153  1 153,  0,   0,
-expected/testProtTransBlatAlign.psl: Q8N139-1 1617 0   1617 ENST00000284425.7 5321 196 5047 1 1617, 0,   196,
-expected/testProtTransBlatAlign.psl: Q8N139-1 1617 376 399  ENST00000524273.1 584  513 582  1 23,   376, 513,
-expected/testProtTransBlatAlign.psl: Q8N139-1 1617 0   153  ENST00000590645.1 1511 189 648  1 153,  0,   189,
-
-% fgrep Q8N139 expected/*Blat*.psl | cut -f1,10-100 | tabFmt 
-expected/testProtCanonBlatAlign.psl: Q8N139-1 1617 0   1617 Q8N139-1          1617 0   1617 1 1617, 0,   0,
-expected/testProtCanonBlatAlign.psl: Q8N139-2 637  0   635  Q8N139-1          1617 0   635  1 635,  0,   0,
-expected/testProtCanonBlatAlign.psl: Q8N139-3 185  0   153  Q8N139-1          1617 0   153  1 153,  0,   0,
-expected/testProtTransBlatAlign.psl: Q8N139-3 185  6   43   ENST00000269080.6 5677 156 267  1 37,   6,   156,
-expected/testProtTransBlatAlign.psl: Q8N139-1 1617 0   1617 ENST00000284425.7 5321 196 5047 1 1617, 0,   196,
-expected/testProtTransBlatAlign.psl: Q8N139-2 637  0   635  ENST00000284425.7 5321 196 2101 1 635,  0,   196,
-expected/testProtTransBlatAlign.psl: Q8N139-3 185  0   153  ENST00000284425.7 5321 196 655  1 153,  0,   196,
-expected/testProtTransBlatAlign.psl: Q8N139-1 1617 376 399  ENST00000524273.1 584  513 582  1 23,   376, 513,
-expected/testProtTransBlatAlign.psl: Q8N139-2 637  376 399  ENST00000524273.1 584  513 582  1 23,   376, 513,
-expected/testProtTransBlatAlign.psl: Q8N139-1 1617 0   153  ENST00000590645.1 1511 189 648  1 153,  0,   189,
-expected/testProtTransBlatAlign.psl: Q8N139-2 637  0   153  ENST00000590645.1 1511 189 648  1 153,  0,   189,
-expected/testProtTransBlatAlign.psl: Q8N139-3 185  0   185  ENST00000590645.1 1511 189 744  1 185,  0,   189,
-
-
-| step | srcQName     | srcQStart | srcQEnd | srcQSize | srcTName          | srcTStart | srcTEnd | srcStrand | srcAligned | mappingQName      | mappingQStart | mappingQEnd | mappingTName      | mappingTStart | mappingTEnd | mappingStrand | mappingId | mappedQName  | mappedQStart | mappedQEnd | mappedTName       | mappedTStart | mappedTEnd | mappedStrand | mappedAligned | qStartTrunc | qEndTrunc | mappedPslLine |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
-|    1 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-1          |      3841 |    4075 | +         |        234 | Q86UQ4-1          |          2736 |        5058 | Q86UQ4-7          |             0 |        2292 | +             |        47 | Q86UQ4-1#766 |            0 |        234 | Q86UQ4-7          |         1105 |       1339 | +            |           234 |           0 |         0 |            27 |
-|    1 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-1          |      3841 |    4075 | +         |        234 | Q86UQ4-1          |          2736 |        4946 | Q86UQ4-6          |             0 |        2211 | +             |        46 | Q86UQ4-1#766 |            0 |        234 | Q86UQ4-6          |         1105 |       1339 | +            |           234 |           0 |         0 |            28 |
-|    1 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-1          |      3841 |    4075 | +         |        234 | Q86UQ4-1          |          2736 |        5058 | Q86UQ4-5          |             0 |        2323 | +             |        45 | Q86UQ4-1#766 |            0 |        234 | Q86UQ4-5          |         1105 |       1339 | +            |           234 |           0 |         0 |            29 |
-|    1 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-1          |      3841 |    4075 | +         |        234 | Q86UQ4-1          |             0 |        5058 | Q86UQ4-4          |             0 |        5059 | +             |        44 | Q86UQ4-1#766 |            0 |        234 | Q86UQ4-4          |         3841 |       4075 | +            |           234 |           0 |         0 |            30 |
-|    1 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-1          |      3841 |    4075 | +         |        234 | Q86UQ4-1          |          2298 |        5058 | Q86UQ4-3          |             0 |        2760 | +             |        43 | Q86UQ4-1#766 |            0 |        234 | Q86UQ4-3          |         1543 |       1777 | +            |           234 |           0 |         0 |            31 |
-|    1 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-1          |      3841 |    4075 | +         |        234 | Q86UQ4-1          |             0 |        5058 | Q86UQ4-1          |             0 |        5058 | +             |        41 | Q86UQ4-1#766 |            0 |        234 | Q86UQ4-1          |         3841 |       4075 | +            |           234 |           0 |         0 |            32 |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
-|    2 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-7          |      1105 |    1339 | +         |        234 |                   |               |             |                   |               |             |               |           |              |              |            |                   |              |            |              |               |             |           |               |
-|    2 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-6          |      1105 |    1339 | +         |        234 |                   |               |             |                   |               |             |               |           |              |              |            |                   |              |            |              |               |             |           |               |
-|    2 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-5          |      1105 |    1339 | +         |        234 |                   |               |             |                   |               |             |               |           |              |              |            |                   |              |            |              |               |             |           |               |
-|    2 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-4          |      3841 |    4075 | +         |        234 |                   |               |             |                   |               |             |               |           |              |              |            |                   |              |            |              |               |             |           |               |
-|    2 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-3          |      1543 |    1777 | +         |        234 |                   |               |             |                   |               |             |               |           |              |              |            |                   |              |            |              |               |             |           |               |
-|    2 | Q86UQ4-1#766 |         0 |     234 |      234 | Q86UQ4-1          |      3841 |    4075 | +         |        234 | Q86UQ4-1          |             0 |        5058 | ENST00000435803.6 |            26 |       15200 | ++            |        61 | Q86UQ4-1#766 |            0 |        234 | ENST00000435803.6 |         3867 |       4101 | +            |           234 |           0 |         0 |            32 |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
-|    3 | Q86UQ4-1#766 |         0 |     234 |      234 | ENST00000435803.6 |      3867 |    4101 | +         |        234 | ENST00000435803.6 |             0 |       17188 | chr7              |      48171457 |    48647497 | +             |       112 | Q86UQ4-1#766 |            0 |        234 | chr7              |     48273507 |   48273741 | +            |           234 |           0 |         0 |            32 |
-|------+--------------+-----------+---------+----------+-------------------+-----------+---------+-----------+------------+-------------------+---------------+-------------+-------------------+---------------+-------------+---------------+-----------+--------------+--------------+------------+-------------------+--------------+------------+--------------+---------------+-------------+-----------+---------------|
 

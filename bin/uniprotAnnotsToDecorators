@@ -15,7 +15,7 @@ from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
-from protmap.uniprot import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus, getColorUses
+from protmap.uniprotDecorators import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus, getColorUses, decoratorBedSortOpts
 from protmap.gencode import GencodeDataTbl
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
@@ -254,7 +254,7 @@ def writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile):
     featTypes = set()
     with fileOps.AtomicFileCreate(annotDecoratorBedFile) as tmpDecoBed:
         # also sort by target item and feature type for test reproducible
-        with pipettor.Popen(["sort", "-k1,1", "-k2,2n", "-k3,3n", "-k13,13n", "-k4,4n"], 'w', stdout=tmpDecoBed) as decoBedFh:
+        with pipettor.Popen(["sort"] + decoratorBedSortOpts, 'w', stdout=tmpDecoBed) as decoBedFh:
             for batchBeds in batchBedsIter:
                 for bed in batchBeds:
                     bed.write(decoBedFh)

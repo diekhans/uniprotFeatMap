@@ -21,3 +21,20 @@ annotation -> uniprotCanonical -> transcript -> genome
 1. uniprotAnnotsToDecorators - Convert domain annotations alignments create by uniprotMapAnnots to a decorator BED file in uniprotDecoration.as format.  Possibly filtering the results.
    * input: uniprotAnnotsTsv, annotGenomePsl, annotTransRefTsv
    * output: annotDecoratorBedFile
+
+# Data required 
+
+
+gencode.v44.pc_transcripts.meta.tsv
+gencode.v44.pc_transcripts.gp
+gencode.v44.pc_transcripts.psl
+gencode.v44.pc_transcripts.ids.tsv
+
+swissprot.9606.fa.gz
+swissprot.9606.refs.tab
+swissprot.9606.annots.tab
+swissprot.9606.tab
+
+ln /hive/data/genomes/hg38/bed/gencodeV45/hgcImportPre/data/release_45/gencode.v45.pc_transcripts.fa.gz .
+zcat gencode.v45.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} /^>/{print gensub("^>([.A-Z0-9]+).*$", "\\1", 1)}' >  gencode.v45.pc_transcripts.ids.tsv
+
