@@ -6,6 +6,16 @@ from pycbio.sys.svgcolors import SvgColors
 from protmap import dropVersion
 from protmap.uniprot import UniProtCategory, UniProtDataSet, TransMatchStatus
 
+UNIPROT_TRANS_MATCH_OUTLINE_COLOR = SvgColors.deepskyblue
+UNIPROT_OTHER_ISO_OUTLINE_COLOR = SvgColors.black
+FEAT_INSERTION_COLOR = SvgColors.red
+FEAT_DELETION_COLOR = SvgColors.red
+
+def makeColorDesc(color, info):
+    colorName = SvgColors.getName(color)
+    colorRgb = color.toRgb8Str() if color.alpha is None else color.toRgba8Str()
+    return f"{info:<36} {colorName:<14} {colorRgb}"
+
 ######
 # The below code is derived from kent/src/hg/utils/otto/uniprot/doUniprot; if
 # this converges, we can turn this into a library.
@@ -56,7 +66,7 @@ _tremblColorCategories = frozenset((
 ))
 
 def getAnnotColorTrembl(annot):
-    if getAnnotCategory(annot)(annot)[0] in _tremblColorCategories:
+    if getAnnotCategory(annot)[0] in _tremblColorCategories:
         return getAnnotColorSwissport(annot)
     else:
         return TREMBLCOLOR

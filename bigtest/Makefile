@@ -32,8 +32,9 @@ all: ${algos:%=%_mkAlgo}
 	cd ../hub && ${MAKE}
 %_mkAlgo:
 	${MAKE} mkAlgo algo=$*
+	${MAKE} mergeDecorators algo=$*
+
 mkAlgo: ${up_divisions:%=%_mkDivision}
-	#${MAKE} amergeDecorators algo=$*
 
 %_mkDivision:
 	${MAKE} mkDivision algo=${algo} div=$*
@@ -116,6 +117,21 @@ ${decoratorsBed}: ${upannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
 	${time} ${uniprotAnnotsToDecorators} --dataset=${dataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
 	    ${upmeta} ${upannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gnpsl} $@.${tmpext}
+	mv -f $@.${tmpext} $@
+
+##
+# mergeDecorators
+# algo=
+##
+swissprotDecoratorsBed = decorators/SwissProt/uniprot-gencode.${gnver}.${algo}.decorators.bed
+tremblDecoratorsBed = decorators/TrEMBL/uniprot-gencode.${gnver}.${algo}.decorators.bed
+
+mergedDecoratorsBed = decorators/uniprot-gencode.${gnver}.${algo}.decorators.bed
+
+
+mergeDecorators: ${mergedDecoratorsBed}
+${mergedDecoratorsBed}: ${swissprotDecoratorsBed} ${tremblDecoratorsBed}
+	${uniprotDecoratorsMerge} --outBed=$@.${tmpext} $^
 	mv -f $@.${tmpext} $@
 
 # paranoid cleaning

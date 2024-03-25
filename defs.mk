@@ -20,4 +20,4 @@ uniprotProteinTranscriptAlign = ${binDir}/uniprotProteinTranscriptAlign
 uniprotProteinTranscriptMap = ${binDir}/uniprotProteinTranscriptMap
 uniprotMapAnnots = ${binDir}/uniprotMapAnnots
 uniprotAnnotsToDecorators = ${binDir}/uniprotAnnotsToDecorators
-
+uniprotDecoratorsMerge = ${binDir}/uniprotDecoratorsMerge

@@ -4,21 +4,12 @@ https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 
 * build:
 cd data
-cp uniprot/tab/swissprot.9606.* .
+ln uniprot/tab/*.9606.* .
 cp /hive/data/genomes/hg38/bed/gencodeV44/hgcImport/data/release_44/gencode.v44.pc_transcripts.fa.gz .
 
-zcat gencode.v44.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} />/{print gensub("^>([A-Z0-9.]+).*", "\\1", "g")}' > gencode.v44.pc_transcripts.ids.tsv
-tmlr join -j transcriptId -f gencode.v44.pc_transcripts.ids.tsv  /hive/data/genomes/hg38/bed/gencodeV44/hgcImport/data/gencode.tsv >gencode.v44.pc_transcripts.meta.tsv
+zcat gencode.v45.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} />/{print gensub("^>([A-Z0-9.]+).*", "\\1", "g")}' > gencode.v45.pc_transcripts.ids.tsv
+tmlr join -j transcriptId -f gencode.v45.pc_transcripts.ids.tsv  /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.tsv >gencode.v45.pc_transcripts.meta.tsv
 
-fgrep -f gencode.v44.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV44/hgcImport/data/gencode.gp > gencode.v44.pc_transcripts.gp
-genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v44.pc_transcripts.gp gencode.v44.pc_transcripts.psl
-
-#simplified
-ln /hive/data/genomes/hg38/bed/gencodeV45/hgcImportPre/data/release_45/gencode.v45.pc_transcripts.fa.gz .
-ln /hive/data/genomes/hg38/bed/gencodeV45/hgcImportPre/data/gencode.gp gencode.v45.gp
-ln /hive/data/genomes/hg38/bed/gencodeV45/hgcImportPre/data/gencode.tsv gencode.v45.meta.tsv
-genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v45.gp gencode.v45.psl
-
-
-zcat gencode.v45.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} /^>/{print gensub("^>([.A-Z0-9]+).*$", "\\1", 1)}' >  gencode.v45.pc_transcripts.ids.tsv
+fgrep -f gencode.v45.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.gp > gencode.v45.pc_transcripts.gp
+genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v45.pc_transcripts.gp gencode.v45.pc_transcripts.psl
 

@@ -7,7 +7,6 @@ import multiprocessing as mp
 import pipettor
 from pycbio.sys import fileOps
 from pycbio.sys.profile import Profile
-from pycbio.sys.svgcolors import SvgColors
 from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.bed import encodeRow
 from pycbio.hgdata.decoration import Decoration, BedBlock, Glyph
@@ -15,20 +14,13 @@ from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
-from protmap.uniprotDecorators import getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus, getColorUses, decoratorBedSortOpts
+from protmap.uniprotDecorators import (getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus,
+                                       getColorUses, decoratorBedSortOpts, makeColorDesc,
+                                       UNIPROT_TRANS_MATCH_OUTLINE_COLOR, UNIPROT_OTHER_ISO_OUTLINE_COLOR,
+                                       FEAT_INSERTION_COLOR, FEAT_DELETION_COLOR)
 from protmap.gencode import GencodeDataTbl
 from protmap.annotTransRef import AnnotTransRefs
 from protmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
-
-UNIPROT_TRANS_MATCH_OUTLINE_COLOR = SvgColors.deepskyblue
-UNIPROT_OTHER_ISO_OUTLINE_COLOR = SvgColors.black
-FEAT_INSERTION_COLOR = SvgColors.red
-FEAT_DELETION_COLOR = SvgColors.red
-
-def makeColorDesc(color, info):
-    colorName = SvgColors.getName(color)
-    colorRgb = color.toRgb8Str() if color.alpha is None else color.toRgba8Str()
-    return f"{info:<36} {colorName:<14} {colorRgb}"
 
 class HelpColors(argparse.Action):
     "generate a help message on colors"
@@ -253,7 +245,6 @@ def writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile):
     "write results from multiprocessing task as they come back via an iter"
     featTypes = set()
     with fileOps.AtomicFileCreate(annotDecoratorBedFile) as tmpDecoBed:
-        # also sort by target item and feature type for test reproducible
         with pipettor.Popen(["sort"] + decoratorBedSortOpts, 'w', stdout=tmpDecoBed) as decoBedFh:
             for batchBeds in batchBedsIter:
                 for bed in batchBeds:

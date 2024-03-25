@@ -3,7 +3,7 @@ SHELL = /bin/bash -beEu -o pipefail
 MAKEFLAGS += -rR
 .PRECIOUS: %
 
-gnver = v44
+gnver = v45
 
 decoDir = ../bigtest/decorators
 gencodePre = ../data/gencode.${gnver}
@@ -12,20 +12,23 @@ gencodeMeta = ${gencodePre}.pc_transcripts.meta.tsv
 gencodeFa = ${gencodePre}.pc_transcripts.fa.gz
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
 decoAs =  ../etc/uniprotDecoration.as
-bigGpAs =  ../../kent/src/hg/lib/bigGenePred.as
+bigGpAs =  ${HOME}/kent/src/hg/lib/bigGenePred.as
+
+hub_url = https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 
 
 algos = blat blast
 
 
 all: ${algos:%=%_mkAlgo} mkGencodeBb
+	${MAKE} check
 %_mkAlgo:
 	${MAKE} mkDecorators algo=$*
 
 #
 # algo=
-decoratorsInBed = ../bigtest/decorators/swissprot-gencode.${gnver}.${algo}.decorators.bed
-decoratorsOutBb = hg38/swissprot-gencode.${gnver}.${algo}.bb
+decoratorsInBed = ../bigtest/decorators/uniprot-gencode.${gnver}.${algo}.decorators.bed
+decoratorsOutBb = hg38/uniprot-gencode.${gnver}.${algo}.bb
 
 
 mkDecorators:  ${decoratorsOutBb}
@@ -52,3 +55,9 @@ ${gencodeTrackPre}.bed: ${gencodePre}.gp
 	rm hg38/gencode.names hg38/gencode.types
 	mv -f $@.tmp $@
 
+
+check: checked.done
+
+checked.done: ${gencodeTrackPre}.bb hg38/uniprot-gencode.${gnver}.blast.bb hg38/uniprot-gencode.${gnver}.blat.bb
+	hubCheck ${hub_url}
+	touch $@

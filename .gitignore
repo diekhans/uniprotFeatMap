@@ -2,7 +2,7 @@
 __pycache__/
 output/
 bigtest/isoCanon/
-bigtest/swissprotGencode/
+bigtest/protTransAln/
 bigtest/decorators/
 bigtest/mapAnnots/
 data/
