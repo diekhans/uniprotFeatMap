@@ -3,16 +3,12 @@ Support for creating UniProt decorators
 """
 
 from pycbio.sys.svgcolors import SvgColors
+from pycbio.sys.color import Color
 from protmap import dropVersion
 from protmap.uniprot import UniProtCategory, UniProtDataSet, TransMatchStatus
 
-UNIPROT_TRANS_MATCH_OUTLINE_COLOR = SvgColors.deepskyblue
-UNIPROT_OTHER_ISO_OUTLINE_COLOR = SvgColors.black
-FEAT_INSERTION_COLOR = SvgColors.red
-FEAT_DELETION_COLOR = SvgColors.red
-
 def makeColorDesc(color, info):
-    colorName = SvgColors.getName(color)
+    colorName = SvgColors.getClosestName(color)
     colorRgb = color.toRgb8Str() if color.alpha is None else color.toRgba8Str()
     return f"{info:<36} {colorName:<14} {colorRgb}"
 
@@ -29,26 +25,35 @@ def isVariant(annot):
 
 
 ###
-# color logic to match uniprot track, however colors for overlay are not visible
-# with track colors, so these are adjusted. Also use named colors.
+# Color logic.  This mostly matches UniProt genomic track, however colors for
+# overlay are not visible with track colors, so these are adjusted. Also use
+# named colors.  We also use consistent colors with
 ###
 
-TREMBLCOLOR = SvgColors.darkseagreen   # was 0,150,250 light blue (dodgerblue)
-SWISSPCOLOR = SvgColors.forestgreen    # was 12,12,120 dark blue (navy)
+def _mkcolor(r, g, b, a=None):
+    return Color.fromRgb8(r, g, b, a)
+
+UNIPROT_TRANS_MATCH_OUTLINE_COLOR = _mkcolor(0, 191, 255)  # deepskyblue
+UNIPROT_OTHER_ISO_OUTLINE_COLOR = _mkcolor(0, 0, 0)        # black
+FEAT_INSERTION_COLOR = _mkcolor(255, 0, 0)                 # red
+FEAT_DELETION_COLOR = _mkcolor(255, 0, 0)                  # red
+
+SWISSPCOLOR = _mkcolor(34, 139, 34)    # forestgreen, genomic tracks are 12,12,120 dark blue
+TREMBLCOLOR = _mkcolor(143, 188, 143)  # darkseagreen, genomic tracks are 0,150,250 light blue
 
 # mapping of annotations columns to colors
 featTypeColors = {
-    "modified residue": SvgColors.goldenrod,   # was 200,200,0
-    "glycosylation site": SvgColors.teal,      # was 0,100,100
-    "disulfide bond": SvgColors.dimgray,       # was 100,100,100
-    "topological domain": SvgColors.maroon,    # was 100,0,0
-    "zinc finger region": SvgColors.olive,     # was 100,100,0
-    "transmembrane region": SvgColors.green,   # was 0,150,0
-    "signal peptide": SvgColors.deeppink,      # was 255,0,150 light-red
+    "modified residue": _mkcolor(200, 200, 0),    # goldenrod
+    "glycosylation site": _mkcolor(0, 100, 100),  # teal
+    "disulfide bond": _mkcolor(100, 100, 100),    # dimgray
+    "topological domain": _mkcolor(100, 0, 0),    # maroon
+    "zinc finger region": _mkcolor(100, 100, 0),  # olive
+    "transmembrane region": _mkcolor(0, 150, 0),  # green
+    "signal peptide": _mkcolor(255, 0, 150),      # deeppink
 }
 commentColor = {
-    "Extracellular": SvgColors.darkcyan,       # was 0,110,180 light-blue
-    "Cytoplasmic": SvgColors.darkorange,       # was 255,150,0 light orange
+    "Extracellular": _mkcolor(0, 110, 180),  # darkcyan
+    "Cytoplasmic": _mkcolor(255, 150, 0),    # darkorange
 }
 
 def getAnnotColorSwissport(annot):
