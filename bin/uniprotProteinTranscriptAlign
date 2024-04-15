@@ -15,10 +15,6 @@ from protmap.align import querySplit, runBatch, buildBlastTransIndex
 
 uniprotProteinTranscriptAlignJob = osp.join(osp.dirname(__file__), "uniprotProteinTranscriptAlignJob")
 
-# Note:
-#  - Don't filter for minimum alignment coverage to get alt isoforms, which
-#    are often split
-
 def parseArgs():
     desc = """Align UniProt protein sequences to transcript RNAs with BLAT or
     BLAST.  Creates a protein to NA PSL alignments, with some basic filtering.

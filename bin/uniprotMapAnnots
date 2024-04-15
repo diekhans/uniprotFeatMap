@@ -29,7 +29,7 @@ def parseArgs():
     parser.add_argument("uniprotAnnotsTsv",
                         help="Uniprot annotations TSV from uniprotToTab")
     parser.add_argument("cdsTransPairedPsl",
-                        help="paired protein CDS coordinated to transcript alignments from uniprotProteinTranscriptMap")
+                        help="paired protein coordinat to transcript alignments from uniprotProteinTranscriptMap")
     parser.add_argument("transGenomePsl",
                         help="transcript genome alignment; often from genePredToPsl")
     parser.add_argument("annotGenomePsl",

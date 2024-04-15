@@ -17,13 +17,13 @@ from protmap.uniprot import UniProtMetaTbl, dropUniportIsoformModifier
 #    xxxAcc is id without version
 #
 # Algorithm:
-#   - Start with alignments of uniprot proteins to match (list in metadats)
+#   - Start with alignments of UniProt proteins that match the UniProt canonical
 #     GENCODE coding transcripts.  These are already filtered for ++ strand
-#     and minimal coverage of protein.
+#     and maximal coverage of protein.
 #   - If multiple alignments to a matched transcript, pick best one.
 #   - Project the matched alignments to other transcript isoforms.  This
 #     doesn't consider gene, which allows project to read-through transcripts.
-#     Only CDS on other isoforms will have proteins mapped to it by making the
+#     Only CDS on other isoforms will have proteins mapped to it by masking the
 #     UTR unaligned to the genome.
 
 def parseArgs():

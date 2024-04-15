@@ -1,45 +1,81 @@
 <html>
   <head>
-<title>SwissProt Transcript Annotations</title>
-</head>
-<body>
-<h1>SwissProt Transcript Annotations</h1>
-<p>
-  SwissProt annotations on GENCODE V44 protein-coding transcripts.
-</p>
+    <title>UniProt Transcript Annotations</title>
+  </head>
+  <body>
+    <h1>UniProt Transcript Annotations</h1>
 
-<p>This decorator set consist of SwissProt annotation on GENCODE transcripts.
+    <p>
+      This decorator set consist of UniProt annotations on individual GENCODE V45
+      protein-coding transcripts
+    </p>
+
+    
+      Genomic locations of UniProt/UniProt annotations are labeled with a short name for
+      the type of annotation (e.g. &quot;glyco&quot;, &quot;disulf bond&quot;, &quot;Signal peptide&quot;
+    etc.).
 
 
-</p>
- 
-Genomic locations of UniProt/SwissProt annotations are labeled with a short name for
-the type of annotation (e.g. &quot;glyco&quot;, &quot;disulf bond&quot;, &quot;Signal peptide&quot;
-etc.). A click on them shows the full annotation and provides a link to the UniProt/SwissProt
-record for more details.
 
-TrEMBL annotations are always shown in 
-<span style="color: rgb(0,150,250)"><b>light blue</b></span>,
-except in the
-Signal Peptides,
-Extracellular Domains,
-Transmembrane Domains, and
-Cytoplamsic domains subtracks.</p>
+<h2>Display Conventions and Configuration</h2>
+
+Domains
+
+Color coding:
+<ul>
+  <li> <span style="color: rgb(255,0,150)"><b>Signal peptide</b></span>
+  <li> <span style="color: rgb(0,150,255)"><b>extracellular</b></span>
+  <li> <span style="color: rgb(0,150,0)"> <b>transmembrane</b></span>
+  <li> <span style="color: rgb(255,150,0)"><b>cytoplasmic</b></span>
+</ul>
+    
+UniProt Modifications
+<ul>
+  <li> lipoification sites <span style="color: rgb(12,12,120)"><b>dark blue</b></span>
+  <li> glycosylation sites in <span style="color: rgb(0,100,100)"><b>dark green</b></span>
+  <li> phosphorylation in <span style="color: rgb(200,200,0)"><b>light green</b></span>
+</ul>
+
 
 TrEMBL annotations are always shown in 
 <span style="color: rgb(0,150,250)"><b>light blue</b></span>,
 except in the Signal Peptides, Extracellular Domains, Transmembrane Domains,
 and Cytoplamsic domains subtracks.</p>
 
-The subtracks for domains related to subcellular location are sorted from outside to inside of 
-the cell: <span style="color: rgb(255,0,150)"><b>Signal peptide</b></span>, 
-<span style="color: rgb(0,150,255)"><b>extracellular</b></span>, <span style="color: rgb(0,150,0)">
-<b>transmembrane</b></span>, and <span style="color: rgb(255,150,0)"><b>cytoplasmic</b></span>.
 
-In the &quot;UniProt Modifications&quot; track, lipoification sites are highlighted in 
-<span style="color: rgb(12,12,120)"><b>dark blue</b></span>, glycosylation sites in 
-<span style="color: rgb(0,100,100)"><b>dark green</b></span>, and phosphorylation in 
-<span style="color: rgb(200,200,0)"><b>light green</b></span>.</p>
+    Mouse over a feature to see the full UniProt annotation comment. For variants, the mouse over will show the full name of the UniProt disease acronym.
+
+
+<h2>Methods</h2>
+<ol>
+  <li> Convert the GENCODE transcript annotations on the genome to the implied alignments
+    for use in projected (<em>transGenomeAln</em>)
+    
+  <li> Produce alignments of UniProt proteins to GENCODE mRNA transcripts
+    (biotype of protein_coding), resulting protein to mRNA alignments
+    (<em>protTranAln</em>) with a two-step process:
+    <ol>
+      <li> UniProt proteins are aligned to their corresponding canonical mRNA
+        transcript in GENCODE using translated BLAT. The UTR regions of the mRNA are
+        hard-masked to prevent alignment of protein to similar sequences.  The
+        canonical mRNA is matched ignoring version number.
+      <li> Produce protein to mRNA transcript alignments for the remaining
+        protein-coding GENCODE transcripts that are not UniProt canonical
+        transcripts by projecting the canonical protein to mRNA alignment
+        through the genome.  Projections to UTR regions are clipped.
+    </ol>
+  <li> Project the UniProt feature annotations on the proteins to the associated mRNAs,
+    and then project those to the genomic coordinates for each mRNA (<em>annotGenomeAln</em>).
+    The projection pipeline is thus:
+    <pre>
+      annotation -&gt; protTranAln -&gt;  transGenomeAln =&gt; annotGenomeAln
+    </pre>
+  <li> Create a Track Decorator BED file associating the feature annotations
+    map to each transcript with the transcript.  Associate metadata for each
+    feature and identify disruptions in features.  Block decorations on the
+    transcripts are created for each feature, and triangular glyph decorations
+    are used to indicate the points of feature disruption.
+</ol>
 
 </html>
 
