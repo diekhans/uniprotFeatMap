@@ -1,0 +1,44 @@
+acc	mainIsoAcc	varId	featType	shortFeatType	begin	end	origAa	mutAa	dbSnpId	disRelated	disease	disCode	pmid	longName	shortName	syns	subCellLoc	comment
+A0A8V8TL87	A0A8V8TL87		non-terminal residue	nonTerm	1	2				notDisRelated								
+A0A087WX86	A0A087WX86		transmembrane region	transmem	6	24				notDisRelated								Helical
+A0A087WX86	A0A087WX86		transmembrane region	transmem	43	70				notDisRelated								Helical
+A0A087WX86	A0A087WX86		transmembrane region	transmem	75	95				notDisRelated								Helical
+A0A087WX86	A0A087WX86		domain	domain	2	93				notDisRelated								ABC-2 type transporter transmembrane
+A0A087WX86	A0A087WX86		non-terminal residue	nonTerm	1	2				notDisRelated								
+B1AK45	B1AK45		domain	domain	13	168				notDisRelated								HORMA
+B1AK45	B1AK45		non-terminal residue	nonTerm	167	168				notDisRelated								
+A2A2N5	A2A2N5		domain	domain	102	133				notDisRelated								C2H2-type
+A2A2N5	A2A2N5		domain	domain	133	161				notDisRelated								C2H2-type
+A2A2N5	A2A2N5		domain	domain	161	189				notDisRelated								C2H2-type
+A2A2N5	A2A2N5		domain	domain	189	217				notDisRelated								C2H2-type
+A2A2N5	A2A2N5		non-terminal residue	nonTerm	221	222				notDisRelated								
+A0A087WZX6	A0A087WZX6		domain	domain	62	128				notDisRelated								ATPase AAA-type core
+A0A087WZX6	A0A087WZX6		region of interest	interest	235	281				notDisRelated								Disordered
+A0A087WZX6	A0A087WZX6		non-terminal residue	nonTerm	1	2				notDisRelated								
+A0A8V8TKV6	A0A8V8TKV6		domain	domain	13	177				notDisRelated								HORMA
+A0A8V8TKV6	A0A8V8TKV6		non-terminal residue	nonTerm	176	177				notDisRelated								
+B1AK44	B1AK44		domain	domain	13	217				notDisRelated								HORMA
+B1AK43	B1AK43		domain	domain	43	198				notDisRelated								HORMA
+B1AK43	B1AK43		region of interest	interest	1	27				notDisRelated								Disordered
+B1AK43	B1AK43		non-terminal residue	nonTerm	197	198				notDisRelated								
+E9PKG5	E9PKG5		non-terminal residue	nonTerm	136	137				notDisRelated								
+E9PL63	E9PL63		non-terminal residue	nonTerm	164	165				notDisRelated								
+A0A8V8TMF5	A0A8V8TMF5		domain	domain	13	54				notDisRelated								HORMA
+A0A6E1ZGS3	A0A6E1ZGS3		transmembrane region	transmem	395	418				notDisRelated								Helical
+A0A6E1ZGS3	A0A6E1ZGS3		domain	domain	1	196				notDisRelated								ABC transporter
+A0A6E1ZGS3	A0A6E1ZGS3		region of interest	interest	205	230				notDisRelated								Disordered
+A0A6E1ZGS3	A0A6E1ZGS3		region of interest	interest	342	367				notDisRelated								Disordered
+A0A6E1ZGS3	A0A6E1ZGS3		compositionally biased region	biased	205	224				notDisRelated								Basic and acidic residues
+A0A6E1ZGS3	A0A6E1ZGS3		non-terminal residue	nonTerm	1	2				notDisRelated								
+H0Y669	H0Y669		domain	domain	5	36				notDisRelated								C2H2-type
+H0Y669	H0Y669		domain	domain	36	64				notDisRelated								C2H2-type
+H0Y669	H0Y669		domain	domain	64	92				notDisRelated								C2H2-type
+H0Y669	H0Y669		domain	domain	92	120				notDisRelated								C2H2-type
+H0Y669	H0Y669		non-terminal residue	nonTerm	1	2				notDisRelated								
+H0YF58	H0YF58		region of interest	interest	1	32				notDisRelated								Disordered
+H0YF58	H0YF58		non-terminal residue	nonTerm	1	2				notDisRelated								
+H0YCN5	H0YCN5		transmembrane region	transmem	41	69				notDisRelated								Helical
+H0YCN5	H0YCN5		transmembrane region	transmem	80	106				notDisRelated								Helical
+H0YCN5	H0YCN5		domain	domain	238	471				notDisRelated								ABC transporter
+H0YCN5	H0YCN5		region of interest	interest	549	592				notDisRelated								Disordered
+H0YCN5	H0YCN5		non-terminal residue	nonTerm	1	2				notDisRelated								
