@@ -2,7 +2,9 @@
 #+TODO: TODO ACTIVE IMPORTANT URGENT PAUSED | DONE CANCELED
 
 * Make smaller triangle* color other red
-* color-blind people
+* color-blind safe
+
+* other biotypes with CDS?
 
 * URGENT why didn't split alignment block get chained
 in test set at chr19:51,890,708-51,890,879 ENST00000600738.5
@@ -39,8 +41,6 @@ sys	0m0.055s
 
 * read-through genes not handled well
 could be handled by projection annotations
-
-* is "canonical" a good term for the matched GENCODE mRNA
 
 * does canonical to canonical mRNA self-alignment ever produce something
 that isn't 100%

@@ -4,7 +4,7 @@ annotation -> uniprotCanonical -> transcript -> genome
 
 ## Treminology
 - CDS to transcript - protein query seqeunce converted to CDS coordinates (multiplied by 3) in alignment to trnascript sequecne so spliced codons can be tracked.
-- match and unmatched transcripts - match transcripts are those listed by UniProt as matching a particular protein.
+- canonical and non-canonical transcripts - canonical transcripts are those listed by UniProt as matching a particular protein.
 - id and acc - acc is the accession of a transcript, less the version; id includes that version
 
 ## Commands:

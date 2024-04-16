@@ -33,8 +33,8 @@ def isVariant(annot):
 def _mkcolor(r, g, b, a=None):
     return Color.fromRgb8(r, g, b, a)
 
-UNIPROT_TRANS_MATCH_OUTLINE_COLOR = _mkcolor(0, 191, 255)  # deepskyblue
-UNIPROT_OTHER_ISO_OUTLINE_COLOR = _mkcolor(0, 0, 0)        # black
+UNIPROT_CANON_ISO_OUTLINE_COLOR = _mkcolor(0, 191, 255)    # deepskyblue
+UNIPROT_NONCANON_ISO_OUTLINE_COLOR = _mkcolor(0, 0, 0)     # black
 FEAT_INSERTION_COLOR = _mkcolor(255, 0, 0)                 # red
 FEAT_DELETION_COLOR = _mkcolor(255, 0, 0)                  # red
 

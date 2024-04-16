@@ -117,7 +117,7 @@ class UniProtMetaTbl:
         "list or None if not found"
         return self.byGeneName.get(geneName)
 
-    def getMatchEnsemblAccSet(self):
+    def getCanonEnsemblAccSet(self):#RENAME
         return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
 def uniprotParseAnnotId(annotId):

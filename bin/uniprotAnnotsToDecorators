@@ -16,7 +16,7 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from protmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransMatchStatus
 from protmap.uniprotDecorators import (getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransMatchStatus,
                                        getColorUses, decoratorBedSortOpts, makeColorDesc,
-                                       UNIPROT_TRANS_MATCH_OUTLINE_COLOR, UNIPROT_OTHER_ISO_OUTLINE_COLOR,
+                                       UNIPROT_CANON_ISO_OUTLINE_COLOR, UNIPROT_NONCANON_ISO_OUTLINE_COLOR,
                                        FEAT_INSERTION_COLOR, FEAT_DELETION_COLOR)
 from protmap.gencode import GencodeDataTbl
 from protmap.annotTransRef import AnnotTransRefs
@@ -25,9 +25,9 @@ from protmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, get
 class HelpColors(argparse.Action):
     "generate a help message on colors"
     def __call__(self, parser, namespace, values, option_string=None):
-        descs = [makeColorDesc(UNIPROT_TRANS_MATCH_OUTLINE_COLOR,
+        descs = [makeColorDesc(UNIPROT_CANON_ISO_OUTLINE_COLOR,
                                "matched transcript outline"),
-                 makeColorDesc(UNIPROT_OTHER_ISO_OUTLINE_COLOR,
+                 makeColorDesc(UNIPROT_NONCANON_ISO_OUTLINE_COLOR,
                                "other isoform transcript outline"),
                  makeColorDesc(FEAT_INSERTION_COLOR,
                                "feature insertion"),
@@ -141,9 +141,9 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transMatchStatus, dataS
     if len(featIndels) > 0:
         color = getProblemColor(annot, dataSet)
     elif transMatchStatus in (TransMatchStatus.same_version, TransMatchStatus.diff_version):
-        color = UNIPROT_TRANS_MATCH_OUTLINE_COLOR
+        color = UNIPROT_CANON_ISO_OUTLINE_COLOR
     else:
-        color = UNIPROT_OTHER_ISO_OUTLINE_COLOR
+        color = UNIPROT_NONCANON_ISO_OUTLINE_COLOR
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     return makeBlockDeco(annotPsl, annot, annotTransRef, transMatchStatus, annotStatus, bedBlocks,
                          getBedName(annot), color, fillColor,
