@@ -14,6 +14,13 @@ decoAs = ../etc/uniprotDecoration.as
 testHubFiles = empty.html genomes.txt hub.txt trackDb.txt
 testHubFilesOutput = ${testHubFiles:%=output/%}
 
+testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/domainDecorators/tests/output/hub.txt
+
+gencodeBed = output/gencode.v43.bed
+gencodeBb = output/gencode.v43.bb
+gencodeBrowserDir = output/gencode-dir
+gencodeBrowserDirDone = ${gencodeBrowserDir}/done
+
 all:
 	@echo "Note: targets are:"
 	@echo "      make test"
@@ -23,7 +30,8 @@ all:
 	@exit 1
 
 
-test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests uniprotDecoratorsMergeTests
+test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests \
+	uniprotDecoratorsMergeTests buildHub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
 	@echo "==========================================" >&2
@@ -116,10 +124,10 @@ define runUniprotAnnotsToDecorators
 	diff expected/$@.types.tsv output/$@.types.tsv
 endef
 
-testUniprotAnnotsToDecoratorsSP: mkout output/gencode.v43.bb ${testHubFilesOutput}
+testUniprotAnnotsToDecoratorsSP: mkout ${gencodeBb}
 	$(call runUniprotAnnotsToDecorators,swissprot,SP)
 
-testUniprotAnnotsToDecoratorsTR: mkout output/gencode.v43.bb ${testHubFilesOutput}
+testUniprotAnnotsToDecoratorsTR: mkout ${gencodeBb}
 	$(call runUniprotAnnotsToDecorators,trembl,TR)
 
 testUniprotAnnotsToDecoColorHelp: mkout
@@ -134,10 +142,19 @@ testUniprotDecoratorsMerge: mkout
 	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
 
+
 # gene track can can be used to validate decorators
-output/gencode.v43.bb: input/gencode.v43.gp
-	genePredToBed $< /dev/stdout | sort -k1,1 -k2,2n >output/gencode.v43.bed
-	bedToBigBed -type=bed12 -tab output/gencode.v43.bed ${chromSizes} $@
+${gencodeBb}: input/gencode.v43.gp
+	genePredToBed $< /dev/stdout | sort -k1,1 -k2,2n > ${gencodeBed}
+	bedToBigBed -type=bed12 -tab ${gencodeBed} ${chromSizes} $@
+
+# hub
+buildHub:${gencodeBrowserDirDone} ${testHubFilesOutput}
+
+${gencodeBrowserDirDone}: ${gencodeBb}
+	@mkdir -p ${gencodeBrowserDir}
+	bedToHtmlDir -hub ${testHubUrl} -title 'GENCODE Deco Test' hg38 ${gencodeBed} ${gencodeBrowserDir}
+	touch $@
 
 output/%: hub-files/%
 	@mkdir -p $(dir $@)

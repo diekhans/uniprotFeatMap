@@ -4,7 +4,9 @@
 * Make smaller triangle* color other red
 * color-blind safe
 
-* other biotypes with CDS?
+* big insertion rectangle is weird
+chr1:11,674,479-11,681,148
+due to one exon being different
 
 * python errors in ../bin/uniprotAnnotsToDecorators
 cause it to continue to run lots of threads, creating a huge stack trace
