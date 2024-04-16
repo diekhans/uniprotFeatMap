@@ -6,6 +6,9 @@
 
 * other biotypes with CDS?
 
+* python errors in ../bin/uniprotAnnotsToDecorators
+cause it to continue to run lots of threads, creating a huge stack trace
+
 * URGENT why didn't split alignment block get chained
 in test set at chr19:51,890,708-51,890,879 ENST00000600738.5
 

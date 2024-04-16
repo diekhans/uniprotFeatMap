@@ -54,19 +54,11 @@ def parseArgs():
 ##
 # data loading and filtering
 ##
-def isCanonProtTrans(uniprotMeta, transId):# MOVE to class
-    "does this UniProt reference this transcript?"
-    return dropVersion(transId) in uniprotMeta.ensemblTransAccs
-
-def hasCanonProtTrans(uniprotMetaTbl, transId):# MOVE TO CLASS
-    "does any UniProt reference this transcript?"
-    return dropVersion(transId) in uniprotMetaTbl.byTranscriptAcc
-
 def keepCanonicalProtMRnaAlign(uniprotMetaTbl, psl):
     """Only keep alignments from canonical SwissProt isoform, as alt-isoforms to
     a canonical transcript"""
     uniprotMeta = uniprotMetaTbl.getByAcc(dropUniportIsoformModifier(psl.qName))
-    return ((psl.qName == uniprotMeta.mainIsoAcc) and isCanonProtTrans(uniprotMeta, psl.tName))
+    return ((psl.qName == uniprotMeta.mainIsoAcc) and uniprotMeta.isCanonProtTrans(psl.tName))
 
 def saveBestCanonAlign(alignsByProtTrans, psl):
     key = (psl.qName, psl.tName)
@@ -102,7 +94,7 @@ def writeCanonTransToGenomeAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl
     canonTransToGenomePslFile = fileOps.tmpFileGet("canon-trans-genome", suffix=".psl")
     with open(canonTransToGenomePslFile, 'w') as pslFh:
         for transId in sorted(gencodeMetaTbl.codingTransIds):
-            if hasCanonProtTrans(uniprotMetaTbl, transId):
+            if uniprotMetaTbl.isCanonProtTrans(transId):
                 for entry in gencodeDataTbl.getEntries(transId):
                     entry.alignPsl.write(pslFh)
     return canonTransToGenomePslFile
@@ -112,7 +104,7 @@ def writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl):
     noncanonTransToGenomePslFile = fileOps.tmpFileGet("noncanon-trans-genome", suffix=".psl")
     with open(noncanonTransToGenomePslFile, 'w') as pslFh:
         for transcriptId in sorted(gencodeMetaTbl.codingTransIds):
-            if not hasCanonProtTrans(uniprotMetaTbl, transcriptId):
+            if not uniprotMetaTbl.isCanonProtTrans(transcriptId):
                 for entry in gencodeDataTbl.getEntries(transcriptId):
                     gencodeMakeCdsPsl(entry.annotGp, entry.alignPsl).write(pslFh)
     return noncanonTransToGenomePslFile
@@ -234,7 +226,7 @@ def proteinTranscriptAlign(gencodeMetaTsv, gencodeGpFile, gencodePslFile, unipro
 
     canonCdsToTransAligns = loadFitlerCdsToTransPsl(uniprotMetaTbl, protTransPslFile)
     noncanonCdsToTransAligns = projectUniPortAlignments(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl,
-                                                         canonCdsToTransAligns, interPrefix)
+                                                        canonCdsToTransAligns, interPrefix)
 
     report(gencodeMetaTbl, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv)
 

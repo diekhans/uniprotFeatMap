@@ -4,7 +4,7 @@ Reads files create by uniprotToTab, and other uniport support
 
 from collections import defaultdict
 from pycbio.sys.symEnum import SymEnum, auto
-from pycbio.tsv import TsvReader
+from pycbio.tsv import TsvReader, TsvRow
 from protmap import dropVersion
 
 # WARNING: UniProt is 1-based, open-end
@@ -57,6 +57,23 @@ def addValuesToMultiIdx(idx, keys, value):
     for key in keys:
         idx[key].append(value)
 
+class UniProtMeta(TsvRow):
+    "one row record of UniProt metadata"
+
+    def __init__(self, reader, row):
+        super().__init__(reader, row)
+        # split comma list fields
+        self.ensemblGeneIds = splitMetaList(self.ensemblGene)
+        self.ensemblGeneAccs = splitDropVersion(self.ensemblGene)
+        self.ensemblTransIds = splitMetaList(self.ensemblTrans)
+        self.ensemblTransAccs = splitDropVersion(self.ensemblTrans)
+        self.uniprotIsoIds = splitMetaList(self.isoIds)
+
+    def isCanonProtTrans(self, transId):
+        "does this UniProt reference this transcript?"
+        return dropVersion(transId) in self.ensemblTransAccs
+
+
 class UniProtMetaTbl:
     """reads swissprot.9606.tab, trembl.9606.tab"""
     def __init__(self, uniprotMetaTsv):
@@ -65,26 +82,21 @@ class UniProtMetaTbl:
         self.byGeneName = defaultdict(list)
         self.byGeneAcc = defaultdict(list)
         self.byTranscriptAcc = defaultdict(list)
-        self.byIsoId = defaultdict(list)
-        for row in TsvReader(uniprotMetaTsv):
+        self.byUniProtIsoId = defaultdict(list)
+        for row in TsvReader(uniprotMetaTsv, rowClass=UniProtMeta):
             self._readRow(row)
         self.byGeneName.default_factory = None
         self.byGeneAcc.default_factory = None
         self.byTranscriptAcc.default_factory = None
-        self.byIsoId.default_factory = None
+        self.byUniProtIsoId.default_factory = None
 
     def _readRow(self, row):
-        setattr(row, 'ensemblGeneIds', splitMetaList(row.ensemblGene))
-        setattr(row, 'ensemblGeneAccs', splitDropVersion(row.ensemblGene))
-        setattr(row, 'ensemblTransIds', splitMetaList(row.ensemblTrans))
-        setattr(row, 'ensemblTransAccs', splitDropVersion(row.ensemblTrans))
-        setattr(row, 'isoIds', splitMetaList(row.isoIds))
         addUniqueToIdx(self.byAcc, row.acc, row)
         addUniqueToIdx(self.byMainIsoAcc, row.mainIsoAcc, row)
         self.byGeneName[row.geneName].append(row)
         addValuesToMultiIdx(self.byGeneAcc, row.ensemblGeneAccs, row)
         addValuesToMultiIdx(self.byTranscriptAcc, row.ensemblTransAccs, row)
-        addValuesToMultiIdx(self.byIsoId, row.isoIds, row)
+        addValuesToMultiIdx(self.byUniProtIsoId, row.uniprotIsoIds, row)
 
     def getByAcc(self, acc):
         "Error if not found"
@@ -117,7 +129,11 @@ class UniProtMetaTbl:
         "list or None if not found"
         return self.byGeneName.get(geneName)
 
-    def getCanonEnsemblAccSet(self):#RENAME
+    def isCanonProtTrans(uniprotMetaTbl, transId):
+        "does any UniProt reference this transcript?"
+        return dropVersion(transId) in uniprotMetaTbl.byTranscriptAcc
+
+    def getCanonEnsemblAccSet(self):
         return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
 def uniprotParseAnnotId(annotId):
