@@ -230,6 +230,7 @@ noncanon_trans_not_mapped	ENST00000579755.2	protein_coding
 noncanon_trans_not_mapped	ENST00000585531.1	protein_coding	
 noncanon_trans_not_mapped	ENST00000585714.1	protein_coding	
 noncanon_trans_not_mapped	ENST00000586539.6	protein_coding	
+noncanon_trans_not_mapped	ENST00000589533.5	non_stop_decay	
 noncanon_trans_not_mapped	ENST00000590645.1	protein_coding	
 noncanon_trans_not_mapped	ENST00000593596.1	protein_coding	
 noncanon_trans_not_mapped	ENST00000594084.5	protein_coding	

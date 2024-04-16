@@ -58,9 +58,13 @@ testProtTransTRBlatAlign: mkout
 ####
 uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapSP testUniprotProteinTranscriptMapTR
 
+# turn on for debugging
+# uniprotProteinTranscriptMapInterPrefix = --interPrefix=output/$@.inter.
+uniprotProteinTranscriptMapInterPrefix =
+
 # $call runUniprotProteinTranscriptMap,swissprot,SP)
 define runUniprotProteinTranscriptMap
-	${uniprotProteinTranscriptMap} --interPrefix=output/$@.inter. \
+	${uniprotProteinTranscriptMap} ${uniprotProteinTranscriptMapInterPrefix} \
 		input/gencode.v43.metadata.tsv input/gencode.v43.gp input/gencode.v43.psl \
 		input/${1}.9606.tab expected/testProtTrans${2}BlatAlign.psl \
 		output/$@.psl output/$@.problems.tsv
