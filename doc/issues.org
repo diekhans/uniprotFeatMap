@@ -1,6 +1,9 @@
 #+STARTUP: nologdone
 #+TODO: TODO ACTIVE IMPORTANT URGENT PAUSED | DONE CANCELED
 
+* Make smaller triangle* color other red
+* color-blind people
+
 * URGENT why didn't split alignment block get chained
 in test set at chr19:51,890,708-51,890,879 ENST00000600738.5
 
@@ -25,7 +28,7 @@ https://www.uniprot.org/keywords/KW-0040
 * It was less than satisfying using Pandas, so it was removed with a huge speedup
 with pandas, time of test uniprotAnnotsToDecorators --nprocs=1
 real	0m6.944s
-user	0m8.726s = 1206s
+user	0m8.726s
 sys	0m3.686s
 
 without pandas
