@@ -6,9 +6,9 @@ canon_trans_not_mapped	ENST00000383515.6	protein_coding	P30511-1
 canon_trans_not_mapped	ENST00000420067.5	protein_coding	P30511-1
 canon_trans_not_mapped	ENST00000440590.5	protein_coding	P30511-1
 canon_trans_not_mapped	ENST00000616052.3	protein_coding	P20848
-transcript_not_in_gene_set			P51809-1
-transcript_not_in_gene_set			P51809-1
-transcript_not_in_gene_set			P51809-1
+transcript_not_in_gene_set	ENST00000711260		P51809-1
+transcript_not_in_gene_set	ENST00000711264		P51809-1
+transcript_not_in_gene_set	ENST00000711265		P51809-1
 noncanon_trans_not_mapped	ENST00000342322.8	protein_coding	
 noncanon_trans_not_mapped	ENST00000383516.8	protein_coding	
 noncanon_trans_not_mapped	ENST00000383626.6	protein_coding	

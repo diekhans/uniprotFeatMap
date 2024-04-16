@@ -187,7 +187,7 @@ def _reportUnmappedTranscript(gencodeMetaTbl, uniprotMetaTbl, unmappedTransAccs,
     transId = transRec.transcriptId if transRec is not None else None
     uniprotMetas = uniprotMetaTbl.byTranscriptAcc.get(transAcc)
     if transId is None:
-        problemLog(logFh, "transcript_not_in_gene_set", transId, None, uniprotMetas[0].mainIsoAcc)
+        problemLog(logFh, "transcript_not_in_gene_set", transAcc, None, uniprotMetas[0].mainIsoAcc)
     elif uniprotMetas is None:
         problemLog(logFh, reason, transId, gencodeMetaTbl.getTransType(transId), None)
     else:
