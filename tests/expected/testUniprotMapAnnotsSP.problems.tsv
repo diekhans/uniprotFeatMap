@@ -1,4 +1,4 @@
 reason	uniprotId	featureType	annotId	begin	end	protSize
-uniprot-feature-off-end	Q99732-1	sequence variant	Q99732-1#29	174	175	161
 uniport-not-mapped	P20848	signal peptide	P20848#0	1	22	
 uniprot-feature-off-end	P30511-1	sequence conflict	P30511-1#56	353	354	346
+uniprot-feature-off-end	Q99732-1	sequence variant	Q99732-1#29	174	175	161

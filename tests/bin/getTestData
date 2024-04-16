@@ -2,7 +2,7 @@
 set -beEu -o pipefail
 
 # to build add entries to test set
-#      tmlr cut -f acc input/swissprot.9606.tab >acc.tsv
+#      tmlr cut -f acc input/swissprot.9606.tab input/trembl.9606.tab >acc.tsv
 #    add new swissprot accession to acc.tsv
 #      ./bin/getTestData acc.tsv tmp
 #    to include all
@@ -19,7 +19,6 @@ set -beEu -o pipefail
 
 gencodeRel=43
 
-
 usage="$0 acctsv outdir"
 
 if [ $# != 2 ] ; then
@@ -30,35 +29,51 @@ acctsv="$1"
 outdir="$2"
 
 spdir=/hive/data/outside/otto/uniprot/tab
-sppre=${spdir}/swissprot.9606
+spInPre=${spdir}/swissprot.9606
+trInPre=${spdir}/trembl.9606
 gndir=/hive/data/genomes/hg38/bed/gencodeV${gencodeRel}/hgcImport/data
 gnfa=${gndir}/release_${gencodeRel}/gencode.v${gencodeRel}.pc_transcripts.fa.gz
 chromSizes=/hive/data/genomes/hg38/chrom.sizes
 
-spoutpre=${outdir}/swissprot.9606
-gnoutpre=${outdir}/gencode.v${gencodeRel}
+spOutPre=${outdir}/swissprot.9606
+trOutPre=${outdir}/trembl.9606
+gnOutPre=${outdir}/gencode.v${gencodeRel}
 mkdir -p ${outdir}
 
-# swissprot data (annots has stray quotes, so use tsvlite)
-tmlr join -j acc -f ${acctsv} ${sppre}.tab > ${spoutpre}.tab
-mlr --tsvlite join -j acc -f ${acctsv} ${sppre}.annots.tab > ${spoutpre}.annots.tab
+##
+# extracting data from both swssprot and trembl
+##
+function getUniProtTestData() {
+    local inpre=$1 outpre=$2
+    # swissprot data (annots has stray quotes, so use tsvlite)
+    tmlr join -j acc -f ${acctsv} ${inpre}.tab > ${outpre}.tab
+    mlr --tsvlite join -j acc -f ${acctsv} ${inpre}.annots.tab > ${outpre}.annots.tab
 
-# all isoforms for acc
-faSize -detailed ${sppre}.fa.gz | fgrep -f ${acctsv} | cut -f 1 >${spoutpre}.fa.ids.tmp
-faSomeRecords ${sppre}.fa.gz ${spoutpre}.fa.ids.tmp ${spoutpre}.fa
-faSize -detailed ${spoutpre}.fa > ${spoutpre}.sizes
+    # all isoforms for acc
+    faSize -detailed ${inpre}.fa.gz | fgrep -f ${acctsv} | cut -f 1 >${outpre}.fa.ids.tmp
+    faSomeRecords ${inpre}.fa.gz ${outpre}.fa.ids.tmp ${outpre}.fa
+    faSize -detailed ${outpre}.fa > ${outpre}.sizes
+}
 
-# gencode genes in swissprots
-tmlr cut -f ensemblGene tmp/swissprot.9606.tab  | tawk '{$0 = gensub("\\.[0-9A-Z_]+","","g"); print gensub("\\|","\n","g")}' > ${gnoutpre}.gene.acc.tmp
-(head -1 ${gndir}/gencode.tsv && fgrep -f ${gnoutpre}.gene.acc.tmp ${gndir}/gencode.tsv) > ${gnoutpre}.metadata.tsv
+getUniProtTestData ${spInPre} ${spOutPre}
+getUniProtTestData ${trInPre} ${trOutPre}
+
+##
+# gencode genes in UniProt.  Split comma-separated lists into lines 
+##
+tmlr cut -f ensemblGene ${spOutPre}.tab > ${gnOutPre}.sp.gene.acc.tmp
+tmlr cut -f ensemblGene ${trOutPre}.tab > ${gnOutPre}.tr.gene.acc.tmp
+tmlr cat ${gnOutPre}.sp.gene.acc.tmp ${gnOutPre}.tr.gene.acc.tmp | \
+    tawk '{$0 = gensub("\\.[0-9A-Z_]+","","g"); print gensub("\\|","\n","g")}' > ${gnOutPre}.gene.acc.tmp
+(head -1 ${gndir}/gencode.tsv && fgrep -f ${gnOutPre}.gene.acc.tmp ${gndir}/gencode.tsv) > ${gnOutPre}.metadata.tsv
 
 # fasta ids
-zcat ${gnfa} | fgrep -f ${gnoutpre}.gene.acc.tmp | sed -e 's/>//' > ${gnoutpre}.fa.ids.tmp
-faSomeRecords ${gnfa} ${gnoutpre}.fa.ids.tmp ${gnoutpre}.pc_transcripts.fa
+zcat ${gnfa} | fgrep -f ${gnOutPre}.gene.acc.tmp | sed -e 's/>//' > ${gnOutPre}.fa.ids.tmp
+faSomeRecords ${gnfa} ${gnOutPre}.fa.ids.tmp ${gnOutPre}.pc_transcripts.fa
 
 # gencode to genome PSL
-awk '/^>/{print gensub(">([A-Z0-9.]+).*$", "\\1", 1)}' ${gnoutpre}.pc_transcripts.fa > ${gnoutpre}.trans.acc.tmp
-fgrep -f ${gnoutpre}.trans.acc.tmp ${gndir}/gencode.gp > ${gnoutpre}.gp
-genePredToPsl ${chromSizes} ${gnoutpre}.gp ${gnoutpre}.psl
+awk '/^>/{print gensub(">([A-Z0-9.]+).*$", "\\1", 1)}' ${gnOutPre}.pc_transcripts.fa > ${gnOutPre}.trans.acc.tmp
+fgrep -f ${gnOutPre}.trans.acc.tmp ${gndir}/gencode.gp > ${gnOutPre}.gp
+genePredToPsl ${chromSizes} ${gnOutPre}.gp ${gnOutPre}.psl
 
 rm -f ${outdir}/*.tmp

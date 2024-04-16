@@ -1,0 +1,6 @@
+category	categoryName	featType	shortFeatType
+LocTransMemb	Transmembrane Domain	transmembrane region	transmem
+Domain	Domain	domain	domain
+Interest	Region of Interest	region of interest	interest
+Other	Other Annotation	compositionally biased region	biased
+Other	Other Annotation	non-terminal residue	nonTerm
