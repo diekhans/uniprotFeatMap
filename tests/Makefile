@@ -1,6 +1,8 @@
 root = ..
 include ${root}/defs.mk
 
+# see bin/getTestData for updating test data
+
 # used nprocs= to change number of processes
 ifeq (${nprocs},)
   nprocs = 8
@@ -28,24 +30,24 @@ fulltest: test aligntest
 aligntest: protTransAlignTests
 
 ###
-protTransAlignTests: testProtTransBlastAlign testProtTransBlatAlign
+protTransAlignTests: testProtTransSPBlastAlign testProtTransSPBlatAlign
 
-testProtTransBlastAlign: mkout
+testProtTransSPBlastAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${uniprotProteinTranscriptAlign} --algo=blast input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
 	$(call checkAlignments)
 
-testProtTransBlatAlign: mkout
+testProtTransSPBlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${uniprotProteinTranscriptAlign} --algo=blat input/swissprot.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
 	$(call checkAlignments)
 ####
-uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapBasic
+uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapSP
 
-testUniprotProteinTranscriptMapBasic: mkout
+testUniprotProteinTranscriptMapSP: mkout
 	${uniprotProteinTranscriptMap} --interPrefix=output/$@.inter. \
 		input/gencode.v43.metadata.tsv input/gencode.v43.gp input/gencode.v43.psl \
-		input/swissprot.9606.tab expected/testProtTransBlatAlign.psl output/$@.psl output/$@.problems.tsv
+		input/swissprot.9606.tab expected/testProtTransSPBlatAlign.psl output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 	pslCheck -verbose=0 output/$@.psl
@@ -56,13 +58,13 @@ define checkAlignments
 endef
 
 ###
-uniprotMapAnnotsTests: testUniprotMapAnnots
+uniprotMapAnnotsTests: testUniprotMapAnnotsSP
 
-# intermediates saved for checking
-testUniprotMapAnnots: mkout
+# intermediates saved for debugging
+testUniprotMapAnnotsSP: mkout
 	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
 	    input/swissprot.9606.annots.tab \
-	    expected/testUniprotProteinTranscriptMapBasic.psl \
+	    expected/testUniprotProteinTranscriptMapSP.psl \
 	    input/gencode.v43.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -73,12 +75,12 @@ testUniprotMapAnnots: mkout
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 ###
-uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecorators \
+uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP \
 	testUniprotAnnotsToDecoColorHelp
 
-testUniprotAnnotsToDecorators: mkout output/gencode.v43.bb ${testHubFilesOutput}
+testUniprotAnnotsToDecoratorsSP: mkout output/gencode.v43.bb ${testHubFilesOutput}
 	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
-	    expected/testUniprotMapAnnots.psl expected/testUniprotMapAnnots.ref.tsv \
+	    expected/testUniprotMapAnnotsSP.psl expected/testUniprotMapAnnotsSP.ref.tsv \
             input/gencode.v43.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
