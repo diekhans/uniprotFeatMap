@@ -16,8 +16,8 @@ _codingTranscriptTypes = frozenset(["protein_coding",
                                     "nonsense_mediated_decay",
                                     "non_stop_decay",
                                     "protein_coding_LoF",
-                                    "TR_V_gene","TR_D_gene","TR_J_gene", "TR_C_gene",
-                                    "IG_C_gene", "IG_J_gene", "IG_D_gene","IG_V_gene"])
+                                    "TR_V_gene", "TR_D_gene", "TR_J_gene", "TR_C_gene",
+                                    "IG_C_gene", "IG_J_gene", "IG_D_gene", "IG_V_gene"])
 
 def isCodingTranscriptType(gencodeMeta):
     "is this transcript one that we should map with swissport?"

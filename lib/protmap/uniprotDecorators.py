@@ -27,7 +27,12 @@ def isVariant(annot):
 ###
 # Color logic.  This mostly matches UniProt genomic track, however colors for
 # overlay are not visible with track colors, so these are adjusted. Also use
-# named colors.  We also use consistent colors with
+# named colors.
+#
+# FIXME: The UniProt genomic has "phosphorylation site" color on all "modified
+# residue", this has been fixed here, however, this needs to be synced up.
+# The featType is adjusted when loading the records
+#
 ###
 
 def _mkcolor(r, g, b, a=None):
@@ -43,7 +48,8 @@ TREMBLCOLOR = _mkcolor(143, 188, 143)  # darkseagreen, genomic tracks are 0,150,
 
 # mapping of annotations columns to colors
 featTypeColors = {
-    "modified residue": _mkcolor(200, 200, 0),            # goldenrod
+    "modified residue": _mkcolor(255, 215, 0),            # gold  (see above comment)
+    "phosphorylation site": _mkcolor(200, 200, 0),        # goldenrod
     "glycosylation site": _mkcolor(0, 100, 100),          # teal
     "disulfide bond": _mkcolor(100, 100, 100),            # dimgray
     "topological domain": _mkcolor(100, 0, 0),            # maroon
@@ -231,7 +237,7 @@ def getAnnotCategory(annot):  # noqa: C901
         return (UniProtCategory.DisulfBond, "Disulfide Bond")
     elif annot.featType in ["domain", "zinc finger region", "topological domain"]:
         return (UniProtCategory.Domain, "Domain")
-    elif annot.featType in ["glycosylation site", "modified residue", "lipid moiety-binding region"]:
+    elif annot.featType in ["glycosylation site", "phosphorylation site", "modified residue", "lipid moiety-binding region"]:
         return (UniProtCategory.Modif, "Amino Acid Modification")
     elif annot.featType in ["region of interest"]:
         return (UniProtCategory.Interest, "Region of Interest")

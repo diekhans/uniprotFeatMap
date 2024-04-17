@@ -5,7 +5,8 @@ Color usage:
     feature deletion                     red            255,0,0
     SwissProt base                       forestgreen    34,139,34
     TrEMBL base                          darkseagreen   143,188,143
-    modified residue                     goldenrod      200,200,0
+    modified residue                     gold           255,215,0
+    phosphorylation site                 goldenrod      200,200,0
     glycosylation site                   teal           0,100,100
     disulfide bond                       dimgray        100,100,100
     topological domain                   maroon         100,0,0

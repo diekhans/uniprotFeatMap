@@ -6,16 +6,32 @@
 
 * colors:
 ** other than special color cases, can TrEMBL uses a different shade or outline
+
+* genomic uniprot color issues
 ** lipoification sites
-12,12,120 is 12,12,120, which is default swissprot color, but not explicitly set
+is 12,12,120, which is default swissprot color, but not explicitly set
 ** these are not doced in genomic page
 *** modified residue                     goldenrod      200,200,0
 *** disulfide bond                       dimgray        100,100,100
 *** topological domain                   maroon         100,0,0
 *** zinc finger region                   olive          100,100,0
 
+** phosphorylation site color 200,200,0 is used for other types of modified residues
+should look for  (phosphoserine, phosphothreonine and phosphotyrosine) in comment
+
+ <li> <span style="color: rgb(200,200,0)"><b>phosphorylation sites</b></span>
+  <li> <span style="color: rgb(200,200,0)"><b>modified residues</b></span>
+
+ In the "UniProt Modifications" track, lipoification sites are highlighted in dark blue, glycosylation sites in dark
+green, and phosphorylation in light green. 
+
+Common modifications include phosphorylation, methylation, acetylation, amidation, formation of pyrrolidone carboxylic acid, isomerization, hydroxylation, sulfation, flavin-binding, cysteine oxidation and nitrosylation.
 
 
+* remove "phosphorylation site" FIXME code
+
+* TransMatchStatus diff version should be in different, use canonical non_canonical
+include source ensembl acc would do this
 * big insertion rectangle is weird
 chr1:11,674,479-11,681,148
 due to one exon being different
