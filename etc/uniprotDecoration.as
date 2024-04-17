@@ -20,7 +20,7 @@ table uniprotDecoration
 
     string dataSet;     "SwissProt (manual annotation) or TrEMBL (automated automated)"
     string uniprotAcc;  "UniProt accession"
-    string transMatchStatus; "Does the transcript matching the canonical Uniprot"
+    string transMatch; "transcript match to UniProt protein: canonical, canonical_diff_version, noncanonical"
     string annotStatus;   "For features, either 'good' or 'problem', for INDEL annotations, the type of INDEL"
     string category;  "Feature category symbolic name"
     string categoryName;  "Feature category descriptive name"

@@ -30,8 +30,8 @@ Common modifications include phosphorylation, methylation, acetylation, amidatio
 
 * remove "phosphorylation site" FIXME code
 
-* TransMatchStatus diff version should be in different, use canonical non_canonical
-include source ensembl acc would do this
+* Should indicate if different version of canonical used
+
 * big insertion rectangle is weird
 chr1:11,674,479-11,681,148
 due to one exon being different

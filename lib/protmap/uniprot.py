@@ -31,10 +31,10 @@ class UniProtCategory(SymEnum):
     Interest = auto()
     Other = auto()
 
-class TransMatchStatus(SymEnum):
-    same_version = auto()
-    diff_version = auto()
-    other_isoform = auto()
+class TransMatch(SymEnum):
+    canonical = auto()
+    canonical_diff_version = auto()
+    noncanonical = auto()
 
 def splitMetaList(val):
     """ split strings like: ENST00000369413.8|ENST00000528909.1"""

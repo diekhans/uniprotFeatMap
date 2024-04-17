@@ -5,7 +5,7 @@ Support for creating UniProt decorators
 from pycbio.sys.svgcolors import SvgColors
 from pycbio.sys.color import Color
 from protmap import dropVersion
-from protmap.uniprot import UniProtCategory, UniProtDataSet, TransMatchStatus
+from protmap.uniprot import UniProtCategory, UniProtDataSet, TransMatch
 
 def makeColorDesc(color, info):
     colorName = SvgColors.getClosestName(color)
@@ -244,14 +244,14 @@ def getAnnotCategory(annot):  # noqa: C901
     else:
         return (UniProtCategory.Other, "Other Annotation")
 
-def calcTransMatchStatus(uniprotMeta, transId):
+def calcTransMatch(uniprotMeta, transId):
     "determine match of transcript to GENCODE based on what transcripts are listed in metadata"
     if transId in uniprotMeta.ensemblTransIds:
-        return TransMatchStatus.same_version
-    elif dropVersion(transId) in uniprotMeta.ensemblTransAccs:
-        return TransMatchStatus.diff_version
+        return TransMatch.canonical
+    if dropVersion(transId) in uniprotMeta.ensemblTransAccs:
+        return TransMatch.canonical_diff_version
     else:
-        return TransMatchStatus.other_isoform
+        return TransMatch.noncanonical
 
 def getColorUses():
     "list of tuples of (color, use_description)"
