@@ -4,6 +4,18 @@
 * Make smaller triangle* color other red
 * color-blind safe
 
+* colors:
+** other than special color cases, can TrEMBL uses a different shade or outline
+** lipoification sites
+12,12,120 is 12,12,120, which is default swissprot color, but not explicitly set
+** these are not doced in genomic page
+*** modified residue                     goldenrod      200,200,0
+*** disulfide bond                       dimgray        100,100,100
+*** topological domain                   maroon         100,0,0
+*** zinc finger region                   olive          100,100,0
+
+
+
 * big insertion rectangle is weird
 chr1:11,674,479-11,681,148
 due to one exon being different
@@ -103,8 +115,6 @@ Warning: P20848 does not map to any transcript
 
   
 * default to adjacent
-
-* rather than special color cases, can TrEMBL uses a different shade or outline
 
 * Interesting cases
 ** chr1:11,658,702-11,658,804

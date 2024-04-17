@@ -43,13 +43,14 @@ TREMBLCOLOR = _mkcolor(143, 188, 143)  # darkseagreen, genomic tracks are 0,150,
 
 # mapping of annotations columns to colors
 featTypeColors = {
-    "modified residue": _mkcolor(200, 200, 0),    # goldenrod
-    "glycosylation site": _mkcolor(0, 100, 100),  # teal
-    "disulfide bond": _mkcolor(100, 100, 100),    # dimgray
-    "topological domain": _mkcolor(100, 0, 0),    # maroon
-    "zinc finger region": _mkcolor(100, 100, 0),  # olive
-    "transmembrane region": _mkcolor(0, 150, 0),  # green
-    "signal peptide": _mkcolor(255, 0, 150),      # deeppink
+    "modified residue": _mkcolor(200, 200, 0),            # goldenrod
+    "glycosylation site": _mkcolor(0, 100, 100),          # teal
+    "disulfide bond": _mkcolor(100, 100, 100),            # dimgray
+    "topological domain": _mkcolor(100, 0, 0),            # maroon
+    "zinc finger region": _mkcolor(100, 100, 0),          # olive
+    "transmembrane region": _mkcolor(0, 150, 0),          # green
+    "signal peptide": _mkcolor(255, 0, 150),              # deeppink
+    "lipid moiety-binding region": _mkcolor(12, 12, 120)  # navy
 }
 commentColor = {
     "Extracellular": _mkcolor(0, 110, 180),  # darkcyan

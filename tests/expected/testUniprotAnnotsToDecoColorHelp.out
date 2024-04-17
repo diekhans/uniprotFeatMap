@@ -12,5 +12,6 @@ Color usage:
     zinc finger region                   olive          100,100,0
     transmembrane region                 green          0,150,0
     signal peptide                       deeppink       255,0,150
+    lipid moiety-binding region          navy           12,12,120
     Extracellular                        darkcyan       0,110,180
     Cytoplasmic                          darkorange     255,150,0
