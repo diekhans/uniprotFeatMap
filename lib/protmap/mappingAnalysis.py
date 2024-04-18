@@ -28,16 +28,17 @@ class FeatureIndel(namedtuple("FeatureIndel",
     is length of insert.  ranges can be zero length."""
     __slots__ = ()
 
-def _isIntron(transPsl, tStart, tEnd):
-    "does the range match an intron in transPsl?"
-    for iBlk in range(len(transPsl.blocks) - 1):
-        iStart = transPsl.blocks[iBlk].tEnd
-        iEnd = transPsl.blocks[iBlk + 1].tStart
-        if (iStart == tStart) and (iEnd == tEnd):
-            return True
-        if iStart > tStart:
-            break  # go past gap
-    return False
+def _exonIntersections(transPsl, tStart, tEnd):
+    """return list of genome ranges where exons intersect the specified range.
+    If nothing is return, that indicates tStart/tEnd are exactly an exon.
+    """
+    exonIntersects = []
+    for iBlk in range(len(transPsl.blocks)):
+        start = max(tStart, transPsl.blocks[iBlk].tStart)
+        end = min(tEnd, transPsl.blocks[iBlk].tEnd)
+        if start < end:
+            exonIntersects.append((start, end))
+    return exonIntersects
 
 def _analyzeStart(annotPsl):
     if annotPsl.qStart > 0:
@@ -61,15 +62,24 @@ def _analyzeEnd(annotPsl):
             indelType = FeatureIndelType.del_5p
         yield FeatureIndel(indelType, annotPsl.qSize - annotPsl.qEnd, tPos, tPos)
 
+def _analyzeQDel(blk, nextBlk):
+    yield FeatureIndel(FeatureIndelType.del_int, (nextBlk.qStart - blk.qEnd),
+                       blk.tEnd, nextBlk.tStart)
+
+def _analyzeTDel(transPsl, blk, nextBlk):
+    # this excludes introns
+    for exStart, exEnd in _exonIntersections(transPsl, blk.tEnd, nextBlk.tStart):
+        yield FeatureIndel(FeatureIndelType.insert, (exEnd - exStart),
+                           exStart, exEnd)
+
 def _analyzeBlock(transPsl, annotPsl, iBlk):
     blk = annotPsl.blocks[iBlk]
     nextBlk = annotPsl.blocks[iBlk + 1]
     if blk.qEnd < nextBlk.qStart:
-        yield FeatureIndel(FeatureIndelType.del_int, (nextBlk.qStart - blk.qEnd),
-                           blk.tEnd, nextBlk.tStart)
-    if (blk.tEnd < nextBlk.tStart) and (not _isIntron(transPsl, blk.tEnd, nextBlk.tStart)):
-        yield FeatureIndel(FeatureIndelType.insert, (nextBlk.tStart - blk.tEnd),
-                           blk.tEnd, nextBlk.tStart)
+        yield from _analyzeQDel(blk, nextBlk)
+
+    if blk.tEnd < nextBlk.tStart:
+        yield from _analyzeTDel(transPsl, blk, nextBlk)
 
 def _analyzeBlocks(transPsl, annotPsl):
     for iBlk in range(len(annotPsl.blocks) - 1):
@@ -81,6 +91,7 @@ def _featureIndelGen(transPsl, annotPsl):
     yield from _analyzeEnd(annotPsl)
 
 def analyzeFeatureMapping(transPsl, annotPsl):
+
     """product list of feature disruptions, either
     unmapped regions of feature or insertions in
     feature that don't correspond to introns in
