@@ -255,6 +255,7 @@ def writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile):
 
 def processSingle(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
                   annotDecoratorBedFile, dataSet, batchSize):
+    # this is easier to debug without mp
     workerInit(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
     batchBedsIters = []
     for alignBatch in annotGenomeBatchReader(annotGenomePslFile, batchSize):

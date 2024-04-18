@@ -20,5 +20,7 @@ decorator.default.mouseOver name: $name<br> categoryName: $categoryName<br> unip
                             featType: $featType<br> shortName: $shortName<br> longName: $longName<br> \
                             comment: $comment<br> disease: $disease<br> \
                             transMatchStatus: $transMatchStatus<br>annotStatus: $annotStatus
+decorator.default.filterValuesDefault.dataSet SwissProt
+decorator.default.filterValues.dataSet SwissProt,TrEMBL
 decorator.default.filterValuesDefault.categoryName Domain
 decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Region of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation

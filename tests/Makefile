@@ -149,7 +149,7 @@ ${gencodeBb}: input/gencode.v43.gp
 	bedToBigBed -type=bed12 -tab ${gencodeBed} ${chromSizes} $@
 
 # hub
-buildHub:${gencodeBrowserDirDone} ${testHubFilesOutput}
+buildHub: ${gencodeBrowserDirDone} ${testHubFilesOutput}
 
 ${gencodeBrowserDirDone}: ${gencodeBb}
 	@mkdir -p ${gencodeBrowserDir}
