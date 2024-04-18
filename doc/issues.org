@@ -6,6 +6,7 @@
 
 * colors:
 ** other than special color cases, can TrEMBL uses a different shade or outline
+** is UniProtCategory still needed if TrEMBL coloring changed
 
 * genomic uniprot color issues
 ** lipoification sites

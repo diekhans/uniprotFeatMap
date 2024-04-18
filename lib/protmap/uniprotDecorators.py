@@ -29,10 +29,6 @@ def isVariant(annot):
 # overlay are not visible with track colors, so these are adjusted. Also use
 # named colors.
 #
-# FIXME: The UniProt genomic has "phosphorylation site" color on all "modified
-# residue", this has been fixed here, however, this needs to be synced up.
-# The featType is adjusted when loading the records
-#
 ###
 
 def _mkcolor(r, g, b, a=None):
@@ -49,7 +45,6 @@ TREMBLCOLOR = _mkcolor(143, 188, 143)  # darkseagreen, genomic tracks are 0,150,
 # mapping of annotations columns to colors
 featTypeColors = {
     "modified residue": _mkcolor(255, 215, 0),            # gold  (see above comment)
-    "phosphorylation site": _mkcolor(200, 200, 0),        # goldenrod
     "glycosylation site": _mkcolor(0, 100, 100),          # teal
     "disulfide bond": _mkcolor(100, 100, 100),            # dimgray
     "topological domain": _mkcolor(100, 0, 0),            # maroon
@@ -58,16 +53,13 @@ featTypeColors = {
     "signal peptide": _mkcolor(255, 0, 150),              # deeppink
     "lipid moiety-binding region": _mkcolor(12, 12, 120)  # navy
 }
+shortFeatTypeColors = {
+    "phos": _mkcolor(200, 200, 0),        # goldenrod
+}
 commentColor = {
     "Extracellular": _mkcolor(0, 110, 180),  # darkcyan
     "Cytoplasmic": _mkcolor(255, 150, 0),    # darkorange
 }
-
-def getAnnotColorSwissport(annot):
-    color = commentColor.get(annot.comment, None)
-    if color is None:
-        color = featTypeColors.get(annot.featType, None)
-    return color if color is not None else SWISSPCOLOR
 
 # TrEMBL categories to provide special coloring
 _tremblColorCategories = frozenset((
@@ -76,6 +68,19 @@ _tremblColorCategories = frozenset((
     UniProtCategory.LocTransMemb,
     UniProtCategory.LocCytopl,
 ))
+
+def getFeatTypeColor(annot):
+    "by feature or short feature type"
+    color = featTypeColors.get(annot.featType, None)
+    if color is None:
+        color = shortFeatTypeColors.get(annot.shortFeatType, None)
+    return color
+
+def getAnnotColorSwissport(annot):
+    color = commentColor.get(annot.comment, None)
+    if color is None:
+        color = getFeatTypeColor(annot)
+    return color if color is not None else SWISSPCOLOR
 
 def getAnnotColorTrembl(annot):
     if getAnnotCategory(annot)[0] in _tremblColorCategories:
@@ -172,6 +177,8 @@ def getAnnotDescriptiveName(annot):   # noqa:C901
         return "Lipidation"
     if annot.featType == "transmembrane region":
         return "Transmembrane"
+    if annot.shortFeatType == "phos":
+        return "Phosphorylation"
     if annot.comment == "Nuclear localization signal":
         return "Nuclear loc"
     if annot.comment == "Involved in receptor recognition and/or post-binding events":
@@ -258,6 +265,8 @@ def getColorUses():
     uses = [(SWISSPCOLOR, "SwissProt base"),
             (TREMBLCOLOR, "TrEMBL base")]
     for info, color in featTypeColors.items():
+        uses.append((color, info))
+    for info, color in shortFeatTypeColors.items():
         uses.append((color, info))
     for info, color in commentColor.items():
         uses.append((color, info))

@@ -160,15 +160,8 @@ class UniProtAnnotTbl(list):
         # the relative index of the annotation for that acc.
         annotId = row.mainIsoAcc + '#' + str(mainIsoNextId[row.mainIsoAcc])
         mainIsoNextId[row.mainIsoAcc] += 1
-
         setattr(row, "annotId", annotId)
         self.byAnnotId[annotId] = row
-
-        # FIXME: fix feature type due to parser not set featureType to "phosphorylation site"
-        # from "modified residue" as it does other types
-        if row.shortFeatType == "phos":
-            row.featType = "phosphorylation site"
-
         self.append(row)
 
     def getByAnnotId(self, annotId):

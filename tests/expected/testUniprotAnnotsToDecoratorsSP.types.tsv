@@ -19,7 +19,7 @@ Modif	Amino Acid Modification	glycosylation site	glyco
 Modif	Amino Acid Modification	lipid moiety-binding region	lipid
 Modif	Amino Acid Modification	modified residue	acetyl
 Modif	Amino Acid Modification	modified residue	modif
-Modif	Amino Acid Modification	phosphorylation site	phos
+Modif	Amino Acid Modification	modified residue	phos
 Interest	Region of Interest	region of interest	interest
 Other	Other Annotation	active site	enzyme act site
 Other	Other Annotation	binding site	bind
