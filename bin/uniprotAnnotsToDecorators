@@ -91,7 +91,7 @@ def xrefToItemArgs(annotTransRef):
     return annotTransRef.transcriptId, coords.start, coords.end
 
 class UniprotDecoration(Decoration):
-    """hold a decoration BED + extra data"""
+    """Holds a decoration BED + extra data.  This match etc/uniprotDecoration.as. """
 
     def __init__(self, chrom, strand, bedBlocks, annot, annotTransRef, transMatch, annotStatus,
                  name, color, dataSet, description, *, fillColor=None, glyph=None):
@@ -107,11 +107,18 @@ class UniprotDecoration(Decoration):
         self.category, self.categoryName = getAnnotCategory(self.annot)
 
     def toRow(self):
-        return super().toRow() + encodeRow([self.dataSet, self.annot.acc, self.transMatch, self.annotStatus,
-                                            self.category, self.categoryName, self.description,
-                                            self.annot.shortFeatType, self.annot.featType,
-                                            self.annot.shortName, self.annot.longName,
-                                            self.annot.comment, self.annot.disease])
+        return super().toRow() + encodeRow([self.dataSet, self.annot.acc, self.transMatch,
+
+                                            self.annotStatus,
+                                            self.category,
+                                            self.categoryName,
+                                            self.description,
+                                            self.annot.shortFeatType,
+                                            self.annot.featType,
+                                            self.annot.shortName,
+                                            self.annot.longName,
+                                            self.annot.comment,
+                                            self.annot.disease])
 
 def makeBlockDeco(annotPsl, annot, annotTransRef, transMatch, annotStatus, bedBlocks, name, color, fillColor,
                   dataSet, description):

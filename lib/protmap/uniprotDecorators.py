@@ -131,8 +131,6 @@ def getDiseaseBedName(annot):
     "bed name field for disease mutation"
     disCodes = shortenDisCode(annot.disCode)
     disName = ",".join(disCodes)
-    if len(disName) > 30:
-        disName = disName[:30] + "..."
     name = "%s-%sdel" % (annot.begin, annot.end)
     if (len(disCodes) > 0) and ("strain" not in disName):
         name += " in %s" % disName

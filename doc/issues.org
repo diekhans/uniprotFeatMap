@@ -1,8 +1,16 @@
 #+STARTUP: nologdone
 #+TODO: TODO ACTIVE IMPORTANT URGENT PAUSED | DONE CANCELED
 
+* popup
+protFullNames
+protAltFullNames
+link to uniprot
+
+* review columns in bigbed
+
+
 * Make smaller triangle* color other red
-* color-blind safe
+** color-blind safe
 
 * colors:
 ** other than special color cases, can TrEMBL uses a different shade or outline

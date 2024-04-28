@@ -13,13 +13,18 @@ bigDataUrl gencode.v43.bb
 labelFields name
 defaultLabelFields name
 labelSeperator " / "
-mouseOver name: $name
+mouseOver name: ${name}
 decorator.default.bigDataUrl testUniprotDecoratorsMerge.bb
-decorator.default.mouseOver name: $name<br> categoryName: $categoryName<br> uniprotAcc: $uniprotAcc<br> \
-                            description: $description<br> shortFeatType: $shortFeatType<br> \
-                            featType: $featType<br> shortName: $shortName<br> longName: $longName<br> \
-                            comment: $comment<br> disease: $disease<br> \
-                            transMatchStatus: $transMatchStatus<br>annotStatus: $annotStatus
+decorator.default.mouseOver \
+   UniProt data set: ${dataSet}<br> \
+   uniprotAcc: <a href="https://www.uniprot.org/uniprot/${uniprotAcc}" target=_BLANK>${uniprotAcc}</a><br> \
+   type: ${featType}<br> \
+   category: ${category}<br> \
+   transType: ${transMatch}<br> \
+   mapStatus: ${annotStatus}<br> \
+   description: ${description}<br> \
+   comment: ${comment}<br> \
+   disease: ${disease}<br>
 decorator.default.filterValuesDefault.dataSet SwissProt
 decorator.default.filterValues.dataSet SwissProt,TrEMBL
 decorator.default.filterValuesDefault.categoryName Domain
