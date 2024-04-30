@@ -4,8 +4,12 @@ Support for creating UniProt decorators
 
 from pycbio.sys.svgcolors import SvgColors
 from pycbio.sys.color import Color
+from pycbio.sys.symEnum import SymEnum, auto
 from protmap import dropVersion
-from protmap.uniprot import UniProtCategory, UniProtDataSet, TransMatch
+from protmap.uniprot import UniProtCategory, UniProtDataSet, TransCategory
+from protmap.mappingAnalysis import FeatureIndelType
+from pycbio.hgdata.bed import encodeRow
+from pycbio.hgdata.decoration import Decoration
 
 def makeColorDesc(color, info):
     colorName = SvgColors.getClosestName(color)
@@ -26,9 +30,7 @@ def isVariant(annot):
 
 ###
 # Color logic.  This mostly matches UniProt genomic track, however colors for
-# overlay are not visible with track colors, so these are adjusted. Also use
-# named colors.
-#
+# overlay are not visible with track colors, so these are adjusted.
 ###
 
 def _mkcolor(r, g, b, a=None):
@@ -44,7 +46,7 @@ TREMBLCOLOR = _mkcolor(143, 188, 143)  # darkseagreen, genomic tracks are 0,150,
 
 # mapping of annotations columns to colors
 featTypeColors = {
-    "modified residue": _mkcolor(255, 215, 0),            # gold  (see above comment)
+    "modified residue": _mkcolor(255, 215, 0),            # gold
     "glycosylation site": _mkcolor(0, 100, 100),          # teal
     "disulfide bond": _mkcolor(100, 100, 100),            # dimgray
     "topological domain": _mkcolor(100, 0, 0),            # maroon
@@ -249,14 +251,14 @@ def getAnnotCategory(annot):  # noqa: C901
     else:
         return (UniProtCategory.Other, "Other Annotation")
 
-def calcTransMatch(uniprotMeta, transId):
+def calcTransCategory(uniprotMeta, transId):
     "determine match of transcript to GENCODE based on what transcripts are listed in metadata"
     if transId in uniprotMeta.ensemblTransIds:
-        return TransMatch.canonical
+        return TransCategory.canonical
     if dropVersion(transId) in uniprotMeta.ensemblTransAccs:
-        return TransMatch.canonical_diff_version
+        return TransCategory.canonical_diff_version
     else:
-        return TransMatch.noncanonical
+        return TransCategory.noncanonical
 
 def getColorUses():
     "list of tuples of (color, use_description)"
@@ -275,3 +277,56 @@ def getColorUses():
 
 # chrom,  chromStart, chromEnd, decoratedItem, name, dataset
 decoratorBedSortOpts = ["-k1,1", "-k2,2n", "-k3,3n", "-k13,13", "-k4,4n", "-k17,17"]
+
+class DecoratorType(SymEnum):
+    feature = auto()
+    disruption = auto()
+
+class FeatStatus(SymEnum):
+    good = auto()
+    problem = auto()
+    insertion = auto()
+    deletion = auto()
+
+class UniprotDecoration(Decoration):
+    """Holds a decoration BED + extra data.  This matches etc/uniprotDecoration.as. """
+
+    # keep in schema order
+    __slots__ = ("decoratorType", "dataSet", "uniprotAcc", "transCategory", "featStatus",
+                 "category", "categoryName", "description", "shortFeatType", "featType",
+                 "shortName", "longName", "comment", "disease")
+
+    def __init__(self, chrom, bedBlocks, name, strand, color,
+                 itemName, itemStart, itemEnd, glyph, fillColor, *, decoratorType,
+                 dataSet, uniprotAcc, transCategory, featStatus,
+                 category, categoryName, description, shortFeatType, featType,
+                 shortName, longName, comment, disease):
+        # sanity check
+        assert isinstance(dataSet, UniProtDataSet)
+        assert isinstance(transCategory, TransCategory)
+        assert isinstance(decoratorType, DecoratorType)
+        assert isinstance(featStatus, (FeatStatus, FeatureIndelType))
+        assert isinstance(category, UniProtCategory)
+
+        super(UniprotDecoration, self).__init__(chrom, bedBlocks[0].start, bedBlocks[-1].end, name,
+                                                itemName, itemStart, itemEnd,
+                                                strand=strand, itemRgb=color, blocks=bedBlocks,
+                                                glyph=glyph, fillColor=fillColor)
+
+        self.dataSet = dataSet
+        self.uniprotAcc = uniprotAcc
+        self.transCategory = transCategory
+        self.decoratorType = decoratorType
+        self.featStatus = featStatus
+        self.category = category
+        self.categoryName = categoryName
+        self.description = description
+        self.shortFeatType = shortFeatType
+        self.featType = featType
+        self.shortName = shortName
+        self.longName = longName
+        self.comment = comment
+        self.disease = disease
+
+    def toRow(self):
+        return super().toRow() + encodeRow([getattr(self, f) for f in self.__slots__])

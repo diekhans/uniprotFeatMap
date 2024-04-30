@@ -14,7 +14,7 @@ class UniProtDataSet(SymEnum):
     TrEMBL = 2
 
 class UniProtCategory(SymEnum):
-    "categories assign my Max in genomic UniProt tracks"
+    "categories assign by Max in genomic UniProt tracks"
     Mut = auto()
     Splice = auto()
     Struct = auto()
@@ -31,7 +31,7 @@ class UniProtCategory(SymEnum):
     Interest = auto()
     Other = auto()
 
-class TransMatch(SymEnum):
+class TransCategory(SymEnum):
     canonical = auto()
     canonical_diff_version = auto()
     noncanonical = auto()
