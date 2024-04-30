@@ -3,39 +3,61 @@
     <title>UniProt Transcript Annotations</title>
   </head>
   <body>
-    <h1>UniProt Transcript Annotations</h1>
+<h1>UniProt Transcript Annotations</h1>
 
-    <p>
-      This decorator set consist of UniProt annotations on individual GENCODE V45
-      protein-coding transcripts
-    </p>
-
-    
-      Genomic locations of UniProt/UniProt annotations are labeled with a short name for
-      the type of annotation (e.g. &quot;glyco&quot;, &quot;disulf bond&quot;, &quot;Signal peptide&quot;
-    etc.).
-
-
+<p>
+  This <a href="https://genome.ucsc.edu/goldenPath/help/decorator.html"
+          target="_blank">track decorator set</a> consist of UniProt annotations
+  on individual GENCODE V45 protein-coding transcripts.
+</p>
+<p>
+  Annotations from both the SwissProt and TrEMBL subsets of UniProt are
+  available.  The UniProt canonical transcripts have annotations added to
+  the transcript based on their protein coordinates. Non-UniProt canonical
+  transcript have the annotation coordinates projected via the genome coordinates.
+  Disputed projected annotations are indicated in the display, as described below.
+</p>
 
 <h2>Display Conventions and Configuration</h2>
 
-Color coding:
+There are two types of decorations for the transcripts: feature decorations,
+that indicate where
 
-Domains
+<h4>Color coding:</h4>
+
+Annotations have there base items colored by type:
 <ul>
-  <li> <span style="color: rgb(255,0,150)"><b>Signal peptide</b></span>
-  <li> <span style="color: rgb(0,150,255)"><b>extracellular</b></span>
-  <li> <span style="color: rgb(0,150,0)"> <b>transmembrane</b></span>
-  <li> <span style="color: rgb(255,150,0)"><b>cytoplasmic</b></span>
-</ul>
-    
-UniProt Modifications
-<ul>
-  <li> <span style="color: rgb(12,12,120)"><b>lipoification sites</b></span>
-  <li> <span style="color: rgb(0,100,100)"><b>glycosylation sites</b></span>
+  <li> <span style="color: rgb(255,0,150)"><b>signal peptide domains</b></span>
+  <li> <span style="color: rgb(0,150,255)"><b>extracellular domains</b></span>
+  <li> <span style="color: rgb(0,150,0)"> <b>transmembrane domains</b></span>
+  <li> <span style="color: rgb(255,150,0)"><b>cytoplasmic domains</b></span>
+  <li> <span style="color: rgb(100,0,0)"><b>topological domain</b></span>
+  <li> <span style="color: rgb(100,100,0)"><b>zinc finger region</b></span>
+  <li> <span style="color: rgb(100,100,100)"><b>disulfide bond</b></span>
+  <li> <span style="color: rgb(12,12,120)"><b>lipoification modification sites</b></span>
+  <li> <span style="color: rgb(0,100,100)"><b>glycosylation modification sites</b></span>
   <li> <span style="color: rgb(200,200,0)"><b>phosphorylation sites</b></span>
+  <li> <span style="color: rgb(255,215,0)"><b>modified residues</b></span>
+  <li> <span style="color: rgb(34,139,34)"><b>other SwissProt</b></span>
+  <li> <span style="color: rgb(143,188,143)"><b>other TrEMBL</b></span>
 </ul>
 
+Feature
+<ul>
+  <li> <span style="color: rgb()"><b></b></span>
+  <li> <span style="color: rgb()"><b></b></span>
+</ul>
+
+    matched transcript outline           deepskyblue    0,191,255
+    other isoform transcript outline     black          0,0,0
+
+    feature insertion                    red            255,0,0
+    feature deletion                     red            255,0,0
+  <li> <span style="color: rgb()"><b></b></span>
+
+
+
+-UUU:**-  F1  *uniprot*      Bot 
 
 TrEMBL annotations are always shown in 
 <span style="color: rgb(0,150,250)"><b>light blue</b></span>,

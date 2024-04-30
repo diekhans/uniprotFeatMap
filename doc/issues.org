@@ -45,6 +45,15 @@ Common modifications include phosphorylation, methylation, acetylation, amidatio
 chr1:11,674,479-11,681,148
 due to one exon being different
 
+* color doc diffs
+not in genomic doc
+    modified residue
+    disulfide bond 
+    topological domain
+    zinc finger region
+not in code?
+lipoification -> Lipidation
+
 * python errors in ../bin/uniprotAnnotsToDecorators
 cause it to continue to run lots of threads, creating a huge stack trace
 
