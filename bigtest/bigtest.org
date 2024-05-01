@@ -13,3 +13,14 @@ tmlr join -j transcriptId -f gencode.v45.pc_transcripts.ids.tsv  /hive/data/geno
 fgrep -f gencode.v45.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.gp > gencode.v45.pc_transcripts.gp
 genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v45.pc_transcripts.gp gencode.v45.pc_transcripts.psl
 
+* comparison of number of problems
+
+| protTransAln/SwissProt/protTrans_Aln.blast.paired.problems.tsv |  13961 |
+| protTransAln/SwissProt/protTrans_Aln.blat.paired.problems.tsv  |  13815 |
+| protTransAln/TrEMBL/protTrans_Aln.blast.paired.problems.tsv    | 144349 |
+| protTransAln/TrEMBL/protTrans_Aln.blat.paired.problems.tsv     | 144744 |
+| mapAnnots/SwissProt/mapAnnots.blast.problems.tsv               |   1245 |
+| mapAnnots/SwissProt/mapAnnots.blat.problems.tsv                |   1246 |
+| mapAnnots/TrEMBL/mapAnnots.blast.problems.tsv                  | 119024 |
+| mapAnnots/TrEMBL/mapAnnots.blat.problems.tsv                   | 119192 |
+

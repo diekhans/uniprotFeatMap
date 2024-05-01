@@ -173,8 +173,8 @@ def _getQNameSet(aligns):
 def _getTNameSet(aligns):
     return frozenset([dropVersion(psl.tName) for psl in aligns])
 
-def problemLog(logFh, reason, transcriptId=None, transcriptType=None, uniprotId=None):
-    fileOps.prRowv(logFh, reason, transcriptId, transcriptType, uniprotId)
+def problemLog(logFh, reason, geneId=None, transcriptId=None, transcriptType=None, uniprotId=None):
+    fileOps.prRowv(logFh, reason, geneId, transcriptId, transcriptType, uniprotId)
 
 def reportUnalignedUniprots(uniprotMetaTbl, canonCdsToTransAligns, logFh):
     alignedUniprotIds = _getQNameSet(canonCdsToTransAligns)
@@ -184,15 +184,18 @@ def reportUnalignedUniprots(uniprotMetaTbl, canonCdsToTransAligns, logFh):
 
 def _reportUnmappedTranscript(gencodeMetaTbl, uniprotMetaTbl, unmappedTransAccs, reason, transAcc, logFh):
     transRec = gencodeMetaTbl.byTranscriptAcc.get(transAcc)
-    transId = transRec.transcriptId if transRec is not None else None
+    geneId = transId = None
+    if transRec is not None:
+        geneId = transRec.geneId
+        transId = transRec.transcriptId
     uniprotMetas = uniprotMetaTbl.byTranscriptAcc.get(transAcc)
     if transId is None:
         problemLog(logFh, "transcript_not_in_gene_set", transAcc, None, uniprotMetas[0].mainIsoAcc)
     elif uniprotMetas is None:
-        problemLog(logFh, reason, transId, gencodeMetaTbl.getTransType(transId), None)
+        problemLog(logFh, reason, geneId, transId, gencodeMetaTbl.getTransType(transId), None)
     else:
         for uniprotMeta in uniprotMetas:
-            problemLog(logFh, reason, transId, gencodeMetaTbl.getTransType(transId), uniprotMeta.mainIsoAcc)
+            problemLog(logFh, reason, geneId, transId, gencodeMetaTbl.getTransType(transId), uniprotMeta.mainIsoAcc)
 
 def _reportUnmappedTranscripts(gencodeMetaTbl, uniprotMetaTbl, unmappedTransAccs, reason, logFh):
     for transAcc in sorted(unmappedTransAccs):
@@ -212,7 +215,7 @@ def reportUnpairedNoncanonTrans(gencodeMetaTbl, uniprotMetaTbl, noncanonCdsToTra
 
 def report(gencodeMetaTbl, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv):
     logFh = fileOps.opengz(problemLogTsv, 'w')
-    problemLog(logFh, "reason", "transcriptId", "transcriptType", "uniprotId")
+    problemLog(logFh, "reason", "geneId", "transcriptId", "transcriptType", "uniprotId")
     reportUnalignedUniprots(uniprotMetaTbl, canonCdsToTransAligns, logFh)
     reportUnpairedCanonTrans(gencodeMetaTbl, uniprotMetaTbl, canonCdsToTransAligns, logFh)
     reportUnpairedNoncanonTrans(gencodeMetaTbl, uniprotMetaTbl, noncanonCdsToTransAligns, logFh)

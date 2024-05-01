@@ -13,7 +13,8 @@ tmpext = $(shell hostname).$(shell echo $${PPID}).tmp
 
 time = time -p
 
-algos = blat blast
+algos = blat
+#blast
 taxid = 9606
 
 up_divisions = swissprot trembl

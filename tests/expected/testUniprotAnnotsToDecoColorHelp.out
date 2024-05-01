@@ -1,6 +1,6 @@
 Color usage:
-    matched transcript outline           deepskyblue    0,191,255
-    other isoform transcript outline     black          0,0,0
+    canonical transcript outline         deepskyblue    0,191,255
+    non-canonical isoform transcript outline black          0,0,0
     feature insertion                    red            255,0,0
     feature deletion                     red            255,0,0
     SwissProt base                       forestgreen    34,139,34

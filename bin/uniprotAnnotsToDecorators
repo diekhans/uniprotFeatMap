@@ -26,9 +26,9 @@ class HelpColors(argparse.Action):
     "generate a help message on colors"
     def __call__(self, parser, namespace, values, option_string=None):
         descs = [makeColorDesc(UNIPROT_CANON_ISO_OUTLINE_COLOR,
-                               "matched transcript outline"),
+                               "canonical transcript outline"),
                  makeColorDesc(UNIPROT_NONCANON_ISO_OUTLINE_COLOR,
-                               "other isoform transcript outline"),
+                               "non-canonical isoform transcript outline"),
                  makeColorDesc(FEAT_INSERTION_COLOR,
                                "feature insertion"),
                  makeColorDesc(FEAT_DELETION_COLOR,

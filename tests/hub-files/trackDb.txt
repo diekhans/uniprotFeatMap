@@ -15,10 +15,10 @@ defaultLabelFields name
 labelSeperator " / "
 mouseOver name: ${name}
 decorator.default.bigDataUrl testUniprotDecoratorsMerge.bb
-decorator.default.filterValuesDefault.dataSet SwissProt
 decorator.default.filterValues.dataSet SwissProt,TrEMBL
-decorator.default.filterValuesDefault.categoryName Domain
+decorator.default.filterValuesDefault.dataSet SwissProt
 decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Region of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation
+decorator.default.filterValuesDefault.categoryName Domain
 decorator.default.mouseOver \
    UniProt data set: ${dataSet}<br> \
    UniProt acc: <a href="https://www.uniprot.org/uniprot/${uniprotAcc}" target=_BLANK>${uniprotAcc}</a><br> \
