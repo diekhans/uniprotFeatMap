@@ -15,17 +15,29 @@
   available.  The UniProt canonical transcripts have annotations added to
   the transcript based on their protein coordinates. Non-UniProt canonical
   transcript have the annotation coordinates projected via the genome coordinates.
+</p>
+<p>
   Disputed projected annotations are indicated in the display, as described below.
+  This provides a visualization that a transcript may produce a protein that
+  is may have alter function or is non-functional.
 </p>
 
 <h2>Display Conventions and Configuration</h2>
 
-There are two types of decorations for the transcripts: feature decorations,
-that indicate where
+<p>
+  There are two types of annotations on transcripts, implemented as track
+  decorators:
+</p>
+<ul>
+  <li> Feature annotations: indicate the location of the UniProt features
+  <li> Disruption annotations: indicate the location of disruption in features projections
+</ul>
 
-<h4>Color coding:</h4>
+<h3>Feature annotations</h3>
 
-Annotations have there base items colored by type:
+<p>
+  Feature annotations have their base items colored by type:
+</p>
 <ul>
   <li> <span style="color: rgb(255,0,150)"><b>signal peptide domains</b></span>
   <li> <span style="color: rgb(0,150,255)"><b>extracellular domains</b></span>
@@ -42,30 +54,70 @@ Annotations have there base items colored by type:
   <li> <span style="color: rgb(143,188,143)"><b>other TrEMBL</b></span>
 </ul>
 
-Feature
+<p>
+  Feature annotations are outlined based on if they are UniProt canonical or non-canonical,
+  or if the feature is disrupted:
+</p>
 <ul>
-  <li> <span style="color: rgb()"><b></b></span>
-  <li> <span style="color: rgb()"><b></b></span>
+  <li> <span style="color: rgb(0,191,255)"><b>canonical</b></span>
+  <li> <span style="color: rgb(0,0,0)"><b>non-canonical</b></span>
+  <li> <span style="color: rgb(255,0,0)"><b>disrupted</b></span>
 </ul>
 
-    matched transcript outline           deepskyblue    0,191,255
-    other isoform transcript outline     black          0,0,0
 
-    feature insertion                    red            255,0,0
-    feature deletion                     red            255,0,0
-  <li> <span style="color: rgb()"><b></b></span>
+<h3>Disruption annotations</h3>
+
+<p>
+Disruption annotations indicate where a feature is broken either by an
+insertions or deletions create by alternative splicing. In addition to
+outlining the disrupted features in <span style="color:rgb(255,0,0)">
+<b>red</b></span>, additional annotations are added to show the location
+in the feature where the disruption occurs.  These are represented by:
+</p>
+<ul>
+  <li>A <span style="color:rgb(255,0,0)">
+      <b>red</b></span> block annotation indicated the range where there is an insertion
+  <li>A <span style="color:rgb(255,0,0)">
+      <b>red</b></span> triangle pointing to the points were a deletion
+    occurred. Internal deletions will have two triangles point to each end of
+    the deletion, a truncation will have a single triangle.
+</ul>
+
+<h3>Mouseover metadata</h3>
+
+<ul>
+  <li> UniProt data set: either <b>SwissProt</b> (manual annotation) or <b>TrEMBL</b> (automated annotation)
+  <li> UniProt acc: UniProt accession with link to UniProt entry.
+  <li> feature type: UniProt feature type
+  <li> feature category: a more general category for the feature assigned by UCSC for filtering and display purposes
+  <li> transcript category:
+    <ul>
+      <li><b>canonical</b>: transcript accession and version is listed by UniProt as match the protein
+      <li><b>canonical_diff_version</b>: transcript accession is listed by UniProt as match the protein, however the
+        version is different
+      <li><b>noncanonical</b>: transcript that is not listed by UniProt that has the features projected on it
+    </ul>
+  <li> feature status:
+    <ul>
+      <li> for feature annotations:  <b>complete</b> or <b>disrupted</b>
+      <li> for disruption annotations: <b>insert</b>, <b>del_5p</b> for 5&apos; deleteions, <b>del_3p<b> for 3&apos; deletionions, or <b><b>del_int<b> for internal deletions
+    </ul>
+  <li> description: for feature annotations, description from UniProt; for disruption annotations,
+    describes the type and size of the disruption.
+  <li> comment: comment from UniProt
+  <li> disease: disease name for disease-related variants
+</ul>
+
+<h3>Display control</h3>
+
+Block decoration placement:  include labels in overlay mode:  
+  Auto-hide labels when window is larger than bp
+Glyph decoration placement:  F
 
 
 
--UUU:**-  F1  *uniprot*      Bot 
 
-TrEMBL annotations are always shown in 
-<span style="color: rgb(0,150,250)"><b>light blue</b></span>,
-except in the Signal Peptides, Extracellular Domains, Transmembrane Domains,
-and Cytoplamsic domains subtracks.</p>
-
-
-    Mouse over a feature to see the full UniProt annotation comment. For variants, the mouse over will show the full name of the UniProt disease acronym.
+<h3>Filters</h3>
 
 
 <h2>Methods</h2>
