@@ -8,9 +8,9 @@ from pycbio.sys import fileOps
 from pycbio.hgdata.psl import Psl, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap import dropVersion
-from protmap.gencode import GencodeMetaTbl, GencodeDataTbl, gencodeMakeCdsPsl
-from protmap.uniprot import UniProtMetaTbl, dropUniportIsoformModifier
+from uniprotmap import dropVersion
+from uniprotmap.gencode import GencodeMetaTbl, GencodeDataTbl, gencodeMakeCdsPsl
+from uniprotmap.uniprot import UniProtMetaTbl, dropUniportIsoformModifier
 
 # Terminology
 #    xxxId is id with version

@@ -6,8 +6,8 @@ import glob
 import pipettor
 from pycbio.distrib.parasol import Para
 from pycbio.sys import fileOps
-from protmap import conf
-from protmap.depends import getDoneFile
+from uniprotmap import conf
+from uniprotmap.depends import getDoneFile
 
 def buildBlastTransIndex(transFa, workDir):
     logFile = osp.join(workDir, "formatdb.log")

@@ -11,8 +11,8 @@ from pycbio.tsv import TsvReader
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap.uniprot import UniProtAnnotTbl
-from protmap.annotTransRef import annotTransRefCreate, annotTransRefWrite
+from uniprotmap.uniprot import UniProtAnnotTbl
+from uniprotmap.annotTransRef import annotTransRefCreate, annotTransRefWrite
 
 def parseArgs():
     desc = """

@@ -7,7 +7,7 @@ from pycbio.hgdata.genePred import GenePredReader
 from pycbio.hgdata.rangeFinder import RangeFinder
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap import dropVersion
+from uniprotmap import dropVersion
 
 # Note: multiple annotation of a transcript is not needed in current
 # GenCode, but will be needed for RefSeq, so leave logic here.

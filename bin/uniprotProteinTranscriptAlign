@@ -9,9 +9,9 @@ from Bio import SeqIO
 from pycbio.sys import fileOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from protmap import conf, prMsg
-from protmap.depends import runIfNotDone, runIfOutOfDate
-from protmap.align import querySplit, runBatch, buildBlastTransIndex
+from uniprotmap import conf, prMsg
+from uniprotmap.depends import runIfNotDone, runIfOutOfDate
+from uniprotmap.align import querySplit, runBatch, buildBlastTransIndex
 
 uniprotProteinTranscriptAlignJob = osp.join(osp.dirname(__file__), "uniprotProteinTranscriptAlignJob")
 

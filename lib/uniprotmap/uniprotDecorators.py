@@ -5,9 +5,9 @@ Support for creating UniProt decorators
 from pycbio.sys.svgcolors import SvgColors
 from pycbio.sys.color import Color
 from pycbio.sys.symEnum import SymEnum, auto
-from protmap import dropVersion
-from protmap.uniprot import UniProtCategory, UniProtDataSet, TransCategory
-from protmap.mappingAnalysis import FeatureIndelType
+from uniprotmap import dropVersion
+from uniprotmap.uniprot import UniProtCategory, UniProtDataSet, TransCategory
+from uniprotmap.mappingAnalysis import FeatureIndelType
 from pycbio.hgdata.bed import encodeRow
 from pycbio.hgdata.decoration import Decoration
 

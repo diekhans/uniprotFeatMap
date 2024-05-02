@@ -5,7 +5,7 @@ Reads files create by uniprotToTab, and other uniport support
 from collections import defaultdict
 from pycbio.sys.symEnum import SymEnum, auto
 from pycbio.tsv import TsvReader, TsvRow
-from protmap import dropVersion
+from uniprotmap import dropVersion
 
 # WARNING: UniProt is 1-based, open-end
 
