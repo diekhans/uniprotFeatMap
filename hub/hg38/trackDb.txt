@@ -1,8 +1,8 @@
 track gencodeV45_blat_deco
 html gencodeV45_blat_deco.html
-shortLabel gencodeV45 BLAT deco
-longLabel gencodeV45 BLAT deco
-description gencodeV45 BLAT deco
+shortLabel GENCODE V45 + UniProt
+longLabel GENCODE V45 w UniProt Decorators
+description GENCODE V45 w UniProt Decorators
 type bigGenePred
 group genes
 #itemRgb on
@@ -15,6 +15,8 @@ labelFields name,name2,geneName,geneName2
 defaultLabelFields geneName2
 labelSeperator " / "
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
+decorator.default.blockMode Adjacent
+decorator.default.glyphMode Adjacent
 decorator.default.bigDataUrl uniprot-gencode.v45.blat.bb
 decorator.default.filterLabel.decoratorType Annotation type
 decorator.default.filterValues.decoratorType feature,disruption
