@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
     <title>UniProt Transcript Annotations</title>
   </head>
@@ -14,12 +15,12 @@
   Annotations from both the SwissProt and TrEMBL subsets of UniProt are
   available.  The UniProt canonical transcripts have annotations added to
   the transcript based on their protein coordinates. Non-UniProt canonical
-  transcript have the annotation coordinates projected via the genome coordinates.
+  transcripts have the annotation coordinates projected via the genome coordinates.
 </p>
 <p>
   Disputed projected annotations are indicated in the display, as described below.
   This provides a visualization that a transcript may produce a protein that
-  is may have alter function or is non-functional.
+  may have altered function or is non-functional.
 </p>
 
 <h2>Display Conventions and Configuration</h2>
@@ -29,8 +30,8 @@
   decorators:
 </p>
 <ul>
-  <li> Feature annotations: indicate the location of the UniProt features
-  <li> Disruption annotations: indicate the location of disruption in features projections
+  <li> Feature annotations: indicate the location of the UniProt features</li>
+  <li> Disruption annotations: indicate the location of disruption in features projections</li>
 </ul>
 
 <h3>Feature annotations</h3>
@@ -39,28 +40,28 @@
   Feature annotations have their base items colored by type:
 </p>
 <ul>
-  <li> <span style="color: rgb(255,0,150)"><b>signal peptide domains</b></span>
-  <li> <span style="color: rgb(0,150,255)"><b>extracellular domains</b></span>
-  <li> <span style="color: rgb(0,150,0)"> <b>transmembrane domains</b></span>
-  <li> <span style="color: rgb(255,150,0)"><b>cytoplasmic domains</b></span>
-  <li> <span style="color: rgb(100,0,0)"><b>topological domain</b></span>
-  <li> <span style="color: rgb(100,100,0)"><b>zinc finger region</b></span>
-  <li> <span style="color: rgb(100,100,100)"><b>disulfide bond</b></span>
-  <li> <span style="color: rgb(12,12,120)"><b>lipoification modification sites</b></span>
-  <li> <span style="color: rgb(0,100,100)"><b>glycosylation modification sites</b></span>
-  <li> <span style="color: rgb(200,200,0)"><b>phosphorylation sites</b></span>
-  <li> <span style="color: rgb(255,215,0)"><b>modified residues</b></span>
-  <li> <span style="color: rgb(34,139,34)"><b>other SwissProt</b></span>
-  <li> <span style="color: rgb(143,188,143)"><b>other TrEMBL</b></span>
+  <li> <span style="color: rgb(255,0,150)"><b>signal peptide domains</b></span></li>
+  <li> <span style="color: rgb(0,150,255)"><b>extracellular domains</b></span></li>
+  <li> <span style="color: rgb(0,150,0)"> <b>transmembrane domains</b></span></li>
+  <li> <span style="color: rgb(255,150,0)"><b>cytoplasmic domains</b></span></li>
+  <li> <span style="color: rgb(100,0,0)"><b>topological domain</b></span></li>
+  <li> <span style="color: rgb(100,100,0)"><b>zinc finger region</b></span></li>
+  <li> <span style="color: rgb(100,100,100)"><b>disulfide bond</b></span></li>
+  <li> <span style="color: rgb(12,12,120)"><b>lipoification modification sites</b></span></li>
+  <li> <span style="color: rgb(0,100,100)"><b>glycosylation modification sites</b></span></li>
+  <li> <span style="color: rgb(200,200,0)"><b>phosphorylation sites</b></span></li>
+  <li> <span style="color: rgb(255,215,0)"><b>modified residues</b></span></li>
+  <li> <span style="color: rgb(34,139,34)"><b>other SwissProt</b></span></li>
+  <li> <span style="color: rgb(143,188,143)"><b>other TrEMBL</b></span></li>
 </ul>
 
 <p>
-  Feature annotations are outlined based on if they are UniProt canonical or non-canonical,
+  Feature annotations are outlined based on whether they are UniProt canonical or non-canonical,
   or if the feature is disrupted:
 </p>
 <ul>
   <li> <span style="color: rgb(0,191,255)"><b>canonical</b></span>
-  <li> <span style="color: rgb(0,0,0)"><b>non-canonical</b></span>
+  <li> <span style="color: rgb(0,0,0)"><b>noncanonical</b></span>
   <li> <span style="color: rgb(255,0,0)"><b>disrupted</b></span>
 </ul>
 
@@ -76,11 +77,11 @@ in the feature where the disruption occurs.  These are represented by:
 </p>
 <ul>
   <li>A <span style="color:rgb(255,0,0)">
-      <b>red</b></span> block annotation indicated the range where there is an insertion
+      <b>red</b></span> block annotation indicated the range where there is an insertion</li>
   <li>A <span style="color:rgb(255,0,0)">
-      <b>red</b></span> triangle pointing to the points were a deletion
-    occurred. Internal deletions will have two triangles point to each end of
-    the deletion, a truncation will have a single triangle.
+      <b>red</b></span>triangle pointing to the points were a deletion
+    occurred. Internal deletions will have two triangles pointing to each end of
+    the deletion and truncations will have a single triangle.</li>
 </ul>
 
 <h3>Mouseover metadata</h3>
@@ -93,14 +94,16 @@ in the feature where the disruption occurs.  These are represented by:
   <li> transcript category:
     <ul>
       <li><b>canonical</b>: transcript accession and version is listed by UniProt as match the protein
-      <li><b>canonical_diff_version</b>: transcript accession is listed by UniProt as match the protein, however the
+      <li><b>canonical_diff_version</b>: transcript accession is listed by UniProt as matching the protein however the
         version is different
-      <li><b>noncanonical</b>: transcript that is not listed by UniProt that has the features projected on it
+      <li><b> non-canonical </b>: transcript that is not listed by UniProt that has the features projected on it
     </ul>
   <li> feature status:
     <ul>
       <li> for feature annotations:  <b>complete</b> or <b>disrupted</b>
-      <li> for disruption annotations: <b>insert</b>, <b>del_5p</b> for 5&apos; deleteions, <b>del_3p<b> for 3&apos; deletionions, or <b><b>del_int<b> for internal deletions
+      <li> for disruption annotations: <b>insert</b>, <b>del_5p</b> for
+        5&apos; deletions, <b>del_3p</b> for 3&apos; deletions,
+        or <b>del_int</b> for internal deletions
     </ul>
   <li> description: for feature annotations, description from UniProt; for disruption annotations,
     describes the type and size of the disruption.
@@ -110,14 +113,27 @@ in the feature where the disruption occurs.  These are represented by:
 
 <h3>Display control</h3>
 
-Block decoration placement:  include labels in overlay mode:  
-  Auto-hide labels when window is larger than bp
-Glyph decoration placement:  F
-
-
-
+<p>
+  These controls allow the user to adjust the placement of the annotations.
+  Block annotations (features and insertion disruptions) and glyph annotations
+  (deletion disruptions) are controlled separately.
+</p>
+<ul>
+  <li> <b>hide</b>: annotations are not shown
+  <li> <b>overlay</b>: annotations are placed over the transcripts
+  <li> <b>adjacent</b>: annotations are placed below the transcripts.
+</ul>
 
 <h3>Filters</h3>
+<p>
+  These filters are available to control what annotations are displayed.
+  An annotation must match all filters to be displayed.
+</p>
+<ul>
+  <li><b>Annotation category</b>: general category of annotation (default <b>Domain</b>)</li>
+  <li><b>Uniprot dataset</b>: <b>SwissProt</b> or <b>TrEMBL</b> dataset (default <b>SwissProt</b>)</li>
+  <li><b>Annotation type</b>: <b>feature</b> or <b>disruption</b> (default <b>All</b>)</li>
+</ul>
 
 
 <h2>Methods</h2>
@@ -131,9 +147,9 @@ Glyph decoration placement:  F
     <ol>
       <li> UniProt proteins are aligned to their corresponding canonical mRNA
         transcript in GENCODE using translated BLAT. The UTR regions of the mRNA are
-        hard-masked to prevent alignment of protein to similar sequences.  The
-        canonical mRNA is matched ignoring version number.
-      <li> Produce protein to mRNA transcript alignments for the remaining
+        hard-masked to prevent protein alignment to similar sequences outside of the CDS.  The
+        canonical mRNA is matched, but the version number is ignored.
+      <li> Produce protein-to-mRNA transcript alignments for the remaining
         protein-coding GENCODE transcripts that are not UniProt canonical
         transcripts by projecting the canonical protein to mRNA alignment
         through the genome.  Projections to UTR regions are clipped.
@@ -145,7 +161,7 @@ Glyph decoration placement:  F
       annotation -&gt; protTranAln -&gt;  transGenomeAln =&gt; annotGenomeAln
     </pre>
   <li> Create a Track Decorator BED file associating the feature annotations
-    map to each transcript with the transcript.  Associate metadata for each
+    map to each transcript with the transcript.  Associated metadata for each
     feature and identify disruptions in features.  Block decorations on the
     transcripts are created for each feature, and triangular glyph decorations
     are used to indicate the points of feature disruption.
