@@ -283,8 +283,8 @@ class DecoratorType(SymEnum):
     disruption = auto()
 
 class FeatStatus(SymEnum):
-    good = auto()
-    problem = auto()
+    complete = auto()
+    disrupted = auto()
     insertion = auto()
     deletion = auto()
 

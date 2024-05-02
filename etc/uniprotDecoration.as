@@ -22,7 +22,7 @@ table uniprotDecoration
     string dataSet;     "'SwissProt' (manual annotation) or 'TrEMBL' (automated annotation)"
     string uniprotAcc;  "UniProt accession"
     string transCategory; "transcript category for UniProt: 'canonical', 'canonical_diff_version', 'noncanonical'"
-    string featStatus;   "For features, either 'good' or 'problem', for disruptions 'insert', 'del_5p' for 5' delete, 'del_3p' for 3' deletion, or ''del_int' for internal deletions"
+    string featStatus;   "For features, either 'complete' or 'disrupted', for disruptions 'insert', 'del_5p' for 5' delete, 'del_3p' for 3' deletion, or ''del_int' for internal deletions"
     string category;  "Feature category symbolic name"
     string categoryName;  "Feature category descriptive name"
     lstring description; "Description of annotation or disruption"

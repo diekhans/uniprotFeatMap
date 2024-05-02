@@ -127,7 +127,7 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transCategory, dataSet,
     description = getDescription(annot)
     annotColor = getAnnotColor(annot, dataSet)
     fillColor = annotColor.setAlpha(0.5)
-    featStatus = FeatStatus.good if len(featIndels) == 0 else FeatStatus.problem
+    featStatus = FeatStatus.complete if len(featIndels) == 0 else FeatStatus.disrupted
     if len(featIndels) > 0:
         color = getProblemColor(annot, dataSet)
     elif transCategory == TransCategory.noncanonical:

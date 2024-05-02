@@ -17,7 +17,8 @@ bigGpAs =  ${HOME}/kent/src/hg/lib/bigGenePred.as
 hub_url = https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 
 
-algos = blat blast
+algos = blat
+#blast
 
 
 all: ${algos:%=%_mkAlgo} mkGencodeBb
@@ -58,6 +59,7 @@ ${gencodeTrackPre}.bed: ${gencodePre}.gp
 
 check: checked.done
 
-checked.done: ${gencodeTrackPre}.bb hg38/uniprot-gencode.${gnver}.blast.bb hg38/uniprot-gencode.${gnver}.blat.bb
+#hg38/uniprot-gencode.${gnver}.blast.bb
+checked.done: ${gencodeTrackPre}.bb  hg38/uniprot-gencode.${gnver}.blat.bb
 	hubCheck ${hub_url}
 	touch $@
