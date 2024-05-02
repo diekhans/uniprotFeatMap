@@ -13,10 +13,14 @@ bigDataUrl gencode.v43.bb
 labelFields name
 defaultLabelFields name
 labelSeperator " / "
-mouseOver name: ${name}
-decorator.default.bigDataUrl testUniprotDecoratorsMerge.bb
+mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
+decorator.default.bigDataUrl uniprot-gencode.v45.blat.bb
+decorator.default.filterLabel.decoratorType Annotation type
+decorator.default.filterValues.decoratorType feature,disruption
+decorator.default.filterLabel.dataSet Uniprot dataset
 decorator.default.filterValues.dataSet SwissProt,TrEMBL
 decorator.default.filterValuesDefault.dataSet SwissProt
+decorator.default.filterLabel.categoryName Annotation category
 decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Region of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation
 decorator.default.filterValuesDefault.categoryName Domain
 decorator.default.mouseOver \
@@ -29,3 +33,4 @@ decorator.default.mouseOver \
    description: ${description}<br> \
    comment: ${comment}<br> \
    disease: ${disease}
+
