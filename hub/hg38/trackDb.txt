@@ -1,5 +1,5 @@
 track gencodeV45_blat_deco
-html ../empty.html
+html gencodeV45_blat_deco.html
 shortLabel gencodeV45 BLAT deco
 longLabel gencodeV45 BLAT deco
 description gencodeV45 BLAT deco

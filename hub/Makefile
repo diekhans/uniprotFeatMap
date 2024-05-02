@@ -21,7 +21,7 @@ algos = blat
 #blast
 
 
-all: ${algos:%=%_mkAlgo} mkGencodeBb
+all: ${algos:%=%_mkAlgo} mkGencodeBb mkDoc
 	${MAKE} check
 %_mkAlgo:
 	${MAKE} mkDecorators algo=$*
@@ -56,6 +56,10 @@ ${gencodeTrackPre}.bed: ${gencodePre}.gp
 	rm hg38/gencode.names hg38/gencode.types
 	mv -f $@.tmp $@
 
+mkDoc: hg38/gencodeV45_blat_deco.html
+
+hg38/gencodeV45_blat_deco.html: ../doc/deco-desc.html
+	cp -f $< $@
 
 check: checked.done
 
