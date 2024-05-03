@@ -28,12 +28,14 @@ fi
 acctsv="$1"
 outdir="$2"
 
+genomeSeqs=/hive/data/genomes/hg38/hg38.2bit
+chromSizes=/hive/data/genomes/hg38/chrom.sizes
+
+
 spdir=/hive/data/outside/otto/uniprot/tab
 spInPre=${spdir}/swissprot.9606
 trInPre=${spdir}/trembl.9606
 gndir=/hive/data/genomes/hg38/bed/gencodeV${gencodeRel}/hgcImport/data
-gnfa=${gndir}/release_${gencodeRel}/gencode.v${gencodeRel}.pc_transcripts.fa.gz
-chromSizes=/hive/data/genomes/hg38/chrom.sizes
 
 spOutPre=${outdir}/swissprot.9606
 trOutPre=${outdir}/trembl.9606
@@ -55,8 +57,8 @@ function getUniProtTestData() {
     faSize -detailed ${outpre}.fa > ${outpre}.sizes
 }
 
-getUniProtTestData ${spInPre} ${spOutPre}
-getUniProtTestData ${trInPre} ${trOutPre}
+#getUniProtTestData ${spInPre} ${spOutPre}
+#getUniProtTestData ${trInPre} ${trOutPre}
 
 ##
 # gencode genes in UniProt.  Split comma-separated lists into lines 
@@ -64,16 +66,16 @@ getUniProtTestData ${trInPre} ${trOutPre}
 tmlr cut -f ensemblGene ${spOutPre}.tab > ${gnOutPre}.sp.gene.acc.tmp
 tmlr cut -f ensemblGene ${trOutPre}.tab > ${gnOutPre}.tr.gene.acc.tmp
 tmlr cat ${gnOutPre}.sp.gene.acc.tmp ${gnOutPre}.tr.gene.acc.tmp | \
-    tawk '{$0 = gensub("\\.[0-9A-Z_]+","","g"); print gensub("\\|","\n","g")}' > ${gnOutPre}.gene.acc.tmp
+    tawk '{$0 = gensub("\\.[0-9A-Z_]+","","g"); print gensub("\\|","\n","g")}' | sort -u > ${gnOutPre}.gene.acc.tmp
+
+# metadata and genePreds
 (head -1 ${gndir}/gencode.tsv && fgrep -f ${gnOutPre}.gene.acc.tmp ${gndir}/gencode.tsv) > ${gnOutPre}.metadata.tsv
-
-# fasta ids
-zcat ${gnfa} | fgrep -f ${gnOutPre}.gene.acc.tmp | sed -e 's/>//' > ${gnOutPre}.fa.ids.tmp
-faSomeRecords ${gnfa} ${gnOutPre}.fa.ids.tmp ${gnOutPre}.pc_transcripts.fa
-
-# gencode to genome PSL
-awk '/^>/{print gensub(">([A-Z0-9.]+).*$", "\\1", 1)}' ${gnOutPre}.pc_transcripts.fa > ${gnOutPre}.trans.acc.tmp
+tmlr cut -f transcriptId ${gnOutPre}.metadata.tsv > ${gnOutPre}.trans.acc.tmp
 fgrep -f ${gnOutPre}.trans.acc.tmp ${gndir}/gencode.gp > ${gnOutPre}.gp
 genePredToPsl ${chromSizes} ${gnOutPre}.gp ${gnOutPre}.psl
+
+# FASTA with UTR lower-cases; PAR in older GENCODE has duplicate ids, but need unique FASTA
+sort -k 1,1 -u  ${gnOutPre}.gp >  ${gnOutPre}.nodup.gp.tmp
+getRnaPred -cdsUpper -genomeSeqs=${genomeSeqs} no ${gnOutPre}.nodup.gp.tmp all ${gnOutPre}.pc_transcripts.fa
 
 rm -f ${outdir}/*.tmp

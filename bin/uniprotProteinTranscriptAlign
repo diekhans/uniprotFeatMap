@@ -31,56 +31,32 @@ def parseArgs():
     parser.add_argument("uniprotFa",
                         help="uniprotFa FASTA")
     parser.add_argument("transFa",
-                        help="transcript FASTA")
+                        help="transcript FASTA, CDS must be in upper-case and UTR in lowercase")
     parser.add_argument("protTransPsl",
                         help="alignments, sorted by transcript")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
     return parser.parse_args()
 
-def parseGencodeFastaHeaderCds(parts):
-    for elem in parts:
-        m = re.search("^CDS:([0-9]+)-([0-9]+)$", elem)
-        if m is not None:
-            return int(m.group(1)) - 1, int(m.group(2))  # zero-based
-    return None
+def writeMaskFastaRec(rec, outFh):
+    print(">" + rec.id, file=outFh)
+    seq = re.sub('[a-z]', 'N', str(rec.seq))
+    print(seq, file=outFh)
 
-def parseGencodeFastaHeader(rec):
-    """parse the fasta, returning new id and CDS coordinates (or None if no CDS)
-      >ENST00000641515.2|ENSG00000186092.7|OTTHUMG00000001094.4|OTTHUMT00000003223.4|OR4F5-201|OR4F5|2618|UTR5:1-60|CDS:61-1041|UTR3:1042-2618|
+def makeUtrMaskedFasta(inFa, outFa):
     """
-    parts = rec.id.split('|')
-    if parts[0].endswith("_PAR_Y"):
-        return None, None  # old style PAR naming
-    cds = parseGencodeFastaHeaderCds(parts)
-    return parts[0], cds
-
-def maskUtr(seq, cds):
-    return (cds[0] * 'N') + seq[cds[0]:cds[1]] + ((len(seq) - cds[1]) * 'N')
-
-def editGencodeFastaRec(rec, outFh):
-    transId, cds = parseGencodeFastaHeader(rec)
-    if cds is not None:
-        print(">" + transId, file=outFh)
-        print(maskUtr(rec.seq, cds), file=outFh)
-
-
-def editGencodeFasta(inFa, outFa):
-    """
-    Decompress and parse GENCODE FASTA headers to get basic id. The UTR
-    regions will be masked, sequences without CDS noted in the header are
-    discarded.
+    Create FASTA with lower-case UTR hard-masked
     """
     with fileOps.opengz(inFa) as inFh:
         with fileOps.opengz(outFa, 'w') as outFh:
             for rec in SeqIO.parse(inFh, "fasta"):
-                editGencodeFastaRec(rec, outFh)
+                writeMaskFastaRec(rec, outFh)
 
 def targetBuildDb(transFa, transDbFa, algo, targetDir):
     prMsg("building target transcript database")
     fileOps.ensureDir(targetDir)
     fileOps.ensureFileDir(transDbFa)
-    editGencodeFasta(transFa, transDbFa)
+    makeUtrMaskedFasta(transFa, transDbFa)
     if algo == "blast":
         buildBlastTransIndex(transDbFa, targetDir)
 

@@ -7,3 +7,7 @@ bigtest/decorators/
 bigtest/mapAnnots/
 data/
 *.bb
+/hub/checked.done
+/hub/hg38/gencode.v44.bed
+/hub/hg38/gencode.v45.bed
+/hub/hg38/gencodeV45_blat_deco.html

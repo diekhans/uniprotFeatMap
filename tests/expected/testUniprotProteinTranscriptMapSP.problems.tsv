@@ -1,48 +1,10 @@
 reason	geneId	transcriptId	transcriptType	uniprotId
-uniprot_not_aligned				P20848
-canon_trans_not_mapped	ENSG00000206509.13	ENST00000359076.7	protein_coding	P30511-1
-canon_trans_not_mapped	ENSG00000229698.11	ENST00000376848.8	protein_coding	P30511-1
-canon_trans_not_mapped	ENSG00000137403.19	ENST00000383515.6	protein_coding	P30511-1
-canon_trans_not_mapped	ENSG00000235220.10	ENST00000420067.5	protein_coding	P30511-1
-canon_trans_not_mapped	ENSG00000237508.10	ENST00000440590.5	protein_coding	P30511-1
-canon_trans_not_mapped	ENSG00000274821.5	ENST00000616052.3	protein_coding	P20848
 transcript_not_in_gene_set	ENST00000711260		P51809-1	
 transcript_not_in_gene_set	ENST00000711264		P51809-1	
 transcript_not_in_gene_set	ENST00000711265		P51809-1	
-noncanon_trans_not_mapped	ENSG00000137403.19	ENST00000342322.8	protein_coding	
-noncanon_trans_not_mapped	ENSG00000137403.19	ENST00000383516.8	protein_coding	
-noncanon_trans_not_mapped	ENSG00000206509.13	ENST00000383626.6	protein_coding	
-noncanon_trans_not_mapped	ENSG00000206509.13	ENST00000383627.8	protein_coding	
 noncanon_trans_not_mapped	ENSG00000179869.15	ENST00000411975.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000206509.13	ENST00000418017.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000137403.19	ENST00000420414.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000235220.10	ENST00000420923.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000235220.10	ENST00000422711.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000206509.13	ENST00000425139.1	protein_coding	
-noncanon_trans_not_mapped	ENSG00000235220.10	ENST00000426470.1	protein_coding	
-noncanon_trans_not_mapped	ENSG00000237508.10	ENST00000426675.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000235220.10	ENST00000428296.6	protein_coding	
-noncanon_trans_not_mapped	ENSG00000229698.11	ENST00000430472.6	protein_coding	
-noncanon_trans_not_mapped	ENSG00000206509.13	ENST00000433515.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000237508.10	ENST00000435058.5	protein_coding	
 noncanon_trans_not_mapped	ENSG00000179869.15	ENST00000435451.1	protein_coding	
-noncanon_trans_not_mapped	ENSG00000237508.10	ENST00000437020.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000229698.11	ENST00000444057.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000229698.11	ENST00000444891.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000237508.10	ENST00000445657.6	protein_coding	
-noncanon_trans_not_mapped	ENSG00000235220.10	ENST00000447400.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000229698.11	ENST00000448064.1	protein_coding	
-noncanon_trans_not_mapped	ENSG00000237508.10	ENST00000452916.1	protein_coding	
 noncanon_trans_not_mapped	ENSG00000179869.15	ENST00000453246.5	nonsense_mediated_decay	
-noncanon_trans_not_mapped	ENSG00000137403.19	ENST00000454646.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000229698.11	ENST00000454779.5	protein_coding	
 noncanon_trans_not_mapped	ENSG00000122643.23	ENST00000456458.5	nonsense_mediated_decay	
-noncanon_trans_not_mapped	ENSG00000137403.19	ENST00000458026.1	protein_coding	
 noncanon_trans_not_mapped	ENSG00000179869.15	ENST00000544596.5	protein_coding	
-noncanon_trans_not_mapped	ENSG00000229698.11	ENST00000549422.2	protein_coding	
-noncanon_trans_not_mapped	ENSG00000206509.13	ENST00000550932.2	protein_coding	
-noncanon_trans_not_mapped	ENSG00000237508.10	ENST00000551780.2	protein_coding	
-noncanon_trans_not_mapped	ENSG00000235220.10	ENST00000551832.2	protein_coding	
-noncanon_trans_not_mapped	ENSG00000137403.19	ENST00000552082.2	protein_coding	
 noncanon_trans_not_mapped	ENSG00000189067.14	ENST00000575426.1	nonsense_mediated_decay	
-noncanon_trans_not_mapped	ENSG00000274821.5	ENST00000627359.1	protein_coding	
