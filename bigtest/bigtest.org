@@ -13,6 +13,10 @@ tmlr join -j transcriptId -f gencode.v45.pc_transcripts.ids.tsv  /hive/data/geno
 fgrep -f gencode.v45.pc_transcripts.ids.tsv /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.gp > gencode.v45.pc_transcripts.gp
 genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v45.pc_transcripts.gp gencode.v45.pc_transcripts.psl
 
+for debugging
+zcat gencode.v45.pc_transcripts.fa.gz | awk '/>/{$0 = ">"gensub("^>([A-Z0-9.]+).*", "\\1", "g")}{print}' |bgzip -c > gencode.v45.pc_transcripts.id.fa.gz
+samtools faidx gencode.v45.pc_transcripts.id.fa.gz
+
 * comparison of number of problems
 
 | protTransAln/SwissProt/protTrans_Aln.blast.paired.problems.tsv |  13961 |
@@ -24,3 +28,12 @@ genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v45.pc_transcripts.gp 
 | mapAnnots/TrEMBL/mapAnnots.blast.problems.tsv                  | 119024 |
 | mapAnnots/TrEMBL/mapAnnots.blat.problems.tsv                   | 119192 |
 
+
+* notes:
+many unaligned are not on primary chrom
+
+
+* missing alignments
+** canon_trans_not_mapped	ENSG00000096150.9	ENST00000211372.9	protein_coding	P62269
+
+not transcript

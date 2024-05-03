@@ -2,7 +2,7 @@ import sys
 import os.path as osp
 from collections import defaultdict
 from pycbio.tsv import TsvReader
-from pycbio.hgdata.psl import Psl, PslBlock, PslReader
+from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.genePred import GenePredReader
 from pycbio.hgdata.rangeFinder import RangeFinder
 
@@ -135,32 +135,3 @@ class GencodeDataTbl:
         for entry in self.rangeIdx.overlapping(self, tName, tStart, tEnd):
             if entry.annotPsl.qStrand == qStrand:
                 yield entry
-
-
-##
-# build PSL with UTR unaligned
-##
-def _makeCdsPslBlock(gp, blk):
-    tStart = max(gp.cdsStart, blk.tStart)
-    size = min(gp.cdsEnd, blk.tEnd) - tStart
-    if size <= 0:
-        return None
-    qStart = blk.qStart + (tStart - blk.tStart)
-    return PslBlock(qStart, tStart, size)
-
-def _addCdsPslBlocks(gp, psl, cdsPsl):
-    for blk in psl.blocks:
-        cdsBlk = _makeCdsPslBlock(gp, blk)
-        if cdsBlk is not None:
-            cdsPsl.addBlock(cdsBlk)
-
-def gencodeMakeCdsPsl(gp, psl):
-    "modify a transcript PSL to make the UTR unaligned, returning a new PSL"
-    cdsPsl = Psl.create(qName=psl.qName, qSize=psl.qSize,
-                        tName=psl.tName, tSize=psl.tSize,
-                        strand=psl.strand)
-    _addCdsPslBlocks(gp, psl, cdsPsl)
-
-    cdsPsl.updateBounds()
-    cdsPsl.updateCounts()
-    return cdsPsl

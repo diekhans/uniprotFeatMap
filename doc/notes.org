@@ -36,3 +36,5 @@ makeUniProtPsl.sh
   hgncSym or hgncId,  ensemblGene, ensemblTrans
 
 
+* including refseq
+/hive/data/genomes/hg38/bed/ncbiRefSeq.2024-01-29/process/

@@ -5,11 +5,11 @@ import os.path as osp
 import argparse
 import pipettor
 from pycbio.sys import fileOps
-from pycbio.hgdata.psl import Psl, PslReader
+from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import dropVersion
-from uniprotmap.gencode import GencodeMetaTbl, GencodeDataTbl, gencodeMakeCdsPsl
+from uniprotmap.gencode import GencodeMetaTbl, GencodeDataTbl
 from uniprotmap.uniprot import UniProtMetaTbl, dropUniportIsoformModifier
 
 # Terminology
@@ -81,6 +81,34 @@ def writePsls(psls, pslFile):
         for psl in sorted(psls, key=Psl.targetKey):
             psl.write(pslFh)
 
+##
+# build PSL with UTR unaligned
+##
+def _makeCdsPslBlock(gp, blk):
+    tStart = max(gp.cdsStart, blk.tStart)
+    size = min(gp.cdsEnd, blk.tEnd) - tStart
+    if size <= 0:
+        return None
+    qStart = blk.qStart + (tStart - blk.tStart)
+    return PslBlock(qStart, tStart, size)
+
+def _addCdsPslBlocks(gp, psl, cdsPsl):
+    for blk in psl.blocks:
+        cdsBlk = _makeCdsPslBlock(gp, blk)
+        if cdsBlk is not None:
+            cdsPsl.addBlock(cdsBlk)
+
+def buildCdsPsl(gp, psl):
+    "modify a transcript PSL to make the UTR unaligned, returning a new PSL"
+    cdsPsl = Psl.create(qName=psl.qName, qSize=psl.qSize,
+                        tName=psl.tName, tSize=psl.tSize,
+                        strand=psl.strand)
+    _addCdsPslBlocks(gp, psl, cdsPsl)
+
+    cdsPsl.updateBounds()
+    cdsPsl.updateCounts()
+    return cdsPsl
+
 ###
 # Project alignments from UniProt canonical transcripts to transcripts isoforms
 # that are non-canonical UniProt.
@@ -106,7 +134,7 @@ def writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl):
         for transcriptId in sorted(gencodeMetaTbl.codingTransIds):
             if not uniprotMetaTbl.isCanonProtTrans(transcriptId):
                 for entry in gencodeDataTbl.getEntries(transcriptId):
-                    gencodeMakeCdsPsl(entry.annotGp, entry.alignPsl).write(pslFh)
+                    buildCdsPsl(entry.annotGp, entry.alignPsl).write(pslFh)
     return noncanonTransToGenomePslFile
 
 def mkPslMapCmds(inPsl, mapPsl, outPsl, swapMap=False, interPrefix=None):
