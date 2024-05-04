@@ -1,5 +1,6 @@
 root = ..
 include ${root}/defs.mk
+SHELL = /bin/bash -beEu -o pipefail
 
 # used nprocs= to change number of processes
 ifeq (${nprocs},)

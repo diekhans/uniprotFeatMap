@@ -23,7 +23,6 @@ uniprotMapAnnots = ${binDir}/uniprotMapAnnots
 uniprotAnnotsToDecorators = ${binDir}/uniprotAnnotsToDecorators
 uniprotDecoratorsMerge = ${binDir}/uniprotDecoratorsMerge
 
-
 dataDir = ${root}/data
 
 # GENCODE set
@@ -44,3 +43,6 @@ uniprotPrefix = ${dataDir}/${div}.${taxid}
 uniprotMeta= ${uniprotPrefix}.tab
 uniprotAnnot= ${uniprotPrefix}.annots.tab
 unitprotFa = ${uniprotPrefix}.fa.gz
+
+chromSizes = /hive/data/genomes/hg38/chrom.sizes
+decoAs =  ${root}/uniprotDecoration.as

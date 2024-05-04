@@ -9,7 +9,6 @@ ifeq (${nprocs},)
 endif
 
 chromSizes = input/hg38.sizes
-decoAs = ../etc/uniprotDecoration.as
 
 testHubFiles = empty.html genomes.txt hub.txt trackDb.txt
 testHubFilesOutput = ${testHubFiles:%=output/%}

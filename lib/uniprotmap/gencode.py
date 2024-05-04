@@ -32,6 +32,8 @@ class GencodeMetaTbl(list):
         self.codingGeneAccs = set()
         for row in TsvReader(gencodeMetaTsv):
             self._readRow(row)
+        self.transcriptsIds = frozenset(self.byTranscriptId.keys())
+        self.transcriptAccs = frozenset(self.byTranscriptAcc.keys())
 
     def _readRow(self, row):
         self.byTranscriptId[row.transcriptId] = row

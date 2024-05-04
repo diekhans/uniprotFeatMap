@@ -206,7 +206,7 @@ def problemLog(logFh, reason, uniprotId=None, geneId=None, transcriptId=None, tr
 
 def reportMissingTrans(gencodeMetaTbl, uniprotMeta, logFh):
     "none of the transcripts are in the gene set"
-    if len(uniprotMeta.ensemblAccs & gencodeMetaTbl.codingGeneAccs) == 0:
+    if len(uniprotMeta.ensemblGeneAccs & gencodeMetaTbl.codingGeneAccs) == 0:
         reason = "no_gene_transcript_in_geneset"
     else:
         reason = "no_transcript_in_geneset"
@@ -230,10 +230,11 @@ def reportUnalignedUniprot(gencodeMetaTbl, uniprotMeta, alignedUniprotIds, logFh
     # explain why
     if len(uniprotMeta.ensemblTransIds) == 0:
         pass  # no transcripts, don't report
-    elif len(uniprotMeta.ensemblTransAccs & gencodeMetaTbl.codingTransAccs) == 0:
-        # report because none of the transcripts were mapped
+    elif len(uniprotMeta.ensemblTransAccs & gencodeMetaTbl.transcriptAccs) == 0:
+        # report because none of the transcripts in gene set (checked non-coding too)
         reportMissingTrans(gencodeMetaTbl, uniprotMeta, logFh)
     else:
+        # have transcript, but not aligned, might be biotype change
         reportUniproiNotAligned(gencodeMetaTbl, uniprotMeta, alignedUniprotIds, logFh)
 
 def reportUnalignedUniprots(gencodeMetaTbl, uniprotMetaTbl, canonCdsToTransAligns, logFh):
