@@ -46,7 +46,7 @@ protTransAlignTests: testProtTransSPBlastAlign testProtTransSPBlatAlign \
 # $(call runAlignments,blat,swissprot)
 define runAlignments
 	rm -rf output/$@.psl output/$@.work
-	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.fa input/gencode.v43.pc_transcripts.fa output/$@.psl output/$@.work
+	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 endef
@@ -73,7 +73,7 @@ uniprotProteinTranscriptMapInterPrefix =
 # $call runUniprotProteinTranscriptMap,swissprot,SP)
 define runUniprotProteinTranscriptMap
 	${uniprotProteinTranscriptMap} ${uniprotProteinTranscriptMapInterPrefix} \
-		input/gencode.v43.metadata.tsv input/gencode.v43.gp input/gencode.v43.psl \
+		input/gencode.v43.metadata.tsv input/gencode.v43.pc.gp input/gencode.v43.pc.psl \
 		input/${1}.9606.tab expected/testProtTrans${2}BlatAlign.psl \
 		output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -95,7 +95,7 @@ uniprotMapAnnotsTests: testUniprotMapAnnotsSP testUniprotMapAnnotsTR
 define runMapAnnots
 	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
 	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
-	    input/gencode.v43.psl \
+	    input/gencode.v43.pc.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	$(call checkAnnots)
 	diff expected/$@.psl output/$@.psl
@@ -119,7 +119,7 @@ uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP testUniprotAnnot
 define runUniprotAnnotsToDecorators
 	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/$(1).9606.tab input/$(1).9606.annots.tab \
 	    expected/testUniprotMapAnnots$(2).psl expected/testUniprotMapAnnots$(2).ref.tsv \
-            input/gencode.v43.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
+            input/gencode.v43.pc.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
 endef
@@ -144,7 +144,7 @@ testUniprotDecoratorsMerge: mkout
 
 
 # gene track can can be used to validate decorators
-${gencodeBb}: input/gencode.v43.gp
+${gencodeBb}: input/gencode.v43.pc.gp
 	genePredToBed $< /dev/stdout | sort -k1,1 -k2,2n > ${gencodeBed}
 	bedToBigBed -type=bed12 -tab ${gencodeBed} ${chromSizes} $@
 

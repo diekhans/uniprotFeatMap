@@ -1,7 +1,4 @@
 reason	geneId	transcriptId	transcriptType	uniprotId
-transcript_not_in_gene_set	ENST00000711260		P51809-1	
-transcript_not_in_gene_set	ENST00000711264		P51809-1	
-transcript_not_in_gene_set	ENST00000711265		P51809-1	
 noncanon_trans_not_mapped	ENSG00000179869.15	ENST00000411975.5	protein_coding	
 noncanon_trans_not_mapped	ENSG00000179869.15	ENST00000435451.1	protein_coding	
 noncanon_trans_not_mapped	ENSG00000179869.15	ENST00000453246.5	nonsense_mediated_decay	

@@ -21,21 +21,36 @@ getRnaPred -cdsUpper -genomeSeqs=/hive/data/genomes/hg38/hg38.2bit no ./gencode.
 
 * comparison of number of problems
 
-| protTransAln/SwissProt/protTrans_Aln.blast.paired.problems.tsv |  13961 |
-| protTransAln/SwissProt/protTrans_Aln.blat.paired.problems.tsv  |  13815 |
-| protTransAln/TrEMBL/protTrans_Aln.blast.paired.problems.tsv    | 144349 |
-| protTransAln/TrEMBL/protTrans_Aln.blat.paired.problems.tsv     | 144744 |
-| mapAnnots/SwissProt/mapAnnots.blast.problems.tsv               |   1245 |
-| mapAnnots/SwissProt/mapAnnots.blat.problems.tsv                |   1246 |
-| mapAnnots/TrEMBL/mapAnnots.blast.problems.tsv                  | 119024 |
-| mapAnnots/TrEMBL/mapAnnots.blat.problems.tsv                   | 119192 |
+** initial
+| SwissProt/protTrans_Aln.blast.paired.problems.tsv |  13961 |
+| SwissProt/mapAnnots.blast.problems.tsv            |   1245 |
+| TrEMBL/protTrans_Aln.blast.paired.problems.tsv    | 144349 |
+| TrEMBL/mapAnnots.blast.problems.tsv               | 119024 |
+
+| SwissProt/protTrans_Aln.blat.paired.problems.tsv  |  13815 |
+| SwissProt/mapAnnots.blat.problems.tsv             |   1246 |
+| TrEMBL/protTrans_Aln.blat.paired.problems.tsv     | 144744 |
+| TrEMBL/mapAnnots.blat.problems.tsv                | 119192 |
+
+** add
+
+| SwissProt/protTrans_Aln.blat.paired.problems.tsv |   4969 |
+| SwissProt/mapAnnots.blat.problems.tsv            |   1185 |
+| TrEMBL/protTrans_Aln.blat.paired.problems.tsv    | 136602 |
+| TrEMBL/mapAnnots.blat.problems.tsv               | 117567 |
 
 
 * notes:
-many unaligned are not on primary chrom
 
 
 * missing alignments
-** canon_trans_not_mapped	ENSG00000096150.9	ENST00000211372.9	protein_coding	P62269
 
-not transcript
+** canon_trans_not_mapped	ENSG00000108387.16	ENST00000321691.3	protein_coding	O43236-1
+transcript_not_in_gene_set	ENST00000327087		Q9NQ90-1	
+canon_trans_not_mapped	ENSG00000196268.12	ENST00000339914.6	protein_coding	Q6ZR52-1
+transcript_not_in_gene_set	ENST00000346387		O15350-1	
+transcript_not_in_gene_set	ENST00000352886		P34896-1	
+transcript_not_in_gene_set	ENST00000357733		O15350-1	
+transcript_not_in_gene_set	ENST00000358590		O95180-1	
+transcript_not_in_gene_set	ENST00000359576		O75122-1	
+

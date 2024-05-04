@@ -62,12 +62,12 @@ class UniProtMeta(TsvRow):
 
     def __init__(self, reader, row):
         super().__init__(reader, row)
-        # split comma list fields
-        self.ensemblGeneIds = splitMetaList(self.ensemblGene)
-        self.ensemblGeneAccs = splitDropVersion(self.ensemblGene)
-        self.ensemblTransIds = splitMetaList(self.ensemblTrans)
-        self.ensemblTransAccs = splitDropVersion(self.ensemblTrans)
-        self.uniprotIsoIds = splitMetaList(self.isoIds)
+        # split '|' separated list fields
+        self.ensemblGeneIds = frozenset(splitMetaList(self.ensemblGene))
+        self.ensemblGeneAccs = frozenset(splitDropVersion(self.ensemblGene))
+        self.ensemblTransIds = frozenset(splitMetaList(self.ensemblTrans))
+        self.ensemblTransAccs = frozenset(splitDropVersion(self.ensemblTrans))
+        self.uniprotIsoIds = frozenset(splitMetaList(self.isoIds))
 
     def isCanonProtTrans(self, transId):
         "does this UniProt reference this transcript?"

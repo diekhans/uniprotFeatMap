@@ -23,10 +23,10 @@ up_dataset_trembl = TrEMBL
 
 gnver = v45
 gnpre = ../data/gencode.${gnver}
-gnmeta = ${gnpre}.meta.tsv
-gnfa = ${gnpre}.pc_transcripts.fa.gz
-gnpsl = ${gnpre}.psl
-gngp = ${gnpre}.gp
+gnmeta = ${gnpre}.tsv
+gnfa = ${gnpre}.pc.fa
+gnpsl = ${gnpre}.pc.psl
+gngp = ${gnpre}.pc.gp
 
 
 all: ${algos:%=%_mkAlgo}
@@ -74,7 +74,7 @@ protTransInterOpt = --interPrefix=${protTransInterPre}
 mkProtTransAln: ${protTransRawAln} ${protTransPairedAln}
 ${protTransRawAln}: ${upfa} ${gnfa}
 	@mkdir -p $(dir $@) ${protTransInterDir}
-	rm -rf ${protTransAlnTmpDir}
+	#rm -rf ${protTransAlnTmpDir}
 	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${upfa} ${gnfa} $@.${tmpext} ${protTransAlnTmpDir}
 	mv -f $@.${tmpext} $@
 
