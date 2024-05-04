@@ -17,25 +17,13 @@ algos = blat
 #blast
 taxid = 9606
 
-up_divisions = swissprot trembl
-up_dataset_swissprot = SwissProt
-up_dataset_trembl = TrEMBL
-
-gnver = v45
-gnpre = ../data/gencode.${gnver}
-gnmeta = ${gnpre}.tsv
-gnfa = ${gnpre}.pc.fa
-gnpsl = ${gnpre}.pc.psl
-gngp = ${gnpre}.pc.gp
-
-
 all: ${algos:%=%_mkAlgo}
 	cd ../hub && ${MAKE}
 %_mkAlgo:
 	${MAKE} mkAlgo algo=$*
 	${MAKE} mergeDecorators algo=$*
 
-mkAlgo: ${up_divisions:%=%_mkDivision}
+mkAlgo: ${uniprotDivisions:%=%_mkDivision}
 
 %_mkDivision:
 	${MAKE} mkDivision algo=${algo} div=$*
@@ -46,47 +34,51 @@ mkAlgo: ${up_divisions:%=%_mkDivision}
 #   div=
 ##
 
-uppre = ../data/${div}.${taxid}
-upmeta= ${uppre}.tab
-upannot= ${uppre}.annots.tab
-upfa = ${uppre}.fa.gz
-mkDivision: mkProtTransAln mkUniprotMapAnnots mkDecorators
-
+mkDivision: mkProtTransAln mkProtTransMap mkUniprotMapAnnots mkDecorators
 
 ##
 # protein/transcript alignment
 #   algo=
 #   div=
 ##
-dataset = ${up_dataset_${div}}
-protTransPre = protTransAln/${dataset}/protTrans_Aln.${algo}
-protTransRawAln = ${protTransPre}.raw.psl
-protTransPairedAln = ${protTransPre}.paired.psl
-protTransPairProbTsv = ${protTransPre}.paired.problems.tsv
-protTransAlnTmpDir = ${protTransPre}.${tmpext}
+protTransAlnPre = protTransAln/${uniprotDataset}/protTransAln.${algo}
+protTransRawAln = ${protTransAlnPre}.raw.psl
+protTransAlnTmpDir = ${protTransAlnPre}.${tmpext}
+
+
+mkProtTransAln: ${protTransRawAln} ${protTransPairedAln}
+${protTransRawAln}: ${unitprotFa} ${gencodeFa}
+	@mkdir -p $(dir $@)
+	rm -rf ${protTransAlnTmpDir}
+	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${unitprotFa} ${gencodeFa} $@.${tmpext} ${protTransAlnTmpDir}
+	mv -f $@.${tmpext} $@
+
+##
+# protein/transcript alignment
+#   algo=
+#   div=
+##
+protTransMapPre = protTransMap/${uniprotDataset}/protTransMap.${algo}
+protTransPairedAln = ${protTransMapPre}.paired.psl
+protTransPairProbTsv = ${protTransMapPre}.paired.problems.tsv
 
 # uncomment to see debugging intermediates
-protTransInterDir = ${protTransAlgoPre}.inter
+protTransInterDir = ${protTransMapPre}.inter
 protTransInterPre = ${protTransInterDir}/${algo}.inter.
 protTransInterOpt = --interPrefix=${protTransInterPre}
 
 
-mkProtTransAln: ${protTransRawAln} ${protTransPairedAln}
-${protTransRawAln}: ${upfa} ${gnfa}
-	@mkdir -p $(dir $@) ${protTransInterDir}
-	#rm -rf ${protTransAlnTmpDir}
-	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${upfa} ${gnfa} $@.${tmpext} ${protTransAlnTmpDir}
-	mv -f $@.${tmpext} $@
-
+mkProtTransMap: ${protTransPairedAln}
 ${protTransPairedAln}: ${protTransRawAln}
-	${time} ${uniprotProteinTranscriptMap} ${gnmeta} ${gngp} ${gnpsl} ${upmeta} $< $@.${tmpext} ${protTransPairProbTsv}
+	@mkdir -p $(dir $@) ${protTransInterDir}
+	${time} ${uniprotProteinTranscriptMap} ${protTransInterOpt} ${gencodeMeta} ${gencodeGp} ${gencodePsl} ${uniprotMeta} $< $@.${tmpext} ${protTransPairProbTsv}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 ##
 # map annotations
 ##
-mapAnnotsAlgoPre = mapAnnots/${dataset}/mapAnnots.${algo}
+mapAnnotsAlgoPre = mapAnnots/${uniprotDataset}/mapAnnots.${algo}
 mapAnnotsPsl = ${mapAnnotsAlgoPre}.psl
 mapAnnotsRefTsv = ${mapAnnotsAlgoPre}.ref.tsv
 mapAnnotsProblemsTsv = ${mapAnnotsAlgoPre}.problems.tsv
@@ -100,7 +92,7 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 
 ${mapAnnotsPsl}: ${upannot} ${protTransPairedAln}
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ${uniprotMapAnnots} ${upannot} ${protTransPairedAln} ${gnpsl} \
+	${time} ${uniprotMapAnnots} ${upannot} ${protTransPairedAln} ${gencodePsl} \
             $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsProblemsTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -108,7 +100,7 @@ ${mapAnnotsPsl}: ${upannot} ${protTransPairedAln}
 ##
 # make decorators
 ##
-decoratorsAlgoPre = decorators/${dataset}/uniprot-gencode.${gnver}.${algo}
+decoratorsAlgoPre = decorators/${uniprotDataset}/uniprot-gencode.${gencodeVer}.${algo}
 decoratorsBed = ${decoratorsAlgoPre}.decorators.bed
 decoratorsTypesTsv = ${decoratorsAlgoPre}.decorators.types.tsv
 
@@ -116,18 +108,18 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${upannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ${uniprotAnnotsToDecorators} --dataset=${dataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
-	    ${upmeta} ${upannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gnpsl} $@.${tmpext}
+	${time} ${uniprotAnnotsToDecorators} --uniprotDataset=${uniprotDataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
+	    ${uniprotMeta} ${upannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gencodePsl} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 ##
 # mergeDecorators
 # algo=
 ##
-swissprotDecoratorsBed = decorators/SwissProt/uniprot-gencode.${gnver}.${algo}.decorators.bed
-tremblDecoratorsBed = decorators/TrEMBL/uniprot-gencode.${gnver}.${algo}.decorators.bed
+swissprotDecoratorsBed = decorators/SwissProt/uniprot-gencode.${gencodeVer}.${algo}.decorators.bed
+tremblDecoratorsBed = decorators/TrEMBL/uniprot-gencode.${gencodeVer}.${algo}.decorators.bed
 
-mergedDecoratorsBed = decorators/uniprot-gencode.${gnver}.${algo}.decorators.bed
+mergedDecoratorsBed = decorators/uniprot-gencode.${gencodeVer}.${algo}.decorators.bed
 
 
 mergeDecorators: ${mergedDecoratorsBed}
@@ -141,4 +133,4 @@ clean:
 	@exit 1
 
 realclean:
-	rm -rf prot_trans_aln mapAnnots decorators
+	rm -rf protTransAln/ protTransMap/ mapAnnots/ decorators/

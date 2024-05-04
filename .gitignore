@@ -1,8 +1,8 @@
 .emacs.bak/
 __pycache__/
 output/
-bigtest/isoCanon/
 bigtest/protTransAln/
+bigtest/protTransMap/
 bigtest/decorators/
 bigtest/mapAnnots/
 data/
