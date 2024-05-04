@@ -1,7 +1,7 @@
 reason	uniprotId	geneId	transcriptId	transcriptType
-noncanon_trans_not_mapped		ENSG00000179869.15	ENST00000411975.5	protein_coding
-noncanon_trans_not_mapped		ENSG00000179869.15	ENST00000435451.1	protein_coding
-noncanon_trans_not_mapped		ENSG00000179869.15	ENST00000453246.5	nonsense_mediated_decay
-noncanon_trans_not_mapped		ENSG00000122643.23	ENST00000456458.5	nonsense_mediated_decay
-noncanon_trans_not_mapped		ENSG00000179869.15	ENST00000544596.5	protein_coding
-noncanon_trans_not_mapped		ENSG00000189067.14	ENST00000575426.1	nonsense_mediated_decay
+noncanon_trans_not_mapped	Q86UQ4	ENSG00000179869.15	ENST00000411975.5	protein_coding
+noncanon_trans_not_mapped	Q86UQ4	ENSG00000179869.15	ENST00000435451.1	protein_coding
+noncanon_trans_not_mapped	Q86UQ4	ENSG00000179869.15	ENST00000453246.5	nonsense_mediated_decay
+noncanon_trans_not_mapped	Q9H0P0	ENSG00000122643.23	ENST00000456458.5	nonsense_mediated_decay
+noncanon_trans_not_mapped	Q86UQ4	ENSG00000179869.15	ENST00000544596.5	protein_coding
+noncanon_trans_not_mapped	Q99732	ENSG00000189067.14	ENST00000575426.1	nonsense_mediated_decay

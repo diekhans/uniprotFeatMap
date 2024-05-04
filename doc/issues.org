@@ -1,13 +1,7 @@
 #+STARTUP: nologdone
 #+TODO: TODO ACTIVE IMPORTANT URGENT PAUSED | DONE CANCELED
 
-* popup
-protFullNames
-protAltFullNames
-link to uniprot
-
-* review columns in bigbed
-
+* uniprot.py  diff between id, acc, main isoform acc|id not clear
 
 * Make smaller triangle* color other red
 ** color-blind safe

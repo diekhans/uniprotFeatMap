@@ -67,7 +67,7 @@ class UniProtMeta(TsvRow):
         self.ensemblGeneAccs = frozenset(splitDropVersion(self.ensemblGene))
         self.ensemblTransIds = frozenset(splitMetaList(self.ensemblTrans))
         self.ensemblTransAccs = frozenset(splitDropVersion(self.ensemblTrans))
-        self.uniprotIsoIds = frozenset(splitMetaList(self.isoIds))
+        self.otherIsoIds = frozenset(splitMetaList(self.isoIds))
 
     def isCanonProtTrans(self, transId):
         "does this UniProt reference this transcript?"
@@ -82,13 +82,11 @@ class UniProtMetaTbl:
         self.byGeneName = defaultdict(list)
         self.byGeneAcc = defaultdict(list)
         self.byTranscriptAcc = defaultdict(list)
-        self.byUniProtIsoId = defaultdict(list)
         for row in TsvReader(uniprotMetaTsv, rowClass=UniProtMeta):
             self._readRow(row)
         self.byGeneName.default_factory = None
         self.byGeneAcc.default_factory = None
         self.byTranscriptAcc.default_factory = None
-        self.byUniProtIsoId.default_factory = None
 
     def _readRow(self, row):
         addUniqueToIdx(self.byAcc, row.acc, row)
@@ -96,7 +94,6 @@ class UniProtMetaTbl:
         self.byGeneName[row.geneName].append(row)
         addValuesToMultiIdx(self.byGeneAcc, row.ensemblGeneAccs, row)
         addValuesToMultiIdx(self.byTranscriptAcc, row.ensemblTransAccs, row)
-        addValuesToMultiIdx(self.byUniProtIsoId, row.uniprotIsoIds, row)
 
     def getByAcc(self, acc):
         "Error if not found"
@@ -105,12 +102,12 @@ class UniProtMetaTbl:
         except KeyError as ex:
             raise KeyError(f"UniProt acc not found {acc}") from ex
 
-    def getByIsoId(self, isoId):
+    def getByMainIsoAcc(self, isoAcc):
         "Error if not found"
         try:
-            return self.byIsoId[isoId]
+            return self.byMainIsoAcc[isoAcc]
         except KeyError as ex:
-            raise KeyError(f"UniProt isoId not found {isoId}") from ex
+            raise KeyError(f"UniProt main isoform not found {isoAcc}") from ex
 
     def getTransMeta(self, transAcc):
         "None if not found"
@@ -122,12 +119,10 @@ class UniProtMetaTbl:
         return protMetas[0]
 
     def getGeneAccMetas(self, geneAcc):
-        "list or None if not found"
-        return self.byGeneAcc.get(geneAcc)
+        return self.byGeneAcc.get(geneAcc, ())
 
     def getGeneNameMetas(self, geneName):
-        "list or None if not found"
-        return self.byGeneName.get(geneName)
+        return self.byGeneName.get(geneName, ())
 
     def isCanonProtTrans(uniprotMetaTbl, transId):
         "does any UniProt reference this transcript?"

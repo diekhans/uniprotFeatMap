@@ -213,25 +213,41 @@ def reportMissingTrans(gencodeMetaTbl, uniprotMeta, logFh):
     problemLog(logFh, reason, uniprotId=uniprotMeta.acc,
                geneId=uniprotMeta.ensemblGene, transcriptId=uniprotMeta.ensemblTrans)
 
+def reportUniproiNotAligned(gencodeMetaTbl, uniprotMeta, alignedUniprotIds, logFh):
+    # find associated transcript info
+    transRecs = [gencodeMetaTbl.byTranscriptAcc[transAcc]
+                 for transAcc in uniprotMeta.ensemblTransAccs
+                 if transAcc in gencodeMetaTbl.byTranscriptAcc]
+    if len(transRecs) == 0:
+        problemLog(logFh, "uniprot_not_aligned", uniprotId=uniprotMeta.acc)
+    else:
+        for transRec in transRecs:
+            problemLog(logFh, "uniprot_not_aligned", uniprotId=uniprotMeta.acc,
+                       geneId=transRec.geneId, transcriptId=transRec.transcriptId, transcriptType=transRec.transcriptType)
+
+
 def reportUnalignedUniprot(gencodeMetaTbl, uniprotMeta, alignedUniprotIds, logFh):
     # explain why
     if len(uniprotMeta.ensemblTransIds) == 0:
         pass  # no transcripts, don't report
     elif len(uniprotMeta.ensemblTransAccs & gencodeMetaTbl.codingTransAccs) == 0:
+        # report because none of the transcripts were mapped
         reportMissingTrans(gencodeMetaTbl, uniprotMeta, logFh)
     else:
-        problemLog(logFh, "uniprot_not_aligned", uniprotId=uniprotMeta.acc)
+        reportUniproiNotAligned(gencodeMetaTbl, uniprotMeta, alignedUniprotIds, logFh)
 
 def reportUnalignedUniprots(gencodeMetaTbl, uniprotMetaTbl, canonCdsToTransAligns, logFh):
     alignedUniprotIds = getQNameAccSet(canonCdsToTransAligns)
     unalignedUniprotIds = frozenset(uniprotMetaTbl.byMainIsoAcc.keys()) - alignedUniprotIds
     for uniprotId in sorted(unalignedUniprotIds):
-        reportUnalignedUniprot(gencodeMetaTbl, uniprotMetaTbl.getByIsoId(uniprotId), alignedUniprotIds, logFh)
+        reportUnalignedUniprot(gencodeMetaTbl, uniprotMetaTbl.getByMainIsoAcc(uniprotId), alignedUniprotIds, logFh)
 
 def reportUnpairedNoncanonTrans(gencodeMetaTbl, uniprotMetaTbl, transAcc, logFh):
+    # ones without uniprot are skipped
     transRec = gencodeMetaTbl.byTranscriptAcc.get(transAcc)
-    problemLog(logFh, "noncanon_trans_not_mapped", geneId=transRec.geneId,
-               transcriptId=transRec.transcriptId, transcriptType=transRec.transcriptType)
+    for uniprotMeta in uniprotMetaTbl.getGeneAccMetas(dropVersion(transRec.geneId)):
+        problemLog(logFh, "noncanon_trans_not_mapped", uniprotId=uniprotMeta.acc, geneId=transRec.geneId,
+                   transcriptId=transRec.transcriptId, transcriptType=transRec.transcriptType)
 
 def reportUnpairedNoncanonTranses(gencodeMetaTbl, uniprotMetaTbl, noncanonCdsToTransAligns, logFh):
     noncanonTransAccs = gencodeMetaTbl.getCodingTransAccSet() - uniprotMetaTbl.getCanonEnsemblAccSet()

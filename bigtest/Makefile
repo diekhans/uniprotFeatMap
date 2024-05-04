@@ -63,10 +63,9 @@ protTransPairedAln = ${protTransMapPre}.paired.psl
 protTransPairProbTsv = ${protTransMapPre}.paired.problems.tsv
 
 # uncomment to see debugging intermediates
-protTransInterDir = ${protTransMapPre}.inter
-protTransInterPre = ${protTransInterDir}/${algo}.inter.
-protTransInterOpt = --interPrefix=${protTransInterPre}
-
+# protTransInterDir = ${protTransMapPre}.inter
+# protTransInterPre = ${protTransInterDir}/${algo}.inter.
+# protTransInterOpt = --interPrefix=${protTransInterPre}
 
 mkProtTransMap: ${protTransPairedAln}
 ${protTransPairedAln}: ${protTransRawAln}
@@ -84,9 +83,9 @@ mapAnnotsRefTsv = ${mapAnnotsAlgoPre}.ref.tsv
 mapAnnotsProblemsTsv = ${mapAnnotsAlgoPre}.problems.tsv
 
 # uncomment to see debugging intermediates
-mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
-mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
-mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
+# mapAnnotsInterDir = ${mapAnnotsAlgoPre}.inter
+# mapAnnotsInterPre = ${mapAnnotsInterDir}/${algo}.inter.
+# mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
@@ -108,7 +107,7 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${upannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ${uniprotAnnotsToDecorators} --uniprotDataset=${uniprotDataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
+	${time} ${uniprotAnnotsToDecorators} --dataset=${uniprotDataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
 	    ${uniprotMeta} ${uniprotAnnot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gencodePsl} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
