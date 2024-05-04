@@ -29,6 +29,7 @@ class GencodeMetaTbl(list):
         self.byTranscriptAcc = {}
         self.codingTransIds = set()
         self.codingTransAccs = set()
+        self.codingGeneAccs = set()
         for row in TsvReader(gencodeMetaTsv):
             self._readRow(row)
 
@@ -38,6 +39,7 @@ class GencodeMetaTbl(list):
         if isCodingTranscriptType(row):
             self.codingTransIds.add(row.transcriptId)
             self.codingTransAccs.add(dropVersion(row.transcriptId))
+            self.codingGeneAccs.add(dropVersion(row.geneId))
 
     def _doGetTrans(self, transId):
         # handle PAR_Y ids (e.g. ENST00000359512.8_PAR_Y)
