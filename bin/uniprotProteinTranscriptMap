@@ -218,7 +218,7 @@ def reportUnalignedUniprots(gencodeMetaTbl, uniprotMetaTbl, canonCdsToTransAlign
     alignedUniprotIds = getQNameAccSet(canonCdsToTransAligns)
     unalignedUniprotIds = frozenset(uniprotMetaTbl.byMainIsoAcc.keys()) - alignedUniprotIds
     for uniprotId in sorted(unalignedUniprotIds):
-        reportUnalignedUniprot(uniprotMetaTbl.getByAcc(uniprotMetaTbl), alignedUniprotIds, logFh)
+        reportUnalignedUniprot(gencodeMetaTbl, uniprotMetaTbl.getByIsoId(uniprotId), alignedUniprotIds, logFh)
 
 def reportUnpairedNoncanonTrans(gencodeMetaTbl, uniprotMetaTbl, transAcc, logFh):
     transRec = gencodeMetaTbl.byTranscriptAcc.get(transAcc)

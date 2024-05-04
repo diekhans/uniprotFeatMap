@@ -90,9 +90,9 @@ mapAnnotsInterOpt = --interPrefix=${mapAnnotsInterPre}
 
 mkUniprotMapAnnots: ${mapAnnotsPsl}
 
-${mapAnnotsPsl}: ${upannot} ${protTransPairedAln}
+${mapAnnotsPsl}: ${protTransPairedAln} ${uniprotAnnot}
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ${uniprotMapAnnots} ${upannot} ${protTransPairedAln} ${gencodePsl} \
+	${time} ${uniprotMapAnnots} ${uniprotAnnot} ${protTransPairedAln} ${gencodePsl} \
             $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsProblemsTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -109,7 +109,7 @@ mkDecorators: ${decoratorsBed}
 ${decoratorsBed}: ${upannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
 	${time} ${uniprotAnnotsToDecorators} --uniprotDataset=${uniprotDataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
-	    ${uniprotMeta} ${upannot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gencodePsl} $@.${tmpext}
+	    ${uniprotMeta} ${uniprotAnnot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gencodePsl} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 ##
