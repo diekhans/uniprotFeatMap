@@ -34,21 +34,21 @@ def parseArgs():
 
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--interPrefix",
-                        help="""save the intermediate files to names starting ${iterPrefix}.${name}.psl  ${iterPrefix}.name.type""")
+                        help="""save the intermediate files to names starting with ${iterPrefix}.${name}""")
     parser.add_argument("gencodeMetaTsv",
-                        help="GENCODE metadata in TSV format UCSC import (not table), which includes tags")
+                        help="""GENCODE metadata in TSV format UCSC import (not table), which includes tags (input)""")
     parser.add_argument("gencodeGp",
-                        help="GENCODE annotations in GenePred format")
+                        help="""GENCODE annotations in GenePred format (input)""")
     parser.add_argument("gencodePsl",
-                        help="GENCODE annotations in PSL format")
+                        help="""GENCODE annotations in PSL format (input)""")
     parser.add_argument("uniprotMetaTsv",
-                        help="Uniprot metadata in TSV format")
+                        help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("protTransPsl",
-                        help="protein to transcript alignment PSL")
+                        help="protein to transcript alignment PSL (input)")
     parser.add_argument("cdsTransPsl",
-                        help="filtered alignments, in CDS coordinates")
+                        help="""filtered alignments, in CDS coordinates (output)""")
     parser.add_argument("problemLogTsv",
-                        help="log file of issues that happened")
+                        help="""log file of issues that happened (output)""")
     return parser.parse_args()
 
 ##

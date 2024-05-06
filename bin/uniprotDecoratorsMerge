@@ -15,9 +15,9 @@ def parseArgs():
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--outBed", default="/dev/stdout",
-                        help="output uniprotDecoration.as BED file")
+                        help="""BED file conforming to uniprotDecoration.as; will be genome order sorted (output)""")
     parser.add_argument("inputBeds", nargs="+",
-                        help="input uniprotDecoration.as BED files")
+                        help="uniprotDecoration.as BED files merge; must be sorted in genome order (input)")
     return parser.parse_args()
 
 
