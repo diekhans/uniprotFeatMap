@@ -25,16 +25,22 @@ annotation -> uniprotCanonical -> transcript -> genome
 # Data required 
 
 
-gencode.v44.pc_transcripts.meta.tsv
-gencode.v44.pc_transcripts.gp
-gencode.v44.pc_transcripts.psl
-gencode.v44.pc_transcripts.ids.tsv
+# Identification
 
-swissprot.9606.fa.gz
-swissprot.9606.refs.tab
-swissprot.9606.annots.tab
-swissprot.9606.tab
+Each feature mapping needs to be assigned a unique id for use in accessing
+individual feature mappings, called the *feature annotation id*
+(`featAnnotId`) and it is not stable across multiple builds.  The ``featAnnotId
+is used for mouse clicks and other record identification.  It is the name column in
+a decorator BED.
 
-ln /hive/data/genomes/hg38/bed/gencodeV45/hgcImportPre/data/release_45/gencode.v45.pc_transcripts.fa.gz .
-zcat gencode.v45.pc_transcripts.fa.gz | awk 'BEGIN{print "transcriptId"} /^>/{print gensub("^>([.A-Z0-9]+).*$", "\\1", 1)}' >  gencode.v45.pc_transcripts.ids.tsv
+The format of a `featAnnotId` is `<uniprot_acc>|<feature_idx>|<annot_idx>`, where
+
+- `uniprot_acc` - UniProt accession
+- `feature_idx` - row index of the feature in the UniProt annotation tab file, relative to the first feature for the accession
+- `annot_idx` - index of assignment of this feature to a transcript.
+
+A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `featAnnotId`s back to the UniProt feature and transcript.
+
+
+
 

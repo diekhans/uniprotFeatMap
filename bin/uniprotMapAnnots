@@ -63,7 +63,8 @@ def getProtCdsSizes(cdsTransPairedPsl):
     return protCdsSizes
 
 def createAnnotPsl(annot, protCdsSizes):
-    # qName will have the annotId in the form  mainIsoAcc#annotIdx
+    # qName will have the featAnnotId in the form
+    #  <uniprot_acc>|<feature_idx>|<annot_idx>
     # coordinated converted to CDS coordinates (3x)
 
     # UniProt is 1-based, open-end
@@ -71,7 +72,7 @@ def createAnnotPsl(annot, protCdsSizes):
     tEnd = 3 * (annot.end - 1)
     tSize = protCdsSizes[annot.mainIsoAcc]
 
-    # some annotations go past the end of the protein
+    # some features go past the end of the protein (already logged)
     if tEnd > tSize:
         tEnd = tSize
     qSize = tEnd - tStart

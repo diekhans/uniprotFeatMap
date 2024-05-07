@@ -1,5 +1,10 @@
 """
-File that cross-references mapped annotations to transcript metadata
+File that cross-references mapped annotations to transcript metadata and alignment position
+
+feature ids are in the form: <uniprot_acc>|<feature_idx>
+
+featAnnotId ids are in the form <uniprot_acc>|<feature_idx>|<annot_idx>`
+
 """
 
 from pycbio.sys import fileOps
