@@ -10,7 +10,10 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import dropVersion
 
 # Note: multiple annotation of a transcript is not needed in current
-# GenCode, but will be needed for RefSeq, so leave logic here.
+# GENCODE, but will be needed for RefSeq, so leave logic here.
+
+class GencodeError(Exception):
+    pass
 
 _codingTranscriptTypes = frozenset(["protein_coding",
                                     "nonsense_mediated_decay",
@@ -50,13 +53,13 @@ class GencodeMetaTbl(list):
         try:
             return self.byTranscriptId.get(transId)
         except Exception as ex:
-            raise Exception(f"can't find GENCODE metadata for '{transId}'") from ex
+            raise GencodeError(f"can't find GENCODE metadata for '{transId}'") from ex
 
     def getTrans(self, transId):
         try:
             return self._doGetTrans(transId)
         except Exception as ex:
-            raise Exception(f"getTrans error for '{transId}'") from ex
+            raise GencodeError(f"getTrans error for '{transId}'") from ex
 
     def getGeneId(self, transId):
         return self.getTrans(transId).geneId
@@ -112,7 +115,7 @@ class GencodeDataTbl:
     def getEntries(self, transId):
         entries = self.findEntries(transId)
         if len(entries) is None:
-            raise Exception(f"GENCODE metadata not found for '{transId}'")
+            raise GencodeError(f"GENCODE metadata not found for '{transId}'")
         return entries
 
     def findEntry(self, transId, chrom):
@@ -126,7 +129,7 @@ class GencodeDataTbl:
     def getEntry(self, transId, chrom):
         entry = self.findEntry(transId, chrom)
         if entry is None:
-            raise Exception(f"GENCODE metadata not found for '{transId}' on chrom '{chrom}'")
+            raise GencodeError(f"GENCODE metadata not found for '{transId}' on chrom '{chrom}'")
         return entry
 
     def getAlign(self, transId, chrom):

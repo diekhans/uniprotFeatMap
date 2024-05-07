@@ -45,4 +45,4 @@ uniprotAnnot= ${uniprotPrefix}.annots.tab
 unitprotFa = ${uniprotPrefix}.fa.gz
 
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
-decoAs =  ${root}/uniprotDecoration.as
+decoAs =  ${root}/etc/uniprotDecoration.as

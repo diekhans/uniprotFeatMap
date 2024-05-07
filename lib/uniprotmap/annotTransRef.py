@@ -10,6 +10,9 @@ featAnnotId ids are in the form <uniprot_acc>|<feature_idx>|<annot_idx>`
 from pycbio.sys import fileOps
 from pycbio.tsv import TsvReader
 
+class AnnotTransRefError(Exception):
+    pass
+
 class AnnotTransRefs:
     """look up transcript for a PSL row"""
     def __init__(self, annotTransRefTsv):
@@ -23,7 +26,7 @@ class AnnotTransRefs:
     def get(self, annotId, alignIdx):
         annotTransRef = self.byAlignIdx[alignIdx]
         if annotTransRef.annotId != annotId:
-            raise Exception(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
+            raise AnnotTransRefError(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
         return annotTransRef
 
 def annotTransRefCreate(annotTransRefTsv):

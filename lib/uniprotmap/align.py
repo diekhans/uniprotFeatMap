@@ -9,6 +9,9 @@ from pycbio.sys import fileOps
 from uniprotmap import conf
 from uniprotmap.depends import getDoneFile
 
+class AlignError(Exception):
+    pass
+
 def buildBlastTransIndex(transFa, workDir):
     logFile = osp.join(workDir, "formatdb.log")
     pipettor.run([osp.join(conf.blastDir, "formatdb"),
@@ -43,7 +46,7 @@ def makeJobFile(alignCmd, queriesDir, targetDbFa, alignDir, alignBatchDir):
             outPsl = osp.join(alignDir, osp.basename(queryFa) + ".psl")
             print(*alignCmd, targetDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
     if osp.getsize(jobFile) == 0:
-        raise Exception(f"empty job file create: {jobFile}")
+        raise AlignError(f"empty job file create: {jobFile}")
     return jobFile
 
 def runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
@@ -55,5 +58,5 @@ def runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
     try:
         para.make()
     except pipettor.exceptions.ProcessException as ex:
-        raise Exception(f"batch failed, correct problem, re-run with -batch={alignBatchDir}\n"
-                        "then touch " + getDoneFile(alignDir)) from ex
+        raise AlignError(f"batch failed, correct problem, re-run with -batch={alignBatchDir}\n"
+                         "then touch " + getDoneFile(alignDir)) from ex

@@ -28,18 +28,18 @@ annotation -> uniprotCanonical -> transcript -> genome
 # Identification
 
 Each feature mapping needs to be assigned a unique id for use in accessing
-individual feature mappings, called the *feature annotation id*
-(`featAnnotId`) and it is not stable across multiple builds.  The ``featAnnotId
+individual feature annotations mappings, called the *annotation mapping id*
+(`annotMapId`) and it is not stable across multiple builds.  The ``annotMapId
 is used for mouse clicks and other record identification.  It is the name column in
 a decorator BED.
 
-The format of a `featAnnotId` is `<uniprot_acc>|<feature_idx>|<annot_idx>`, where
+The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
 
-- `uniprot_acc` - UniProt accession
-- `feature_idx` - row index of the feature in the UniProt annotation tab file, relative to the first feature for the accession
-- `annot_idx` - index of assignment of this feature to a transcript.
+- `canon_acc` - UniProt canonical isoform id
+- `annot_idx` - row index of the feature in the UniProt annotation tab file, relative to the first feature for the accession
+- `map_idx` - index of assignment of this feature annotation to a transcript mapping.
 
-A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `featAnnotId`s back to the UniProt feature and transcript.
+A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `annotMapId`s back to the UniProt feature and transcript.
 
 
 

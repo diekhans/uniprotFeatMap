@@ -9,6 +9,9 @@ from uniprotmap import dropVersion
 
 # WARNING: UniProt is 1-based, open-end
 
+class UniProtError(Exception):
+    pass
+
 class UniProtDataSet(SymEnum):
     SwissProt = 1
     TrEMBL = 2
@@ -50,7 +53,7 @@ def dropUniportIsoformModifier(acc):
 
 def addUniqueToIdx(idx, key, value):
     if key in idx:
-        raise KeyError(f"key '{key}' already in unique index")
+        raise UniProtError(f"key '{key}' already in unique index")
     idx[key] = value
 
 def addValuesToMultiIdx(idx, keys, value):
@@ -99,15 +102,15 @@ class UniProtMetaTbl:
         "Error if not found"
         try:
             return self.byAcc[acc]
-        except KeyError as ex:
-            raise KeyError(f"UniProt acc not found {acc}") from ex
+        except Exception as ex:
+            raise UniProtError(f"UniProt acc not found {acc}") from ex
 
     def getByMainIsoAcc(self, isoAcc):
         "Error if not found"
         try:
             return self.byMainIsoAcc[isoAcc]
-        except KeyError as ex:
-            raise KeyError(f"UniProt main isoform not found {isoAcc}") from ex
+        except Exception as ex:
+            raise UniProtError(f"UniProt main isoform not found {isoAcc}") from ex
 
     def getTransMeta(self, transAcc):
         "None if not found"
@@ -115,7 +118,7 @@ class UniProtMetaTbl:
         if protMetas is None:
             return None
         if len(protMetas) > 1:
-            raise Exception(f"more than one UniProt protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
+            raise UniProtError(f"more than one UniProt protein for transcript {transAcc}, found: {protMetas.mainIsoAcc}")
         return protMetas[0]
 
     def getGeneAccMetas(self, geneAcc):
@@ -131,15 +134,21 @@ class UniProtMetaTbl:
     def getCanonEnsemblAccSet(self):
         return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
+def uniprotMakeAnnotId(canonAcc, annotIdx):
+    # Add a unique, reproducible annotation id in the form
+    # mainIsoAcc#annotIdx, where the annotIdx is the relative index of the
+    # annotation for that acc.
+    return canonAcc + '|' + str(annotIdx)
+
 def uniprotParseAnnotId(annotId):
-    "parse the annotation id into its parts: 'Q9BXI3#0' -> ('Q9BXI3' 0)"
-    parts = annotId.rsplit('#', 1)
+    "parse the annotation id into its parts: 'Q9BXI3|0' -> ('Q9BXI3' 0)"
+    parts = annotId.rsplit('|', 1)
     if len(parts) != 2:
-        raise Exception(f"invalid annotation id: '{annotId}'")
+        raise UniProtError(f"invalid annotation id: '{annotId}'")
     return parts
 
 def uniprotAnnotIdToAcc(annotId):
-    "parse the annotation id into accession: 'Q9BXI3#0' -> 'Q9BXI3'"
+    "parse the annotation id into accession: 'Q9BXI3|0' -> 'Q9BXI3'"
     return uniprotParseAnnotId(annotId)[0]
 
 class UniProtAnnotTbl(list):
@@ -151,9 +160,7 @@ class UniProtAnnotTbl(list):
             self._readRow(row, mainIsoNextId)
 
     def _readRow(self, row, mainIsoNextId):
-        # Add a unique, reproducible annotation id in the form mainIsoAcc#annotIdx, where the annotIdx is
-        # the relative index of the annotation for that acc.
-        annotId = row.mainIsoAcc + '#' + str(mainIsoNextId[row.mainIsoAcc])
+        annotId = uniprotMakeAnnotId(row.mainIsoAcc, mainIsoNextId[row.mainIsoAcc])
         mainIsoNextId[row.mainIsoAcc] += 1
         setattr(row, "annotId", annotId)
         self.byAnnotId[annotId] = row
@@ -162,5 +169,5 @@ class UniProtAnnotTbl(list):
     def getByAnnotId(self, annotId):
         annot = self.byAnnotId.get(annotId)
         if annot is None:
-            raise Exception(f"annotId '{annotId}' not found in annotation table")
+            raise UniProtError(f"annotId '{annotId}' not found in annotation table")
         return annot

@@ -3,6 +3,9 @@ check and dirty file generation dependency checking
 """
 from os import path as osp
 
+class DependsError(Exception):
+    pass
+
 def getDoneFile(target):
     "get path to done file corresponding to target"
     return osp.normpath(target) + ".done"
@@ -18,7 +21,7 @@ def _normalizeDepends(depends):
 def _checkDepends(depends):
     for depend in depends:
         if not osp.exists(depend):
-            raise Exception(f"dependency does not exist: {depend}")
+            raise DependsError(f"dependency does not exist: {depend}")
 
 def _isOutOfDate(doneFile, depends):
     modTime = osp.getmtime(doneFile)
@@ -31,7 +34,7 @@ def _checkDoneDepends(doneDepends):
     for doneDepend in doneDepends:
         depend = getDoneFile(doneDepend)
         if not osp.exists(depend):
-            raise Exception(f"dependency does not exist: {depend}")
+            raise DependsError(f"dependency does not exist: {depend}")
 
 def _isDoneOutOfDate(doneFile, doneDepends):
     return _isOutOfDate(doneFile, [getDoneFile(d) for d in doneDepends])
