@@ -115,10 +115,6 @@ def makeGlyphDeco(annotPsl, annot, annotTransRef, transCategory, featStatus, pos
     return makeDecorator(annotPsl, annot, annotTransRef, transCategory, featStatus, bedBlocks, name, color, color,
                          dataSet, description, glyph=Glyph.Triangle)
 
-def getBedName(annot):
-    "change this function to get a different BED name (MUST be <= 255 characters)"
-    return annot.shortFeatType
-
 def getDescription(annot):
     "change this function to get a different description"
     return getAnnotDescriptiveName(annot)
@@ -136,42 +132,44 @@ def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transCategory, dataSet,
         color = UNIPROT_CANON_ISO_OUTLINE_COLOR
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
     return makeBlockDeco(annotPsl, annot, annotTransRef, transCategory, featStatus, bedBlocks,
-                         getBedName(annot), color, fillColor,
+                         annotTransRef.annotMapId, color, fillColor,
                          dataSet, description)
 
-def getIndelName(featIndel, annot):
-    return f"{featIndel.indelType}_{featIndel.length}_" + getBedName(annot)
+def getDistruptId(annotTransRef, indelCnt):
+    return f"{annotTransRef.annotMapId}|{indelCnt}"
 
 def getIndelDesc(featIndel, annot):
     indelText = getFeatureIndelText(featIndel.indelType)
     return f"{indelText} of {featIndel.length} bases in " + getDescription(annot)
 
-def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet):
+def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt):
     pos = (featIndel.tStart + featIndel.tEnd) // 2
     yield makeGlyphDeco(annotPsl, annot, annotTransRef, transCategory, featIndel.indelType, pos,
-                        getIndelName(featIndel, annot), FEAT_DELETION_COLOR,
+                        getDistruptId(annotTransRef, indelCnt), FEAT_DELETION_COLOR,
                         dataSet, getIndelDesc(featIndel, annot))
 
-def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet):
+def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt):
     color = FEAT_INSERTION_COLOR
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
     yield makeBlockDeco(annotPsl, annot, annotTransRef, transCategory, featIndel.indelType, bedBlocks,
-                        getIndelName(featIndel, annot), color, color,
+                        getDistruptId(annotTransRef, indelCnt), color, color,
                         dataSet, getIndelDesc(featIndel, annot))
 
-def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet):
+def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt):
     """Make glyphs or block for a particular INDEL in the annotation. A generator
     so more than one can be returned"""
     if featIndel.indelType == FeatureIndelType.insert:
-        yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet)
+        yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt)
     else:
-        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet)
+        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt)
 
 def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, transCategory, dataSet, featIndels):
     "produces decorators to mark were annotations are broken in the mappings"
     decoratorBeds = []
+    indelCnt = 0
     for featIndel in featIndels:
-        decoratorBeds.extend(makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet))
+        decoratorBeds.extend(makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt))
+        indelCnt += 1
     return decoratorBeds
 
 def buildAnnotation(transPsl, annotPsl, annot, annotTransRef, transCategory, dataSet, decoratorBeds):

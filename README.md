@@ -41,6 +41,7 @@ The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
 
 A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `annotMapId`s back to the UniProt feature and transcript.
 
-
+Distortion decorators will have an addition disruption index add the annotMapId
+to make them unique.
 
 
