@@ -29,11 +29,11 @@ def parseArgs():
     parser.add_argument("--algo", choices=("blast", "blat"), default="blat",
                         help="alignment algorithm")
     parser.add_argument("uniprotFa",
-                        help="uniprotFa FASTA")
+                        help="""UniProt FASTA (input)""")
     parser.add_argument("transFa",
-                        help="transcript FASTA, CDS must be in upper-case and UTR in lowercase")
+                        help="""transcript FASTA, CDS must be in upper-case and UTR in lowercase (input)""")
     parser.add_argument("protTransPsl",
-                        help="alignments, sorted by transcript")
+                        help="""alignments, sorted by transcript (output)""")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
     return parser.parse_args()

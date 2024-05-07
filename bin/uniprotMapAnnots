@@ -25,19 +25,19 @@ def parseArgs():
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--interPrefix",
-                        help="""save the intermediate files to names starting ${iterPrefix}.${name}.psl  ${iterPrefix}.name.type""")
+                        help="""save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
     parser.add_argument("uniprotAnnotsTsv",
-                        help="Uniprot annotations TSV from uniprotToTab")
+                        help="Uniprot annotations TSV from uniprotToTab (input)")
     parser.add_argument("cdsTransPairedPsl",
-                        help="paired protein coordinat to transcript alignments from uniprotProteinTranscriptMap")
+                        help="paired protein CDS coordinates to transcript alignments from uniprotProteinTranscriptMap (input)")
     parser.add_argument("transGenomePsl",
-                        help="transcript genome alignment; often from genePredToPsl")
+                        help="transcript genome alignment; often from genePredToPsl (input)")
     parser.add_argument("annotGenomePsl",
-                        help="Uniprot annotations mapped to genome")
+                        help="Uniprot annotations mapped to genome (output)")
     parser.add_argument("annotTransRefTsv",
-                        help="association of annotations to mapped transcripts")
+                        help="association of annotations to mapped transcripts (output)")
     parser.add_argument("problemLogTsv",
-                        help="log file of issues that happened")
+                        help="log file of issues that happened (output)")
     loggingOps.addCmdOptions(parser)
     opts = parser.parse_args()
     loggingOps.setupFromCmd(opts)
