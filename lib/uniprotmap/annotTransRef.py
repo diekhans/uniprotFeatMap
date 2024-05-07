@@ -1,9 +1,9 @@
 """
 File that cross-references mapped annotations to transcript metadata and alignment position
 
-feature ids are in the form: <uniprot_acc>|<feature_idx>
+annotIds are in the form: <canon_acc>|<annot_idx>
 
-featAnnotId ids are in the form <uniprot_acc>|<feature_idx>|<annot_idx>`
+annotMapIds are in the form: <canon_acc>|<annot_idx>|<map_idx>
 
 """
 
@@ -32,8 +32,9 @@ class AnnotTransRefs:
 def annotTransRefCreate(annotTransRefTsv):
     "create a new ref TSV, and write header"
     annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
-    annotTransRefWrite(annotTransRefFh, "annotId", "transcriptPos", "transcriptId", "alignIdx")
+    fileOps.prRowv(annotTransRefFh, "annotId", "annotMapId", "transcriptPos", "transcriptId", "alignIdx")
     return annotTransRefFh
 
-def annotTransRefWrite(annotTransRefFh, annotId, transcriptPos, transcriptId, alignIdx):
-    fileOps.prRowv(annotTransRefFh, annotId, transcriptPos, transcriptId, alignIdx)
+def annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos, transcriptId, alignIdx):
+    annotMapId = annotId + '|' + str(mapIdx)
+    fileOps.prRowv(annotTransRefFh, annotId, annotMapId, transcriptPos, transcriptId, alignIdx)

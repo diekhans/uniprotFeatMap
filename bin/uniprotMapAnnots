@@ -3,6 +3,7 @@
 import sys
 import os
 import os.path as osp
+from collections import defaultdict
 import argparse
 import logging
 import pipettor
@@ -115,14 +116,20 @@ def createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh):
         if annotFilter(annot, protCdsSizes, warned, logFh):
             createAnnotPsl(annot, protCdsSizes).write(annotCanonPslFh)
 
-def writeRef(annotGenomeMapInfo, annotTransRefFh):
+def writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, annotTransRefFh):
+    annotId = annotGenomeMapInfo.srcQName
+    mapIdx = annotIdMapIdxCounter[annotId]
+    annotIdMapIdxCounter[annotId] += 1
     transcriptPos = f"{annotGenomeMapInfo.mappingTName}:{annotGenomeMapInfo.mappingTStart}-{annotGenomeMapInfo.mappingTEnd}"
-    annotTransRefWrite(annotTransRefFh, annotGenomeMapInfo.srcQName, transcriptPos, annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine)
+
+    annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos,
+                       annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine)
 
 def writeRefs(annotGenomeMapInfoTsv, annotTransRefFh):
+    annotIdMapIdxCounter = defaultdict(int)  # to get unique map index for diff transcripts
     for annotGenomeMapInfo in TsvReader(annotGenomeMapInfoTsv):
         if annotGenomeMapInfo.mappedPslLine != "":
-            writeRef(annotGenomeMapInfo, annotTransRefFh)
+            writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, annotTransRefFh)
 
 def mkAnnotToTransCmd(annotIsoPsl, cdsTransPairedPsl, annotTransPsl, interPrefix):
     """create command to map annotations to transcripts, all CDS coordinates
@@ -135,21 +142,21 @@ def mkAnnotToTransCmd(annotIsoPsl, cdsTransPairedPsl, annotTransPsl, interPrefix
         cmd.append(["tee", f"{interPrefix}annotTrans.psl"])
     return cmd
 
-def mkAnnotToGenomeCmd(annotTransPsl, transGenomePsl, annotGenomePsl, annotGenomeMapInfo):
+def mkAnnotToGenomeCmd(annotTransPsl, transGenomePsl, annotGenomePsl, annotGenomeMapInfoTsv):
     """create command to map annotations to genomes
        NA/NA -> NA/NA -> NA/NA
     """
     cmd = ["pslMap", "-inType=na_na", "-mapType=na_na", "-check",
            annotTransPsl, transGenomePsl, annotGenomePsl,
-           f"-mapInfo={annotGenomeMapInfo}"]
+           f"-mapInfo={annotGenomeMapInfoTsv}"]
     return [cmd]
 
 def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
                  annotGenomePslFh, annotTransRefFh, interPrefix):
     if interPrefix is not None:
-        annotGenomeMapInfo = f"{interPrefix}annotGenome.mapinfo.tsv"
+        annotGenomeMapInfoTsv = f"{interPrefix}annotGenome.mapinfo.tsv"
     else:
-        annotGenomeMapInfo = fileOps.tmpFileGet(prefix="annotGenome.", suffix=".mapinfo.tsv")
+        annotGenomeMapInfoTsv = fileOps.tmpFileGet(prefix="annotGenome.", suffix=".mapinfo.tsv")
 
     cmd = []
 
@@ -157,13 +164,13 @@ def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
     cmd += mkAnnotToTransCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout", interPrefix)
 
     # NA/NA -> NA/NA -> NA/NA
-    cmd += mkAnnotToGenomeCmd("/dev/stdin", transGenomePsl, "/dev/stdout", annotGenomeMapInfo)
+    cmd += mkAnnotToGenomeCmd("/dev/stdin", transGenomePsl, "/dev/stdout", annotGenomeMapInfoTsv)
 
     pipettor.run(cmd, stdout=annotGenomePslFh)
-    writeRefs(annotGenomeMapInfo, annotTransRefFh)
+    writeRefs(annotGenomeMapInfoTsv, annotTransRefFh)
 
     if interPrefix is None:
-        os.unlink(annotGenomeMapInfo)
+        os.unlink(annotGenomeMapInfoTsv)
 
 def uniprotMapAnnots(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv,
