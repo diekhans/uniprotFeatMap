@@ -11,3 +11,5 @@ data/
 /hub/hg38/gencode.v44.bed
 /hub/hg38/gencode.v45.bed
 /hub/hg38/gencodeV45_blat_deco.html
+/hub/hg38/gencode.names
+/hub/hg38/gencode.types

@@ -1,5 +1,5 @@
 #+STARTUP: nologdone
-#+TODO: TODO ACTIVE IMPORTANT URGENT PAUSED | DONE CANCELED
+#+TODO: TODO URGENT | DONE CANCELED
 
 * uniprot.py  diff between id, acc, main isoform acc|id not clear
 
@@ -10,7 +10,7 @@
 an hgc page for these annotations, it's a bigBed file after all...
 
 
-** I don't understand this:
+** DONE I don't understand this:
 > feature status: disrupted
 Is this UniProt data? We usually only show what Uniprot provides, but I
 imagine this was added by your pipeline? Wonder if we should rename this or

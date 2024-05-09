@@ -13,14 +13,17 @@
 </p>
 <p>
   Annotations from both the SwissProt and TrEMBL subsets of UniProt are
-  available.  The UniProt canonical transcripts have annotations added to
-  the transcript based on their protein coordinates. Non-UniProt canonical
-  transcripts have the annotation coordinates projected via the genome coordinates.
+  available.  The UniProt canonical transcripts have annotations added to the
+  transcript based on their protein coordinates. For non-UniProt canonical
+  transcripts, UCSC projects the UniProt canonical feature annotation to the
+  non-canonical transcripts via the genome.
 </p>
 <p>
-  Disputed projected annotations are indicated in the display, as described below.
-  This provides a visualization that a transcript may produce a protein that
-  may have altered function or is non-functional.
+  Disputed annotations are created when the UCSC projections to the
+  non-canonical transcripts are not complete.  The disruption is indicated in
+  the display, as described below.  This provides a visualization that a
+  transcript may produce a protein that may have altered function or is
+  non-functional.
 </p>
 
 <h2>Display Conventions and Configuration</h2>
@@ -70,7 +73,7 @@
 
 <p>
 Disruption annotations indicate where a feature is broken either by an
-insertions or deletions create by alternative splicing. In addition to
+insertions or deletions created by alternative splicing. In addition to
 outlining the disrupted features in <span style="color:rgb(255,0,0)">
 <b>red</b></span>, additional annotations are added to show the location
 in the feature where the disruption occurs.  These are represented by:
