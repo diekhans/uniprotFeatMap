@@ -18,7 +18,7 @@ table uniprotDecoration
     string fillColor;  "Secondary color to use for filling decoration, blocks, supports RGBA"
     string glyph;  "The glyph to draw in glyph mode; ignored for other styles"
 
-    string decoratorType;   "The type of decoration: 'feature' or 'disruption'"
+    string annotType;   "The type of the annotation: 'feature' or 'disruption'"
     string dataSet;     "'SwissProt' (manual annotation) or 'TrEMBL' (automated annotation)"
     string uniprotAcc;  "UniProt accession"
     string transCategory; "transcript category for UniProt: 'canonical', 'canonical_diff_version', 'noncanonical'"

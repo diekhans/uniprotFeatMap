@@ -115,36 +115,9 @@ elif annot.featType == "mutagenesis site":
 * TFDP2: no annotations
 * ENST00000235310.7 (in tests) seems to get multiple similar domains
 
-* ZNF649 broken blast and blat alignments
-
-* ZNF429 chr19:21,499,700-21,559,736
-ENST00000597078.5 blast missing KRAB
-
-* ZNF534 chr19:52,429,148-52,442,499
-blast misses incomplete KRABS found by blat
-
-
 * intersect with Max tracks to find issues
 
-* convert from prMsg to using python loggin
-
-* in uniprotMapAnnots, it seems it is should check for end past end protein:
-
-Warning: Q9BXI3 annotation extends past end of protein: 369 > 368
-Warning: Q96P26-1 annotation extends past end of protein: 611 > 610
-Warning: Q96P26-1 annotation extends past end of protein: 611 > 610
-Warning: Q9H0P0-4 annotation extends past end of protein: 337 > 336
- 
-* URGENT uniprotMapAnnots warnings should maybe be written to problem file; also why is does not map repeat?
-Warning: P30511-1 annotation extends past end of protein: 353..354 > 346
-Warning: Q99732-1 annotation extends past end of protein: 174..175 > 161
-Warning: P20848 does not map to any transcript
-Warning: P20848 does not map to any transcript
-Warning: P20848 does not map to any transcript
-Warning: P20848 does not map to any transcript
-Warning: P20848 does not map to any transcript
-Warning: P20848 does not map to any transcript
-Warning: P20848 does not map to any transcript
+* convert from prMsg to using python logging
 
   
 * default to adjacent

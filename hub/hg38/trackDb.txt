@@ -18,8 +18,8 @@ mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> ty
 decorator.default.blockMode Adjacent
 decorator.default.glyphMode Adjacent
 decorator.default.bigDataUrl uniprot-gencode.v45.blat.bb
-decorator.default.filterLabel.decoratorType Annotation type
-decorator.default.filterValues.decoratorType feature,disruption
+decorator.default.filterLabel.annotType Annotation type
+decorator.default.filterValues.annotType feature,disruption
 decorator.default.filterLabel.dataSet Uniprot dataset
 decorator.default.filterValues.dataSet SwissProt,TrEMBL
 decorator.default.filterValuesDefault.dataSet SwissProt

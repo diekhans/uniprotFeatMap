@@ -278,7 +278,7 @@ def getColorUses():
 # chrom,  chromStart, chromEnd, decoratedItem, name, dataset
 decoratorBedSortOpts = ["-k1,1", "-k2,2n", "-k3,3n", "-k13,13", "-k4,4n", "-k17,17"]
 
-class DecoratorType(SymEnum):
+class AnnotType(SymEnum):
     feature = auto()
     disruption = auto()
 
@@ -292,19 +292,19 @@ class UniprotDecoration(Decoration):
     """Holds a decoration BED + extra data.  This matches etc/uniprotDecoration.as. """
 
     # keep in schema order
-    __slots__ = ("decoratorType", "dataSet", "uniprotAcc", "transCategory", "featStatus",
+    __slots__ = ("annotType", "dataSet", "uniprotAcc", "transCategory", "featStatus",
                  "category", "categoryName", "description", "shortFeatType", "featType",
                  "shortName", "longName", "comment", "disease")
 
     def __init__(self, chrom, bedBlocks, name, strand, color,
-                 itemName, itemStart, itemEnd, glyph, fillColor, *, decoratorType,
+                 itemName, itemStart, itemEnd, glyph, fillColor, *, annotType,
                  dataSet, uniprotAcc, transCategory, featStatus,
                  category, categoryName, description, shortFeatType, featType,
                  shortName, longName, comment, disease):
         # sanity check
         assert isinstance(dataSet, UniProtDataSet)
         assert isinstance(transCategory, TransCategory)
-        assert isinstance(decoratorType, DecoratorType)
+        assert isinstance(annotType, AnnotType)
         assert isinstance(featStatus, (FeatStatus, FeatureIndelType))
         assert isinstance(category, UniProtCategory)
 
@@ -316,7 +316,7 @@ class UniprotDecoration(Decoration):
         self.dataSet = dataSet
         self.uniprotAcc = uniprotAcc
         self.transCategory = transCategory
-        self.decoratorType = decoratorType
+        self.annotType = annotType
         self.featStatus = featStatus
         self.category = category
         self.categoryName = categoryName
