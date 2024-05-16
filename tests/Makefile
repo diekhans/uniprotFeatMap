@@ -26,7 +26,7 @@ all:
 	@echo "      make fulltest"
 	@echo "      make aligntest"
 	@echo "      make clean"
-	@exit 1
+	@exit 0
 
 
 test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests \
