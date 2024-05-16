@@ -25,6 +25,7 @@ all:
 	@echo "      make test"
 	@echo "      make fulltest"
 	@echo "      make aligntest"
+	@echo "      make buildHub"
 	@echo "      make clean"
 	@exit 0
 

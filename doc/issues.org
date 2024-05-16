@@ -22,7 +22,7 @@ depending on zoom levels?
 ** The triangles are not intuitive to me at all. A little message in the
 mouseover may help?
 
-** OK a tiny one: The mouseovers start with:
+** DONE OK a tiny one: The mouseovers start with:
 > UniProt data set: SwissProt
 > UniProt acc: P00395
 But to users, that's not super relevant... I'd have the more human-readable
@@ -105,15 +105,13 @@ elif annot.featType == "mutagenesis site":
     annoType = "Experimental mutation of amino acids"
 
 
-* percent-identity doesn't seem very sane from blastToPsl for protein to RNH gene (RNH1?)
-
 * should proteinTranscriptAlign and uniprotGencodeSelect be combined
 
-* TODO add source transcript
 * TODO how to flag deleted domains
 
 * TFDP2: no annotations
 * ENST00000235310.7 (in tests) seems to get multiple similar domains
+looks okay, but interesting test acse
 
 * intersect with Max tracks to find issues
 

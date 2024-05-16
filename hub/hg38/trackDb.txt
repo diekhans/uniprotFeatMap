@@ -27,13 +27,12 @@ decorator.default.filterLabel.categoryName Annotation category
 decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Region of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation
 decorator.default.filterValuesDefault.categoryName Domain
 decorator.default.mouseOver \
-   UniProt data set: ${dataSet}<br> \
+   description: ${description}<br> \
    UniProt acc: <a href="https://www.uniprot.org/uniprot/${uniprotAcc}" target=_BLANK>${uniprotAcc}</a><br> \
    feature type: ${featType}<br> \
    feature category: ${category}<br> \
    transcript category: ${transCategory}<br> \
    feature status: ${featStatus}<br> \
-   description: ${description}<br> \
+   UniProt data set: ${dataSet}<br> \
    comment: ${comment}<br> \
    disease: ${disease}
-
