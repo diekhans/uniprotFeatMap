@@ -22,6 +22,8 @@ uniprotProteinTranscriptMap = ${binDir}/uniprotProteinTranscriptMap
 uniprotMapAnnots = ${binDir}/uniprotMapAnnots
 uniprotAnnotsToDecorators = ${binDir}/uniprotAnnotsToDecorators
 uniprotDecoratorsMerge = ${binDir}/uniprotDecoratorsMerge
+transTransXSpeciesMap = ${binDir}/transTransXSpeciesMap
+
 
 dataDir = ${root}/data
 

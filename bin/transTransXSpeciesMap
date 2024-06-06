@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+import os
+import argparse
+import pipettor
+from pycbio.sys import fileOps
+
+# Algorithm
+#  - srcMRnaAln  -> srcTargetGenome -> srcMRnaTargetGenomeAln
+#  - srcMRnaTargetGenomeAln -> targetMRnaGenomeAln -> srcTargetMRnaAln
+#
+
+def parseArgs():
+    desc = """Create cross-species source mRNA to target mRNA alignments
+    via transmap"""
+
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("srcMRnaPsl",
+                        help="""source inferred mRNA alignments""")
+    parser.add_argument("srcMRnaFa",
+                        help="""source mRNA sequences""")
+    parser.add_argument("mappingChains",
+                        help="""alignment chains between species""")
+    parser.add_argument("targetMRnaPsl",
+                        help="""target species inferred alignments""")
+    parser.add_argument("targetMRnaFa",
+                        help="""target species mRNA sequences""")
+    parser.add_argument("srcTargetMRnaPsl",
+                        help="""alignments of source to target transcripts """)
+    return parser.parse_args()
+
+
+def transMapPipeline(srcMRnaPsl, srcMRnaFa, mappingChains,
+                     targetMRnaPsl, targetMRnaTwoBit, srcTargetMRnaPsl):
+    cmd1 = ("pslMap", "-inType=na_na", "-mapType=na_na", "-chainMapFile", "-swapMap",
+            srcMRnaPsl, mappingChains, "/dev/stdout")
+    cmd2 = ("pslMap", "-inType=na_na", "-mapType=na_na", "-swapMap",
+            "/dev/stdin", targetMRnaPsl, "/dev/stdout")
+    cmd3 = ("pslRecalcMatch", "/dev/stdin", targetMRnaTwoBit, srcMRnaFa, "/dev/stdout")
+    cmd4 = ("sort", "-k10,10", "-k12,12n")
+    pipettor.run([cmd1, cmd2, cmd3, cmd4], stdout=srcTargetMRnaPsl)
+
+def transTransXSpeciesMap(srcMRnaPsl, srcMRnaFa, mappingChains,
+                          targetMRnaPsl, targetMRnaFa, srcTargetMRnaPsl):
+    tmpTargetMRnaTwoBit = fileOps.tmpFileGet("rnatwobit")
+    try:
+        pipettor.run(["faToTwoBit", "-long", targetMRnaFa, tmpTargetMRnaTwoBit])
+        transMapPipeline(srcMRnaPsl, srcMRnaFa, mappingChains,
+                         targetMRnaPsl, tmpTargetMRnaTwoBit, srcTargetMRnaPsl)
+    finally:
+        os.unlink(tmpTargetMRnaTwoBit)
+
+def main(opts):
+    transTransXSpeciesMap(opts.srcMRnaPsl, opts.srcMRnaFa, opts.mappingChains,
+                          opts.targetMRnaPsl, opts.targetMRnaFa, opts.srcTargetMRnaPsl)
+
+
+main(parseArgs())

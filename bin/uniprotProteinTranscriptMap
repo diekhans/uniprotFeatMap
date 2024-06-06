@@ -30,7 +30,7 @@ def parseArgs():
     desc = """Filter protein to PSL transcript alignments to pair them based
     on being the listed transcript in UniProt.  Project the primary alignments
     to other transcript isoforms using the genomic coordinates. Output alignments
-    in CDS coordinates rather than AA. """
+    in codon coordinates rather than AA (3x AA base position). """
 
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--interPrefix",
@@ -46,7 +46,7 @@ def parseArgs():
     parser.add_argument("protTransPsl",
                         help="protein to transcript alignment PSL (input)")
     parser.add_argument("cdsTransPsl",
-                        help="""filtered alignments, in CDS coordinates (output)""")
+                        help="""filtered alignments, in codon coordinates (output)""")
     parser.add_argument("problemLogTsv",
                         help="""log file of issues that happened (output)""")
     return parser.parse_args()

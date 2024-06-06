@@ -1,21 +1,9 @@
 #!/bin/bash
 set -beEu -o pipefail
 
-# to build add entries to test set
-#      tmlr cut -f acc input/swissprot.9606.tab input/trembl.9606.tab >acc.tsv
-#    add new swissprot accession to acc.tsv
-#      ./bin/getTestData acc.tsv tmp
-#    to include all
-#      cp tmp/*. input/
-#      make -j 10 -k aligntest >&log
-#      cp output/*.psl expected/
-#    repeat until we have all updated (3 times)
-#      make -j 10 -k test >&log
-#      cp output/*.{psl,tsv,bed} expected/
-
-# this can also be run using just one uniprot accession, trimming down the
-# GENCODE results and appending.
-#
+##
+# see README.org 
+##
 
 gencodeRel=43
 

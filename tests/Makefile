@@ -31,7 +31,7 @@ all:
 
 
 test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests \
-	uniprotDecoratorsMergeTests buildHub
+	uniprotDecoratorsMergeTests xspeciesTests, buildHub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
 	@echo "==========================================" >&2
@@ -147,6 +147,16 @@ testUniprotDecoratorsMerge: mkout
 ${gencodeBb}: input/gencode.v43.pc.gp
 	genePredToBed $< /dev/stdout | sort -k1,1 -k2,2n > ${gencodeBed}
 	bedToBigBed -type=bed12 -tab ${gencodeBed} ${chromSizes} $@
+
+
+# cross-species mapping
+xspeciesTests: testXSpeciesRnaMap
+
+testXSpeciesRnaMap: mkout
+	${transTransXSpeciesMap} input/GCA_028885655.2.cat.psl input/GCA_028885655.2.cat.fa \
+		input/GCA_028885655.2.chains input/gencode.v43.pc.psl input/gencode.v43.pc.fa output/$@.psl
+	diff expected/$@.psl output/$@.psl
+
 
 # hub
 buildHub: ${gencodeBrowserDirDone} ${testHubFilesOutput}

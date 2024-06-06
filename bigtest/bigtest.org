@@ -8,7 +8,7 @@ cd data
 # copy because it changes
 cp -f uniprot/tab/*.9606.* . 
 
-# GENCODE must get our own sequences, since transcript rna doesn't include alts
+# GENCODE must get our own sequences, since transcripts rna fasta doesn't include alts
 cp /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.gp gencode.v45.gp
 cp /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.tsv gencode.v45.tsv
 

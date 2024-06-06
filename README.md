@@ -7,22 +7,47 @@ annotation -> uniprotCanonical -> transcript -> genome
 - canonical and non-canonical transcripts - canonical transcripts are those listed by UniProt as matching a particular protein.
 - id and acc - acc is the accession of a transcript, less the version; id includes that version
 
-## Commands:
+## Mapping pipeline commands:
 
-1. uniprotProteinTranscriptAlign - Align protein sequences to transcript RNAs with BLAT or BLAST. Creates a protein to NA PSL alignments, with some basic filtering.
+1. `uniprotProteinTranscriptAlign` - Align protein sequences to transcript RNAs with BLAT or BLAST. Creates a protein to NA PSL alignments, with some basic filtering.
    * input: uniprotFa, transFa
    * output: protTransPsl
-1. uniprotProteinTranscriptMap - Filter protein to PSL transcript alignments to pair them based on being the listed transcript in UniProt.  Project the primary alignments to other transcript isoforms using the genomic coordiates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in UniProt CDS to transcri
+1. `uniprotProteinTranscriptMap` - Filter protein to PSL transcript alignments to pair them based on being the listed transcript in UniProt.  Project the primary alignments to other transcript isoforms using the genomic coordiates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in UniProt CDS to transcri
    * input: gencodeMetaTsv, uniprotMetaTsv, protTransPsl
    * output: cdsTransPairedPsl, problemLogTsvh
-1. uniprotMapAnnots - Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.
+1. `uniprotMapAnnots` - Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.  This can also map to other assembly via way of transcript-transcript alignments.
    * input: uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl
    * output: annotGenomePsl, annotTransRefTsv
-1. uniprotAnnotsToDecorators - Convert domain annotations alignments create by uniprotMapAnnots to a decorator BED file in uniprotDecoration.as format.  Possibly filtering the results.
+1. `uniprotAnnotsToDecorators` - Convert domain annotations alignments create by uniprotMapAnnots to a decorator BED file in uniprotDecoration.as format.  Possibly filtering the results.
    * input: uniprotAnnotsTsv, annotGenomePsl, annotTransRefTsv
    * output: annotDecoratorBedFile
 
+## Data acquisition commands
+- `transMapMRnas` - Use genomic projection alignments to produce a set of cross-species mRNA to mRNA alignments.
+- `getCatXSpeciesPairs` - Obtain pair GENCODE source transcripts and CAT 
+
 # Data required 
+
+* tab -  /hive/data/outside/otto/uniprot/
+
+# Cross-species projection
+
+Domains can be projected to other species by way of mRNA to mRNA alignments
+from the source assembly mRNA to the target assembly mRNA (`srcTargetMRnaPsl`).
+This alignments is built and filtered based on the gene annotations
+
+Source mRNAs (srcTrans) and aligned to target mRNAs (targetTrans) using
+the TransMap algorithm, giving mRNA/mRNA alignments.  These are then
+filter to pick the best transcript ortholog.  
+
+For CAT annotations produced from GENCODE, this matches the transcript
+accessions.  Other gene sets will require different criteria.
+
+These alignments of srcTrans, annotated by `uniprotProteinTranscriptMap`, to
+targetTrans in the target genomes, along with alignments of the target mRNAs
+to the target genome are required.  These two alignments are given as
+additional input to `uniprotMapAnnots`, to project UniProt features through to
+the target transcripts on the target genome.
 
 
 # Identification
