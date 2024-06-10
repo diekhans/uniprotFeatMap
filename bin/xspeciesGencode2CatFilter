@@ -1,0 +1,87 @@
+#!/usr/bin/env python3
+
+import sys
+import os.path as osp
+import argparse
+from collections import defaultdict
+import pipettor
+from pycbio.tsv import TsvReader, strOrNoneType
+from pycbio.sys import fileOps
+from pycbio.hgdata.psl import PslReader
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap import dropVersion
+
+def parseArgs():
+    desc = """Filter GENCODE to CAT cross-species alignments created by
+    xspeciesTrans2TransMap.  Keep best alignment where source GENCODE
+    matches CAT.
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("srcTargetMRnaPsl",
+                        help="""alignments of source to target transcripts """)
+    parser.add_argument("targetCatBigBed",
+                        help="""target genome CAT bigBed, to obtain metadata """)
+    parser.add_argument("srcTargetFiltPsl",
+                        help="""filtered PSL""")
+    return parser.parse_args()
+
+
+def loadCatSource(targetCatBigBed):
+    with pipettor.Popen((("bigBedToBed", "-tsv", targetCatBigBed, "/dev/stdout"),
+                        ("mlr", "--tsv", "cut", "-f", "name,sourceTranscript"))) as fh:
+        return {r.name: dropVersion(r.sourceTranscript) for r in TsvReader(targetCatBigBed, inFh=fh,
+                                                                           typeMap={"sourceTranscript": strOrNoneType})}
+def loadAlnsByTarget(srcTargetFiltPsl):
+    alnsByTarget = defaultdict(list)
+    for psl in PslReader(srcTargetFiltPsl):
+        alnsByTarget[psl.tName].append(psl)
+    return alnsByTarget
+
+def isCatSourceMatch(targetAln, catSources):
+    return dropVersion(targetAln.qName) == catSources[targetAln.tName]
+
+def getMatchNonMatchAlns(targetAlns, catSources):
+    matchAlns = []
+    nonMatchAlns = []
+    for targetAln in targetAlns:
+        if isCatSourceMatch(targetAln, catSources):
+            matchAlns.append(targetAln)
+        else:
+            nonMatchAlns.append(targetAln)
+    return matchAlns, nonMatchAlns
+
+def scoreAln(aln):
+    qAligned = aln.basesAligned() / aln.qSize
+    tAligned = aln.basesAligned() / aln.tSize
+
+    # use longest coverage to help prevent weak UTR alignment bias
+    return aln.identity() * max(qAligned, tAligned)
+
+def getBestAln(alns):
+    return sorted(alns, key=scoreAln, reverse=True)[0]
+
+def pickBestBySource(targetAlns, catSources):
+    "return best match, if none are matched, get best unmatched"
+    matchAlns, nonMatchAlns = getMatchNonMatchAlns(targetAlns, catSources)
+    if len(matchAlns) > 0:
+        return getBestAln(matchAlns)
+    else:
+        return getBestAln(nonMatchAlns)
+
+def filterAligns(alnsByTarget, catSources, alnFh):
+    for targetAcc in sorted(alnsByTarget.keys()):
+        bestAln = pickBestBySource(alnsByTarget[targetAcc], catSources)
+        bestAln.write(alnFh)
+
+def xspeciesGencode2CatFilter(srcTargetMRnaPsl, targetCatBigBed, srcTargetFiltPsl):
+    alnsByTarget = loadAlnsByTarget(srcTargetMRnaPsl)
+    catSources = loadCatSource(targetCatBigBed)
+    with fileOps.opengz(srcTargetFiltPsl, 'w') as alnFh:
+        filterAligns(alnsByTarget, catSources, alnFh)
+
+def main(opts):
+    xspeciesGencode2CatFilter(opts.srcTargetMRnaPsl, opts.targetCatBigBed, opts.srcTargetFiltPsl)
+
+
+main(parseArgs())

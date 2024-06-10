@@ -150,12 +150,24 @@ ${gencodeBb}: input/gencode.v43.pc.gp
 
 
 # cross-species mapping
-xspeciesTests: testXSpeciesRnaMap
+cat_bigcat = output/GCA_028885655.2.cat.bb
+ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_028885655.2/GCA_028885655.2.2bit
+
+xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter
 
 testXSpeciesRnaMap: mkout
-	${transTransXSpeciesMap} input/GCA_028885655.2.cat.psl input/GCA_028885655.2.cat.fa \
-		input/GCA_028885655.2.chains input/gencode.v43.pc.psl input/gencode.v43.pc.fa output/$@.psl
+	${xspeciesTrans2TransMap} input/gencode.v43.pc.psl input/gencode.v43.pc.fa \
+		input/GCA_028885655.2.chains input/GCA_028885655.2.cat.psl input/GCA_028885655.2.cat.fa output/$@.psl
 	diff expected/$@.psl output/$@.psl
+
+testXSpeciesGencodeCatFilter: mkout ${cat_bigcat}
+	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${cat_bigcat} output/$@.psl
+	diff expected/$@.psl output/$@.psl
+
+${cat_bigcat}: input/GCA_028885655.2.cat.bigCat input/bigCat.as
+	@mkdir -p $(dir $@)
+	bedToBigBed -tab -type=bed12+ -as=input/bigCat.as -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
+	mv -f $@.tmp $@
 
 
 # hub
