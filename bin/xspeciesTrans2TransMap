@@ -36,9 +36,10 @@ def transMapPipeline(srcMRnaPsl, srcMRnaFa, mappingChains,
             srcMRnaPsl, mappingChains, "/dev/stdout")
     cmd2 = ("pslMap", "-inType=na_na", "-mapType=na_na", "-swapMap",
             "/dev/stdin", targetMRnaPsl, "/dev/stdout")
-    cmd3 = ("pslRecalcMatch", "/dev/stdin", targetMRnaTwoBit, srcMRnaFa, "/dev/stdout")
-    cmd4 = ("sort", "-k10,10", "-k12,12n")
-    pipettor.run([cmd1, cmd2, cmd3, cmd4], stdout=srcTargetMRnaPsl)
+    cmd3 = ("pslMapPostChain", "/dev/stdin", "/dev/stdout")
+    cmd4 = ("pslRecalcMatch", "/dev/stdin", targetMRnaTwoBit, srcMRnaFa, "/dev/stdout")
+    cmd5 = ("sort", "-k10,10", "-k12,12n")
+    pipettor.run([cmd1, cmd2, cmd3, cmd4, cmd5], stdout=srcTargetMRnaPsl)
 
 def xspeciesTrans2TransMap(srcMRnaPsl, srcMRnaFa, mappingChains,
                            targetMRnaPsl, targetMRnaFa, srcTargetMRnaPsl):
