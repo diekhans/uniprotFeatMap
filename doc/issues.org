@@ -151,3 +151,5 @@ useful in visual QC to look for weird cases
 why is domain truncated here
 also says 5' truncation, looks like 3'
 
+* NOTCH2NLB has annotation disrupted in canonical
+could be because it is wrong because of bad annotation; document

@@ -6,6 +6,8 @@ bigGpAs =  ${HOME}/kent/src/hg/lib/bigGenePred.as
 
 hub_url = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/hub/hub.txt
 
+algos = blat
+
 
 all: ${algos:%=%_mkAlgo} mkGencodeBb mkDoc
 	${MAKE} check
