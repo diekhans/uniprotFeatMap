@@ -29,12 +29,18 @@ class AnnotTransRefs:
             raise AnnotTransRefError(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
         return annotTransRef
 
-def annotTransRefCreate(annotTransRefTsv):
+def annotTransRefCreate(annotTransRefTsv, inclXSpecies):
     "create a new ref TSV, and write header"
     annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
-    fileOps.prRowv(annotTransRefFh, "annotId", "annotMapId", "transcriptPos", "transcriptId", "alignIdx")
+    hdr = ["annotId", "annotMapId", "transcriptPos", "transcriptId", "alignIdx"]
+    if inclXSpecies:
+        hdr.append("srcTranscriptId")
+    fileOps.prRow(annotTransRefFh, hdr)
     return annotTransRefFh
 
-def annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos, transcriptId, alignIdx):
+def annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos, transcriptId, alignIdx, srcTranscriptId=None):
     annotMapId = annotId + '|' + str(mapIdx)
-    fileOps.prRowv(annotTransRefFh, annotId, annotMapId, transcriptPos, transcriptId, alignIdx)
+    row = [annotId, annotMapId, transcriptPos, transcriptId, alignIdx]
+    if srcTranscriptId is not None:
+        row.append(srcTranscriptId)
+    fileOps.prRow(annotTransRefFh, row)

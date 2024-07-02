@@ -24,7 +24,7 @@ annotation -> uniprotCanonical -> transcript -> genome
 
 ## Data acquisition commands
 - `transMapMRnas` - Use genomic projection alignments to produce a set of cross-species mRNA to mRNA alignments.
-- `getCatXSpeciesPairs` - Obtain pair GENCODE source transcripts and CAT 
+- `getCatXSpeciesPairs` - Obtain paired GENCODE source transcripts and CAT cross-species annotations.
 
 # Data required 
 

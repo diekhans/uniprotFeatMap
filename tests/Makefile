@@ -153,7 +153,7 @@ ${gencodeBb}: input/gencode.v43.pc.gp
 cat_bigcat = output/GCA_028885655.2.cat.bb
 ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_028885655.2/GCA_028885655.2.2bit
 
-xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter
+xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotMapAnnots
 
 testXSpeciesRnaMap: mkout
 	${xspeciesTrans2TransMap} input/gencode.v43.pc.psl input/gencode.v43.pc.fa \
@@ -163,6 +163,20 @@ testXSpeciesRnaMap: mkout
 testXSpeciesGencodeCatFilter: mkout ${cat_bigcat}
 	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${cat_bigcat} output/$@.psl
 	diff expected/$@.psl output/$@.psl
+
+testXSpeciesUniprotMapAnnots: mkout
+	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
+	    --xspeciesTransPsl=expected/testXSpeciesGencodeCatFilter.psl \
+	    input/swissprot.9606.annots.tab expected/testUniprotProteinTranscriptMapSP.psl \
+	    input/GCA_028885655.2.cat.psl \
+            output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
+	$(call checkAnnots)
+	diff expected/$@.psl output/$@.psl
+	diff expected/$@.ref.tsv output/$@.ref.tsv
+	diff expected/$@.problems.tsv output/$@.problems.tsv
+	diff expected/$@.inter.annotTrans.psl output/$@.inter.annotTrans.psl
+	pslCheck -verbose=0 output/$@.psl
+	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 ${cat_bigcat}: input/GCA_028885655.2.cat.bigCat input/bigCat.as
 	@mkdir -p $(dir $@)

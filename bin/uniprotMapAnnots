@@ -23,22 +23,28 @@ def parseArgs():
     building decorators.
 
     Resulting PSLs will have query name of isoId#annotRowIndex
+
+
+    This maybe also be used to project the mappings to another species by providing
+
     """
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--xspeciesTransPsl",
+                        help="""PSL alignments of transcripts in the source genome to transcripts in a target genome for cross-species mapping of UniProt features.""")
     parser.add_argument("--interPrefix",
-                        help="""save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
+                        help="""Save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
     parser.add_argument("uniprotAnnotsTsv",
-                        help="Uniprot annotations TSV from uniprotToTab (input)")
+                        help="""Uniprot annotations TSV from uniprotToTab (input)""")
     parser.add_argument("cdsTransPairedPsl",
-                        help="paired protein CDS coordinates to transcript alignments from uniprotProteinTranscriptMap (input)")
+                        help="""Paired protein CDS coordinates to transcript alignments from uniprotProteinTranscriptMap (input)""")
     parser.add_argument("transGenomePsl",
-                        help="transcript genome alignment; often from genePredToPsl (input)")
+                        help="""Transcript genome alignment; often from genePredToPsl. For cross-species mapping, this should be the target species transcript alignments. (input)""")
     parser.add_argument("annotGenomePsl",
-                        help="Uniprot annotations mapped to genome (output)")
+                        help="""Uniprot annotations mapped to genome (output)""")
     parser.add_argument("annotTransRefTsv",
-                        help="association of annotations to mapped transcripts (output)")
+                        help="""Association of annotations to mapped transcripts (output)""")
     parser.add_argument("problemLogTsv",
-                        help="log file of issues that happened (output)")
+                        help="""Log file of issues that happened (output)""")
     loggingOps.addCmdOptions(parser)
     opts = parser.parse_args()
     loggingOps.setupFromCmd(opts)
@@ -116,31 +122,59 @@ def createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh):
         if annotFilter(annot, protCdsSizes, warned, logFh):
             createAnnotPsl(annot, protCdsSizes).write(annotCanonPslFh)
 
-def writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, annotTransRefFh):
+def getXSpeciesSrcMap(xspeciesTransMapInfoTsv):
+    return {r.mappedTName: r for r in TsvReader(xspeciesTransMapInfoTsv)}
+
+def getXSpeciesSrcTrans(mappedTransId, xspeciesSrcMap):
+    if xspeciesSrcMap is None:
+        return None
+    rec = xspeciesSrcMap.get(mappedTransId)
+    if rec is None:
+        raise Exception(f"Could not find srcTranscriptId for cross-species mapped transcript '{mappedTransId}'")
+    return rec.srcTName
+
+def writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, xspeciesSrcMap, annotTransRefFh):
     annotId = annotGenomeMapInfo.srcQName
     mapIdx = annotIdMapIdxCounter[annotId]
     annotIdMapIdxCounter[annotId] += 1
     transcriptPos = f"{annotGenomeMapInfo.mappingTName}:{annotGenomeMapInfo.mappingTStart}-{annotGenomeMapInfo.mappingTEnd}"
-
+    srcTranscriptId = getXSpeciesSrcTrans(annotGenomeMapInfo.mappingQName, xspeciesSrcMap) if xspeciesSrcMap is not None else None
     annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos,
-                       annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine)
+                       annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine, srcTranscriptId)
 
-def writeRefs(annotGenomeMapInfoTsv, annotTransRefFh):
+def writeRefs(annotGenomeMapInfoTsv, xspeciesSrcMap, annotTransRefFh):
     annotIdMapIdxCounter = defaultdict(int)  # to get unique map index for diff transcripts
     for annotGenomeMapInfo in TsvReader(annotGenomeMapInfoTsv):
         if annotGenomeMapInfo.mappedPslLine != "":
-            writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, annotTransRefFh)
+            writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, xspeciesSrcMap, annotTransRefFh)
+
+def writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv, annotTransRefTsv):
+    xspeciesSrcMap = getXSpeciesSrcMap(xspeciesTransMapInfoTsv) if xspeciesTransMapInfoTsv is not None else None
+    with annotTransRefCreate(annotTransRefTsv, xspeciesSrcMap is not None) as annotTransRefFh:
+        writeRefs(annotGenomeMapInfoTsv, xspeciesSrcMap, annotTransRefFh)
 
 def mkAnnotToTransCmd(annotIsoPsl, cdsTransPairedPsl, annotTransPsl, interPrefix):
     """create command to map annotations to transcripts, all CDS coordinates
     """
     cmd1 = ["pslMap", "-inType=na_na", "-mapType=na_na", "-check",
             annotIsoPsl, cdsTransPairedPsl, annotTransPsl]
-    cmd = [cmd1]
+    cmds = [cmd1]
     if interPrefix is not None:
         cmd1.append(f"-mapInfo={interPrefix}annotTrans.mapinfo.tsv")
-        cmd.append(["tee", f"{interPrefix}annotTrans.psl"])
-    return cmd
+        cmds.append(["tee", f"{interPrefix}annotTrans.psl"])
+    return cmds
+
+def mkTransToXSpeciesCmd(annotTransPsl, xspeciesTransPsl, xspeciesAnnotTransPsl,
+                         xspeciesTransMapInfoTsv, interPrefix):
+    """create command to map annotations to transcripts, all CDS coordinates
+    """
+    cmd1 = ["pslMap", "-inType=na_na", "-mapType=na_na", "-check",
+            annotTransPsl, xspeciesTransPsl, xspeciesAnnotTransPsl,
+            f"-mapInfo={xspeciesTransMapInfoTsv}"]
+    cmds = [cmd1]
+    if interPrefix is not None:
+        cmds.append(["tee", f"{interPrefix}xspeciesAnnotTransPsl.psl"])
+    return cmds
 
 def mkAnnotToGenomeCmd(annotTransPsl, transGenomePsl, annotGenomePsl, annotGenomeMapInfoTsv):
     """create command to map annotations to genomes
@@ -151,31 +185,50 @@ def mkAnnotToGenomeCmd(annotTransPsl, transGenomePsl, annotGenomePsl, annotGenom
            f"-mapInfo={annotGenomeMapInfoTsv}"]
     return [cmd]
 
-def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
-                 annotGenomePslFh, annotTransRefFh, interPrefix):
+def getMapInfoFiles(xspeciesTransPsl, interPrefix):
+    """get mapInfo pages from pslMap used when generating the output.  If intermediate files
+    are not being saved, temporary files are created"""
+    xspeciesTransMapInfoTsv = None
     if interPrefix is not None:
         annotGenomeMapInfoTsv = f"{interPrefix}annotGenome.mapinfo.tsv"
+        if xspeciesTransPsl is not None:
+            xspeciesTransMapInfoTsv = f"{interPrefix}xspeciesTrans.mapinfo.tsv"
     else:
         annotGenomeMapInfoTsv = fileOps.tmpFileGet(prefix="annotGenome.", suffix=".mapinfo.tsv")
+        if xspeciesTransPsl is not None:
+            xspeciesTransMapInfoTsv = fileOps.tmpFileGet(prefix="xspeciesTrans.", suffix=".mapinfo.tsv")
+    return annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv
 
-    cmd = []
+def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+                 annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
+    annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv = getMapInfoFiles(xspeciesTransPsl, interPrefix)
+    cmds = []
 
+    # annotation to transcript mapping
     # NA/NA -> NA/NA -> NA/NA
-    cmd += mkAnnotToTransCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout", interPrefix)
+    cmds += mkAnnotToTransCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout", interPrefix)
 
+    if xspeciesTransPsl is not None:
+        # transcript to other species transcript mapping
+        # NA/NA -> NA/NA -> NA/NA
+        cmds += mkTransToXSpeciesCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
+                                     xspeciesTransMapInfoTsv, interPrefix)
+
+    # per-transcript annotation to genome mapping
     # NA/NA -> NA/NA -> NA/NA
-    cmd += mkAnnotToGenomeCmd("/dev/stdin", transGenomePsl, "/dev/stdout", annotGenomeMapInfoTsv)
+    cmds += mkAnnotToGenomeCmd("/dev/stdin", transGenomePsl, "/dev/stdout", annotGenomeMapInfoTsv)
 
-    pipettor.run(cmd, stdout=annotGenomePslFh)
-    writeRefs(annotGenomeMapInfoTsv, annotTransRefFh)
+    pipettor.run(cmds, stdout=annotGenomePslFh)
+    writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv, annotTransRefTsv)
 
     if interPrefix is None:
         os.unlink(annotGenomeMapInfoTsv)
+        if xspeciesTransMapInfoTsv is not None:
+            os.unlink(xspeciesTransMapInfoTsv)
 
 def uniprotMapAnnots(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv,
-                     interPrefix):
-    logFh = problemLogOpen(problemLogTsv)
+                     xspeciesTransPsl, interPrefix):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
     protCdsSizes = getProtCdsSizes(cdsTransPairedPsl)
 
@@ -184,21 +237,20 @@ def uniprotMapAnnots(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
     else:
         annotCanonPsl = fileOps.tmpFileGet("annotCanon.", ".psl")
 
-    with fileOps.opengz(annotCanonPsl, 'w') as annotCanonPslFh:
-        createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh)
+    with problemLogOpen(problemLogTsv) as logFh:
+        with fileOps.opengz(annotCanonPsl, 'w') as annotCanonPslFh:
+            createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
-        with annotTransRefCreate(annotTransRefTsv) as annotTransRefFh:
-            pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
-                         annotGenomePslFh, annotTransRefFh, interPrefix)
+        pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+                     annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix)
 
     if interPrefix is None:
         os.unlink(annotCanonPsl)
-    logFh.close()
 
 def main(opts):
     uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.cdsTransPairedPsl, opts.transGenomePsl,
                      opts.annotGenomePsl, opts.annotTransRefTsv, opts.problemLogTsv,
-                     opts.interPrefix)
+                     opts.xspeciesTransPsl, opts.interPrefix)
 
 main(parseArgs())
