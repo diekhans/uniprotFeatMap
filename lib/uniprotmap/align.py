@@ -53,7 +53,7 @@ def runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
     "alignCmdPre is list of program and initial arguments"
     fileOps.ensureDir(alignBatchDir)
     jobFile = makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
-    para = Para(conf.paraHost, jobFile, paraDir=alignBatchDir, retries=0)
+    para = Para(conf.paraHost, jobFile=jobFile, paraDir=alignBatchDir, retries=0)
     para.free()
     try:
         para.make()
