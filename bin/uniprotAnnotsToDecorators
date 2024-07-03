@@ -110,7 +110,7 @@ def makeDecorator(ad, featStatus, bedBlocks, name, color, fillColor, description
                              itemName, itemStart, itemEnd, glyph, fillColor,
                              annotType=annotType, dataSet=ad.dataSet,
                              uniprotAcc=ad.annot.acc, transCategory=ad.transCategory,
-                             srcTransId="XXX", mappedTransId="YYY", featStatus=featStatus,
+                             canonTransId="", featStatus=featStatus,
                              category=category, categoryName=categoryName, description=description,
                              shortFeatType=annot.shortFeatType, featType=annot.featType,
                              shortName=annot.shortName, longName=annot.longName,

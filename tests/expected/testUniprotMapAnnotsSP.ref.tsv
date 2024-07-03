@@ -1,4 +1,4 @@
-annotId	annotMapId	transcriptPos	transcriptId	srcTranscriptId	alignIdx
+annotId	annotMapId	transcriptPos	transcriptId	canonTransId	alignIdx
 Q9BXI3|0	Q9BXI3|0|0	chr1:39651228-39672107	ENST00000235628.2		0
 Q9BXI3|1	Q9BXI3|1|0	chr1:39651228-39672107	ENST00000235628.2		1
 Q9BXI3|2	Q9BXI3|2|0	chr1:39651228-39672107	ENST00000235628.2		2

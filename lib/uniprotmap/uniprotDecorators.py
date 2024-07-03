@@ -291,14 +291,14 @@ class FeatStatus(SymEnum):
 class UniprotDecoration(Decoration):
     """Holds a decoration BED + extra data.  This matches etc/uniprotDecoration.as. """
 
-    # keep in schema order
-    __slots__ = ("annotType", "dataSet", "uniprotAcc", "transCategory", "transCategory", "srcTransId", "mappedTransId",
+    # Keep in schema order:
+    __slots__ = ("annotType", "dataSet", "uniprotAcc", "transCategory", "canonTransId",
                  "featStatus", "category", "categoryName", "description", "shortFeatType", "featType",
                  "shortName", "longName", "comment", "disease")
 
     def __init__(self, chrom, bedBlocks, name, strand, color,
                  itemName, itemStart, itemEnd, glyph, fillColor, *, annotType,
-                 dataSet, uniprotAcc, transCategory, srcTransId, mappedTransId, featStatus,
+                 dataSet, uniprotAcc, transCategory, canonTransId, featStatus,
                  category, categoryName, description, shortFeatType, featType,
                  shortName, longName, comment, disease):
         # sanity check
@@ -313,12 +313,11 @@ class UniprotDecoration(Decoration):
                                                 strand=strand, itemRgb=color, blocks=bedBlocks,
                                                 glyph=glyph, fillColor=fillColor)
 
+        self.annotType = annotType
         self.dataSet = dataSet
         self.uniprotAcc = uniprotAcc
         self.transCategory = transCategory
-        self.srcTransId = srcTransId
-        self.mappedTransId = mappedTransId
-        self.annotType = annotType
+        self.canonTransId = canonTransId
         self.featStatus = featStatus
         self.category = category
         self.categoryName = categoryName
