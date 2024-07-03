@@ -63,17 +63,21 @@ def parseArgs():
     parser.add_argument("uniprotAnnotsTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
     parser.add_argument("annotGenomePsl",
-                        help="""Uniprot annotations mapped to genome from uniprotMapAnnots (input)""")
+                        help="""Uniprot annotations mapped to genome from uniprotMapAnnots (input). For cross-species mapping, this will
+                        be the target species genome.""")
     parser.add_argument("annotTransRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
     parser.add_argument("transGenomePsl",
-                        help="""transcript genome alignment; often from genePredToPsl (input)""")
+                        help="""transcript genome alignment; often from genePredToPsl (input).For cross-species mapping, this must
+e                        be the target species genome.""")
     parser.add_argument("annotDecoratorBedFile",
                         help="""annotation decorator BED file (output)""")
     profiler = Profile(parser)
     opts = parser.parse_args()
     profiler.setup(opts)
     return opts
+
+class AnnotInfo(namedtuple("AnnotInfo", (
 
 ##
 # shortFeatType to not include in track.
@@ -91,35 +95,36 @@ def xrefToItemArgs(annotTransRef):
     return annotTransRef.transcriptId, coords.start, coords.end
 
 
-def makeDecorator(annotPsl, annot, annotTransRef, transCategory, featStatus, bedBlocks, name, color, fillColor,
-                  dataSet, description, *, glyph=None):
+def makeDecorator(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, featStatus,
+                  bedBlocks, name, color, fillColor, dataSet, description, *, glyph=None):
     annotType = AnnotType.feature if glyph is None else AnnotType.disruption
     itemName, itemStart, itemEnd = xrefToItemArgs(annotTransRef)
     category, categoryName = getAnnotCategory(annot)
     return UniprotDecoration(annotPsl.tName, bedBlocks, name, annotPsl.qStrand, color,
                              itemName, itemStart, itemEnd, glyph, fillColor,
                              annotType=annotType, dataSet=dataSet,
-                             uniprotAcc=annot.acc, transCategory=transCategory, featStatus=featStatus,
+                             uniprotAcc=annot.acc, transCategory=transCategory,
+                             srcTransId=srcTransId, mappedTransId=mappedTransId, featStatus=featStatus,
                              category=category, categoryName=categoryName, description=description,
                              shortFeatType=annot.shortFeatType, featType=annot.featType,
                              shortName=annot.shortName, longName=annot.longName,
                              comment=annot.comment, disease=annot.disease)
 
-def makeBlockDeco(annotPsl, annot, annotTransRef, transCategory, featStatus, bedBlocks, name, color, fillColor,
+def makeBlockDeco(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, featStatus, bedBlocks, name, color, fillColor,
                   dataSet, description):
-    return makeDecorator(annotPsl, annot, annotTransRef, transCategory, featStatus, bedBlocks, name, color, fillColor,
+    return makeDecorator(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, featStatus, bedBlocks, name, color, fillColor,
                          dataSet, description)
 
-def makeGlyphDeco(annotPsl, annot, annotTransRef, transCategory, featStatus, pos, name, color, dataSet, description):
+def makeGlyphDeco(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, featStatus, pos, name, color, dataSet, description):
     bedBlocks = [BedBlock(pos, pos)]
-    return makeDecorator(annotPsl, annot, annotTransRef, transCategory, featStatus, bedBlocks, name, color, color,
+    return makeDecorator(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, featStatus, bedBlocks, name, color, color,
                          dataSet, description, glyph=Glyph.Triangle)
 
 def getDescription(annot):
     "change this function to get a different description"
     return getAnnotDescriptiveName(annot)
 
-def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transCategory, dataSet, featIndels):
+def mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, srcTransId, mappedTransId, featIndels):
     description = getDescription(annot)
     annotColor = getAnnotColor(annot, dataSet)
     fillColor = annotColor.setAlpha(0.5)
@@ -142,43 +147,43 @@ def getIndelDesc(featIndel, annot):
     indelText = getFeatureIndelText(featIndel.indelType)
     return f"{indelText} of {featIndel.length} bases in " + getDescription(annot)
 
-def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt):
+def makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, indelCnt):
     pos = (featIndel.tStart + featIndel.tEnd) // 2
-    yield makeGlyphDeco(annotPsl, annot, annotTransRef, transCategory, featIndel.indelType, pos,
+    yield makeGlyphDeco(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, featIndel.indelType, pos,
                         getDistruptId(annotTransRef, indelCnt), FEAT_DELETION_COLOR,
                         dataSet, getIndelDesc(featIndel, annot))
 
-def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt):
+def makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, indelCnt):
     color = FEAT_INSERTION_COLOR
     bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
-    yield makeBlockDeco(annotPsl, annot, annotTransRef, transCategory, featIndel.indelType, bedBlocks,
+    yield makeBlockDeco(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, featIndel.indelType, bedBlocks,
                         getDistruptId(annotTransRef, indelCnt), color, color,
                         dataSet, getIndelDesc(featIndel, annot))
 
-def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt):
+def makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, indelCnt):
     """Make glyphs or block for a particular INDEL in the annotation. A generator
     so more than one can be returned"""
     if featIndel.indelType == FeatureIndelType.insert:
-        yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt)
+        yield from makeFeatInsAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, indelCnt)
     else:
-        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt)
+        yield from makeFeatDelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, indelCnt)
 
-def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, transCategory, dataSet, featIndels):
+def mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, featIndels):
     "produces decorators to mark were annotations are broken in the mappings"
     decoratorBeds = []
     indelCnt = 0
     for featIndel in featIndels:
-        decoratorBeds.extend(makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, dataSet, indelCnt))
+        decoratorBeds.extend(makeFeatIndelAnnot(featIndel, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, indelCnt))
         indelCnt += 1
     return decoratorBeds
 
-def buildAnnotation(transPsl, annotPsl, annot, annotTransRef, transCategory, dataSet, decoratorBeds):
+def buildAnnotation(transPsl, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, decoratorBeds):
     "converts BEDs to strings so this work is distributed"
     featIndels = analyzeFeatureMapping(transPsl, annotPsl)
-    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transCategory, dataSet, featIndels)
+    bed = mkMainAnnotDecorator(annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, featIndels)
     decoratorBeds.append(bed)
     if len(featIndels) > 0:
-        decoratorBeds.extend(mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, transCategory, dataSet, featIndels))
+        decoratorBeds.extend(mkBrokenAnnotDecorators(transPsl, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, dataSet, featIndels))
 
 class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the
@@ -196,7 +201,7 @@ class AnnotationProcessor:
         uniprotMeta = self.uniprotMetaTbl.getByAcc(annot.acc)
         transCategory = calcTransCategory(uniprotMeta, annotTransRef.transcriptId)
         transPsl = self.transGenomeAlns.getAlign(annotTransRef.transcriptId, annotPsl.tName)
-        buildAnnotation(transPsl, annotPsl, annot, annotTransRef, transCategory, self.dataSet, decoratorBeds)
+        buildAnnotation(transPsl, annotPsl, annot, annotTransRef, transCategory, srcTransId, mappedTransId, self.dataSet, decoratorBeds)
 
     def processBatch(self, alignBatch):
         decoratorBeds = []

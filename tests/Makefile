@@ -31,7 +31,7 @@ all:
 
 
 test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests \
-	uniprotDecoratorsMergeTests xspeciesTests, buildHub
+	uniprotDecoratorsMergeTests xspeciesTests buildHub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
 	@echo "==========================================" >&2

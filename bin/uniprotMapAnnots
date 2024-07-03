@@ -138,7 +138,10 @@ def writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, xspeciesSrcMap, annotTran
     mapIdx = annotIdMapIdxCounter[annotId]
     annotIdMapIdxCounter[annotId] += 1
     transcriptPos = f"{annotGenomeMapInfo.mappingTName}:{annotGenomeMapInfo.mappingTStart}-{annotGenomeMapInfo.mappingTEnd}"
-    srcTranscriptId = getXSpeciesSrcTrans(annotGenomeMapInfo.mappingQName, xspeciesSrcMap) if xspeciesSrcMap is not None else None
+    if xspeciesSrcMap is not None:
+        srcTranscriptId = getXSpeciesSrcTrans(annotGenomeMapInfo.mappingQName, xspeciesSrcMap)
+    else:
+        srcTranscriptId = ""
     annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos,
                        annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine, srcTranscriptId)
 
@@ -150,7 +153,7 @@ def writeRefs(annotGenomeMapInfoTsv, xspeciesSrcMap, annotTransRefFh):
 
 def writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv, annotTransRefTsv):
     xspeciesSrcMap = getXSpeciesSrcMap(xspeciesTransMapInfoTsv) if xspeciesTransMapInfoTsv is not None else None
-    with annotTransRefCreate(annotTransRefTsv, xspeciesSrcMap is not None) as annotTransRefFh:
+    with annotTransRefCreate(annotTransRefTsv) as annotTransRefFh:
         writeRefs(annotGenomeMapInfoTsv, xspeciesSrcMap, annotTransRefFh)
 
 def mkAnnotToTransCmd(annotIsoPsl, cdsTransPairedPsl, annotTransPsl, interPrefix):
