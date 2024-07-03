@@ -1,20 +1,21 @@
-track gencode_deco_test
+track gencode_maped_deco_test
 html ../empty.html
-shortLabel GENCODE Deco
-longLabel GENCODE Deco Test
-description GENCODE Deco Test
+shortLabel CAT Mapped Deco
+longLabel CAT MappedDeco Test
+description CAT Mapped Deco Test
 type bigBed 12
 group genes
 color 12,12,120
 priority 3
 visibility pack
 searchIndex name
-bigDataUrl gencode.v43.bb
+bigDataUrl GCA_028885655.2.cat.bb
 labelFields name
 defaultLabelFields name
 labelSeperator " / "
+html empty.html
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
-decorator.default.bigDataUrl testUniprotDecoratorsMerge.bb
+decorator.default.bigDataUrl testXSpeciesAnnotsToDeco.bb
 decorator.default.filterLabel.annotType Annotation type
 decorator.default.filterValues.annotType feature,disruption
 decorator.default.filterLabel.dataSet Uniprot dataset

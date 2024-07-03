@@ -1,3 +1,6 @@
 genome hg38
-trackDb trackDb.txt
+trackDb hg38.trackDb.txt
 
+
+genome GCA_028885655.2
+trackDb GCA_028885655.2.trackDb.txt

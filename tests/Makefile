@@ -10,7 +10,7 @@ endif
 
 chromSizes = input/hg38.sizes
 
-testHubFiles = empty.html genomes.txt hub.txt trackDb.txt
+testHubFiles = empty.html genomes.txt hub.txt hg38.trackDb.txt GCA_028885655.2.trackDb.txt
 testHubFilesOutput = ${testHubFiles:%=output/%}
 
 testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/domainDecorators/tests/output/hub.txt
@@ -25,13 +25,13 @@ all:
 	@echo "      make test"
 	@echo "      make fulltest"
 	@echo "      make aligntest"
-	@echo "      make buildHub"
+	@echo "      make hub"
 	@echo "      make clean"
 	@exit 0
 
 
 test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests \
-	uniprotDecoratorsMergeTests xspeciesTests buildHub
+	uniprotDecoratorsMergeTests xspeciesTests hub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
 	@echo "==========================================" >&2
@@ -153,7 +153,8 @@ ${gencodeBb}: input/gencode.v43.pc.gp
 cat_bigcat = output/GCA_028885655.2.cat.bb
 ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_028885655.2/GCA_028885655.2.2bit
 
-xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotMapAnnots
+xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotMapAnnots \
+	testXSpeciesAnnotsToDeco
 
 testXSpeciesRnaMap: mkout
 	${xspeciesTrans2TransMap} input/gencode.v43.pc.psl input/gencode.v43.pc.fa \
@@ -178,6 +179,14 @@ testXSpeciesUniprotMapAnnots: mkout
 	pslCheck -verbose=0 output/$@.psl
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
+testXSpeciesAnnotsToDeco: mkout
+	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
+	    expected/testXSpeciesUniprotMapAnnots.psl expected/testXSpeciesUniprotMapAnnots.ref.tsv \
+            input/GCA_028885655.2.cat.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
+	diff expected/$@.bed output/$@.bed
+	diff expected/$@.types.tsv output/$@.types.tsv
+	bedToBigBed -type=bed12+ -as=${decoAs} -sizesIs2Bit -tab expected/$@.bed ${ponAbeTwobit} output/$@.bb
+
 ${cat_bigcat}: input/GCA_028885655.2.cat.bigCat input/bigCat.as
 	@mkdir -p $(dir $@)
 	bedToBigBed -tab -type=bed12+ -as=input/bigCat.as -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
@@ -185,7 +194,8 @@ ${cat_bigcat}: input/GCA_028885655.2.cat.bigCat input/bigCat.as
 
 
 # hub
-buildHub: ${gencodeBrowserDirDone} ${testHubFilesOutput}
+hub: ${gencodeBrowserDirDone} ${testHubFilesOutput}
+	hubCheck $$(pwd)/output/hub.txt
 
 ${gencodeBrowserDirDone}: ${gencodeBb}
 	@mkdir -p ${gencodeBrowserDir}
