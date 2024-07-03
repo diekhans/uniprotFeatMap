@@ -292,7 +292,7 @@ class UniprotDecoration(Decoration):
     """Holds a decoration BED + extra data.  This matches etc/uniprotDecoration.as. """
 
     # keep in schema order
-    __slots__ = ("annotType", "dataSet", "uniprotAcc", "transCategory", "transCategory", "srcTransId",
+    __slots__ = ("annotType", "dataSet", "uniprotAcc", "transCategory", "transCategory", "srcTransId", "mappedTransId",
                  "featStatus", "category", "categoryName", "description", "shortFeatType", "featType",
                  "shortName", "longName", "comment", "disease")
 
