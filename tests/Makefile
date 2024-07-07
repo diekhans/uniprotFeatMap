@@ -113,7 +113,7 @@ testUniprotMapAnnotsTR: mkout
 
 ###
 uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP testUniprotAnnotsToDecoratorsTR \
-	testUniprotAnnotsToDecoColorHelp
+	testUniprotAnnotsToDecoColorHelp testUniprotAnnotsToDecoratorsError
 
 # $(call runUniprotAnnotsToDecorators,swissprot,SP)
 define runUniprotAnnotsToDecorators
@@ -133,6 +133,13 @@ testUniprotAnnotsToDecoratorsTR: mkout ${gencodeBb}
 testUniprotAnnotsToDecoColorHelp: mkout
 	${uniprotAnnotsToDecorators} --help-colors >output/$@.out
 	diff expected/$@.out output/$@.out
+
+# error handling, use to not terminate on fail to open files
+testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
+	! ${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissport.9606.annots.tab \
+	    expected/testUniprotMapAnnotsSP.psl expected/does-not-exist.tsv \
+            input/gencode.v43.pc.psl output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
+	grep -q 'Exception: Pool initialization failed' output/$@.err 
 
 ###
 uniprotDecoratorsMergeTests: testUniprotDecoratorsMerge

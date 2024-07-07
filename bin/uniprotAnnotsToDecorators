@@ -217,14 +217,31 @@ class AnnotationProcessor:
                 self._buildAnnotation(annotPsl, annot, alignIdx, decoratorBeds)
         return decoratorBeds
 
+##
+# This holds the forked process-global instance of AnnotationProcessor
+# If an error occurs during initialization, it is set to the Exception
+##
+gAnnotationProcessor = None
+
 def workerInit(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet):
-    "sub-process setup"
+    "sub-process setup, will set global annotation process or store an exception."
     global gAnnotationProcessor
-    gAnnotationProcessor = AnnotationProcessor(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
+    try:
+        gAnnotationProcessor = AnnotationProcessor(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
+    except Exception as ex:
+        gAnnotationProcessor = Exception("Pool initialization failed")
+        gAnnotationProcessor.__cause__ = ex
 
 def worker(alignBatch):
-    "sub-process worker"
-    return gAnnotationProcessor.processBatch(alignBatch)
+    "sub-process worker, if an error occur es, and exception object is the return"
+    if isinstance(gAnnotationProcessor, Exception):
+        return gAnnotationProcessor
+    try:
+        return gAnnotationProcessor.processBatch(alignBatch)
+    except Exception as ex:
+        ex2 = Exception("Worker failed")
+        ex2.__cause__ = ex
+        return ex
 
 def annotGenomeBatchReader(annotGenomePslFile, batchSize):
     """return tuples of (annotPsl, alignIdx)"""
@@ -240,36 +257,45 @@ def annotGenomeBatchReader(annotGenomePslFile, batchSize):
     if len(alignBatch) > 0:
         yield alignBatch
 
-def writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile):
-    "write results from multiprocessing task as they come back via an iter"
+def checkForWorkerFail(decoBeds):
+    if isinstance(decoBeds, Exception):
+        raise Exception("creation of decorator BEDs failed") from decoBeds
+
+def writeDecoratorBeds(decoBedIters, annotDecoratorBedFile):
+    """write results from multiprocessing task as they come back via an iter over lists of beds,
+    or maybe a list of lists. This also checks for exceptions in the list, since these
+    are combine back asynchronously, we have to way until actually writing"""
     featTypes = set()
     with fileOps.AtomicFileCreate(annotDecoratorBedFile) as tmpDecoBed:
         with pipettor.Popen(["sort"] + decoratorBedSortOpts, 'w', stdout=tmpDecoBed) as decoBedFh:
-            for batchBeds in batchBedsIter:
-                for bed in batchBeds:
+            for decoBeds in decoBedIters:
+                checkForWorkerFail(decoBeds)
+                for bed in decoBeds:
                     bed.write(decoBedFh)
                     featTypes.add((bed.category, bed.categoryName, bed.featType, bed.shortFeatType))
     return featTypes
-
 
 def processSingle(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
                   annotDecoratorBedFile, dataSet, batchSize):
     # this is easier to debug without mp
     workerInit(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
-    batchBedsIters = []
+    decoBedsList = []
     for alignBatch in annotGenomeBatchReader(annotGenomePslFile, batchSize):
-        batchBedsIters.append(worker(alignBatch))
+        decoBeds = worker(alignBatch)
+        checkForWorkerFail(decoBeds)
+        decoBedsList.append(decoBeds)
 
-    featTypes = writeDecoratorBeds(batchBedsIters, annotDecoratorBedFile)
+    featTypes = writeDecoratorBeds(decoBedsList, annotDecoratorBedFile)
     return featTypes
 
 def processMulti(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
                  annotDecoratorBedFile, dataSet, nprocs, batchSize):
     with mp.Pool(processes=nprocs, initializer=workerInit,
                  initargs=(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)) as pool:
-        batchBedsIter = pool.imap_unordered(worker,
-                                            annotGenomeBatchReader(annotGenomePslFile, batchSize))
-        featTypes = writeDecoratorBeds(batchBedsIter, annotDecoratorBedFile)
+        decoBedIters = pool.imap_unordered(worker,
+                                           annotGenomeBatchReader(annotGenomePslFile, batchSize))
+
+        featTypes = writeDecoratorBeds(decoBedIters, annotDecoratorBedFile)
     return featTypes
 
 def writeFeatTypes(featTypes, featTypesTsv):

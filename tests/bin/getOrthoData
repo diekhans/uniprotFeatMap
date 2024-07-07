@@ -19,7 +19,7 @@ outdir="$2"
 target_asmname=ponAbe-GCA_028885655.2
 target_asmacc=GCA_028885655.2
 
-xspecies_rootdir=/hive/users/markd/gencode/projs/cls-t2t-primate/hs/data/primate
+xspecies_rootdir=/hive/users/markd/gencode/projs/cls/cls-t2t-primate/hg38/data/assemblies
 xspecies_url=https://public.gi.ucsc.edu/~pnhebbar/t2t_autosomes/assemblyHub
 
 target_catbb=${xspecies_url}/${target_asmacc}/tm.bb

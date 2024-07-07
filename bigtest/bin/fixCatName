@@ -1,0 +1,30 @@
+#!/bin/bash
+set -beEu -o pipefail
+
+# set name column to transcriptId so it is unique
+# filter for only protein-coding
+
+usage="$0 catBbUrl genome2bit catFixedBb"
+
+if [ $# != 3 ] ; then
+    echo "Wrong number of args: $usage" >&2
+    exit 1
+fi
+catBbUrl="$1" ; shift
+genome2bit="$1" ; shift
+catFixedBb="$1" ; shift
+
+tmpAs=${catFixedBb}.as.tmp
+tmpCatBbin=${catFixedBb}.bbin.tmp
+
+extraIndex="name,name2,txId,geneName,sourceGene,sourceTranscript"
+
+bigBedInfo -asOut ${catBbUrl} > ${tmpAs}
+
+bigBedToBed ${catBbUrl} /dev/stdout | tawk '$6 < $7 {$4 = $17 ; print}' > ${tmpCatBbin}
+bedToBigBed -type=bed12+ -tab -as=${tmpAs} -extraIndex=${extraIndex} -sizesIs2Bit ${tmpCatBbin} ${genome2bit} ${catFixedBb}.tmp
+  
+
+
+mv -f ${catFixedBb}.tmp ${catFixedBb}
+rm -f ${tmpAs} ${tmpCatBbin} 

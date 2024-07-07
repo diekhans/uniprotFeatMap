@@ -3,6 +3,7 @@
 #   include ${root}/defs.mk
 
 .PRECIOUS:
+.SECONDARY:
 
 SHELL = /bin/bash
 export BASHOPTS = -beEu -o pipefail
@@ -30,7 +31,7 @@ dataDir = ${root}/data
 
 # GENCODE set
 gencodeVer = v45
-gencodePre = ../data/gencode.${gencodeVer}
+gencodePre = ${root}/data/gencode.${gencodeVer}
 gencodeGp = ${gencodePre}.pc.gp 
 gencodePsl = ${gencodePre}.pc.psl
 gencodeMeta = ${gencodePre}.tsv

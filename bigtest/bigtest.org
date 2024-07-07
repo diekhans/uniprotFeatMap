@@ -19,6 +19,18 @@ genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v45.pc.gp gencode.v45.
 # CDS must be upper-case
 getRnaPred -cdsUpper -genomeSeqs=/hive/data/genomes/hg38/hg38.2bit no ./gencode.v45.pc.gp  all gencode.v45.pc.fa
 
+
+* cross-species
+Need chains from hg38 to target species.  Have them already for cls, so
+just link
+cd /hive/users/markd/gencode/projs/cls/cls-t2t-primate/hg38/data/assemblies
+
+find . -name '*.chain.gz' -o -name '*.2bit' -o -name '*.sizes' | cpio -pduml /hive/users/markd/kznf/projs/bed-decorators/uniprotFeatMap/data/t2t-primates/
+
+only use T2T apes, as need consistent CAT; drop musMus ratNor, calJac, macMul
+
+
+
 * comparison of number of problems
 
 ** initial
