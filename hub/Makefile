@@ -1,15 +1,16 @@
 root = ..
 include ${root}/defs.mk
+include ${root}/xspecies.defs.mk
 
-decoDir = ../bigtest/decorators
+decoDir = ${root}/bigtest/decorators
 bigGpAs =  ${HOME}/kent/src/hg/lib/bigGenePred.as
 
 hub_url = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/hub/hub.txt
 
 algos = blat
+algo = blat
 
-
-all: ${algos:%=%_mkAlgo} mkGencodeBb mkDoc
+all: ${algos:%=%_mkAlgo} mkGencodeBb mkDoc xspeciesHub
 	${MAKE} check
 %_mkAlgo:
 	${MAKE} mkDecorators algo=$*
@@ -39,18 +40,49 @@ ${gencodeTrackPre}.bed: ${gencodeGp}
 	tmlr cut -o -f transcriptId,geneName,geneId ${gencodeMeta} > hg38/gencode.names
 	tmlr cut -o -f transcriptId,transcriptType ${gencodeMeta} > hg38/gencode.types
 	genePredToBigGenePred -geneNames=hg38/gencode.names -geneType=hg38/gencode.types $< /dev/stdout | sort -k1,1 -k2,2n > $@.tmp
-	#rm hg38/gencode.names hg38/gencode.types
 	mv -f $@.tmp $@
 
 mkDoc: hg38/gencodeV45_blat_deco.html
 
-hg38/gencodeV45_blat_deco.html: ../doc/deco-desc.html
+hg38/gencodeV45_blat_deco.html: ${root}/doc/deco-desc.html
+	@mkdir -p $(dir $@)
 	cp -f $< $@
 
-check: checked.done
-
-#hg38/uniprot-gencode.${gencodeVer}.blast.bb
-checked.done: ${gencodeTrackPre}.bb  hg38/uniprot-gencode.${gencodeVer}.blat.bb
+check:
 	hubCheck ${hub_url}
-	touch $@
 
+
+##
+# xspecies
+##
+xspeciesHub: ${asm_names:%=%_xspeciesHub}
+%_xspeciesHub:
+	${MAKE} xspeciesHubAsm  asmname=$* asmacc=$(call asmname_to_acc,$*)
+
+##
+# asmname
+# asmacc
+##
+xhub_cat_bb = ${asmname}/${asmname}.cat.bb
+xhub_deco_bb = ${asmname}/${asmname}.cat.blat.deco.bb
+xhub_deco_html = ${asmname}/deco.html
+xhub_trackDb = ${asmname}/trackDb.txt
+xspeciesHubAsm: ${xhub_cat_bb} ${xhub_deco_bb} ${xhub_deco_html} ${xhub_trackDb}
+
+${xhub_cat_bb}: ${xspecies_cat_bb}
+	@mkdir -p $(dir $@)
+	ln -f $< $@
+
+${xhub_deco_bb}: ${xspecies_decorators_bed}
+	@mkdir -p $(dir $@)
+	bedToBigBed -type=bed12+ -as=${decoAs} -tab $< ${xspecies_chromsizes} $@.tmp
+	mv -f $@.tmp $@
+
+${xhub_deco_html}: ${root}/doc/deco-desc.html
+	@mkdir -p $(dir $@)
+	cp -f $< $@
+
+${xhub_trackDb}: common/xspecies.trackDb.txt
+	@mkdir -p $(dir $@)
+	sed -e 's/@genebb@/$(notdir ${xhub_cat_bb})/' -e 's/@decobb@/$(notdir ${xhub_deco_bb})/' $< > $@.tmp
+	mv -f $@.tmp $@

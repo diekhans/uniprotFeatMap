@@ -1,0 +1,39 @@
+track cat_blat_deco
+html cat_blat_deco.html
+shortLabel CAT + UniProt
+longLabel CAT w mapped UniProt Decorators
+description CAT w mapped UniProt Decorators
+type bigGenePred
+group genes
+#itemRgb on
+color 12,12,120
+priority 2
+visibility pack
+searchIndex name,geneName,geneName2
+bigDataUrl @genebb@
+labelFields name,name2,geneName,sourceTranscript
+defaultLabelFields name2
+html deco.html
+labelSeperator " / "
+mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
+decorator.default.blockMode Adjacent
+decorator.default.glyphMode Adjacent
+decorator.default.bigDataUrl @decobb@
+decorator.default.filterLabel.annotType Annotation type
+decorator.default.filterValues.annotType feature,disruption
+decorator.default.filterLabel.dataSet Uniprot dataset
+decorator.default.filterValues.dataSet SwissProt,TrEMBL
+decorator.default.filterValuesDefault.dataSet SwissProt
+decorator.default.filterLabel.categoryName Annotation category
+decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Region of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation
+decorator.default.filterValuesDefault.categoryName Domain
+decorator.default.mouseOver \
+   description: ${description}<br> \
+   UniProt acc: <a href="https://www.uniprot.org/uniprot/${uniprotAcc}" target=_BLANK>${uniprotAcc}</a><br> \
+   feature type: ${featType}<br> \
+   feature category: ${category}<br> \
+   transcript category: ${transCategory}<br> \
+   feature status: ${featStatus}<br> \
+   UniProt data set: ${dataSet}<br> \
+   comment: ${comment}<br> \
+   disease: ${disease}

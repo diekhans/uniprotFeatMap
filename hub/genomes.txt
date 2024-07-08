@@ -1,3 +1,21 @@
 genome hg38
 trackDb hg38/trackDb.txt
 
+genome GCA_028885655.2
+trackDb ponAbe-GCA_028885655.2/trackDb.txt
+
+genome GCA_028885625.2
+trackDb ponPyg-GCA_028885625.2/trackDb.txt
+
+genome GCA_029281585.2
+trackDb gorGor-GCA_029281585.2/trackDb.txt
+
+genome GCA_029289425.2
+trackDb panPan-GCA_029289425.2/trackDb.txt
+
+genome GCA_028858775.2
+trackDb panTro-GCA_028858775.2/trackDb.txt
+
+genome GCA_028878055.2
+trackDb symSyn-GCA_028878055.2/trackDb.txt
+

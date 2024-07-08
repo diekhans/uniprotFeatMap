@@ -15,6 +15,12 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.annotTransRef import annotTransRefCreate, annotTransRefWrite
 
+##
+# pipeline
+#   annot2protcds -> protcds2trans -> annot2trans
+#   [xspecies] annot2trans -> trans2xsptrans -> annot2xsptrans
+#   annot2trans -> trans2genome -> annot2genome
+##
 def parseArgs():
     desc = """
     Map Uniprot annotations to the genome via protein and transcript
