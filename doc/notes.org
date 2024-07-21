@@ -49,6 +49,6 @@ can not be a PSL as there is nothing aligned
 - create 1-base PSLs that indicate where unmapped annotation should occur
   based on context.
 - output a metadata file that identifies these records
-** uniprotMapAnnots
+** uniprotAnnotsMap
 - unmapped PSL are passed throuth, dropped ones added back
 - updated metadata produced

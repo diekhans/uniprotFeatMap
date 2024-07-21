@@ -20,7 +20,7 @@ diff = diff -u
 
 uniprotProteinTranscriptAlign = ${binDir}/uniprotProteinTranscriptAlign 
 uniprotProteinTranscriptMap = ${binDir}/uniprotProteinTranscriptMap
-uniprotMapAnnots = ${binDir}/uniprotMapAnnots
+uniprotAnnotsMap = ${binDir}/uniprotAnnotsMap
 uniprotAnnotsToDecorators = ${binDir}/uniprotAnnotsToDecorators
 uniprotDecoratorsMerge = ${binDir}/uniprotDecoratorsMerge
 xspeciesTrans2TransMap = ${binDir}/xspeciesTrans2TransMap

@@ -235,7 +235,7 @@ def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
         if xspeciesTransMapInfoTsv is not None:
             os.unlink(xspeciesTransMapInfoTsv)
 
-def uniprotMapAnnots(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
+def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv,
                      xspeciesTransPsl, interPrefix):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
@@ -258,7 +258,7 @@ def uniprotMapAnnots(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
         os.unlink(annotCanonPsl)
 
 def main(opts):
-    uniprotMapAnnots(opts.uniprotAnnotsTsv, opts.cdsTransPairedPsl, opts.transGenomePsl,
+    uniprotAnnotsMap(opts.uniprotAnnotsTsv, opts.cdsTransPairedPsl, opts.transGenomePsl,
                      opts.annotGenomePsl, opts.annotTransRefTsv, opts.problemLogTsv,
                      opts.xspeciesTransPsl, opts.interPrefix)
 

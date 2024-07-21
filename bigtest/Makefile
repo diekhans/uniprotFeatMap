@@ -93,7 +93,7 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 
 ${mapAnnotsPsl}: ${protTransPairedAln} ${uniprotAnnot}
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ${uniprotMapAnnots} ${uniprotAnnot} ${protTransPairedAln} ${gencodePsl} \
+	${time} ${uniprotAnnotsMap} ${uniprotAnnot} ${protTransPairedAln} ${gencodePsl} \
             $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsProblemsTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -143,7 +143,7 @@ ${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_p
 	mv -f $@.tmp $@
 
 ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv} &: ${uniprotAnnot} ${protTransPairedAln} ${xspecies_cat_psl} ${src_xspecies_rna_aln}
-	${uniprotMapAnnots} --xspeciesTransPsl=${src_xspecies_rna_aln} \
+	${uniprotAnnotsMap} --xspeciesTransPsl=${src_xspecies_rna_aln} \
 	    ${uniprotAnnot} ${protTransPairedAln} ${xspecies_cat_psl} \
             ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv}
 	mv -f ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_psl}

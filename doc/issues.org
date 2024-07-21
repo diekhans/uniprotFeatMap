@@ -3,9 +3,6 @@
 
 * uniprot.py  diff between id, acc, main isoform acc|id not clear
 
-* uniprotMapAnnots doesn't follow naming convention (uniprotProteinTranscriptMap)
-
-
 * annotation term used when feature is UniProt terminology
 
 * Max:

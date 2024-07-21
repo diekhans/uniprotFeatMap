@@ -17,10 +17,10 @@ annotation -> uniprotCanonical -> transcript -> genome
 1. `uniprotProteinTranscriptMap` - Filter protein to PSL transcript alignments to pair them based on being the listed transcript in UniProt.  Project the primary alignments to other transcript isoforms using the genomic coordiates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in UniProt CDS to transcript alignments.
    * input: gencodeMetaTsv, uniprotMetaTsv, protTransPsl
    * output: cdsTransPairedPsl, problemLogTsvh
-1. `uniprotMapAnnots` - Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.  This can also map to other assembly via way of transcript-transcript alignments.
+1. `uniprotAnnotsMap` - Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.  This can also map to other assembly via way of transcript-transcript alignments.
    * input: uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl
    * output: annotGenomePsl, annotTransRefTsv
-1. `uniprotAnnotsToDecorators` - Convert domain annotations alignments create by uniprotMapAnnots to a decorator BED file in uniprotDecoration.as format.  Possibly filtering the results.
+1. `uniprotAnnotsToDecorators` - Convert domain annotations alignments create by uniprotAnnotsMap to a decorator BED file in uniprotDecoration.as format.  Possibly filtering the results.
    * input: uniprotAnnotsTsv, annotGenomePsl, annotTransRefTsv
    * output: annotDecoratorBedFile
 
@@ -48,7 +48,7 @@ accessions.  Other gene sets will require different criteria.
 These alignments of srcTrans, annotated by `uniprotProteinTranscriptMap`, to
 targetTrans in the target genomes, along with alignments of the target mRNAs
 to the target genome are required.  These two alignments are given as
-additional input to `uniprotMapAnnots`, to project UniProt features through to
+additional input to `uniprotAnnotsMap`, to project UniProt features through to
 the target transcripts on the target genome.
 
 

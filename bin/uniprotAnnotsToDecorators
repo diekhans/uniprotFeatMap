@@ -44,7 +44,7 @@ class HelpColors(argparse.Action):
 
 def parseArgs():
     desc = """
-    Convert domain annotations alignments create by uniprotMapAnnots
+    Convert domain annotations alignments create by uniprotAnnotsMap
     to a decorator BED file in uniprotDecoration.as format.  Possibly filtering
     the results.
     """
@@ -64,7 +64,7 @@ def parseArgs():
     parser.add_argument("uniprotAnnotsTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
     parser.add_argument("annotGenomePsl",
-                        help="""Uniprot annotations mapped to genome from uniprotMapAnnots (input). For cross-species mapping, this will
+                        help="""Uniprot annotations mapped to genome from uniprotAnnotsMap (input). For cross-species mapping, this will
                         be the target species genome.""")
     parser.add_argument("annotTransRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")

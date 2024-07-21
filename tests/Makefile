@@ -27,10 +27,10 @@ all:
 	@echo "      make aligntest"
 	@echo "      make hub"
 	@echo "      make clean"
-	@exit 0
+	@exit 1
 
 
-test: uniprotProteinTranscriptMapTests uniprotMapAnnotsTests uniprotAnnotsToDecoratorsTests \
+test: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDecoratorsTests \
 	uniprotDecoratorsMergeTests xspeciesTests hub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
@@ -88,12 +88,12 @@ testUniprotProteinTranscriptMapTR: mkout
 	$(call runUniprotProteinTranscriptMap,trembl,TR)
 
 ###
-uniprotMapAnnotsTests: testUniprotMapAnnotsSP testUniprotMapAnnotsTR
+uniprotAnnotsMapTests: testUniprotAnnotsMapSP testUniprotAnnotsMapTR
 # intermediates saved for debugging
 
 # $(call runMapAnnots,swissprot,SP)
 define runMapAnnots
-	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
+	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
 	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
 	    input/gencode.v43.pc.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
@@ -106,9 +106,9 @@ define runMapAnnots
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 endef
 
-testUniprotMapAnnotsSP: mkout
+testUniprotAnnotsMapSP: mkout
 	$(call runMapAnnots,swissprot,SP)
-testUniprotMapAnnotsTR: mkout
+testUniprotAnnotsMapTR: mkout
 	$(call runMapAnnots,trembl,TR)
 
 ###
@@ -118,7 +118,7 @@ uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP testUniprotAnnot
 # $(call runUniprotAnnotsToDecorators,swissprot,SP)
 define runUniprotAnnotsToDecorators
 	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/$(1).9606.tab input/$(1).9606.annots.tab \
-	    expected/testUniprotMapAnnots$(2).psl expected/testUniprotMapAnnots$(2).ref.tsv \
+	    expected/testUniprotAnnotsMap$(2).psl expected/testUniprotAnnotsMap$(2).ref.tsv \
             input/gencode.v43.pc.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
@@ -137,7 +137,7 @@ testUniprotAnnotsToDecoColorHelp: mkout
 # error handling, use to not terminate on fail to open files
 testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
 	! ${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissport.9606.annots.tab \
-	    expected/testUniprotMapAnnotsSP.psl expected/does-not-exist.tsv \
+	    expected/testUniprotAnnotsMapSP.psl expected/does-not-exist.tsv \
             input/gencode.v43.pc.psl output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
 	grep -q 'Exception: Pool initialization failed' output/$@.err 
 
@@ -160,7 +160,7 @@ ${gencodeBb}: input/gencode.v43.pc.gp
 cat_bigcat = output/GCA_028885655.2.cat.bb
 ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_028885655.2/GCA_028885655.2.2bit
 
-xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotMapAnnots \
+xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotAnnotsMap \
 	testXSpeciesAnnotsToDeco
 
 testXSpeciesRnaMap: mkout
@@ -172,8 +172,8 @@ testXSpeciesGencodeCatFilter: mkout ${cat_bigcat}
 	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${cat_bigcat} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
-testXSpeciesUniprotMapAnnots: mkout
-	${uniprotMapAnnots} --interPrefix=output/$@.inter. \
+testXSpeciesUniprotAnnotsMap: mkout
+	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
 	    --xspeciesTransPsl=expected/testXSpeciesGencodeCatFilter.psl \
 	    input/swissprot.9606.annots.tab expected/testUniprotProteinTranscriptMapSP.psl \
 	    input/GCA_028885655.2.cat.psl \
@@ -188,7 +188,7 @@ testXSpeciesUniprotMapAnnots: mkout
 
 testXSpeciesAnnotsToDeco: mkout
 	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
-	    expected/testXSpeciesUniprotMapAnnots.psl expected/testXSpeciesUniprotMapAnnots.ref.tsv \
+	    expected/testXSpeciesUniprotAnnotsMap.psl expected/testXSpeciesUniprotAnnotsMap.ref.tsv \
             input/GCA_028885655.2.cat.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
