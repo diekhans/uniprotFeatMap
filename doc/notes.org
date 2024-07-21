@@ -35,6 +35,20 @@ makeUniProtPsl.sh
   filter based on either
   hgncSym or hgncId,  ensemblGene, ensemblTrans
 
-
 * including refseq
 /hive/data/genomes/hg38/bed/ncbiRefSeq.2024-01-29/process/
+
+
+* metadata pass through
+* design of pass passing through unmapped features:
+properly order between other features
+can not be a PSL as there is nothing aligned
+
+
+** uniprotProteinTranscriptMap
+- create 1-base PSLs that indicate where unmapped annotation should occur
+  based on context.
+- output a metadata file that identifies these records
+** uniprotMapAnnots
+- unmapped PSL are passed throuth, dropped ones added back
+- updated metadata produced

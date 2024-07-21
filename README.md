@@ -1,3 +1,5 @@
+# Mapping UniProt annotations to transcripts
+
 ## mapping flow
 
 annotation -> uniprotCanonical -> transcript -> genome
@@ -12,7 +14,7 @@ annotation -> uniprotCanonical -> transcript -> genome
 1. `uniprotProteinTranscriptAlign` - Align protein sequences to transcript RNAs with BLAT or BLAST. Creates a protein to NA PSL alignments, with some basic filtering.
    * input: uniprotFa, transFa
    * output: protTransPsl
-1. `uniprotProteinTranscriptMap` - Filter protein to PSL transcript alignments to pair them based on being the listed transcript in UniProt.  Project the primary alignments to other transcript isoforms using the genomic coordiates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in UniProt CDS to transcri
+1. `uniprotProteinTranscriptMap` - Filter protein to PSL transcript alignments to pair them based on being the listed transcript in UniProt.  Project the primary alignments to other transcript isoforms using the genomic coordiates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in UniProt CDS to transcript alignments.
    * input: gencodeMetaTsv, uniprotMetaTsv, protTransPsl
    * output: cdsTransPairedPsl, problemLogTsvh
 1. `uniprotMapAnnots` - Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.  This can also map to other assembly via way of transcript-transcript alignments.
@@ -66,7 +68,6 @@ The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
 
 A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `annotMapId`s back to the UniProt feature and transcript.
 
-Distortion decorators will have an addition disruption index add the annotMapId
-to make them unique.
+Disruption decorators will have an addition disruption index appended to annotMapId to make them unique.
 
 
