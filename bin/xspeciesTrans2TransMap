@@ -32,9 +32,9 @@ def parseArgs():
 
 def transMapPipeline(srcMRnaPsl, srcMRnaFa, mappingChains,
                      targetMRnaPsl, targetMRnaTwoBit, srcTargetMRnaPsl):
-    cmd1 = ("pslMap", "-inType=na_na", "-mapType=na_na", "-chainMapFile",
+    cmd1 = ("pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-chainMapFile",
             srcMRnaPsl, mappingChains, "/dev/stdout")
-    cmd2 = ("pslMap", "-inType=na_na", "-mapType=na_na", "-swapMap",
+    cmd2 = ("pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-swapMap",
             "/dev/stdin", targetMRnaPsl, "/dev/stdout")
     cmd3 = ("pslMapPostChain", "/dev/stdin", "/dev/stdout")
     cmd4 = ("pslRecalcMatch", "/dev/stdin", targetMRnaTwoBit, srcMRnaFa, "/dev/stdout")

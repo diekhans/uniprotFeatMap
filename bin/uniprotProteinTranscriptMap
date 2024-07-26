@@ -138,7 +138,7 @@ def writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl):
     return noncanonTransToGenomePslFile
 
 def mkPslMapCmds(inPsl, mapPsl, outPsl, swapMap=False, interPrefix=None):
-    cmd1 = ["pslMap", "-check", "-inType=na_na", "-mapType=na_na"]
+    cmd1 = ["pslMap", "-tsv", "-check", "-inType=na_na", "-mapType=na_na"]
     cmds = [cmd1]
     if swapMap:
         cmd1.append("-swapMap")

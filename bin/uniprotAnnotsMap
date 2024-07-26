@@ -165,7 +165,7 @@ def writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv, annotTransRefTs
 def mkAnnotToTransCmd(annotIsoPsl, cdsTransPairedPsl, annotTransPsl, interPrefix):
     """create command to map annotations to transcripts, all CDS coordinates
     """
-    cmd1 = ["pslMap", "-inType=na_na", "-mapType=na_na", "-check",
+    cmd1 = ["pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-check",
             annotIsoPsl, cdsTransPairedPsl, annotTransPsl]
     cmds = [cmd1]
     if interPrefix is not None:
@@ -177,7 +177,7 @@ def mkTransToXSpeciesCmd(annotTransPsl, xspeciesTransPsl, xspeciesAnnotTransPsl,
                          xspeciesTransMapInfoTsv, interPrefix):
     """create command to map annotations to transcripts, all CDS coordinates
     """
-    cmd1 = ["pslMap", "-inType=na_na", "-mapType=na_na", "-check",
+    cmd1 = ["pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-check",
             annotTransPsl, xspeciesTransPsl, xspeciesAnnotTransPsl,
             f"-mapInfo={xspeciesTransMapInfoTsv}"]
     cmds = [cmd1]
@@ -189,7 +189,7 @@ def mkAnnotToGenomeCmd(annotTransPsl, transGenomePsl, annotGenomePsl, annotGenom
     """create command to map annotations to genomes
        NA/NA -> NA/NA -> NA/NA
     """
-    cmd = ["pslMap", "-inType=na_na", "-mapType=na_na", "-check",
+    cmd = ["pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-check",
            annotTransPsl, transGenomePsl, annotGenomePsl,
            f"-mapInfo={annotGenomeMapInfoTsv}"]
     return [cmd]
