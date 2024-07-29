@@ -46,7 +46,7 @@ protTransAlignTests: testProtTransSPBlastAlign testProtTransSPBlatAlign \
 # $(call runAlignments,blat,swissprot)
 define runAlignments
 	rm -rf output/$@.psl output/$@.work
-	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
+	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.tab input/${2}.9606.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 endef
@@ -67,8 +67,8 @@ testProtTransTRBlatAlign: mkout
 uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapSP testUniprotProteinTranscriptMapTR
 
 # turn on for debugging
-# uniprotProteinTranscriptMapInterPrefix = --interPrefix=output/$@.inter.
-uniprotProteinTranscriptMapInterPrefix =
+uniprotProteinTranscriptMapInterPrefix = --interPrefix=output/$@.inter.
+# uniprotProteinTranscriptMapInterPrefix =
 
 # $call runUniprotProteinTranscriptMap,swissprot,SP)
 define runUniprotProteinTranscriptMap

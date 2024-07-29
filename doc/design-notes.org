@@ -1,0 +1,20 @@
+
+* alignment of protein to transcripts
+
+Converting protein to transcript alignments to CDS to transcript alignment, by
+multiplying the AA coordinates by three handles spliced codons once mapped to
+genome.
+
+Initially approach was to align proteins to both canonical and non-canonical
+transcripts and pick the best alignments.  However, there were a number of
+discrepancies in the non-canonical transcript alignments.  This was change to
+only align to canonical and then project these alignments to the non-canonical
+transcripts, which resulted in a significant improvement.
+
+Alignments are done to canonical transcript where the UTR is hard-masked to
+prevent alignment into UTR.  Projection to non-canonical transcripts have
+UTR projection trimmed.
+
+Both BLAT protein to DNA and TBLASTN were tried to align the UniProt
+proteins.  When aligning only to the canonical transcript, the difference
+were negligible.

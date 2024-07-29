@@ -44,11 +44,37 @@ makeUniProtPsl.sh
 properly order between other features
 can not be a PSL as there is nothing aligned
 
+*** load UniProt tab data into sqlite data, much easier to make parallel
 
-** uniprotProteinTranscriptMap
-- create 1-base PSLs that indicate where unmapped annotation should occur
-  based on context.
-- output a metadata file that identifies these records
 ** uniprotAnnotsMap
+*** thinking:
+- rather than annotation using PSL line, unmapped features still get ids
+- is it enough to anchor ids or do need to create 1-bases psl with relative locations
+
 - unmapped PSL are passed throuth, dropped ones added back
 - updated metadata produced
+
+** metadata protein-transcript map
+uniprotId  status
+
+"no_gene_transcript_in_geneset"
+"no_transcript_in_geneset"
+"uniprot_not_aligned"
+"noncanon_trans_not_mapped"
+
+*** new
+uniprotAcc
+status
+taxonId
+dataSet
+transcriptId
+transCategory
+canonTransId
+cdsCoverage
+
+
+
+** metadata annotMap
+annotId	annotMapId	transcriptPos	transcriptId	canonTransId	alignIdx
+
+canonTransId not filled in  

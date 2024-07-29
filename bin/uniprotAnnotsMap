@@ -13,7 +13,7 @@ from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.uniprot import UniProtAnnotTbl
-from uniprotmap.annotTransRef import annotTransRefCreate, annotTransRefWrite
+from uniprotmap.metadata import annotTransRefCreate, annotTransRefWrite
 
 ##
 # pipeline
@@ -99,13 +99,13 @@ def createAnnotPsl(annot, protCdsSizes):
 
 def warnProtNotMapped(annot, warned, logFh):
     # no point if not in sizes, will not map
-    key = ('uniport-not-mapped', annot.mainIsoAcc)
+    key = ('uniport-protein-not-mapped', annot.mainIsoAcc)
     if key not in warned:
         problemLogAnnot(logFh, key[0], annot)
         warned.add(key)
 
 def warnOffEnd(annot, protCdsSize, warned, logFh):
-    # some are off the end
+    # some are off the end; these are partially annotated
     key = ('uniprot-feature-off-end', annot.mainIsoAcc, annot.featType)
     if key not in warned:
         problemLogAnnot(logFh, key[0], annot, protCdsSize // 3)

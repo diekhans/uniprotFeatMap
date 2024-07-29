@@ -1,4 +1,10 @@
 """
+Metadata support associated with annotation mappings.
+
+
+
+
+
 File that cross-references mapped annotations to transcript metadata and alignment position
 
 annotIds are in the form: <canon_acc>|<annot_idx>

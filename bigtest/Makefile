@@ -52,7 +52,7 @@ mkProtTransAln: ${protTransRawAln} ${protTransPairedAln}
 ${protTransRawAln}: ${unitprotFa} ${gencodeFa}
 	@mkdir -p $(dir $@)
 	rm -rf ${protTransAlnTmpDir}
-	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${unitprotFa} ${gencodeFa} $@.${tmpext} ${protTransAlnTmpDir}
+	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${uniprotMeta} ${unitprotFa} ${gencodeFa} $@.${tmpext} ${protTransAlnTmpDir}
 	mv -f $@.${tmpext} $@
 
 ##

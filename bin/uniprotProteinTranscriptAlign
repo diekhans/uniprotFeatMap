@@ -7,33 +7,37 @@ import re
 import pipettor
 from Bio import SeqIO
 from pycbio.sys import fileOps
+from pycbio.hgdata.psl import PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import conf, prMsg
+from uniprotmap import prMsg
 from uniprotmap.depends import runIfNotDone, runIfOutOfDate
 from uniprotmap.align import querySplit, runBatch, buildBlastTransIndex
+from uniprotmap.uniprot import UniProtMetaTbl, dropUniportIsoformModifier
 
 uniprotProteinTranscriptAlignJob = osp.join(osp.dirname(__file__), "uniprotProteinTranscriptAlignJob")
 
 def parseArgs():
-    desc = """Align UniProt protein sequences to transcript RNAs with BLAT or
-    BLAST.  Creates a protein to NA PSL alignments, with some basic filtering.
-    UTR is hard masked to prevent alignment outside of CDS without changing
-    sequence size.
+    desc = """Align UniProt protein sequences to UniProt canonical transcripts
+    RNAs with BLAT or BLAST.  Creates a protein to NA PSL alignments, with
+    some basic filtering.  UTR is hard masked to prevent alignment outside of
+    CDS without changing sequence size.
 
-    Program can rerun to finish up after manual parasol recovery, checking
-    for the state of the result files.  After returning a files could,
-    touch ${workdir}/aligns.doneto indicate where to
+    Program can be rerun to finish up after manual parasol recovery. After a
+    failure is connect and jobs finished, touch ${workdir}/aligns.done and
+    rerun this program.
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--algo", choices=("blast", "blat"), default="blat",
                         help="alignment algorithm")
+    parser.add_argument("uniprotMetaTsv",
+                        help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("uniprotFa",
                         help="""UniProt FASTA (input)""")
     parser.add_argument("transFa",
                         help="""transcript FASTA, CDS must be in upper-case and UTR in lowercase (input)""")
-    parser.add_argument("protTransPsl",
-                        help="""alignments, sorted by transcript (output)""")
+    parser.add_argument("protCanonTransPsl",
+                        help="""alignments of UniProt proteins to their canonical transcripts, sorted by transcript (output)""")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
     return parser.parse_args()
@@ -43,20 +47,21 @@ def writeMaskFastaRec(rec, outFh):
     seq = re.sub('[a-z]', 'N', str(rec.seq))
     print(seq, file=outFh)
 
-def makeUtrMaskedFasta(inFa, outFa):
+def makeUtrMaskedFasta(uniprotMetaTbl, inFa, outFa):
     """
     Create FASTA with lower-case UTR hard-masked
     """
     with fileOps.opengz(inFa) as inFh:
         with fileOps.opengz(outFa, 'w') as outFh:
             for rec in SeqIO.parse(inFh, "fasta"):
-                writeMaskFastaRec(rec, outFh)
+                if uniprotMetaTbl.isCanonProtTrans(rec.id):
+                    writeMaskFastaRec(rec, outFh)
 
-def targetBuildDb(transFa, transDbFa, algo, targetDir):
+def targetBuildDb(uniprotMetaTbl, transFa, transDbFa, algo, targetDir):
     prMsg("building target transcript database")
     fileOps.ensureDir(targetDir)
     fileOps.ensureFileDir(transDbFa)
-    makeUtrMaskedFasta(transFa, transDbFa)
+    makeUtrMaskedFasta(uniprotMetaTbl, transFa, transDbFa)
     if algo == "blast":
         buildBlastTransIndex(transDbFa, targetDir)
 
@@ -68,25 +73,61 @@ def queryBuildDb(uniprotFa, queryDir):
     prMsg("split UniProt proteins")
     querySplit(uniprotFa, queryDir, filterFunc=lambda hline: re.match("^>.+ isRefOf .+$", hline))
 
-def combineAligns(alignDir, protTransPsl):
-    "concatenate and sort by tName (transcript))"
+def queryTargetPairPslReader(inPslFh):
+    "read batches with name query and target names, assumes sorted by (target, query)"
+    pairedPsls = []
+    for psl in PslReader(inPslFh):
+        if len(pairedPsls) == 0:
+            pairedPsls.append(psl)
+        elif ((psl.qName == pairedPsls[0].qName) and
+              (psl.tName == pairedPsls[0].tName)):
+            pairedPsls.append(psl)
+        else:
+            yield pairedPsls
+            pairedPsls = [psl]
+    if len(pairedPsls) > 0:
+        yield pairedPsls
+
+def isCanonicalProtMRnaAlign(uniprotMetaTbl, psl):
+    """Only keep alignments from canonical SwissProt isoform, as alt-isoforms to
+    a canonical transcript"""
+    uniprotMeta = uniprotMetaTbl.getByAcc(dropUniportIsoformModifier(psl.qName))
+    return ((psl.qName == uniprotMeta.mainIsoAcc) and uniprotMeta.isCanonProtTrans(psl.tName))
+
+def selectPairedPsls(uniprotMetaTbl, pairedPsls):
+    # all have same query/target
+    if not isCanonicalProtMRnaAlign(uniprotMetaTbl, pairedPsls[0]):
+        return None
+    if len(pairedPsls) > 1:
+        # most query aligned wins
+        pairedPsls.sort(key=lambda p: p.queryAligned(), reverse=True)
+    return pairedPsls[0]
+
+def processAlignedPsls(uniprotMetaTbl, inPslFh, outPslFh):
+    for pairedPsls in queryTargetPairPslReader(inPslFh):
+        psl = selectPairedPsls(uniprotMetaTbl, pairedPsls)
+        if psl is not None:
+            psl.write(outPslFh)
+
+def combinePairAligns(uniprotMetaTbl, alignDir, protCanonTransPsl):
+    "concatenate, filter, and sort by tName (transcript))"
     prMsg("combining alignments")
 
     # discard not within the configure minimum identity and coverage.  Batch
     # program discards PSLs that are not ++ alignments
-    pipettor.run([["find", alignDir, "-name", "*.fa.psl", "-print0"],
-                  ["sort", "-k14,14", "-k10,10", "--files0-from=-"],
-                  ["pslCDnaFilter", "-verbose=0",
-                   "-minCover=" + str(conf.protTransAlnMinCover),
-                   "-minId=" + str(conf.protTransAlnMinId),
-                   "/dev/stdin", "/dev/stdout"]], stdout=protTransPsl)
+    findSortCmd = (["find", alignDir, "-name", "*.fa.psl", "-print0"],
+                   ["sort", "-k14,14", "-k10,10", "--files0-from=-"])
+    with pipettor.Popen(findSortCmd, 'r') as inPslFh:
+        with fileOps.opengz(protCanonTransPsl, 'w') as outPslFh:
+            processAlignedPsls(uniprotMetaTbl, inPslFh, outPslFh)
 
-def proteinTranscriptAlign(uniprotFa, transFa, protTransPsl, algo, workDir):
+def proteinTranscriptAlign(uniprotMetaTsv, uniprotFa, transFa, protCanonTransPsl, algo, workDir):
+    uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
     targetDir = osp.join(workDir, "transDb")
     transDbFa = osp.join(targetDir, "transDb.fa")
     with runIfNotDone(targetDir, depends=transFa) as do:
         if do:
-            targetBuildDb(transFa, transDbFa, algo, targetDir)
+            targetBuildDb(uniprotMetaTbl, transFa, transDbFa, algo, targetDir)
 
     queryDir = osp.join(workDir, "queryDir")
     with runIfNotDone(queryDir, depends=uniprotFa) as do:
@@ -100,13 +141,14 @@ def proteinTranscriptAlign(uniprotFa, transFa, protTransPsl, algo, workDir):
             runBatch([uniprotProteinTranscriptAlignJob, algo], queryDir, transDbFa, alignDir,
                      osp.join(workDir, "batch"))
 
-    with runIfOutOfDate(protTransPsl, doneDepends=alignDir) as do:
+    with runIfOutOfDate(protCanonTransPsl, doneDepends=alignDir) as do:
         if do:
-            with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
-                combineAligns(alignDir, tmpPsl)
+            with fileOps.AtomicFileCreate(protCanonTransPsl) as tmpPsl:
+                combinePairAligns(uniprotMetaTbl, alignDir, tmpPsl)
     prMsg("finished")
 
 def main(opts):
-    proteinTranscriptAlign(opts.uniprotFa, opts.transFa, opts.protTransPsl, opts.algo, opts.workDir)
+    proteinTranscriptAlign(opts.uniprotMetaTsv, opts.uniprotFa, opts.transFa,
+                           opts.protCanonTransPsl, opts.algo, opts.workDir)
 
 main(parseArgs())

@@ -16,14 +16,3 @@ protTransAlnMinCover = 0.0
 
 # stricter filter keeps if from being too far off
 protTransAlnMinId = 0.80
-
-
-##
-# initial filtering of isoform/canconical alignments
-##
-
-# want to allow for alignments to other isoforms, so let a lot pass
-isoCanconAlnMinCover = 0.0
-
-# stricter filter keeps if from being too far off
-isoCanconIsoAlnMinId = 0.98
