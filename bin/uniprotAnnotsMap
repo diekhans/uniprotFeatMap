@@ -12,6 +12,7 @@ from pycbio.tsv import TsvReader
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap import mkPslMapCmd, TmpOrSaveFile, cleanTmpFiles
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.metadata import annotTransRefCreate, annotTransRefWrite
 
@@ -162,78 +163,31 @@ def writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv, annotTransRefTs
     with annotTransRefCreate(annotTransRefTsv) as annotTransRefFh:
         writeRefs(annotGenomeMapInfoTsv, xspeciesSrcMap, annotTransRefFh)
 
-def mkAnnotToTransCmd(annotIsoPsl, cdsTransPairedPsl, annotTransPsl, interPrefix):
-    """create command to map annotations to transcripts, all CDS coordinates
-    """
-    cmd1 = ["pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-check",
-            annotIsoPsl, cdsTransPairedPsl, annotTransPsl]
-    cmds = [cmd1]
-    if interPrefix is not None:
-        cmd1.append(f"-mapInfo={interPrefix}annotTrans.mapinfo.tsv")
-        cmds.append(["tee", f"{interPrefix}annotTrans.psl"])
-    return cmds
-
-def mkTransToXSpeciesCmd(annotTransPsl, xspeciesTransPsl, xspeciesAnnotTransPsl,
-                         xspeciesTransMapInfoTsv, interPrefix):
-    """create command to map annotations to transcripts, all CDS coordinates
-    """
-    cmd1 = ["pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-check",
-            annotTransPsl, xspeciesTransPsl, xspeciesAnnotTransPsl,
-            f"-mapInfo={xspeciesTransMapInfoTsv}"]
-    cmds = [cmd1]
-    if interPrefix is not None:
-        cmds.append(["tee", f"{interPrefix}xspeciesAnnotTransPsl.psl"])
-    return cmds
-
-def mkAnnotToGenomeCmd(annotTransPsl, transGenomePsl, annotGenomePsl, annotGenomeMapInfoTsv):
-    """create command to map annotations to genomes
-       NA/NA -> NA/NA -> NA/NA
-    """
-    cmd = ["pslMap", "-tsv", "-inType=na_na", "-mapType=na_na", "-check",
-           annotTransPsl, transGenomePsl, annotGenomePsl,
-           f"-mapInfo={annotGenomeMapInfoTsv}"]
-    return [cmd]
-
-def getMapInfoFiles(xspeciesTransPsl, interPrefix):
-    """get mapInfo pages from pslMap used when generating the output.  If intermediate files
-    are not being saved, temporary files are created"""
-    xspeciesTransMapInfoTsv = None
-    if interPrefix is not None:
-        annotGenomeMapInfoTsv = f"{interPrefix}annotGenome.mapinfo.tsv"
-        if xspeciesTransPsl is not None:
-            xspeciesTransMapInfoTsv = f"{interPrefix}xspeciesTrans.mapinfo.tsv"
-    else:
-        annotGenomeMapInfoTsv = fileOps.tmpFileGet(prefix="annotGenome.", suffix=".mapinfo.tsv")
-        if xspeciesTransPsl is not None:
-            xspeciesTransMapInfoTsv = fileOps.tmpFileGet(prefix="xspeciesTrans.", suffix=".mapinfo.tsv")
-    return annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv
-
 def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
                  annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
-    annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv = getMapInfoFiles(xspeciesTransPsl, interPrefix)
+    annotGenomeMapInfoTsv = TmpOrSaveFile(interPrefix, "annotGenome.mapinfo.tsv")
+    xspeciesTransMapInfoTsv = None if xspeciesTransPsl is None else TmpOrSaveFile(interPrefix, "xspeciesTrans.mapinfo.tsv")
     cmds = []
 
     # annotation to transcript mapping
     # NA/NA -> NA/NA -> NA/NA
-    cmds += mkAnnotToTransCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout", interPrefix)
-
+    cmds += mkPslMapCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout",
+                        interPrefix=interPrefix, interMid="annotTrans")
     if xspeciesTransPsl is not None:
         # transcript to other species transcript mapping
         # NA/NA -> NA/NA -> NA/NA
-        cmds += mkTransToXSpeciesCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
-                                     xspeciesTransMapInfoTsv, interPrefix)
+        cmds += mkPslMapCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
+                            mapInfo=xspeciesTransMapInfoTsv,
+                            interPrefix=interPrefix, interMid="xspeciesAnnotTrans")
 
     # per-transcript annotation to genome mapping
     # NA/NA -> NA/NA -> NA/NA
-    cmds += mkAnnotToGenomeCmd("/dev/stdin", transGenomePsl, "/dev/stdout", annotGenomeMapInfoTsv)
+    cmds += mkPslMapCmd("/dev/stdin", transGenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
 
     pipettor.run(cmds, stdout=annotGenomePslFh)
     writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv, annotTransRefTsv)
 
-    if interPrefix is None:
-        os.unlink(annotGenomeMapInfoTsv)
-        if xspeciesTransMapInfoTsv is not None:
-            os.unlink(xspeciesTransMapInfoTsv)
+    cleanTmpFiles(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv)
 
 def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv,

@@ -8,7 +8,7 @@ from pycbio.sys import fileOps
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import dropVersion
+from uniprotmap import dropVersion, mkPslMapCmd
 from uniprotmap.gencode import GencodeMetaTbl, GencodeDataTbl
 from uniprotmap.uniprot import UniProtMetaTbl
 
@@ -120,19 +120,6 @@ def writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl):
                     buildCdsPsl(entry.annotGp, entry.alignPsl).write(pslFh)
     return noncanonTransToGenomePslFile
 
-def mkPslMapCmds(inPsl, mapPsl, outPsl, swapMap=False, interPrefix=None):
-    cmd1 = ["pslMap", "-tsv", "-check", "-inType=na_na", "-mapType=na_na"]
-    cmds = [cmd1]
-    if swapMap:
-        cmd1.append("-swapMap")
-    if interPrefix is not None:
-        cmd1.append(f"-mapInfo={interPrefix}.mapInfo.tsv")
-    cmd1.extend((inPsl, mapPsl, outPsl))
-    if interPrefix is not None:
-        cmd2 = ["tee", f"{interPrefix}.psl"]
-        cmds.append(cmd2)
-    return cmds
-
 def saveBestAlign(alignsByProtTrans, psl):
     key = (psl.qName, psl.tName)
     curPsl = alignsByProtTrans.get(key)
@@ -146,16 +133,10 @@ def readFilterMappedPsls(inFh):
     return list(alignsByProtTrans.values())
 
 def mapCanonicalToNoncanon(canonCdsToTransPslFile, canonTransToGenomePslFile, noncanonTransToGenomePslFile, interPrefix):
-    if interPrefix is not None:
-        canonToGennomeInter = f"{interPrefix}canonToGenome"
-        canonToNoncanonInter = f"{interPrefix}canonToNoncanon"
-    else:
-        canonToGennomeInter = canonToNoncanonInter = None
-
-    cmds = (mkPslMapCmds(canonCdsToTransPslFile, canonTransToGenomePslFile, "/dev/stdout",
-                         interPrefix=canonToGennomeInter) +
-            mkPslMapCmds("/dev/stdin", noncanonTransToGenomePslFile, "/dev/stdout", swapMap=True,
-                         interPrefix=canonToNoncanonInter))
+    cmds = (mkPslMapCmd(canonCdsToTransPslFile, canonTransToGenomePslFile, "/dev/stdout",
+                        interPrefix=interPrefix, interMid="canonToGenome") +
+            mkPslMapCmd("/dev/stdin", noncanonTransToGenomePslFile, "/dev/stdout", swapMap=True,
+                        interPrefix=interPrefix, interMid="canonToNoncanon"))
 
     # will get multiple alignments for multiple canon alignments, keep ones with best coverage
     with pipettor.Popen(cmds) as inFh:

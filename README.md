@@ -12,6 +12,7 @@ annotation -> uniprotCanonical -> transcript -> genome
 - disrupted feature (disruption) - A disruption is a UniProt feature that only partially mapped to a non-canonical transcripts.
 - deleted feature (deletion) - A deletion is a UniProt feature that doesn't map to a non-canonical transcripts.
 - annotMapId: unique id assigned to the mapping of a UniProt feature annotation to a transcript, which is described below.
+- raw.psl - intermediate alignments that have not yet been fully filtered
 
 ## Mapping pipeline commands:
 

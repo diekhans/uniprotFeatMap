@@ -1,20 +1,17 @@
 """
 Metadata support associated with annotation mappings.
 
-
-
-
-
-File that cross-references mapped annotations to transcript metadata and alignment position
-
-annotIds are in the form: <canon_acc>|<annot_idx>
-
 annotMapIds are in the form: <canon_acc>|<annot_idx>|<map_idx>
-
 """
 
 from pycbio.sys import fileOps
 from pycbio.tsv import TsvReader
+
+###
+# protein->transcript mapping metadata
+###
+class ProtTransMapMeta:
+    """metadata associated with mapping of proteins to transcripts"""
 
 class AnnotTransRefError(Exception):
     pass
