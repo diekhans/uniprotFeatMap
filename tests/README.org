@@ -1,23 +1,29 @@
-
-* to add new UniProt entries to the test data set
-** get existing accessions
+* setup
+** to add new UniProt entries to the test data set
+*** get existing accessions
 tmlr cut -f acc input/swissprot.9606.tab input/trembl.9606.tab >acc.tsv
-** add new swissprot accession to acc.tsv
-** obtain data 
+*** add new swissprot accession to acc.tsv
+*** obtain data 
 ./bin/getTestData acc.tsv tmp
 cp tmp/*. input/
-** update alignemnts 
+*** update alignemnts 
 make -j 10 -k aligntest >&log
 cp output/*.{psl,tsv,bed} expected/
-** repeat until we have all updated (3 times)
+*** repeat until we have all updated (3 times)
 make -j 10 -k test >&log
 cp output/*.{psl,tsv,bed} expected/
 
-** this can also be run using just one uniprot accession, trimming down the GENCODE results and appending.
+*** this can also be run using just one uniprot accession, trimming down the GENCODE results and appending.
 
-
-* to get the test CAT data for cross-species 
+** to get the test CAT data for cross-species 
 
 cut -f 4 input/gencode.v43.metadata.tsv > gencode.ids
 ./bin/getOrthoData gencode.ids tmp
+
+
+* various cases
+
+** ZNF215  Q9UL58
+ENST00000636606.1, ENST00000529755.1  lost domain
+loses KRAB in chr11:6,942,930-6,943,843
 

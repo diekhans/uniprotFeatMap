@@ -13,7 +13,7 @@ chromSizes = input/hg38.sizes
 testHubFiles = empty.html genomes.txt hub.txt hg38.trackDb.txt GCA_028885655.2.trackDb.txt
 testHubFilesOutput = ${testHubFiles:%=output/%}
 
-testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/domainDecorators/tests/output/hub.txt
+testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/tests/output/hub.txt
 
 gencodeBed = output/gencode.v43.bed
 gencodeBb = output/gencode.v43.bb

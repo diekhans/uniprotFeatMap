@@ -35,7 +35,7 @@ annotation -> uniprotCanonical -> transcript -> genome
 
 # Data required 
 
-* U  /hive/data/outside/otto/uniprot/
+* /hive/data/outside/otto/uniprot/
 
 # Cross-species projection
 
@@ -69,7 +69,7 @@ The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
 
 - `canon_acc`: UniProt canonical isoform id
 - `annot_idx`: row index of the feature in the UniProt annotation tab file, relative to the first feature for the accession
-- `map_idx`: index of assignment of this feature annotation to a transcript mapping.  The number does not identify the same transcript across multiple features.
+- `map_idx`: index of assignment of this feature annotation to a transcript mapping, uniquely identifying the mapping.
 
 A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `annotMapId`s back to the UniProt feature and transcript.
 

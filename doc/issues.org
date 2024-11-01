@@ -5,6 +5,10 @@
 
 * annotation term used when feature is UniProt terminology
 
+* AnnotTransRef
+** is transPostion really needed, given we have the psl
+** canonTransId not implement, but is it needed
+
 * Max:
 ** In "adjavent" mode, I'm very tempted to click on features... we could have
 an hgc page for these annotations, it's a bigBed file after all...

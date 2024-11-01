@@ -8,7 +8,7 @@ from pycbio.sys import fileOps
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import dropVersion, mkPslMapCmd
+from uniprotmap import dropVersion, mkPslMapCmd, TmpOrSaveFile, cleanTmpFiles
 from uniprotmap.gencode import GencodeMetaTbl, GencodeDataTbl
 from uniprotmap.uniprot import UniProtMetaTbl
 
@@ -96,13 +96,13 @@ def buildCdsPsl(gp, psl):
 # Project alignments from UniProt canonical transcripts to transcripts isoforms
 # that are non-canonical UniProt.
 ###
-def writeCanonCdsToTransAligns(canonCdsToTransAligns):
-    canonCdsToTransPslFile = fileOps.tmpFileGet("canon-cds-trans", suffix=".psl")
+def writeCanonCdsToTransAligns(canonCdsToTransAligns, interPrefix):
+    canonCdsToTransPslFile = TmpOrSaveFile(interPrefix, "canon-cds-trans.psl")
     writePsls(canonCdsToTransAligns, canonCdsToTransPslFile)
     return canonCdsToTransPslFile
 
-def writeCanonTransToGenomeAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl):
-    canonTransToGenomePslFile = fileOps.tmpFileGet("canon-trans-genome", suffix=".psl")
+def writeCanonTransToGenomeAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl, interPrefix):
+    canonTransToGenomePslFile = TmpOrSaveFile(interPrefix, "canon-trans-genome.psl")
     with open(canonTransToGenomePslFile, 'w') as pslFh:
         for transId in sorted(gencodeMetaTbl.codingTransIds):
             if uniprotMetaTbl.isCanonProtTrans(transId):
@@ -110,9 +110,9 @@ def writeCanonTransToGenomeAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl
                     entry.alignPsl.write(pslFh)
     return canonTransToGenomePslFile
 
-def writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl):
+def writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl, interPrefix):
     "this will make UTR portions unaligned"
-    noncanonTransToGenomePslFile = fileOps.tmpFileGet("noncanon-trans-genome", suffix=".psl")
+    noncanonTransToGenomePslFile = TmpOrSaveFile(interPrefix, "noncanon-trans-genome.psl")
     with open(noncanonTransToGenomePslFile, 'w') as pslFh:
         for transcriptId in sorted(gencodeMetaTbl.codingTransIds):
             if not uniprotMetaTbl.isCanonProtTrans(transcriptId):
@@ -148,12 +148,12 @@ def projectUniPortAlignments(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl, can
     # converted to CDS alignments to allow mapping to work.
     # isoFormGen
 
-    canonCdsToTransPslFile = writeCanonCdsToTransAligns(canonCdsToTransAligns)
-    canonTransToGenomePslFile = writeCanonTransToGenomeAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl)
-    noncanonTransToGenomePslFile = writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl)
+    canonCdsToTransPslFile = writeCanonCdsToTransAligns(canonCdsToTransAligns, interPrefix)
+    canonTransToGenomePslFile = writeCanonTransToGenomeAligns(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl, interPrefix)
+    noncanonTransToGenomePslFile = writeNoncanonTransToGenome(gencodeMetaTbl, gencodeDataTbl, uniprotMetaTbl, interPrefix)
     noncanonCdsToTransAligns = mapCanonicalToNoncanon(canonCdsToTransPslFile, canonTransToGenomePslFile, noncanonTransToGenomePslFile, interPrefix)
 
-    fileOps.rmFiles(canonCdsToTransPslFile, canonTransToGenomePslFile, noncanonTransToGenomePslFile)
+    cleanTmpFiles(canonCdsToTransPslFile, canonTransToGenomePslFile, noncanonTransToGenomePslFile)
     return noncanonCdsToTransAligns
 
 ##

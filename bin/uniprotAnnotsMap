@@ -14,13 +14,22 @@ from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import mkPslMapCmd, TmpOrSaveFile, cleanTmpFiles
 from uniprotmap.uniprot import UniProtAnnotTbl
-from uniprotmap.metadata import annotTransRefCreate, annotTransRefWrite
+from uniprotmap.metadata import annotTransRefOpen, annotTransRefWrite
 
 ##
-# pipeline
-#   annot2protcds -> protcds2trans -> annot2trans
-#   [xspecies] annot2trans -> trans2xsptrans -> annot2xsptrans
-#   annot2trans -> trans2genome -> annot2genome
+# Same-species mapping pipeline:
+#     annot2protcds -> protcds2trans -> annot2trans
+#     annot2trans -> trans2genome -> annot2genome
+#
+# Cross-species mapping pipeline:
+#     annot2protcds -> protcds2trans -> annot2trans
+#     annot2trans -> trans2xsptrans -> annot2xsptrans
+#     annot2xsptrans -> trans2genome -> annot2genome
+#  Requires an alignment of source transcripts to other species
+#  transcripts filtered in some kind of smart way.
+#
+# Check for annotations that didn't map:
+#
 ##
 def parseArgs():
     desc = """
@@ -129,6 +138,15 @@ def createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh):
         if annotFilter(annot, protCdsSizes, warned, logFh):
             createAnnotPsl(annot, protCdsSizes).write(annotCanonPslFh)
 
+def buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh):
+    if interPrefix is not None:
+        annotCanonPsl = f"{interPrefix}annotCanon.psl"
+    else:
+        annotCanonPsl = fileOps.tmpFileGet("annotCanon.", ".psl")
+    with fileOps.opengz(annotCanonPsl, 'w') as annotCanonPslFh:
+        createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh)
+    return annotCanonPsl
+
 def getXSpeciesSrcMap(xspeciesTransMapInfoTsv):
     return {r.mappedTName: r for r in TsvReader(xspeciesTransMapInfoTsv)}
 
@@ -160,7 +178,7 @@ def writeRefs(annotGenomeMapInfoTsv, xspeciesSrcMap, annotTransRefFh):
 
 def writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv, annotTransRefTsv):
     xspeciesSrcMap = getXSpeciesSrcMap(xspeciesTransMapInfoTsv) if xspeciesTransMapInfoTsv is not None else None
-    with annotTransRefCreate(annotTransRefTsv) as annotTransRefFh:
+    with annotTransRefOpen(annotTransRefTsv) as annotTransRefFh:
         writeRefs(annotGenomeMapInfoTsv, xspeciesSrcMap, annotTransRefFh)
 
 def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
@@ -195,14 +213,8 @@ def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
     protCdsSizes = getProtCdsSizes(cdsTransPairedPsl)
 
-    if interPrefix is not None:
-        annotCanonPsl = f"{interPrefix}annotCanon.psl"
-    else:
-        annotCanonPsl = fileOps.tmpFileGet("annotCanon.", ".psl")
-
     with problemLogOpen(problemLogTsv) as logFh:
-        with fileOps.opengz(annotCanonPsl, 'w') as annotCanonPslFh:
-            createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh)
+        annotCanonPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
         pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
