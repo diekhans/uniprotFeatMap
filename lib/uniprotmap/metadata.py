@@ -22,7 +22,8 @@ class AnnotTransRef(TsvRow):
             not mapped.
         transcriptPos: chr1:11674479-11691650 position of transcript (FIXME needed, in PSL)
         transcriptId: ENST00000235310.7
-        canonTransId: FIXME not implemented
+        xspeciesSrcTransId: transcript id of the source transcript that was mapped to the other
+            species transcript
         alignIdx: zero-based line numner of PSL alignment file associated with this annotation, or
            None if not mapped
     """
@@ -57,11 +58,11 @@ class AnnotTransRefs:
 def annotTransRefOpen(annotTransRefTsv):
     "create a new ref TSV, and write header"
     annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
-    hdr = ["annotId", "annotMapId", "transcriptPos", "transcriptId", "canonTransId", "alignIdx"]
+    hdr = ["annotId", "annotMapId", "transcriptPos", "transcriptId", "xspeciesSrcTransId", "alignIdx"]
     fileOps.prRow(annotTransRefFh, hdr)
     return annotTransRefFh
 
-def annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos, transcriptId, canonTransId, alignIdx):
+def annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos, transcriptId, xspeciesSrcTransId, alignIdx):
     annotMapId = annotId + '|' + str(mapIdx)
-    row = [annotId, annotMapId, transcriptPos, transcriptId, alignIdx, canonTransId]
+    row = [annotId, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId]
     fileOps.prRow(annotTransRefFh, row)

@@ -55,5 +55,5 @@ def cleanTmpFiles(*paths):
     """Remove each file is path is not None.  If it is a TmpOrSaveFile
     object, remove if it is not tmp"""
     for p in paths:
-        if (p is not None) and (isinstance(p, str)) or (isinstance(p, TmpOrSaveFile) and p.isTmp):
+        if (p is not None) and p.isTmp:
             os.unlink(p)

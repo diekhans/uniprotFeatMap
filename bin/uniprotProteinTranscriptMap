@@ -19,7 +19,7 @@ from uniprotmap.uniprot import UniProtMetaTbl
 # Algorithm:
 #   - Start with alignments of UniProt proteins that match the UniProt canonical
 #     coding transcripts.  These are already filtered and paired.  Convert these
-#     to CDS coordinates to transcript alignments.
+#     to CDS coordinates (3 * AA).
 #   - Project the canonical transcript alignments to non-canonical transcript isoforms.
 #     Using the genome This doesn't consider gene, which allows project to read-through transcripts.
 #     Only CDS on other isoforms will have proteins mapped to it by masking the
@@ -47,8 +47,8 @@ def parseArgs():
                         help="protein to paired canonical transcript alignment PSL (input)")
     parser.add_argument("cdsTransPsl",
                         help="""filtered alignments, in codon coordinates (output)""")
-    parser.add_argument("protTransMetaTsv",
-                        help="""metadata describing how the mappings were produced (output)""")
+    parser.add_argument("problemLogTsv",
+                        help="""Log file of issues that happened (output)""")
     return parser.parse_args()
 
 ##
@@ -244,7 +244,7 @@ def proteinTranscriptAlign(gencodeMetaTsv, gencodeGpFile, gencodePslFile, unipro
 def main(opts):
     proteinTranscriptAlign(opts.gencodeMetaTsv, opts.gencodeGp, opts.gencodePsl,
                            opts.uniprotMetaTsv, opts.protCanonTransPsl,
-                           opts.cdsTransPsl, opts.protTransMetaTsv,
+                           opts.cdsTransPsl, opts.problemLogTsv,
                            opts.interPrefix)
 
 main(parseArgs())
