@@ -8,7 +8,7 @@ import pipettor
 from pycbio.sys import fileOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import mkPslMapCmd
+from uniprotmap.mapping import pslMapMkCmd
 
 # Algorithm
 #  - srcMRnaAln  -> srcTargetGenome -> srcMRnaTargetGenomeAln
@@ -37,8 +37,8 @@ def parseArgs():
 
 def transMapPipeline(srcMRnaPsl, srcMRnaFa, mappingChains,
                      targetMRnaPsl, targetMRnaTwoBit, srcTargetMRnaPsl):
-    cmds = (mkPslMapCmd(srcMRnaPsl, mappingChains, "/dev/stdout", chainMapFile=True) +
-            mkPslMapCmd("/dev/stdin", targetMRnaPsl, "/dev/stdout", swapMap=True) +
+    cmds = (pslMapMkCmd(srcMRnaPsl, mappingChains, "/dev/stdout", chainMapFile=True) +
+            pslMapMkCmd("/dev/stdin", targetMRnaPsl, "/dev/stdout", swapMap=True) +
             [["pslMapPostChain", "/dev/stdin", "/dev/stdout"],
              ["pslRecalcMatch", "/dev/stdin", targetMRnaTwoBit, srcMRnaFa, "/dev/stdout"],
              ["sort", "-k10,10", "-k12,12n"]])

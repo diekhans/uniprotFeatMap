@@ -11,7 +11,8 @@ from pycbio.tsv import TsvReader
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import mkPslMapCmd, TmpOrSaveFile, cleanTmpFiles
+from uniprotmap import TmpOrSaveFile, cleanTmpFiles
+from uniprotmap.mapping import pslMapMkCmd, PslMapInfoTbl
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.metadata import annotTransRefOpen, annotTransRefWrite
 
@@ -141,36 +142,32 @@ def buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh):
     return annotCanonPsl
 
 def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
-                 annotGenomeMapInfoTsv, canonTransMapInfoTsv, xspeciesTransMapInfoTsv,
+                 annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv,
                  annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
     # all of these pslMaps are NA/NA -> NA/NA -> NA/NA
     cmds = []
 
     # annotation on canonical transcripts to all transcripts alignment to canonical
-    cmds += mkPslMapCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout",
-                        mapInfo=canonTransMapInfoTsv,
+    cmds += pslMapMkCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout",
                         interPrefix=interPrefix, interMid="annotTrans")
     if xspeciesTransPsl is not None:
         # transcript to other species transcript mapping
-        cmds += mkPslMapCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
+        cmds += pslMapMkCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
                             mapInfo=xspeciesTransMapInfoTsv,
                             interPrefix=interPrefix, interMid="xspeciesAnnotTrans")
 
     # per-transcript annotation to genome mapping
-    cmds += mkPslMapCmd("/dev/stdin", transGenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
+    cmds += pslMapMkCmd("/dev/stdin", transGenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
 
     pipettor.run(cmds, stdout=annotGenomePslFh)
 
-def loadTransMapInfo(toTransMapInfo):
-    return {r.mappedTName: r for r in TsvReader(toTransMapInfo)}
-
 def getXSpeciesSrcTrans(mappedTransId, xspeciesTransMapTbl):
-    rec = xspeciesTransMapTbl.get(mappedTransId)
-    if rec is None:
+    recs = xspeciesTransMapTbl.byMappedTName.get(mappedTransId)
+    if recs is None:
         raise Exception(f"Could not find source transcript for cross-species mapped transcript '{mappedTransId}'")
-    return rec.srcTName
+    return recs[0].srcTName
 
-def writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, canonTransMapTbl, xspeciesTransMapTbl, annotTransRefFh):
+def writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, xspeciesTransMapTbl, annotTransRefFh):
     annotId = annotGenomeMapInfo.srcQName
     mapIdx = annotIdMapIdxCounter[annotId]
     annotIdMapIdxCounter[annotId] += 1
@@ -182,30 +179,27 @@ def writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, canonTransMapTbl, xspecie
     annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos,
                        annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine, xspeciesSrcTransId)
 
-def writeRefs(annotGenomeMapInfoTsv, canonTransMapTbl, xspeciesTransMapTbl, annotTransRefFh):
+def writeRefs(annotGenomeMapInfoTsv, xspeciesTransMapTbl, annotTransRefFh):
     annotIdMapIdxCounter = defaultdict(int)  # to get unique map index for diff transcripts
     for annotGenomeMapInfo in TsvReader(annotGenomeMapInfoTsv):
-        if annotGenomeMapInfo.mappedPslLine != "":
-            writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, canonTransMapTbl, xspeciesTransMapTbl, annotTransRefFh)
+        writeRef(annotGenomeMapInfo, annotIdMapIdxCounter, xspeciesTransMapTbl, annotTransRefFh)
 
-def writeRefsTsv(annotGenomeMapInfoTsv, canonTransMapTbl, xspeciesTransMapTbl, annotTransRefTsv):
+def writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapTbl, annotTransRefTsv):
     with annotTransRefOpen(annotTransRefTsv) as annotTransRefFh:
-        writeRefs(annotGenomeMapInfoTsv, canonTransMapTbl, xspeciesTransMapTbl, annotTransRefFh)
+        writeRefs(annotGenomeMapInfoTsv, xspeciesTransMapTbl, annotTransRefFh)
 
 def mapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
               annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
     annotGenomeMapInfoTsv = TmpOrSaveFile(interPrefix, "annotGenome.mapinfo.tsv")
-    canonTransMapInfoTsv = TmpOrSaveFile(interPrefix, "canonTrans.mapinfo.tsv")
     xspeciesTransMapInfoTsv = None if xspeciesTransPsl is None else TmpOrSaveFile(interPrefix, "xspeciesTrans.mapinfo.tsv")
 
     pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
-                 annotGenomeMapInfoTsv, canonTransMapInfoTsv, xspeciesTransMapInfoTsv,
+                 annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv,
                  annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix)
 
-    canonTransMapTbl = loadTransMapInfo(canonTransMapInfoTsv)
-    xspeciesTransMap = loadTransMapInfo(xspeciesTransMapInfoTsv) if xspeciesTransMapInfoTsv is not None else None
-    writeRefsTsv(annotGenomeMapInfoTsv, canonTransMapTbl, xspeciesTransMap, annotTransRefTsv)
-    cleanTmpFiles(canonTransMapInfoTsv, xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
+    xspeciesTransMapTbl = PslMapInfoTbl(xspeciesTransMapInfoTsv) if xspeciesTransMapInfoTsv is not None else None
+    writeRefsTsv(annotGenomeMapInfoTsv, xspeciesTransMapTbl, annotTransRefTsv)
+    cleanTmpFiles(xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
 
 def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv,

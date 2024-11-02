@@ -8,7 +8,8 @@ from pycbio.sys import fileOps
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import dropVersion, mkPslMapCmd, TmpOrSaveFile, cleanTmpFiles
+from uniprotmap import dropVersion, TmpOrSaveFile, cleanTmpFiles
+from uniprotmap.mapping import pslMapMkCmd
 from uniprotmap.gencode import GencodeMetaTbl, GencodeDataTbl
 from uniprotmap.uniprot import UniProtMetaTbl
 
@@ -133,9 +134,9 @@ def readFilterMappedPsls(inFh):
     return list(alignsByProtTrans.values())
 
 def mapCanonicalToNoncanon(canonCdsToTransPslFile, canonTransToGenomePslFile, noncanonTransToGenomePslFile, interPrefix):
-    cmds = (mkPslMapCmd(canonCdsToTransPslFile, canonTransToGenomePslFile, "/dev/stdout",
+    cmds = (pslMapMkCmd(canonCdsToTransPslFile, canonTransToGenomePslFile, "/dev/stdout",
                         interPrefix=interPrefix, interMid="canonToGenome") +
-            mkPslMapCmd("/dev/stdin", noncanonTransToGenomePslFile, "/dev/stdout", swapMap=True,
+            pslMapMkCmd("/dev/stdin", noncanonTransToGenomePslFile, "/dev/stdout", swapMap=True,
                         interPrefix=interPrefix, interMid="canonToNoncanon"))
 
     # will get multiple alignments for multiple canon alignments, keep ones with best coverage
