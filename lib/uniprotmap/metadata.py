@@ -62,7 +62,6 @@ def annotTransRefOpen(annotTransRefTsv):
     fileOps.prRow(annotTransRefFh, hdr)
     return annotTransRefFh
 
-def annotTransRefWrite(annotTransRefFh, annotId, mapIdx, transcriptPos, transcriptId, xspeciesSrcTransId, alignIdx):
-    annotMapId = annotId + '|' + str(mapIdx)
+def annotTransRefWrite(annotTransRefFh, annotId, annotMapId, transcriptPos, transcriptId, xspeciesSrcTransId, alignIdx):
     row = [annotId, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId]
     fileOps.prRow(annotTransRefFh, row)

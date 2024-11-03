@@ -56,18 +56,15 @@ _mapInfoTypeMap = {
     'mappedPslLine': intOrNoneType,
 }
 
-
-
-
 class PslMapInfoTbl(list):
     """read and index pslMap -mapInfo files"""
     def __init__(self, mapInfoTsv):
-        self.bySrcQName = defaultdict(list)
+        self.bySrcTName = defaultdict(list)
         self.byMappedTName = defaultdict(list)
         for row in TsvReader(mapInfoTsv, typeMap=_mapInfoTypeMap):
             self.append(row)
-            self.bySrcQName[row.srcQName].append(row)
+            self.bySrcTName[row.srcTName].append(row)
             if row.mappedTName is not None:
                 self.byMappedTName[row.mappedTName].append(row)
-        self.bySrcQName.default_factory = None
+        self.bySrcTName.default_factory = None
         self.byMappedTName.default_factory = None
