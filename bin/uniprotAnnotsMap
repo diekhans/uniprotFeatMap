@@ -4,12 +4,13 @@ import sys
 import os.path as osp
 import argparse
 import logging
+from collections import defaultdict
 import pipettor
 from pycbio.sys import fileOps, loggingOps
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import TmpOrSaveFile, cleanTmpFiles
+from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToCanonAcc
 from uniprotmap.mapping import pslMapMkCmd, PslMapInfoTbl
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.metadata import AnnotTransRefWriter
@@ -61,6 +62,9 @@ def parseArgs():
     loggingOps.setupFromCmd(opts)
     pipettor.setDefaultLogger(logging.getLogger())
     return opts
+
+class OutOfSyncError(Exception):
+    "error when UniProt and mapped files are out-of-sycn "
 
 def problemLogOpen(problemLogTsv):
     logFh = open(problemLogTsv, 'w')
@@ -165,28 +169,84 @@ def getXSpeciesSrcTrans(mappedTransId, xspeciesTransMapTbl):
         raise Exception(f"Could not find source transcript for cross-species mapped transcript '{mappedTransId}'")
     return recs[0].srcTName
 
-def writeTransRef(annotGenomeMapInfo, xspeciesTransMapTbl, refWriter):
-    transcriptPos = f"{annotGenomeMapInfo.mappingTName}:{annotGenomeMapInfo.mappingTStart}-{annotGenomeMapInfo.mappingTEnd}"
-    if xspeciesTransMapTbl is not None:
-        xspeciesSrcTransId = getXSpeciesSrcTrans(annotGenomeMapInfo.mappingQName, xspeciesTransMapTbl)
-    else:
-        xspeciesSrcTransId = None
-    refWriter.write(annotGenomeMapInfo.srcQName, transcriptPos, annotGenomeMapInfo.srcTName,
-                    annotGenomeMapInfo.mappedPslLine, xspeciesSrcTransId)
+def getA2GUniprotId(transA2GMapInfos):
+    return annotIdToCanonAcc(transA2GMapInfos[0].srcQName)
 
-def writeTransRefs(annotGenomeMapInfos, xspeciesTransMapTbl, refWriter):
-    for annotGenomeMapInfo in annotGenomeMapInfos:
-        writeTransRef(annotGenomeMapInfo, xspeciesTransMapTbl, refWriter)
+def getA2GUniprotAnnots(uniprotAnnotTbl, transA2GMapInfos):
+    uniprotAcc = annotIdToCanonAcc(transA2GMapInfos[0].srcQName)
+    return uniprotAnnotTbl.byMainIsoAcc[uniprotAcc]
 
-def writeRefs(annotGenomeMapTbl, xspeciesTransMapTbl, refWriter):
-    for transcriptId in sorted(annotGenomeMapTbl.bySrcTName.keys()):
-        writeTransRefs(annotGenomeMapTbl.bySrcTName[transcriptId], xspeciesTransMapTbl, refWriter)
+def mkOutOfSyncAnnotExcept(canonAcc, allAnnots, transA2GMapInfos):
+    transcriptId = transA2GMapInfos[0].mappingQName
+    errMsg = ([f"UniProt features for {allAnnots[0].mainIsoAcc} out of sync with mapped annotations on {transcriptId}",
+               f"number of features {len(allAnnots)}, number of mappings {len(transA2GMapInfos)}",
+               "annotations:"] +
+              [f"   [{i}] {allAnnots[i].annotId}" for i in range(len(allAnnots))] +
+              ["mappings:"] +
+              [f"   [{i}] {transA2GMapInfos[i].srcQName}" for i in range(len(transA2GMapInfos))])
+    return Exception('\n'.join(errMsg))
 
-def writeRefsTsv(annotGenomeMapTbl, xspeciesTransMapTbl, annotTransRefTsv):
-    with AnnotTransRefWriter(annotTransRefTsv) as refWriter:
-        writeRefs(annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
+def splitByUniprotAcc(transA2GMapInfos):
+    "some genes have multiple uniprot entries, split by acc"
+    byUniprotAcc = defaultdict(list)
+    for transA2GMapInfo in transA2GMapInfos:
+        byUniprotAcc[annotIdToCanonAcc(transA2GMapInfo.srcQName)].append(transA2GMapInfo)
+    return byUniprotAcc
 
-def mapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+def writeMappedRef(transA2GMapInfo, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
+    refWriter.write(transA2GMapInfo.srcQName, transcriptId, transcriptPos,
+                    transA2GMapInfo.mappedPslLine, xspeciesSrcTransId)
+
+def writeUnmappedRef(annotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
+    refWriter.write(annotId, transcriptId, transcriptPos, None, xspeciesSrcTransId)
+
+def writeUnmappedRange(allAnnots, iAll, mappedAnnotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
+    # advance all
+    while (iAll < len(allAnnots)) and (allAnnots[iAll].annotId != mappedAnnotId):
+        writeUnmappedRef(allAnnots[iAll].annotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
+        iAll += 1
+        if iAll >= len(allAnnots):
+            raise OutOfSyncError(f"mapped annotations our of order or out of sync with uniprot annotation file for '{transcriptId}' and '{mappedAnnotId}'")
+    return iAll
+
+def doWriteAllTransRefs(allAnnots, transcriptId, transA2GMapInfos, transcriptPos, xspeciesSrcTransId, refWriter):
+    if len(transA2GMapInfos) > len(allAnnots):
+        raise OutOfSyncError("more mapped annotations than actually annotations")
+    iAll = 0
+
+    for iMapped in range(len(transA2GMapInfos)):
+        mappedAnnotId = transA2GMapInfos[iMapped].srcQName
+        # unmapped before current
+        iAll = writeUnmappedRange(allAnnots, iAll, mappedAnnotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
+        # current
+        writeMappedRef(transA2GMapInfos[iMapped], transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
+        iAll += 1
+    # remaining unmapped
+    for iAll in range(iAll, len(allAnnots)):
+        writeUnmappedRef(allAnnots[iAll].annotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
+
+def writeAllTransRefs(canonAcc, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, xspeciesSrcTransId, refWriter):
+    try:
+        doWriteAllTransRefs(allAnnots, transcriptId, transA2GMapInfos, transcriptPos, xspeciesSrcTransId, refWriter)
+    except OutOfSyncError as ex:
+        raise mkOutOfSyncAnnotExcept(canonAcc, allAnnots, transA2GMapInfos) from ex
+
+def writeTransRefs(uniprotAnnotTbl, transcriptId, transA2GMapInfos, xspeciesTransMapTbl, refWriter):
+    infos0 = transA2GMapInfos[0]
+    transcriptPos = f"{infos0.mappingTName}:{infos0.mappingTStart}-{infos0.mappingTEnd}"
+    xspeciesSrcTransId = (getXSpeciesSrcTrans(infos0.mappingQName, xspeciesTransMapTbl)
+                          if xspeciesTransMapTbl is not None else None)
+    canonAcc = getA2GUniprotId(transA2GMapInfos)
+    allAnnots = uniprotAnnotTbl.byMainIsoAcc[canonAcc]
+    writeAllTransRefs(canonAcc, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, xspeciesSrcTransId, refWriter)
+
+def writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter):
+    # split by chrom, to handle PAR, and then by uniprot acc to handle multiple annotations
+    for transIdChrom, transA2GMapInfos in sorted(annotGenomeMapTbl.byMappingQMappedTNames.items(), key=lambda v: v[0]):
+        for uniprotAcc, uniprotA2GMapInfos in sorted(splitByUniprotAcc(transA2GMapInfos).items(), key=lambda v: v[0]):
+            writeTransRefs(uniprotAnnotTbl, transIdChrom[0], uniprotA2GMapInfos, xspeciesTransMapTbl, refWriter)
+
+def mapAnnots(uniprotAnnotTbl, annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
               annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
     annotGenomeMapInfoTsv = TmpOrSaveFile(interPrefix, "annotGenome.mapinfo.tsv")
     xspeciesTransMapInfoTsv = None if xspeciesTransPsl is None else TmpOrSaveFile(interPrefix, "xspeciesTrans.mapinfo.tsv")
@@ -197,7 +257,9 @@ def mapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
 
     annotGenomeMapTbl = PslMapInfoTbl(annotGenomeMapInfoTsv)
     xspeciesTransMapTbl = PslMapInfoTbl(xspeciesTransMapInfoTsv) if xspeciesTransMapInfoTsv is not None else None
-    writeRefsTsv(annotGenomeMapTbl, xspeciesTransMapTbl, annotTransRefTsv)
+
+    with AnnotTransRefWriter(annotTransRefTsv) as refWriter:
+        writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
     cleanTmpFiles(xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
 
 def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
@@ -210,7 +272,7 @@ def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
         annotCanonPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
-        mapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+        mapAnnots(uniprotAnnotTbl, annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
                   annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix)
 
     cleanTmpFiles(annotCanonPsl)

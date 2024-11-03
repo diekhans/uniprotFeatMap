@@ -7,7 +7,7 @@ annotMapIds are in the form: <canon_acc>|<annot_idx>|<map_idx>
 from collections import defaultdict
 from pycbio.sys import fileOps
 from pycbio.tsv import TsvReader, TsvRow, strOrNoneType, intOrNoneType
-from uniprotmap import annotMapIdFmt, annotMapIdAnnotId
+from uniprotmap import annotMapIdFmt, annotMapIdToAnnotId
 
 ###
 
@@ -33,7 +33,7 @@ class AnnotTransRef(TsvRow):
 
     def __init__(self, reader, row):
         super().__init__(reader, row)
-        self.annotId = annotMapIdAnnotId(self.annotMapId)
+        self.annotId = annotMapIdToAnnotId(self.annotMapId)
 
 _annotTransRefTypeMap = {
     "xspeciesSrcTransId": strOrNoneType,
@@ -83,7 +83,7 @@ class AnnotTransRefWriter:
         if self.fh is not None:
             self.close()
 
-    def write(self, annotId, transcriptPos, transcriptId, xspeciesSrcTransId, alignIdx):
+    def write(self, annotId, transcriptId, transcriptPos, xspeciesSrcTransId, alignIdx):
         "write record, return assigned annotMapId"
         annotMapId = annotMapIdFmt(annotId, self.idxCounter[annotId])
         self.idxCounter[annotId] += 1

@@ -24,6 +24,9 @@ def annotIdParse(annotId):
     except Exception as ex:   # catch bad int
         raise ValueError(f"invalid annotation id: '{annotId}'") from ex
 
+def annotIdToCanonAcc(annotId):
+    return annotIdParse(annotId)[0]
+
 def annotMapIdFmt(annotId, mapIdx):
     return f"{annotId}|{mapIdx}"
 
@@ -36,7 +39,7 @@ def annotMapIdParse(annotMapId):
     except Exception as ex:   # catch bad int
         raise ValueError(f"invalid annotation map id: '{annotMapId}'") from ex
 
-def annotMapIdAnnotId(annotMapId):
+def annotMapIdToAnnotId(annotMapId):
     canonAcc, annotIdx, _ = annotMapIdParse(annotMapId)
     return annotIdFmt(canonAcc, annotIdx)
 

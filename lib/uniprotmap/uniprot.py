@@ -138,6 +138,7 @@ class UniProtAnnotTbl(list):
     """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
     def __init__(self, uniprotAnnotsTsv):
         self.byAnnotId = {}
+        self.byMainIsoAcc = defaultdict(list)
         nextFeatId = defaultdict(int)
         for row in TsvReader(uniprotAnnotsTsv, typeMap={"begin": int, "end": int}):
             self._readRow(row, nextFeatId)
@@ -145,9 +146,10 @@ class UniProtAnnotTbl(list):
     def _readRow(self, row, nextFeatId):
         annotId = annotIdFmt(row.mainIsoAcc, nextFeatId[row.mainIsoAcc])
         nextFeatId[row.mainIsoAcc] += 1
-        setattr(row, "annotId", annotId)
-        self.byAnnotId[annotId] = row
+        row.annotId = annotId
         self.append(row)
+        self.byAnnotId[annotId] = row
+        self.byMainIsoAcc[row.mainIsoAcc].append(row)
 
     def getByAnnotId(self, annotId):
         annot = self.byAnnotId.get(annotId)

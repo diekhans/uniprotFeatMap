@@ -60,11 +60,15 @@ class PslMapInfoTbl(list):
     """read and index pslMap -mapInfo files"""
     def __init__(self, mapInfoTsv):
         self.bySrcTName = defaultdict(list)
+        # use (mappingQName, mappedTName) to handle PAR
+        self.byMappingQMappedTNames = defaultdict(list)
         self.byMappedTName = defaultdict(list)
         for row in TsvReader(mapInfoTsv, typeMap=_mapInfoTypeMap):
             self.append(row)
             self.bySrcTName[row.srcTName].append(row)
             if row.mappedTName is not None:
+                self.byMappingQMappedTNames[(row.mappingQName, row.mappedTName)].append(row)
                 self.byMappedTName[row.mappedTName].append(row)
         self.bySrcTName.default_factory = None
+        self.byMappingQMappedTNames.default_factory = None
         self.byMappedTName.default_factory = None
