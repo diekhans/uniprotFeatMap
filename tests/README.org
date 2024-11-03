@@ -27,3 +27,4 @@ cut -f 4 input/gencode.v43.metadata.tsv > gencode.ids
 ENST00000636606.1, ENST00000529755.1  lost domain
 loses KRAB in chr11:6,942,930-6,943,843
 
+** gene ENSG00000147889.18 has annotations for P42771-1 and Q8N726-1
