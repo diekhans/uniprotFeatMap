@@ -32,7 +32,7 @@ class AnnotTransRef(TsvRow):
     pass
 
 _annotTransRefTypeMap = {
-    "annotMapId": strOrNoneType,
+    "xspeciesSrcTransId": strOrNoneType,
     "alignIdx": intOrNoneType,
 }
 

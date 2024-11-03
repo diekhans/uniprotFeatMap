@@ -5,7 +5,7 @@ Reads files create by uniprotToTab, and other uniport support
 from collections import defaultdict
 from pycbio.sys.symEnum import SymEnum, auto
 from pycbio.tsv import TsvReader, TsvRow
-from uniprotmap import dropVersion
+from uniprotmap import dropVersion, annotIdFmt
 
 # WARNING: UniProt is 1-based, open-end
 
@@ -134,34 +134,17 @@ class UniProtMetaTbl:
     def getCanonEnsemblAccSet(self):
         return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
-def uniprotMakeAnnotId(canonAcc, annotIdx):
-    # Add a unique, reproducible annotation id in the form
-    # mainIsoAcc#annotIdx, where the annotIdx is the relative index of the
-    # annotation for that acc.
-    return canonAcc + '|' + str(annotIdx)
-
-def uniprotParseAnnotId(annotId):
-    "parse the annotation id into its parts: 'Q9BXI3|0' -> ('Q9BXI3' 0)"
-    parts = annotId.rsplit('|', 1)
-    if len(parts) != 2:
-        raise UniProtError(f"invalid annotation id: '{annotId}'")
-    return parts
-
-def uniprotAnnotIdToAcc(annotId):
-    "parse the annotation id into accession: 'Q9BXI3|0' -> 'Q9BXI3'"
-    return uniprotParseAnnotId(annotId)[0]
-
 class UniProtAnnotTbl(list):
     """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
     def __init__(self, uniprotAnnotsTsv):
         self.byAnnotId = {}
-        mainIsoNextId = defaultdict(int)
+        nextFeatId = defaultdict(int)
         for row in TsvReader(uniprotAnnotsTsv, typeMap={"begin": int, "end": int}):
-            self._readRow(row, mainIsoNextId)
+            self._readRow(row, nextFeatId)
 
-    def _readRow(self, row, mainIsoNextId):
-        annotId = uniprotMakeAnnotId(row.mainIsoAcc, mainIsoNextId[row.mainIsoAcc])
-        mainIsoNextId[row.mainIsoAcc] += 1
+    def _readRow(self, row, nextFeatId):
+        annotId = annotIdFmt(row.mainIsoAcc, nextFeatId[row.mainIsoAcc])
+        nextFeatId[row.mainIsoAcc] += 1
         setattr(row, "annotId", annotId)
         self.byAnnotId[annotId] = row
         self.append(row)

@@ -12,6 +12,33 @@ def prMsg(msg):
 def dropVersion(ident):
     return ident.split('.')[0]
 
+def annotIdFmt(canonAcc, annotIdx):
+    return f"{canonAcc}|{annotIdx}"
+
+def annotIdParse(annotId):
+    parts = annotId.split('|')
+    try:
+        if len(parts) != 2:
+            raise ValueError(f"expected 'canonAcc|annotIdx', got '{annotId}'")
+        return parts[0], int(parts[1])
+    except Exception as ex:   # catch bad int
+        raise ValueError(f"invalid annotation id: '{annotId}'") from ex
+
+def annotMapIdFmt(annotId, mapIdx):
+    return f"{annotId}|{mapIdx}"
+
+def annotMapIdParse(annotMapId):
+    parts = annotMapId.split('|')
+    try:
+        if len(parts) != 3:
+            raise ValueError(f"expected 'canonAcc|annotIdx|mapIdx', got '{annotMapId}'")
+        return parts[0], int(parts[1]), int(parts[2])
+    except Exception as ex:   # catch bad int
+        raise ValueError(f"invalid annotation map id: '{annotMapId}'") from ex
+
+def annotMapIdAnnotId(annotMapId):
+    canonAcc, annotIdx, _ = annotMapIdParse(annotMapId)
+    return annotIdFmt(canonAcc, annotIdx)
 
 class TmpOrSaveFile(str):
     """an file that might be saved for debugging purposes

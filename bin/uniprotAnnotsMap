@@ -82,7 +82,7 @@ def getProtCdsSizes(cdsTransPairedPsl):
     return protCdsSizes
 
 def createAnnotPsl(annot, protCdsSizes):
-    # qName will have the featAnnotId in the form
+    # qName will have the annotMapId in the form
     #  <uniprot_acc>|<feature_idx>|<annot_idx>
     # coordinated converted to CDS coordinates (3x)
 
@@ -96,7 +96,7 @@ def createAnnotPsl(annot, protCdsSizes):
         tEnd = tSize
     qSize = tEnd - tStart
 
-    psl = Psl(qName=annot.annotId, qSize=qSize, qStart=0, qEnd=qSize,
+    psl = Psl(qName=str(annot.annotId), qSize=qSize, qStart=0, qEnd=qSize,
               tName=annot.mainIsoAcc, tSize=tSize, tStart=tStart, tEnd=tEnd,
               strand='+')
     psl.addBlock(PslBlock(qStart=0, tStart=tStart, size=qSize))
