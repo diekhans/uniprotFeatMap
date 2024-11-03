@@ -5,6 +5,7 @@ bigtest/protTransAln/
 bigtest/protTransMap/
 bigtest/decorators/
 bigtest/mapAnnots/
+bigtest/xspecies/
 data/
 *.bb
 /hub/checked.done
@@ -13,3 +14,9 @@ data/
 /hub/hg38/gencodeV45_blat_deco.html
 /hub/hg38/gencode.names
 /hub/hg38/gencode.types
+/hub/gorGor-GCA_029281585.2/
+/hub/panPan-GCA_029289425.2/
+/hub/panTro-GCA_028858775.2/
+/hub/ponAbe-GCA_028885655.2/
+/hub/ponPyg-GCA_028885625.2/
+/hub/symSyn-GCA_028878055.2/
