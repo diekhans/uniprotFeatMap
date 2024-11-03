@@ -4,8 +4,10 @@ Metadata support associated with annotation mappings.
 annotMapIds are in the form: <canon_acc>|<annot_idx>|<map_idx>
 """
 
+from collections import defaultdict
 from pycbio.sys import fileOps
 from pycbio.tsv import TsvReader, TsvRow, strOrNoneType, intOrNoneType
+from uniprotmap import annotMapIdFmt, annotMapIdAnnotId
 
 ###
 
@@ -17,7 +19,7 @@ class AnnotTransRef(TsvRow):
     alignment index.
 
     Attributes:
-        annotId: identifies annotation within an UniProt entry (Q9BXI3|0)
+        annotId: identifies annotation within an UniProt entry (Q9BXI3|0) [not stored in file]
         annotMapId: identifies mapping of annotation to a given transcript (Q9BXI3|0|0), None if
             not mapped.
         transcriptPos: chr1:11674479-11691650 position of transcript (FIXME needed, in PSL)
@@ -27,9 +29,11 @@ class AnnotTransRef(TsvRow):
         alignIdx: zero-based line numner of PSL alignment file associated with this annotation, or
            None if not mapped
     """
-    # just here for documentation, could be a named tuple
     __slots__ = ()
-    pass
+
+    def __init__(self, reader, row):
+        super().__init__(reader, row)
+        self.annotId = annotMapIdAnnotId(self.annotMapId)
 
 _annotTransRefTypeMap = {
     "xspeciesSrcTransId": strOrNoneType,
@@ -55,13 +59,32 @@ class AnnotTransRefs:
             raise AnnotTransRefError(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
         return annotTransRef
 
-def annotTransRefOpen(annotTransRefTsv):
-    "create a new ref TSV, and write header"
-    annotTransRefFh = fileOps.opengz(annotTransRefTsv, 'w')
-    hdr = ["annotId", "annotMapId", "transcriptPos", "transcriptId", "xspeciesSrcTransId", "alignIdx"]
-    fileOps.prRow(annotTransRefFh, hdr)
-    return annotTransRefFh
 
-def annotTransRefWrite(annotTransRefFh, annotId, annotMapId, transcriptPos, transcriptId, xspeciesSrcTransId, alignIdx):
-    row = [annotId, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId]
-    fileOps.prRow(annotTransRefFh, row)
+class AnnotTransRefWriter:
+    header = ["annotMapId", "transcriptPos", "transcriptId", "xspeciesSrcTransId", "alignIdx"]
+
+    def __init__(self, annotTransRefTsv):
+        self.fh = fileOps.opengz(annotTransRefTsv, 'w')
+        self.idxCounter = defaultdict(int)  # used to get globally unique id
+        fileOps.prRow(self.fh, self.header)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+        return False
+
+    def close(self):
+        self.fh.close()
+        self.fh = None
+
+    def __del__(self):
+        if self.fh is not None:
+            self.close()
+
+    def write(self, annotId, transcriptPos, transcriptId, xspeciesSrcTransId, alignIdx):
+        "write record, return assigned annotMapId"
+        annotMapId = annotMapIdFmt(annotId, self.idxCounter[annotId])
+        self.idxCounter[annotId] += 1
+        fileOps.prRowv(self.fh, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)

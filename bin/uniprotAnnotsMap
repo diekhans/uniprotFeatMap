@@ -2,7 +2,6 @@
 
 import sys
 import os.path as osp
-from collections import defaultdict
 import argparse
 import logging
 import pipettor
@@ -13,7 +12,7 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import TmpOrSaveFile, cleanTmpFiles
 from uniprotmap.mapping import pslMapMkCmd, PslMapInfoTbl
 from uniprotmap.uniprot import UniProtAnnotTbl
-from uniprotmap.metadata import annotTransRefOpen, annotTransRefWrite
+from uniprotmap.metadata import AnnotTransRefWriter
 
 ##
 # Same-species mapping pipeline:
@@ -166,33 +165,26 @@ def getXSpeciesSrcTrans(mappedTransId, xspeciesTransMapTbl):
         raise Exception(f"Could not find source transcript for cross-species mapped transcript '{mappedTransId}'")
     return recs[0].srcTName
 
-def writeTransRef(annotGenomeMapInfo, annotIdMapIdxCounter, xspeciesTransMapTbl, annotTransRefFh):
-    annotId = annotGenomeMapInfo.srcQName
-    annotMapId = f"{annotId}|{annotIdMapIdxCounter[annotId]}"
-    annotIdMapIdxCounter[annotId] += 1
-
+def writeTransRef(annotGenomeMapInfo, xspeciesTransMapTbl, refWriter):
     transcriptPos = f"{annotGenomeMapInfo.mappingTName}:{annotGenomeMapInfo.mappingTStart}-{annotGenomeMapInfo.mappingTEnd}"
     if xspeciesTransMapTbl is not None:
         xspeciesSrcTransId = getXSpeciesSrcTrans(annotGenomeMapInfo.mappingQName, xspeciesTransMapTbl)
     else:
         xspeciesSrcTransId = None
-    annotTransRefWrite(annotTransRefFh, annotId, annotMapId, transcriptPos,
-                       annotGenomeMapInfo.srcTName, annotGenomeMapInfo.mappedPslLine, xspeciesSrcTransId)
+    refWriter.write(annotGenomeMapInfo.srcQName, transcriptPos, annotGenomeMapInfo.srcTName,
+                    annotGenomeMapInfo.mappedPslLine, xspeciesSrcTransId)
 
-def writeTransRefs(annotGenomeMapInfos, annotIdMapIdxCounter, xspeciesTransMapTbl,
-                   annotTransRefFh):
+def writeTransRefs(annotGenomeMapInfos, xspeciesTransMapTbl, refWriter):
     for annotGenomeMapInfo in annotGenomeMapInfos:
-        writeTransRef(annotGenomeMapInfo, annotIdMapIdxCounter, xspeciesTransMapTbl, annotTransRefFh)
+        writeTransRef(annotGenomeMapInfo, xspeciesTransMapTbl, refWriter)
 
-def writeRefs(annotGenomeMapTbl, xspeciesTransMapTbl, annotTransRefFh):
-    annotIdMapIdxCounter = defaultdict(int)  # used to get globally unique id
+def writeRefs(annotGenomeMapTbl, xspeciesTransMapTbl, refWriter):
     for transcriptId in sorted(annotGenomeMapTbl.bySrcTName.keys()):
-        writeTransRefs(annotGenomeMapTbl.bySrcTName[transcriptId], annotIdMapIdxCounter,
-                       xspeciesTransMapTbl, annotTransRefFh)
+        writeTransRefs(annotGenomeMapTbl.bySrcTName[transcriptId], xspeciesTransMapTbl, refWriter)
 
 def writeRefsTsv(annotGenomeMapTbl, xspeciesTransMapTbl, annotTransRefTsv):
-    with annotTransRefOpen(annotTransRefTsv) as annotTransRefFh:
-        writeRefs(annotGenomeMapTbl, xspeciesTransMapTbl, annotTransRefFh)
+    with AnnotTransRefWriter(annotTransRefTsv) as refWriter:
+        writeRefs(annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
 
 def mapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
               annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):

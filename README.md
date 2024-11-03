@@ -69,7 +69,7 @@ The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
 
 - `canon_acc`: UniProt canonical isoform id
 - `annot_idx`: row index of the feature in the UniProt annotation tab file, relative to the first feature for the accession
-- `map_idx`: index of assignment of this feature annotation to a transcript mapping, uniquely identifying the mapping.
+- `map_idx`: index of assignment of this feature annotation to a transcript mapping, uniquely identifying the mapping.  Deleted features that don't map still have map_idx assigned to them.
 
 A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `annotMapId`s back to the UniProt feature and transcript.
 
