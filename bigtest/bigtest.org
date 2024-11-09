@@ -5,19 +5,19 @@ https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 * build:
 cd data
 
-# copy because it changes
-cp -f uniprot/tab/*.9606.* . 
+# copy because they change
+cp -pf uniprot/tab/*.9606.* . 
 
 # GENCODE must get our own sequences, since transcripts rna fasta doesn't include alts
-cp /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.gp gencode.v45.gp
-cp /hive/data/genomes/hg38/bed/gencodeV45/hgcImport/data/gencode.tsv gencode.v45.tsv
+cp /hive/data/genomes/hg38/bed/gencodeV47/hgcImport/data/gencode.gp gencode.v47.gp
+cp /hive/data/genomes/hg38/bed/gencodeV47/hgcImport/data/gencode.tsv gencode.v47.tsv
 
 # filter for CDS
-tawk '$6 < $7' gencode.v45.gp > gencode.v45.pc.gp
-genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v45.pc.gp gencode.v45.pc.psl
+tawk '$6 < $7' gencode.v47.gp > gencode.v47.pc.gp
+genePredToPsl /hive/data/genomes/hg38/chrom.sizes gencode.v47.pc.gp gencode.v47.pc.psl
 
 # CDS must be upper-case
-getRnaPred -cdsUpper -genomeSeqs=/hive/data/genomes/hg38/hg38.2bit no ./gencode.v45.pc.gp  all gencode.v45.pc.fa
+getRnaPred -cdsUpper -genomeSeqs=/hive/data/genomes/hg38/hg38.2bit no ./gencode.v47.pc.gp  all gencode.v47.pc.fa
 
 
 * cross-species
@@ -29,40 +29,11 @@ find . -name '*.chain.gz' -o -name '*.2bit' -o -name '*.sizes' | cpio -pduml /hi
 
 only use T2T apes, as need consistent CAT; drop musMus ratNor, calJac, macMul
 
+rm -rf t2t-primates/musMus-GCA_000001635.* t2t-primates/ratNor-GCF_015227675.2/ t2t-primates/calJac-GCF_009663435.1/ t2t-primates/macMul-GCF_003339765.1/
 
-
-* comparison of number of problems
-
-** initial
-| SwissProt/protTrans_Aln.blast.paired.problems.tsv |  13961 |
-| SwissProt/mapAnnots.blast.problems.tsv            |   1245 |
-| TrEMBL/protTrans_Aln.blast.paired.problems.tsv    | 144349 |
-| TrEMBL/mapAnnots.blast.problems.tsv               | 119024 |
-
-| SwissProt/protTrans_Aln.blat.paired.problems.tsv  |  13815 |
-| SwissProt/mapAnnots.blat.problems.tsv             |   1246 |
-| TrEMBL/protTrans_Aln.blat.paired.problems.tsv     | 144744 |
-| TrEMBL/mapAnnots.blat.problems.tsv                | 119192 |
-
-** add
-
-| SwissProt/protTrans_Aln.blat.paired.problems.tsv |   4969 |
-| SwissProt/mapAnnots.blat.problems.tsv            |   1185 |
-| TrEMBL/protTrans_Aln.blat.paired.problems.tsv    | 136602 |
-| TrEMBL/mapAnnots.blat.problems.tsv               | 117567 |
-
-
+* 
 * notes:
 
 
 * missing alignments
-
-** canon_trans_not_mapped	ENSG00000108387.16	ENST00000321691.3	protein_coding	O43236-1
-transcript_not_in_gene_set	ENST00000327087		Q9NQ90-1	
-canon_trans_not_mapped	ENSG00000196268.12	ENST00000339914.6	protein_coding	Q6ZR52-1
-transcript_not_in_gene_set	ENST00000346387		O15350-1	
-transcript_not_in_gene_set	ENST00000352886		P34896-1	
-transcript_not_in_gene_set	ENST00000357733		O15350-1	
-transcript_not_in_gene_set	ENST00000358590		O95180-1	
-transcript_not_in_gene_set	ENST00000359576		O75122-1	
 

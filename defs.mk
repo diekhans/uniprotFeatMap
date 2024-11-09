@@ -30,7 +30,7 @@ xspeciesGencode2CatFilter = ${binDir}/xspeciesGencode2CatFilter
 dataDir = ${root}/data
 
 # GENCODE set
-gencodeVer = v45
+gencodeVer = v47
 gencodePre = ${root}/data/gencode.${gencodeVer}
 gencodeGp = ${gencodePre}.pc.gp 
 gencodePsl = ${gencodePre}.pc.psl
