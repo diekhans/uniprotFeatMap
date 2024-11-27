@@ -31,7 +31,7 @@ all:
 
 
 test: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDecoratorsTests \
-	uniprotDecoratorsMergeTests xspeciesTests hub
+	uniprotDecoratorsMergeTests xspeciesTests uniprotInfoTests hub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
 	@echo "==========================================" >&2
@@ -39,7 +39,7 @@ test: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDeco
 fulltest: aligntest test
 aligntest: protTransAlignTests
 
-###
+####
 protTransAlignTests: testProtTransSPBlastAlign testProtTransSPBlatAlign \
 	testProtTransTRBlastAlign testProtTransTRBlatAlign \
 
@@ -199,8 +199,20 @@ ${cat_bigcat}: input/GCA_028885655.2.cat.bigCat input/bigCat.as
 	bedToBigBed -tab -type=bed12+ -as=input/bigCat.as -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
 	mv -f $@.tmp $@
 
+###
+uniprotInfoTests: testUniprotInfoEnsTrans testUniprotInfoGeneName
 
+testUniprotInfoEnsTrans: mkout
+	${uniprotInfo} ensemblTransId input/swissprot.9606.tab output/$@.tsv
+	diff expected/$@.tsv output/$@.tsv
+
+testUniprotInfoGeneName:
+	${uniprotInfo} geneName input/swissprot.9606.tab output/$@.tsv
+	diff expected/$@.tsv output/$@.tsv
+
+##
 # hub
+##
 hub: ${gencodeBrowserDirDone} ${testHubFilesOutput}
 	hubCheck $$(pwd)/output/hub.txt
 

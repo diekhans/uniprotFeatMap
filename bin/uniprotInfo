@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+
+import sys
+import os.path as osp
+import argparse
+from pycbio.sys import fileOps
+from pycbio.sys.symEnum import SymEnum, auto
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap.uniprot import UniProtMetaTbl
+
+class What(SymEnum):
+    "what data is requested?"
+    name = auto()
+    ensemblTransId = auto()
+    geneName = auto()
+
+whatToDataCol = {
+    What.name: "name",
+    What.ensemblTransId: "ensemblTransIds",
+    What.geneName: "geneNames",
+}
+
+def parseArgs():
+    desc = """Extract a subset of information from UniProt metadata in a digestible TSV.
+
+    Note than many fields, even geneName, sometimes have multiple values so there are requests
+    per column of associated data.
+    """
+
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("what", type=What,
+                        help="""data requested (input)""")
+    parser.add_argument("uniprotMetaTsv",
+                        help="""Uniprot metadata in TSV format (input)""")
+    parser.add_argument("uniprotInfoTsv",
+                        help="""Log file of issues that happened (output)""")
+    return parser.parse_args()
+
+BASE_COLS = ("acc", "mainIsoAcc", "taxonId")
+
+def getBaseCols(rec):
+    return [rec[col] for col in BASE_COLS]
+
+def writeMultiVal(fh, rec, dataCol):
+    baseCols = getBaseCols(rec)
+    for val in sorted(rec[dataCol]):
+        fileOps.prRowv(fh, *baseCols, val)
+
+def writeSingleVal(fh, rec, dataCol):
+    fileOps.prRowv(fh, *getBaseCols(rec), rec[dataCol])
+
+def writeTsv(fh, uniprotMetaTbl, dataCol):
+    if isinstance(uniprotMetaTbl[0][dataCol], frozenset):
+        writeFunc = writeMultiVal
+    else:
+        writeFunc = writeSingleVal
+    fileOps.prRowv(fh, *BASE_COLS, dataCol)
+    for rec in uniprotMetaTbl:
+        writeFunc(fh, rec, dataCol)
+
+def uniprotInfo(what, uniprotMetaTsv, uniprotInfoTsv):
+    uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
+    dataCol = whatToDataCol[what]
+    with fileOps.opengz(uniprotInfoTsv, 'w') as fh:
+        writeTsv(fh, uniprotMetaTbl, dataCol)
+
+def main(opts):
+    uniprotInfo(opts.what, opts.uniprotMetaTsv, opts.uniprotInfoTsv)
+
+main(parseArgs())

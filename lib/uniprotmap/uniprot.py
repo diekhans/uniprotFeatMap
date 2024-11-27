@@ -66,6 +66,7 @@ class UniProtMeta(TsvRow):
     def __init__(self, reader, row):
         super().__init__(reader, row)
         # split '|' separated list fields
+        self.geneNames = frozenset(splitMetaList(self.geneName))
         self.ensemblGeneIds = frozenset(splitMetaList(self.ensemblGene))
         self.ensemblGeneAccs = frozenset(splitDropVersion(self.ensemblGene))
         self.ensemblTransIds = frozenset(splitMetaList(self.ensemblTrans))
@@ -77,7 +78,7 @@ class UniProtMeta(TsvRow):
         return dropVersion(transId) in self.ensemblTransAccs
 
 
-class UniProtMetaTbl:
+class UniProtMetaTbl(list):
     """reads swissprot.9606.tab, trembl.9606.tab"""
     def __init__(self, uniprotMetaTsv):
         self.byAcc = {}
@@ -92,6 +93,7 @@ class UniProtMetaTbl:
         self.byTranscriptAcc.default_factory = None
 
     def _readRow(self, row):
+        self.append(row)
         addUniqueToIdx(self.byAcc, row.acc, row)
         addUniqueToIdx(self.byMainIsoAcc, row.mainIsoAcc, row)
         self.byGeneName[row.geneName].append(row)
