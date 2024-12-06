@@ -66,4 +66,9 @@ genePredToPsl ${chromSizes} ${gnOutPre}.pc.gp ${gnOutPre}.pc.psl
 sort -k 1,1 -u  ${gnOutPre}.pc.gp >  ${gnOutPre}.nodup.gp.tmp
 getRnaPred -cdsUpper -genomeSeqs=${genomeSeqs} no ${gnOutPre}.nodup.gp.tmp all ${gnOutPre}.pc.fa
 
+# protein sequence, converting compount ('|' separated) ids
+tmlr cut -f proteinId ${gnOutPre}.metadata.tsv | tawk '$1!=""' >${gnOutPre}.proteinIds.tsv.tmp
+
+fastaSelect --selectFile=${gnOutPre}.proteinIds.tsv.tmp ${gndir}/release_${gencodeRel}/gencode.v${gencodeRel}.pc_translations.fa.gz ${gnOutPre}.proteins.fa
+
 rm -f ${outdir}/*.tmp
