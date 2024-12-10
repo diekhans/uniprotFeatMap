@@ -1,4 +1,6 @@
-# Mapping UniProt annotations to transcripts
+# Mapping UniProt and Interproscan annotations to transcripts
+
+This modules implements mapping of protein annotations to transcripts.
 
 ## mapping flow
 

@@ -17,4 +17,12 @@ UTR projection trimmed.
 
 Both BLAT protein to DNA and TBLASTN were tried to align the UniProt
 proteins.  When aligning only to the canonical transcript, the difference
-were negligible.
+were negligible. Could probably avoid a lot of the BLAT alignments by
+check if the transcript version was the same and just construct it.
+
+
+* interproscan
+Do alignments with BLAT in the same manner as UniProt protein to transcript alignment
+to reuse code.  This could be optimized in the future to manually do paired alignments,
+interproscan should be exact matches.  This approach would be good to UniProt too, which
+in most cases they match.
