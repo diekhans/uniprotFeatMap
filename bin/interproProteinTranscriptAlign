@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+import sys
+import os.path as osp
+import argparse
+import functools
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap.gencode import GencodeError, GencodeMetaTbl
+from uniprotmap.interproscan import InterproError
+from uniprotmap.align import updateCompoundFastaHeader, proteinTranscriptAlign
+
+def parseArgs():
+    desc = """Align protein sequences annotated by InterProScan to
+    RNAs with BLAT or BLAST.  Creates a protein to NA PSL alignments, with
+    some basic filtering.  UTR is hard masked to prevent alignment outside of
+    CDS without changing sequence size.
+
+    Program can be rerun to finish up after manual parasol recovery. After a
+    failure is connect and jobs finished, touch ${workdir}/aligns.done and
+    rerun this program.
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--algo", choices=("blast", "blat"), default="blat",
+                        help="alignment algorithm")
+    parser.add_argument("gencodeMetaTsv",
+                        help="""GENCODE metadata in TSV format UCSC import (not table), which includes tags (input)""")
+    parser.add_argument("proteinFa",
+                        help="""protein FASTA matching InterProScan results (input)""")
+    parser.add_argument("transFa",
+                        help="""transcript FASTA, CDS must be in upper-case and UTR in lowercase (input)""")
+    parser.add_argument("protTransPsl",
+                        help="""alignments of proteins to their transcripts, sorted by transcript (output)""")
+    parser.add_argument("workDir",
+                        help="temporary directory used by parasol run")
+    return parser.parse_args()
+
+def queryFaEditFilter(gencodeMetaTbl, faRec):
+    updateCompoundFastaHeader(faRec)
+    if faRec.id not in gencodeMetaTbl.byProteinId:
+        raise InterproError(f"protein id '{faRec}' not found in GENCODE metadata")
+    return True
+
+def alignFilter(gencodeMetaTbl, psl):
+    try:
+        trans = gencodeMetaTbl.getTrans(psl.tName)
+    except GencodeError as ex:
+        raise InterproError(f"transcript id '{psl.tName}' not found in GENCODE metadata for protein/transcript alignment '{psl.qName}'/'{psl.tName}'") from ex
+    return trans.proteinId == psl.qName
+
+def interproProteinTranscriptAlign(gencodeMetaTsv, proteinFa, transFa, protTransPsl, algo, workDir):
+    gencodeMetaTbl = GencodeMetaTbl(gencodeMetaTsv)
+    proteinTranscriptAlign(proteinFa, transFa, protTransPsl, algo, workDir,
+                           queryFaEditFilterFunc=functools.partial(queryFaEditFilter, gencodeMetaTbl),
+                           alignFilterFunc=functools.partial(alignFilter, gencodeMetaTbl))
+
+def main(opts):
+    interproProteinTranscriptAlign(opts.gencodeMetaTsv, opts.proteinFa, opts.transFa,
+                                   opts.protTransPsl, opts.algo, opts.workDir)
+
+main(parseArgs())

@@ -26,7 +26,7 @@ uniprotDecoratorsMerge = ${binDir}/uniprotDecoratorsMerge
 xspeciesTrans2TransMap = ${binDir}/xspeciesTrans2TransMap
 xspeciesGencode2CatFilter = ${binDir}/xspeciesGencode2CatFilter
 uniprotInfo = ${binDir}/uniprotInfo
-
+interproProteinTranscriptAlign = ${binDir}/interproProteinTranscriptAlign
 
 dataDir = ${root}/data
 

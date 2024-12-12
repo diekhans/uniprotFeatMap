@@ -29,6 +29,7 @@ def isCodingTranscriptType(gencodeMeta):
 class GencodeMetaTbl(list):
     def __init__(self, gencodeMetaTsv):
         self.byTranscriptId = {}
+        self.byProteinId = {}
         self.byTranscriptAcc = {}
         self.codingTransIds = set()
         self.codingTransAccs = set()
@@ -40,26 +41,22 @@ class GencodeMetaTbl(list):
 
     def _readRow(self, row):
         self.byTranscriptId[row.transcriptId] = row
+        if row.proteinId != "":
+            self.byProteinId[row.proteinId] = row
         self.byTranscriptAcc[dropVersion(row.transcriptId)] = row
         if isCodingTranscriptType(row):
             self.codingTransIds.add(row.transcriptId)
             self.codingTransAccs.add(dropVersion(row.transcriptId))
             self.codingGeneAccs.add(dropVersion(row.geneId))
 
-    def _doGetTrans(self, transId):
+    def getTrans(self, transId):
         # handle PAR_Y ids (e.g. ENST00000359512.8_PAR_Y)
         if transId.endswith("_PAR_Y"):
             transId = transId.split('_', 1)[0]
         try:
-            return self.byTranscriptId.get(transId)
+            return self.byTranscriptId[transId]
         except Exception as ex:
-            raise GencodeError(f"can't find GENCODE metadata for '{transId}'") from ex
-
-    def getTrans(self, transId):
-        try:
-            return self._doGetTrans(transId)
-        except Exception as ex:
-            raise GencodeError(f"getTrans error for '{transId}'") from ex
+            raise GencodeError(f"can't find GENCODE metadata for transcript '{transId}'") from ex
 
     def getGeneId(self, transId):
         return self.getTrans(transId).geneId

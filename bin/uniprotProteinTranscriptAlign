@@ -5,15 +5,10 @@ import os.path as osp
 import argparse
 import re
 import functools
-from pycbio.sys import fileOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import prMsg
-from uniprotmap.depends import runIfNotDone, runIfOutOfDate
-from uniprotmap.align import queryBuildDb, targetBuildDb, combinePairAligns, runBatch
+from uniprotmap.align import proteinTranscriptAlign
 from uniprotmap.uniprot import UniProtMetaTbl, dropUniportIsoformModifier
-
-uniprotProteinTranscriptAlignJob = osp.join(osp.dirname(__file__), "uniprotProteinTranscriptAlignJob")
 
 def parseArgs():
     desc = """Align UniProt protein sequences to UniProt canonical transcripts
@@ -30,7 +25,7 @@ def parseArgs():
                         help="alignment algorithm")
     parser.add_argument("uniprotMetaTsv",
                         help="""Uniprot metadata in TSV format (input)""")
-    parser.add_argument("uniprotFa",
+    parser.add_argument("proteinFa",
                         help="""UniProt FASTA (input)""")
     parser.add_argument("transFa",
                         help="""transcript FASTA, CDS must be in upper-case and UTR in lowercase (input)""")
@@ -46,43 +41,26 @@ def queryFaEditFilter(faRec):
     """
     return re.match("^.+ isRefOf .+$", faRec.description) is not None
 
-def isCanonicalProtMRnaAlign(uniprotMetaTbl, psl):
+def targetFaEditFilter(uniprotMetaTbl, faRec):
+    """only used transcripts associated with canonical protein"""
+    return uniprotMetaTbl.isCanonProtTrans(faRec.id)
+
+def alignFilter(uniprotMetaTbl, psl):
     """Only keep alignments from canonical SwissProt isoform, as alt-isoforms to
     a canonical transcript"""
     uniprotMeta = uniprotMetaTbl.getByAcc(dropUniportIsoformModifier(psl.qName))
     return ((psl.qName == uniprotMeta.mainIsoAcc) and uniprotMeta.isCanonProtTrans(psl.tName))
 
-def proteinTranscriptAlign(uniprotMetaTsv, uniprotFa, transFa, protCanonTransPsl, algo, workDir):
+def uniprotProteinTranscriptAlign(uniprotMetaTsv, proteinFa, transFa, protCanonTransPsl, algo, workDir):
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
-    targetDir = osp.join(workDir, "transDb")
-    transDbFa = osp.join(targetDir, "transDb.fa")
-    with runIfNotDone(targetDir, depends=transFa) as do:
-        if do:
-            prMsg("building target transcript database")
-            targetBuildDb(uniprotMetaTbl.isCanonProtTrans, transFa, transDbFa, algo, targetDir)
 
-    queryDir = osp.join(workDir, "queryDir")
-    with runIfNotDone(queryDir, depends=uniprotFa) as do:
-        if do:
-            prMsg("split UniProt proteins")
-            queryBuildDb(uniprotFa, queryDir)
-
-    alignDir = osp.join(workDir, "aligns")
-    with runIfNotDone(alignDir, doneDepends=[targetDir, queryDir]) as do:
-        if do:
-            prMsg("running alignment batch")
-            runBatch([uniprotProteinTranscriptAlignJob, algo], queryDir, transDbFa, alignDir,
-                     osp.join(workDir, "batch"))
-
-    with runIfOutOfDate(protCanonTransPsl, doneDepends=alignDir) as do:
-        if do:
-            prMsg("combining alignments")
-            with fileOps.AtomicFileCreate(protCanonTransPsl) as tmpPsl:
-                combinePairAligns(alignDir, tmpPsl, functools.partial(isCanonicalProtMRnaAlign, uniprotMetaTbl))
-    prMsg("finished")
+    proteinTranscriptAlign(proteinFa, transFa, protCanonTransPsl, algo, workDir,
+                           queryFaEditFilterFunc=queryFaEditFilter,
+                           targetFaEditFilterFunc=functools.partial(targetFaEditFilter, uniprotMetaTbl),
+                           alignFilterFunc=functools.partial(alignFilter, uniprotMetaTbl))
 
 def main(opts):
-    proteinTranscriptAlign(opts.uniprotMetaTsv, opts.uniprotFa, opts.transFa,
-                           opts.protCanonTransPsl, opts.algo, opts.workDir)
+    uniprotProteinTranscriptAlign(opts.uniprotMetaTsv, opts.proteinFa, opts.transFa,
+                                  opts.protCanonTransPsl, opts.algo, opts.workDir)
 
 main(parseArgs())

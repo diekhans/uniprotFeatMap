@@ -37,14 +37,14 @@ test: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDeco
 	@echo "==========================================" >&2
 
 fulltest: aligntest test
-aligntest: protTransAlignTests
+aligntest: protTransAlignTests interproAlignTests
 
 ####
 protTransAlignTests: testProtTransSPBlastAlign testProtTransSPBlatAlign \
 	testProtTransTRBlastAlign testProtTransTRBlatAlign \
 
-# $(call runAlignments,blat,swissprot)
-define runAlignments
+# $(call runUpAlignments,blat,swissprot)
+define runUpAlignments
 	rm -rf output/$@.psl output/$@.work
 	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.tab input/${2}.9606.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
@@ -52,16 +52,16 @@ define runAlignments
 endef
 
 testProtTransSPBlastAlign: mkout
-	$(call runAlignments,blast,swissprot)
+	$(call runUpAlignments,blast,swissprot)
 
 testProtTransSPBlatAlign: mkout
-	$(call runAlignments,blat,swissprot)
+	$(call runUpAlignments,blat,swissprot)
 
 testProtTransTRBlastAlign: mkout
-	$(call runAlignments,blast,trembl)
+	$(call runUpAlignments,blast,trembl)
 
 testProtTransTRBlatAlign: mkout
-	$(call runAlignments,blat,trembl)
+	$(call runUpAlignments,blat,trembl)
 
 ####
 uniprotProteinTranscriptMapTests: testUniprotProteinTranscriptMapSP testUniprotProteinTranscriptMapTR
@@ -210,6 +210,21 @@ testUniprotInfoGeneName:
 	${uniprotInfo} geneName input/swissprot.9606.tab output/$@.tsv
 	diff expected/$@.tsv output/$@.tsv
 
+####
+# $(call runUpAlignments,blat)
+define runIpAlignments
+	rm -rf output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} --algo=${1} input/gencode.v43.metadata.tsv input/gencode.v43.proteins.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
+	diff expected/$@.psl output/$@.psl
+	pslCheck -verbose=0 output/$@.psl
+endef
+
+interproAlignTests:  testInterproBlatAlign
+
+testInterproBlatAlign: mkout
+	$(call runIpAlignments,blat)
+
+
 ##
 # hub
 ##
@@ -232,3 +247,6 @@ mkout:
 clean:
 	rm -rf output
 
+
+savebak:
+	cd .. && ${MAKE} savebak

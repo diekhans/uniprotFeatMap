@@ -18,3 +18,5 @@ clean:
 	cd tests && ${MAKE} clean
 	rm -rf  lib/uniprotmap/__pycache__
 
+savebak:
+	savebak -git uniprotFeatMap

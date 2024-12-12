@@ -9,13 +9,25 @@ from pycbio.distrib.parasol import Para
 from pycbio.sys import fileOps
 from pycbio.hgdata.psl import PslReader
 from Bio import SeqIO
-from uniprotmap import conf
-from uniprotmap.depends import getDoneFile
+from uniprotmap import conf, prMsg
+from uniprotmap.depends import runIfNotDone, runIfOutOfDate, getDoneFile
 
 DEFAULT_QUERY_SPLIT_APPROX_SIZE = 25000
 
+proteinTranscriptAlignJob = osp.normpath(osp.join(osp.dirname(__file__), "../../bin/proteinTranscriptAlignJob"))
+
 class AlignError(Exception):
     pass
+
+def updateCompoundFastaHeader(faRec):
+    """convert >idA|idB|idC to >idA idB idC in a fasta Seq record"""
+    if faRec.id.find('|') >= 0:
+        idParts = faRec.id.split('|')
+        faRec.id = idParts[0]
+        desc = idParts[1:]
+        if faRec.description != "":
+            desc.append(faRec.description)
+        faRec.description = ' '.join(desc)
 
 ##
 # BLAST alignments
@@ -26,29 +38,54 @@ def _buildBlastTransIndex(transFa, workDir):
                   "-l", logFile, "-i", transFa, "-p", "F"])
 
 ##
+# parasol batch alignments
+##
+def _makeJobFile(alignCmd, queriesDir, targetDbFa, alignDir, alignBatchDir):
+    jobFile = osp.join(alignBatchDir, "jobs.para")
+    with fileOps.opengz(jobFile, 'w') as fh:
+        for queryFa in _queryListSplitFas(queriesDir):
+            outPsl = osp.join(alignDir, osp.basename(queryFa) + ".psl")
+            print(*alignCmd, targetDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
+    if osp.getsize(jobFile) == 0:
+        raise AlignError(f"empty job file create: {jobFile}")
+    return jobFile
+
+def _runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
+    "alignCmdPre is list of program and initial arguments"
+    fileOps.ensureDir(alignBatchDir)
+    jobFile = _makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
+    para = Para(conf.paraHost, jobFile=jobFile, paraDir=alignBatchDir, retries=2)
+    para.free()
+    try:
+        para.make()
+    except pipettor.exceptions.ProcessException as ex:
+        raise AlignError(f"batch failed, correct problem, re-run with -batch={alignBatchDir}\n"
+                         "then touch " + getDoneFile(alignDir)) from ex
+
+##
 # Alignment query setup
 ##
-def queryGetSplitPrefix(queriesDir):
+def _queryGetSplitPrefix(queriesDir):
     return osp.join(queriesDir, "query")
 
-def queryListSplitFas(queriesDir):
-    return sorted(glob.glob(queryGetSplitPrefix(queriesDir) + "*"))
+def _queryListSplitFas(queriesDir):
+    return sorted(glob.glob(_queryGetSplitPrefix(queriesDir) + "*"))
 
-def _querySplitWriter(inFaFh, outFaFh, filterEditFunc):
+def _queryFilterEditFasta(inFaFh, outFaFh, filterEditFunc):
     for faRec in SeqIO.parse(inFaFh, "fasta"):
         if (filterEditFunc is None) or filterEditFunc(faRec):
             SeqIO.write(faRec, outFaFh, "fasta")
 
-def queryBuildDb(queryFa, queriesDir, *, filterEditFunc=None, approxSize=DEFAULT_QUERY_SPLIT_APPROX_SIZE):
+def _queryBuildDb(queryFa, queriesDir, filterEditFunc, approxSize):
     """Split a query FASTA, If filterEditFunction is not none, it is passed the fasta record to
     check it should be included.  It can also update the FASTA record header if needed.
     """
     fileOps.ensureDir(queriesDir)
     # make sure there are no old files that could cause problems
-    fileOps.rmFiles(*queryListSplitFas(queriesDir))
+    fileOps.rmFiles(*_queryListSplitFas(queriesDir))
     with fileOps.opengz(queryFa) as inFaFh:
-        with pipettor.Popen(["faSplit", "about", "/dev/stdin", approxSize, queryGetSplitPrefix(queriesDir)], 'w') as outFaFh:
-            _querySplitWriter(inFaFh, outFaFh, filterEditFunc)
+        with pipettor.Popen(["faSplit", "about", "/dev/stdin", approxSize, _queryGetSplitPrefix(queriesDir)], 'w') as outFaFh:
+            _queryFilterEditFasta(inFaFh, outFaFh, filterEditFunc)
 
 ##
 # Alignment target setup
@@ -60,21 +97,21 @@ def _targetWriteMaskFastaRec(rec, outFh):
     seq = re.sub('[a-z]', 'N', str(rec.seq))
     print(seq, file=outFh)
 
-def _targetMakeUtrMaskedFasta(filterFunc, inFa, outFa):
+def _targetMakeUtrMaskedFasta(inFa, outFa, filterEditFunc):
     """
     Create FASTA with lower-case UTR hard-masked
     """
     with fileOps.opengz(inFa) as inFh:
         with fileOps.opengz(outFa, 'w') as outFh:
             for rec in SeqIO.parse(inFh, "fasta"):
-                if filterFunc(rec.id):
+                if (filterEditFunc is None) or filterEditFunc(rec):
                     _targetWriteMaskFastaRec(rec, outFh)
 
-def targetBuildDb(filterFunc, transFa, transDbFa, algo, targetDir):
+def _targetBuildDb(transFa, transDbFa, algo, filterEditFunc, targetDir):
     """build alignment target database for all transcripts were filterFunc(id) returns True"""
     fileOps.ensureDir(targetDir)
     fileOps.ensureFileDir(transDbFa)
-    _targetMakeUtrMaskedFasta(filterFunc, transFa, transDbFa)
+    _targetMakeUtrMaskedFasta(transFa, transDbFa, filterEditFunc)
     if algo == "blast":
         _buildBlastTransIndex(transDbFa, targetDir)
 
@@ -113,7 +150,7 @@ def _processAlignedPsls(inPslFh, outPslFh, filterFunc):
         if psl is not None:
             psl.write(outPslFh)
 
-def combinePairAligns(alignDir, protTransPsl, filterFunc):
+def _combinePairAligns(alignDir, protTransPsl, filterFunc):
     "concatenate, filter, and sort by tName (transcript))"
 
     findSortCmd = (["find", alignDir, "-name", "*.fa.psl", "-print0"],
@@ -123,26 +160,34 @@ def combinePairAligns(alignDir, protTransPsl, filterFunc):
             _processAlignedPsls(inPslFh, outPslFh, filterFunc)
 
 ##
-# parasol batch alignments
+# overall pipeline, parameterized with files and functions.
 ##
-def makeJobFile(alignCmd, queriesDir, targetDbFa, alignDir, alignBatchDir):
-    jobFile = osp.join(alignBatchDir, "jobs.para")
-    with fileOps.opengz(jobFile, 'w') as fh:
-        for queryFa in queryListSplitFas(queriesDir):
-            outPsl = osp.join(alignDir, osp.basename(queryFa) + ".psl")
-            print(*alignCmd, targetDbFa, queryFa, f"{{check out exists {outPsl}}}", file=fh)
-    if osp.getsize(jobFile) == 0:
-        raise AlignError(f"empty job file create: {jobFile}")
-    return jobFile
+def proteinTranscriptAlign(proteinFa, transFa, protTransPsl, algo, workDir, *,
+                           queryFaEditFilterFunc=None, targetFaEditFilterFunc=None, alignFilterFunc=None,
+                           querySplitSize=DEFAULT_QUERY_SPLIT_APPROX_SIZE):
+    targetDir = osp.join(workDir, "transDb")
+    transDbFa = osp.join(targetDir, "transDb.fa")
+    with runIfNotDone(targetDir, depends=transFa) as do:
+        if do:
+            prMsg("building target transcript database")
+            _targetBuildDb(transFa, transDbFa, algo, targetFaEditFilterFunc, targetDir)
 
-def runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
-    "alignCmdPre is list of program and initial arguments"
-    fileOps.ensureDir(alignBatchDir)
-    jobFile = makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
-    para = Para(conf.paraHost, jobFile=jobFile, paraDir=alignBatchDir, retries=2)
-    para.free()
-    try:
-        para.make()
-    except pipettor.exceptions.ProcessException as ex:
-        raise AlignError(f"batch failed, correct problem, re-run with -batch={alignBatchDir}\n"
-                         "then touch " + getDoneFile(alignDir)) from ex
+    queryDir = osp.join(workDir, "queryDir")
+    with runIfNotDone(queryDir, depends=proteinFa) as do:
+        if do:
+            prMsg("split proteins")
+            _queryBuildDb(proteinFa, queryDir, queryFaEditFilterFunc, querySplitSize)
+
+    alignDir = osp.join(workDir, "aligns")
+    with runIfNotDone(alignDir, doneDepends=[targetDir, queryDir]) as do:
+        if do:
+            prMsg("running alignment batch")
+            _runBatch([proteinTranscriptAlignJob, algo], queryDir, transDbFa, alignDir,
+                      osp.join(workDir, "batch"))
+
+    with runIfOutOfDate(protTransPsl, doneDepends=alignDir) as do:
+        if do:
+            prMsg("combining alignments")
+            with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
+                _combinePairAligns(alignDir, tmpPsl, alignFilterFunc)
+    prMsg("finished")
