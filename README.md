@@ -1,6 +1,7 @@
-# Mapping UniProt and Interproscan annotations to transcripts
+# Mapping UniProt and InterProScan annotations to transcripts
 
-This modules implements mapping of protein annotations to transcripts.
+This modules implements mapping of protein annotations to transcripts and
+generating BED track decorators.
 
 ## mapping flow
 
@@ -16,14 +17,14 @@ annotation -> uniprotCanonical -> transcript -> genome
 - annotMapId: unique id assigned to the mapping of a UniProt feature annotation to a transcript, which is described below.
 - raw.psl - intermediate alignments that have not yet been fully filtered
 
-## Mapping pipeline commands:
+## UniProt Mapping pipeline commands:
 
-1. `uniprotProteinTranscriptAlign`: Align protein sequences to transcript RNAs with BLAT or BLAST. Creates a protein to NA PSL alignments, with some basic filtering.
+1. `uniprotProteinTranscriptAlign`: Align UniProt canonical protein sequences to transcript RNAs with BLAT or BLAST. Creates protein to NA PSL alignments for the transcripts associated with the UniProt canonical protein.
    * input: uniprotFa, uniprotMetaTsv, transFa
    * output: protCanonTransPsl
-1. `uniprotProteinTranscriptMap`: Filter protein to PSL transcript alignments to pair them based on being the listed transcript in UniProt.  Project the primary alignments to other transcript isoforms using the genomic coordinates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in UniProt CDS to transcript alignments.
+1. `uniprotProteinTranscriptMap`: Project the canonical alignments to other transcript isoforms using the genomic coordinates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in the combination of the canonical and projected transcript alignments, with  the protein convert to CDS coordinates.
    * input: gencodeMetaTsv, uniprotMetaTsv, protCanonTransPsl
-   * output: cdsTransPairedPsl, problemLogTsvh
+   * output: cdsTransPairedPsl, problemLogTsv
 1. `uniprotAnnotsMap`: Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.  This can also map to other assembly via way of transcript-transcript alignments.
    * input: uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl
    * output: annotGenomePsl, annotTransRefTsv
@@ -78,3 +79,8 @@ A file `*.ref.tsv` file is created when annotations are mapped to using in mappi
 Disruption decorators will have an addition disruption index appended to `annotMapId` to make them unique.
 
 
+* InterProScan
+
+1. `interproProteinTranscriptAlign`: Align InterProScan annotated protein sequences to transcript RNAs with BLAT or BLAST. Creates protein to NA PSL alignments for the transcript paired in the geneset.
+   * input: gencodeMetaTsv, proteinFa, transFa
+   * output: protTransPsl
