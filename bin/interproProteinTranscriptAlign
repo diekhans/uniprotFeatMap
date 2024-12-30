@@ -6,7 +6,8 @@ import argparse
 import functools
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap.gencode import GencodeError, GencodeMetaTbl
+from uniprotmap.gencode import loadGencodeMetadata
+from uniprotmap.geneset import GeneSetError
 from uniprotmap.interproscan import InterproError
 from uniprotmap.align import updateCompoundFastaHeader, proteinTranscriptAlign
 
@@ -35,24 +36,24 @@ def parseArgs():
                         help="temporary directory used by parasol run")
     return parser.parse_args()
 
-def queryFaEditFilter(gencodeMetaTbl, faRec):
+def queryFaEditFilter(geneSetMeta, faRec):
     updateCompoundFastaHeader(faRec)
-    if faRec.id not in gencodeMetaTbl.byProteinId:
+    if faRec.id not in geneSetMeta.byProteinId:
         raise InterproError(f"protein id '{faRec}' not found in GENCODE metadata")
     return True
 
-def alignFilter(gencodeMetaTbl, psl):
+def alignFilter(geneSetMeta, psl):
     try:
-        trans = gencodeMetaTbl.getTrans(psl.tName)
-    except GencodeError as ex:
-        raise InterproError(f"transcript id '{psl.tName}' not found in GENCODE metadata for protein/transcript alignment '{psl.qName}'/'{psl.tName}'") from ex
+        trans = geneSetMeta.getTranscript(psl.tName)
+    except GeneSetError as ex:
+        raise InterproError(f"transcript id '{psl.tName}' not found in gene set metadata for protein/transcript alignment '{psl.qName}'/'{psl.tName}'") from ex
     return trans.proteinId == psl.qName
 
 def interproProteinTranscriptAlign(gencodeMetaTsv, proteinFa, transFa, protTransPsl, algo, workDir):
-    gencodeMetaTbl = GencodeMetaTbl(gencodeMetaTsv)
+    geneSetMeta = loadGencodeMetadata(gencodeMetaTsv)
     proteinTranscriptAlign(proteinFa, transFa, protTransPsl, algo, workDir,
-                           queryFaEditFilterFunc=functools.partial(queryFaEditFilter, gencodeMetaTbl),
-                           alignFilterFunc=functools.partial(alignFilter, gencodeMetaTbl))
+                           queryFaEditFilterFunc=functools.partial(queryFaEditFilter, geneSetMeta),
+                           alignFilterFunc=functools.partial(alignFilter, geneSetMeta))
 
 def main(opts):
     interproProteinTranscriptAlign(opts.gencodeMetaTsv, opts.proteinFa, opts.transFa,

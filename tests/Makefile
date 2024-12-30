@@ -250,3 +250,7 @@ clean:
 
 savebak:
 	cd .. && ${MAKE} savebak
+
+
+lint:
+	cd .. && ${MAKE} lint

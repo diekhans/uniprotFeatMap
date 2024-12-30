@@ -252,7 +252,7 @@ def getAnnotCategory(annot):  # noqa: C901
         return (UniProtCategory.Other, "Other Annotation")
 
 def calcTransCategory(uniprotMeta, transId):
-    "determine match of transcript to GENCODE based on what transcripts are listed in metadata"
+    "determine match of transcript to based on what transcripts are listed in metadata"
     if transId in uniprotMeta.ensemblTransIds:
         return TransCategory.canonical
     if dropVersion(transId) in uniprotMeta.ensemblTransAccs:

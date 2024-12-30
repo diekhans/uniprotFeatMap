@@ -19,7 +19,7 @@ from uniprotmap.uniprotDecorators import (getAnnotColor, getProblemColor, getAnn
                                           UNIPROT_CANON_ISO_OUTLINE_COLOR, UNIPROT_NONCANON_ISO_OUTLINE_COLOR,
                                           FEAT_INSERTION_COLOR, FEAT_DELETION_COLOR, AnnotType, FeatStatus,
                                           UniprotDecoration)
-from uniprotmap.gencode import GencodeDataTbl
+from uniprotmap.gencode import loadGencodeData
 from uniprotmap.metadata import AnnotTransRefs
 from uniprotmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
 
@@ -197,7 +197,7 @@ class AnnotationProcessor:
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
         self.uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
         self.annotTransRefs = AnnotTransRefs(annotTransRefTsv)
-        self.transGenomeAlns = GencodeDataTbl(transGenomePsl)
+        self.transGenomeAlns = loadGencodeData(transGenomePsl)
 
     def _buildAnnotation(self, annotPsl, annot, alignIdx, decoratorBeds):
         annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
