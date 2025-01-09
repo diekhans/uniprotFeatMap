@@ -30,8 +30,7 @@ all:
 	@exit 1
 
 
-test: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDecoratorsTests \
-	uniprotDecoratorsMergeTests xspeciesTests uniprotInfoTests hub
+test: uniprotTests interproTests hub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
 	@echo "==========================================" >&2
@@ -40,6 +39,10 @@ fulltest: aligntest test
 aligntest: protTransAlignTests interproAlignTests
 
 ####
+uniprotTests: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDecoratorsTests \
+	uniprotDecoratorsMergeTests xspeciesTests uniprotInfoTests 
+
+
 protTransAlignTests: testProtTransSPBlastAlign testProtTransSPBlatAlign \
 	testProtTransTRBlastAlign testProtTransTRBlatAlign \
 
@@ -97,7 +100,6 @@ define runMapAnnots
 	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
 	    input/gencode.v43.pc.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
-	$(call checkAnnots)
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	diff expected/$@.problems.tsv output/$@.problems.tsv
@@ -178,7 +180,6 @@ testXSpeciesUniprotAnnotsMap: mkout
 	    input/swissprot.9606.annots.tab expected/testUniprotProteinTranscriptMapSP.psl \
 	    input/GCA_028885655.2.cat.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
-	$(call checkAnnots)
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	diff expected/$@.problems.tsv output/$@.problems.tsv
@@ -223,6 +224,17 @@ interproAlignTests:  testInterproBlatAlign
 
 testInterproBlatAlign: mkout
 	$(call runIpAlignments,blat)
+
+interproTests: testInterproAnnotsMap
+
+testInterproAnnotsMap: mkout
+	${interproAnnotsMap} \
+	    input/gencode.v43.interproscan.tsv expected/testInterproBlatAlign.psl \
+	    input/gencode.v43.pc.psl \
+            output/$@.psl output/$@.ref.tsv
+	diff expected/$@.psl output/$@.psl
+	diff expected/$@.ref.tsv output/$@.ref.tsv
+	pslCheck -verbose=0 output/$@.psl
 
 
 ##

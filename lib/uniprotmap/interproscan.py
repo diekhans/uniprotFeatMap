@@ -1,60 +1,58 @@
 """
 Access to interproscan results in JSON format.
 """
-import os.path as osp
-import json
-import pickle
-from pycbio.sys import fileOps
-from pycbio.sys.objDict import ObjDict
+from collections import defaultdict
+from pycbio.tsv import TsvReader
+from uniprotmap import annotIdFmt
 
 class InterproError(Exception):
     pass
 
-class InterproResults:
-    """Interproscan analysis results from JSON output"""
+def _parse_none_if_minus(val):
+    "parse fields that use '-' if there is no value"
+    return None if val == '-' else val
+
+def _parse_status(val):
+    "convert status to a boolean"
+    return True if val == 'T' else False
+
+# `TSV' does not contain a header
+_tsvColumns = ("protein_accession", "sequence_digest", "sequence_length",
+               "analysis", "signature_accession", "signature_description", "start", "stop",
+               "score", "status", "date", "interpro_accession", "interpro_description",
+               "go", "pathways")
+_tsvTypeMap = {"sequence_length": int,
+               "start": int,
+               "stop": int,
+               "score": _parse_none_if_minus,  # don't bother converting to float
+               "status": _parse_status,
+               "interpro_accession": _parse_none_if_minus,
+               "interpro_description": _parse_none_if_minus,
+               "go": _parse_none_if_minus,
+               "pathways": _parse_none_if_minus}
+
+class InterproAnnotTbl(list):
+    """InterProScan analysis results from TSV output.
+
+    Rows have the above columns from TSV, plus
+    annotId - computed annotId with protein id and offset within proteins annotations
+    """
     def __init__(self):
-        self.byProtId = {}
+        self.byProtAcc = defaultdict(list)
 
-    def add(self, result):
-        self.byProtId[result.xref.id] = result
+    def add(self, row):
+        self.append(row)
+        self.byProtAcc[row.protein_accession].append(row)
+        row.annotId = annotIdFmt(row.protein_accession, len(self.byProtAcc[row.protein_accession]) - 1)
 
-def _interproPklFile(interproJson, cacheDir):
-    """removes compression extension and .json, if present, and return .pkl.gz
-    in cache dir"""
-    inBase = osp.basename(fileOps.compressBaseName(interproJson))
-    return osp.join(cacheDir, inBase + ".pkl.gz")
+    def finish(self):
+        self.byProtAcc.default_factory = None
 
-def _interproReadJson(interproJson):
-    interproResults = InterproResults()
-    with fileOps.opengz(interproJson) as fh:
-        for result in json.load(fh, object_pairs_hook=ObjDict):
-            interproResults.add(result)
-    return interproResults
+def interproResultsLoad(interproTsv):
+    """Load interproscan results TSV """
 
-def _interproPklCurrent(interproJson, interproPkl):
-    return osp.exists(interproPkl) and (osp.getmtime(interproJson) <= osp.getmtime(interproPkl))
-
-def _interproSavePkl(interproResults, interproPkl):
-    with fileOps.opengz(interproPkl, 'wb') as fh:
-        pickle.dump(interproResults, fh)
-
-def _interproLoadPkl(interproPkl):
-    with fileOps.opengz(interproPkl, 'rb') as fh:
-        return pickle.load(fh)
-
-
-def interproResultsLoad(interproJson, *, cacheDir=None):
-    """Load interproscan results. If cache_dir is not None, it is used to
-    pickle the InterproscanResults object, with replacing the .json[.gz], with .pkl.gz.
-    If pickle file does not exist or is out-of-date, it is creates """
-
-    if cacheDir is None:
-        return _interproReadJson(interproJson)
-    else:
-        interproPkl = _interproPklFile(interproJson, cacheDir)
-        if _interproPklCurrent(interproJson, interproPkl):
-            return _interproLoadPkl(interproPkl)
-        else:
-            interproResults = _interproReadJson(interproJson)
-            _interproSavePkl(interproResults, interproPkl)
-            return interproResults
+    interproTbl = InterproAnnotTbl()
+    for row in TsvReader(interproTsv, columns=_tsvColumns, typeMap=_tsvTypeMap):
+        interproTbl.add(row)
+    interproTbl.finish()
+    return interproTbl

@@ -1,0 +1,320 @@
+#!/usr/bin/env python3
+
+import sys
+import os.path as osp
+import argparse
+import multiprocessing as mp
+from collections import namedtuple
+import pipettor
+from pycbio.sys import fileOps
+from pycbio.sys.profile import Profile
+from pycbio.hgdata.psl import PslReader
+from pycbio.hgdata.decoration import BedBlock, Glyph
+from pycbio.hgdata.coords import Coords
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap.gencode import loadGencodeData
+from uniprotmap.metadata import AnnotTransRefs
+from uniprotmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
+
+class HelpColors(argparse.Action):
+    "generate a help message on colors"
+    def __call__(self, parser, namespace, values, option_string=None):
+        descs = [makeColorDesc(UNIPROT_CANON_ISO_OUTLINE_COLOR,
+                               "canonical transcript outline"),
+                 makeColorDesc(UNIPROT_NONCANON_ISO_OUTLINE_COLOR,
+                               "non-canonical isoform transcript outline"),
+                 makeColorDesc(FEAT_INSERTION_COLOR,
+                               "feature insertion"),
+                 makeColorDesc(FEAT_DELETION_COLOR,
+                               "feature deletion")]
+        for (color, info) in getColorUses():
+            descs.append(makeColorDesc(color, info))
+        print("Color usage:")
+        for desc in descs:
+            print("   ", desc)
+        parser.exit()
+
+
+def parseArgs():
+    desc = """
+    Convert InterproScan annotations alignments create by uniprotAnnotsMap
+    to a decorator BED file in uniprotDecoration.as format.  Possibly filtering
+    the results.
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument('--help-colors', action=HelpColors, nargs=0,
+                        help="""Show description of colors used, mostly for producing documentation""")
+    parser.add_argument("--nprocs", type=int, default=1,
+                        help="""number of processers to use""")
+    parser.add_argument("--batchSize", type=int, default=1000,
+                        help="""size of batch to sent to task""")
+    parser.add_argument("--dataset", type=UniProtDataSet, choices=UniProtDataSet, default=UniProtDataSet.SwissProt,
+                        help="""Is the UniProt dataset SwissProt or TrEMBL?""")
+    parser.add_argument("--featTypesTsv",
+                        help="""unique category and feature types for constructing track filters (output)""")
+    parser.add_argument("uniprotMetaTsv",
+                        help="""Uniprot metadata in TSV format (input)""")
+    parser.add_argument("uniprotAnnotsTsv",
+                        help="""Uniprot annotations TSV from uniprotToTab (input)""")
+    parser.add_argument("annotGenomePsl",
+                        help="""Uniprot annotations mapped to genome from uniprotAnnotsMap (input). For cross-species mapping, this will
+                        be the target species genome.""")
+    parser.add_argument("annotTransRefTsv",
+                        help="""association of annotations to mapped transcripts (input)""")
+    parser.add_argument("transGenomePsl",
+                        help="""transcript genome alignment; often from genePredToPsl (input).For cross-species mapping, this must
+                        be the target species genome.""")
+    parser.add_argument("annotDecoratorBedFile",
+                        help="""annotation decorator BED file (output)""")
+    profiler = Profile(parser)
+    opts = parser.parse_args()
+    profiler.setup(opts)
+    return opts
+
+class AnnotData(namedtuple("AnnotInfo",
+                           ("transPsl", "annotPsl", "annot", "annotTransRef",
+                            "transCategory", "dataSet"))):
+    "common data passed through a lot of functions"
+    pass
+
+##
+# shortFeatType to not include in track.
+#
+_shortFeatTypesToSkip = frozenset([
+    'splicing',
+])
+def includeAnnot(annot):
+    "filter for desired annotations"
+    return annot.shortFeatType not in _shortFeatTypesToSkip
+
+def xrefToItemArgs(annotTransRef):
+    "turns xref return into [name, start, end]"
+    coords = Coords.parse(annotTransRef.transcriptPos)
+    return annotTransRef.transcriptId, coords.start, coords.end
+
+
+def makeDecorator(ad, featStatus, bedBlocks, name, color, fillColor, description, *, glyph=None):
+    annot = ad.annot
+    annotType = AnnotType.feature if glyph is None else AnnotType.disruption
+    itemName, itemStart, itemEnd = xrefToItemArgs(ad.annotTransRef)
+    category, categoryName = getAnnotCategory(annot)
+
+    return UniprotDecoration(ad.annotPsl.tName, bedBlocks, name, ad.annotPsl.qStrand, color,
+                             itemName, itemStart, itemEnd, glyph, fillColor,
+                             annotType=annotType, dataSet=ad.dataSet,
+                             uniprotAcc=ad.annot.acc, transCategory=ad.transCategory,
+                             canonTransId="", featStatus=featStatus,
+                             category=category, categoryName=categoryName, description=description,
+                             shortFeatType=annot.shortFeatType, featType=annot.featType,
+                             shortName=annot.shortName, longName=annot.longName,
+                             comment=annot.comment, disease=annot.disease)
+
+def makeBlockDeco(ad, featStatus, bedBlocks, name, color, fillColor,
+                  description):
+    return makeDecorator(ad, featStatus, bedBlocks, name, color, fillColor, description)
+
+def makeGlyphDeco(ad, featStatus, pos, name, color, description):
+    bedBlocks = [BedBlock(pos, pos)]
+    return makeDecorator(ad, featStatus, bedBlocks, name, color, color, description,
+                         glyph=Glyph.Triangle)
+
+def getDescription(annot):
+    "change this function to get a different description"
+    return getAnnotDescriptiveName(annot)
+
+def mkMainAnnotDecorator(ad, featIndels):
+    description = getDescription(ad.annot)
+    annotColor = getAnnotColor(ad.annot, ad.dataSet)
+    fillColor = annotColor.setAlpha(0.5)
+    featStatus = FeatStatus.complete if len(featIndels) == 0 else FeatStatus.disrupted
+    if len(featIndels) > 0:
+        color = getProblemColor(ad.annot, ad.dataSet)
+    elif ad.transCategory == TransCategory.noncanonical:
+        color = UNIPROT_NONCANON_ISO_OUTLINE_COLOR
+    else:
+        color = UNIPROT_CANON_ISO_OUTLINE_COLOR
+    bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in ad.annotPsl.blocks]
+    return makeBlockDeco(ad, featStatus, bedBlocks, ad.annotTransRef.annotMapId, color, fillColor, description)
+
+def getDistruptId(annotTransRef, indelCnt):
+    return f"{annotTransRef.annotMapId}|{indelCnt}"
+
+def getIndelDesc(featIndel, annot):
+    indelText = getFeatureIndelText(featIndel.indelType)
+    return f"{indelText} of {featIndel.length} bases in " + getDescription(annot)
+
+def makeFeatDelAnnot(ad, featIndel, indelCnt):
+    pos = (featIndel.tStart + featIndel.tEnd) // 2
+    yield makeGlyphDeco(ad, featIndel.indelType, pos,
+                        getDistruptId(ad.annotTransRef, indelCnt), FEAT_DELETION_COLOR,
+                        getIndelDesc(featIndel, ad.annot))
+
+def makeFeatInsAnnot(ad, featIndel, indelCnt):
+    color = FEAT_INSERTION_COLOR
+    bedBlocks = [BedBlock(featIndel.tStart, featIndel.tEnd)]
+    yield makeBlockDeco(ad, featIndel.indelType, bedBlocks,
+                        getDistruptId(ad.annotTransRef, indelCnt), color, color,
+                        getIndelDesc(featIndel, ad.annot))
+
+def makeFeatIndelAnnot(ad, featIndel, indelCnt):
+    """Make glyphs or block for a particular INDEL in the annotation. A generator
+    so more than one can be returned"""
+    if featIndel.indelType == FeatureIndelType.insert:
+        yield from makeFeatInsAnnot(ad, featIndel, indelCnt)
+    else:
+        yield from makeFeatDelAnnot(ad, featIndel, indelCnt)
+
+def mkBrokenAnnotDecorators(ad, featIndels):
+    "produces decorators to mark were annotations are broken in the mappings"
+    decoratorBeds = []
+    indelCnt = 0
+    for featIndel in featIndels:
+        decoratorBeds.extend(makeFeatIndelAnnot(ad, featIndel, indelCnt))
+        indelCnt += 1
+    return decoratorBeds
+
+def buildAnnotation(ad, decoratorBeds):
+    "converts BEDs to strings so this work is distributed"
+    featIndels = analyzeFeatureMapping(ad.transPsl, ad.annotPsl)
+    bed = mkMainAnnotDecorator(ad, featIndels)
+    decoratorBeds.append(bed)
+    if len(featIndels) > 0:
+        decoratorBeds.extend(mkBrokenAnnotDecorators(ad, featIndels))
+
+class AnnotationProcessor:
+    """Class used to generate annotations.  This is used to move most of the
+    processing to the pool sub-process"""
+
+    def __init__(self, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet):
+        self.dataSet = dataSet
+        self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
+        self.uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
+        self.annotTransRefs = AnnotTransRefs(annotTransRefTsv)
+        self.transGenomeAlns = loadGencodeData(transGenomePsl)
+
+    def _buildAnnotation(self, annotPsl, annot, alignIdx, decoratorBeds):
+        annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
+        uniprotMeta = self.uniprotMetaTbl.getByAcc(annot.acc)
+        transPsl = self.transGenomeAlns.getAlign(annotTransRef.transcriptId, annotPsl.tName)
+        transCategory = calcTransCategory(uniprotMeta, annotTransRef.transcriptId)
+        # package up since so many parameters
+        ad = AnnotData(transPsl=transPsl, annotPsl=annotPsl, annot=annot, annotTransRef=annotTransRef,
+                       transCategory=transCategory, dataSet=self.dataSet)
+        buildAnnotation(ad, decoratorBeds)
+
+    def processBatch(self, alignBatch):
+        decoratorBeds = []
+        for annotPsl, alignIdx in alignBatch:
+            annot = self.uniprotAnnotTbl.getByAnnotId(annotPsl.qName)
+            if includeAnnot(annot):
+                self._buildAnnotation(annotPsl, annot, alignIdx, decoratorBeds)
+        return decoratorBeds
+
+##
+# This holds the forked process-global instance of AnnotationProcessor
+# If an error occurs during initialization, it is set to the Exception
+##
+gAnnotationProcessor = None
+
+def workerInit(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet):
+    "sub-process setup, will set global annotation process or store an exception."
+    global gAnnotationProcessor
+    try:
+        gAnnotationProcessor = AnnotationProcessor(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
+    except Exception as ex:
+        gAnnotationProcessor = Exception("Pool initialization failed")
+        gAnnotationProcessor.__cause__ = ex
+
+def worker(alignBatch):
+    "sub-process worker, if an error occur es, and exception object is the return"
+    if isinstance(gAnnotationProcessor, Exception):
+        return gAnnotationProcessor
+    try:
+        return gAnnotationProcessor.processBatch(alignBatch)
+    except Exception as ex:
+        ex2 = Exception("Worker failed")
+        ex2.__cause__ = ex
+        return ex
+
+def annotGenomeBatchReader(annotGenomePslFile, batchSize):
+    """return tuples of (annotPsl, alignIdx)"""
+    alignIdx = 0
+    alignBatch = []
+
+    for annotPsl in PslReader(annotGenomePslFile):
+        alignBatch.append((annotPsl, alignIdx))
+        alignIdx += 1
+        if len(alignBatch) >= batchSize:
+            yield alignBatch
+            alignBatch = []
+    if len(alignBatch) > 0:
+        yield alignBatch
+
+def checkForWorkerFail(decoBeds):
+    if isinstance(decoBeds, Exception):
+        raise Exception("creation of decorator BEDs failed") from decoBeds
+
+def writeDecoratorBeds(decoBedIters, annotDecoratorBedFile):
+    """write results from multiprocessing task as they come back via an iter over lists of beds,
+    or maybe a list of lists. This also checks for exceptions in the list, since these
+    are combine back asynchronously, we have to way until actually writing"""
+    featTypes = set()
+    with fileOps.AtomicFileCreate(annotDecoratorBedFile) as tmpDecoBed:
+        with pipettor.Popen(["sort"] + decoratorBedSortOpts, 'w', stdout=tmpDecoBed) as decoBedFh:
+            for decoBeds in decoBedIters:
+                checkForWorkerFail(decoBeds)
+                for bed in decoBeds:
+                    bed.write(decoBedFh)
+                    featTypes.add((bed.category, bed.categoryName, bed.featType, bed.shortFeatType))
+    return featTypes
+
+def processSingle(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
+                  annotDecoratorBedFile, dataSet, batchSize):
+    # this is easier to debug without mp
+    workerInit(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
+    decoBedsList = []
+    for alignBatch in annotGenomeBatchReader(annotGenomePslFile, batchSize):
+        decoBeds = worker(alignBatch)
+        checkForWorkerFail(decoBeds)
+        decoBedsList.append(decoBeds)
+
+    featTypes = writeDecoratorBeds(decoBedsList, annotDecoratorBedFile)
+    return featTypes
+
+def processMulti(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
+                 annotDecoratorBedFile, dataSet, nprocs, batchSize):
+    with mp.Pool(processes=nprocs, initializer=workerInit,
+                 initargs=(uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)) as pool:
+        decoBedIters = pool.imap_unordered(worker,
+                                           annotGenomeBatchReader(annotGenomePslFile, batchSize))
+
+        featTypes = writeDecoratorBeds(decoBedIters, annotDecoratorBedFile)
+    return featTypes
+
+def writeFeatTypes(featTypes, featTypesTsv):
+    with fileOps.opengz(featTypesTsv, 'w') as fh:
+        fileOps.prRowv(fh, "category", "categoryName", "featType", "shortFeatType")
+        for ft in sorted(featTypes):
+            fileOps.prRowv(fh, *ft)
+
+def uniprotAnnotsToDecorators(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
+                              annotDecoratorBedFile, dataSet, nprocs, batchSize, featTypesTsv):
+    # special case one process makes profiling easier
+    if nprocs == 1:
+        featTypes = processSingle(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
+                                  annotDecoratorBedFile, dataSet, batchSize)
+    else:
+        featTypes = processMulti(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
+                                 annotDecoratorBedFile, dataSet, nprocs, batchSize)
+    if featTypesTsv is not None:
+        writeFeatTypes(featTypes, featTypesTsv)
+
+def main(opts):
+    uniprotAnnotsToDecorators(opts.uniprotMetaTsv, opts.uniprotAnnotsTsv, opts.annotGenomePsl, opts.annotTransRefTsv,
+                              opts.transGenomePsl, opts.annotDecoratorBedFile, opts.dataset, opts.nprocs, opts.batchSize,
+                              opts.featTypesTsv)
+
+if __name__ == '__main__':
+    mp.set_start_method("fork")
+    main(parseArgs())

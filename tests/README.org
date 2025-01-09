@@ -22,12 +22,12 @@ cut -f 4 input/gencode.v43.metadata.tsv > gencode.ids
 
 ** interproscan test cases
 use latest version of interproscan to match lookup service, don't install from
-conda if out-of-date
+conda as it is out of date out-of-date
 need updated java
   mamba install conda-forge::openjdk
 
-(time ../pkgs/interproscan-5.72-103.0/interproscan.sh -f JSON -i input/gencode.v43.proteins.fa -b gencode.v43.interproscan) >&ips.log&
-real	5m13.971s
+  
+(time ../pkgs/interproscan-5.72-103.0/interproscan.sh -f TSV -i input/gencode.v43.proteins.fa -b gencode.v43.interproscan) >&ips.log
 
 * various cases
 

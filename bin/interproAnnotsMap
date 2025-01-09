@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+
+import sys
+import os.path as osp
+import argparse
+import logging
+import pipettor
+from pycbio.sys import fileOps, loggingOps
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
+from uniprotmap.mapping import PslMapInfoTbl, createAnnotToProteinCdsPsl, pslMapAnnots
+from uniprotmap.interproscan import interproResultsLoad
+from uniprotmap.metadata import AnnotTransRefWriter
+
+##
+# Same-species mapping pipeline:
+#     annot2protcds -> protcds2trans -> annot2trans
+#     annot2trans -> trans2genome -> annot2genome
+##
+def parseArgs():
+    desc = """
+    Map Interpro annotations to the genome via protein and transcript
+    alignments.  The output will be a NA to NA PSL alignments of annotations
+    of all annotation types that are mapped.  They can be filtered later when
+    building decorators.
+
+    Resulting PSLs will have query name of isoId#annotRowIndex
+
+    This maybe also be used to project the mappings to another species by providing
+    transcript to transcript alignments.
+    """
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--interPrefix",
+                        help="""Save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
+    parser.add_argument("interproAnnotTsv",
+                        help="""InterProScan TSV results (input)""")
+    parser.add_argument("protTransPsl",
+                        help="""Paired protein to transcript alignments from interproProteinTranscriptAlign (input)""")
+    parser.add_argument("transGenomePsl",
+                        help="""Transcript genome alignment; often from genePredToPsl. (input)""")
+    parser.add_argument("annotGenomePsl",
+                        help="""InterProScan annotations mapped to the genome (output)""")
+    parser.add_argument("annotTransRefTsv",
+                        help="""Association of annotations to mapped transcripts (output)""")
+    loggingOps.addCmdOptions(parser)
+    opts = parser.parse_args()
+    loggingOps.setupFromCmd(opts)
+    pipettor.setDefaultLogger(logging.getLogger())
+    return opts
+
+class OutOfSyncError(Exception):
+    "error when Interpro and mapped files are out-of-sycn "
+
+def createAnnotPsl(annot):
+    # qName will have the annotMapId in the form
+    #  <protein_acc>|<feature_idx>|<annot_idx>
+    # coordinates converted to CDS coordinates (3x)
+
+    # InterPro is 1-based, close-ended
+    annotStartOff = 3 * (annot.start - 1)
+    annotEndOff = 3 * annot.stop
+    protCdsSize = 3 * annot.sequence_length
+
+    return createAnnotToProteinCdsPsl(annot.annotId, annotStartOff, annotEndOff,
+                                      annot.protein_accession, protCdsSize)
+
+def createAnnotPsls(interproAnnotTbl, annotProtPslFh):
+    for annot in interproAnnotTbl:
+        createAnnotPsl(annot).write(annotProtPslFh)
+
+def buildAnnotProtPsls(interproAnnotTbl, interPrefix):
+    annotProtPsl = TmpOrSaveFile(interPrefix, "annotProt.psl")
+    with fileOps.opengz(annotProtPsl, 'w') as annotProtPslFh:
+        createAnnotPsls(interproAnnotTbl, annotProtPslFh)
+    return annotProtPsl
+
+def convertProtRnaToCdsRna(protTransPsl, interPrefix):
+    cdsTransPairedPsl = TmpOrSaveFile(interPrefix, "cdsTrans.psl")
+    pipettor.run(["pslProtToRnaCoords", protTransPsl, cdsTransPairedPsl])
+    return cdsTransPairedPsl
+
+def writeMappedRef(transA2GMapInfo, transcriptId, transcriptPos, refWriter):
+    refWriter.write(transA2GMapInfo.srcQName, transcriptId, transcriptPos,
+                    transA2GMapInfo.mappedPslLine, None)
+
+def writeAllTransRefs(protId, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, refWriter):
+    for iMapped in range(len(transA2GMapInfos)):
+        writeMappedRef(transA2GMapInfos[iMapped], transcriptId, transcriptPos, refWriter)
+
+def writeTransRefs(interproAnnotTbl, transcriptId, transA2GMapInfos, refWriter):
+    infos0 = transA2GMapInfos[0]
+    transcriptPos = f"{infos0.mappingTName}:{infos0.mappingTStart}-{infos0.mappingTEnd}"
+    protId = annotIdToProtAcc(infos0.srcQName)
+    allAnnots = interproAnnotTbl.byProtAcc[protId]
+    writeAllTransRefs(protId, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, refWriter)
+
+def writeRefs(interproAnnotTbl, annotGenomeMapTbl, refWriter):
+    # split by chrom, to handle PAR, and then by interpro acc to handle multiple annotations
+    for transIdChrom in sorted(annotGenomeMapTbl.byMappingQMappedTNames.keys(), key=lambda v: v[0]):
+        writeTransRefs(interproAnnotTbl, transIdChrom[0], annotGenomeMapTbl.byMappingQMappedTNames[transIdChrom], refWriter)
+
+def mapAnnots(interproAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
+              annotGenomePslFh, annotTransRefTsv, interPrefix):
+    annotGenomeMapInfoTsv = TmpOrSaveFile(interPrefix, "annotGenome.mapinfo.tsv")
+
+    pslMapAnnots(annotProtPsl, cdsTransPairedPsl, transGenomePsl, annotGenomeMapInfoTsv, None,
+                 annotGenomePslFh, annotTransRefTsv, None, interPrefix)
+
+    annotGenomeMapTbl = PslMapInfoTbl(annotGenomeMapInfoTsv)
+
+    with AnnotTransRefWriter(annotTransRefTsv) as refWriter:
+        writeRefs(interproAnnotTbl, annotGenomeMapTbl, refWriter)
+    cleanTmpFiles(annotGenomeMapInfoTsv)
+
+def interproAnnotsMap(interproAnnotTsv, protTransPsl, transGenomePsl,
+                      annotGenomePsl, annotTransRefTsv, interPrefix):
+    interproAnnotTbl = interproResultsLoad(interproAnnotTsv)
+    cdsTransPairedPsl = convertProtRnaToCdsRna(protTransPsl, interPrefix)
+    annotProtPsl = buildAnnotProtPsls(interproAnnotTbl, interPrefix)
+
+    with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
+        mapAnnots(interproAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
+                  annotGenomePslFh, annotTransRefTsv, interPrefix)
+
+    cleanTmpFiles(annotProtPsl, cdsTransPairedPsl)
+
+def main(opts):
+    interproAnnotsMap(opts.interproAnnotTsv, opts.protTransPsl, opts.transGenomePsl,
+                      opts.annotGenomePsl, opts.annotTransRefTsv, opts.interPrefix)
+
+main(parseArgs())

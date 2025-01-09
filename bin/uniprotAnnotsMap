@@ -7,11 +7,10 @@ import logging
 from collections import defaultdict
 import pipettor
 from pycbio.sys import fileOps, loggingOps
-from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToCanonAcc
-from uniprotmap.mapping import pslMapMkCmd, PslMapInfoTbl
+from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
+from uniprotmap.mapping import PslMapInfoTbl, getQuerySizes, createAnnotToProteinCdsPsl, pslMapAnnots
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.metadata import AnnotTransRefWriter
 
@@ -77,34 +76,22 @@ def problemLog(logFh, reason, mainIsoAcc=None, featType=None, annotId=None, begi
 def problemLogAnnot(logFh, reason, annot, protSize=None):
     problemLog(logFh, reason, annot.mainIsoAcc, annot.featType, annot.annotId, annot.begin, annot.end, protSize)
 
-def getProtCdsSizes(cdsTransPairedPsl):
-    # protein is query, but in CDS coordinates (3x)
-    protCdsSizes = {}
-    for psl in PslReader(cdsTransPairedPsl):
-        protCdsSizes[psl.qName] = psl.qSize
-    return protCdsSizes
-
 def createAnnotPsl(annot, protCdsSizes):
     # qName will have the annotMapId in the form
     #  <uniprot_acc>|<feature_idx>|<annot_idx>
-    # coordinated converted to CDS coordinates (3x)
+    # coordinates converted to CDS coordinates (3x)
 
-    # UniProt is 1-based, open-end
-    tStart = 3 * (annot.begin - 1)
-    tEnd = 3 * (annot.end - 1)
-    tSize = protCdsSizes[annot.mainIsoAcc]
+    # UniProt is 1-based, open-ended
+    annotStartOff = 3 * (annot.begin - 1)
+    annotEndOff = 3 * (annot.end - 1)
+    protCdsSize = protCdsSizes[annot.mainIsoAcc]
 
     # some features go past the end of the protein (already logged)
-    if tEnd > tSize:
-        tEnd = tSize
-    qSize = tEnd - tStart
+    if annotEndOff > protCdsSize:
+        annotEndOff = protCdsSize
 
-    psl = Psl(qName=str(annot.annotId), qSize=qSize, qStart=0, qEnd=qSize,
-              tName=annot.mainIsoAcc, tSize=tSize, tStart=tStart, tEnd=tEnd,
-              strand='+')
-    psl.addBlock(PslBlock(qStart=0, tStart=tStart, size=qSize))
-    psl.computeCounts()
-    return psl
+    return createAnnotToProteinCdsPsl(annot.annotId, annotStartOff, annotEndOff,
+                                      annot.mainIsoAcc, protCdsSize)
 
 def warnProtNotMapped(annot, warned, logFh):
     # no point if not in sizes, will not map
@@ -131,50 +118,23 @@ def annotFilter(annot, protCdsSizes, warned, logFh):
     else:
         return True
 
-def createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh):
+def createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotProtPslFh, logFh):
     warned = set()
     for annot in uniprotAnnotTbl:
         if annotFilter(annot, protCdsSizes, warned, logFh):
-            createAnnotPsl(annot, protCdsSizes).write(annotCanonPslFh)
+            createAnnotPsl(annot, protCdsSizes).write(annotProtPslFh)
 
 def buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh):
-    annotCanonPsl = TmpOrSaveFile(interPrefix, "annotCanon.psl")
-    with fileOps.opengz(annotCanonPsl, 'w') as annotCanonPslFh:
-        createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotCanonPslFh, logFh)
-    return annotCanonPsl
-
-def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
-                 annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv,
-                 annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
-    # all of these pslMaps are NA/NA -> NA/NA -> NA/NA
-    cmds = []
-
-    # annotation on canonical transcripts to all transcripts alignment to canonical
-    cmds += pslMapMkCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout",
-                        interPrefix=interPrefix, interMid="annotTrans")
-    if xspeciesTransPsl is not None:
-        # transcript to other species transcript mapping
-        cmds += pslMapMkCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
-                            mapInfo=xspeciesTransMapInfoTsv,
-                            interPrefix=interPrefix, interMid="xspeciesAnnotTrans")
-
-    # per-transcript annotation to genome mapping
-    cmds += pslMapMkCmd("/dev/stdin", transGenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
-
-    pipettor.run(cmds, stdout=annotGenomePslFh)
+    annotProtPsl = TmpOrSaveFile(interPrefix, "annotProt.psl")
+    with fileOps.opengz(annotProtPsl, 'w') as annotProtPslFh:
+        createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotProtPslFh, logFh)
+    return annotProtPsl
 
 def getXSpeciesSrcTrans(mappedTransId, xspeciesTransMapTbl):
     recs = xspeciesTransMapTbl.byMappedTName.get(mappedTransId)
     if recs is None:
         raise Exception(f"Could not find source transcript for cross-species mapped transcript '{mappedTransId}'")
     return recs[0].srcTName
-
-def getA2GUniprotId(transA2GMapInfos):
-    return annotIdToCanonAcc(transA2GMapInfos[0].srcQName)
-
-def getA2GUniprotAnnots(uniprotAnnotTbl, transA2GMapInfos):
-    uniprotAcc = annotIdToCanonAcc(transA2GMapInfos[0].srcQName)
-    return uniprotAnnotTbl.byMainIsoAcc[uniprotAcc]
 
 def mkOutOfSyncAnnotExcept(canonAcc, allAnnots, transA2GMapInfos):
     transcriptId = transA2GMapInfos[0].mappingQName
@@ -184,13 +144,13 @@ def mkOutOfSyncAnnotExcept(canonAcc, allAnnots, transA2GMapInfos):
               [f"   [{i}] {allAnnots[i].annotId}" for i in range(len(allAnnots))] +
               ["mappings:"] +
               [f"   [{i}] {transA2GMapInfos[i].srcQName}" for i in range(len(transA2GMapInfos))])
-    return Exception('\n'.join(errMsg))
+    return OutOfSyncError('\n'.join(errMsg))
 
 def splitByUniprotAcc(transA2GMapInfos):
     "some genes have multiple uniprot entries, split by acc"
     byUniprotAcc = defaultdict(list)
     for transA2GMapInfo in transA2GMapInfos:
-        byUniprotAcc[annotIdToCanonAcc(transA2GMapInfo.srcQName)].append(transA2GMapInfo)
+        byUniprotAcc[annotIdToProtAcc(transA2GMapInfo.srcQName)].append(transA2GMapInfo)
     return byUniprotAcc
 
 def writeMappedRef(transA2GMapInfo, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
@@ -236,7 +196,7 @@ def writeTransRefs(uniprotAnnotTbl, transcriptId, transA2GMapInfos, xspeciesTran
     transcriptPos = f"{infos0.mappingTName}:{infos0.mappingTStart}-{infos0.mappingTEnd}"
     xspeciesSrcTransId = (getXSpeciesSrcTrans(infos0.mappingQName, xspeciesTransMapTbl)
                           if xspeciesTransMapTbl is not None else None)
-    canonAcc = getA2GUniprotId(transA2GMapInfos)
+    canonAcc = annotIdToProtAcc(infos0.srcQName)
     allAnnots = uniprotAnnotTbl.byMainIsoAcc[canonAcc]
     writeAllTransRefs(canonAcc, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, xspeciesSrcTransId, refWriter)
 
@@ -246,12 +206,12 @@ def writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter
         for uniprotAcc, uniprotA2GMapInfos in sorted(splitByUniprotAcc(transA2GMapInfos).items(), key=lambda v: v[0]):
             writeTransRefs(uniprotAnnotTbl, transIdChrom[0], uniprotA2GMapInfos, xspeciesTransMapTbl, refWriter)
 
-def mapAnnots(uniprotAnnotTbl, annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+def mapAnnots(uniprotAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
               annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
     annotGenomeMapInfoTsv = TmpOrSaveFile(interPrefix, "annotGenome.mapinfo.tsv")
     xspeciesTransMapInfoTsv = None if xspeciesTransPsl is None else TmpOrSaveFile(interPrefix, "xspeciesTrans.mapinfo.tsv")
 
-    pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+    pslMapAnnots(annotProtPsl, cdsTransPairedPsl, transGenomePsl,
                  annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv,
                  annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix)
 
@@ -266,16 +226,16 @@ def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv,
                      xspeciesTransPsl, interPrefix):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
-    protCdsSizes = getProtCdsSizes(cdsTransPairedPsl)
+    protCdsSizes = getQuerySizes(cdsTransPairedPsl)
 
     with problemLogOpen(problemLogTsv) as logFh:
-        annotCanonPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh)
+        annotProtPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
-        mapAnnots(uniprotAnnotTbl, annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+        mapAnnots(uniprotAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
                   annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix)
 
-    cleanTmpFiles(annotCanonPsl)
+    cleanTmpFiles(annotProtPsl)
 
 def main(opts):
     uniprotAnnotsMap(opts.uniprotAnnotsTsv, opts.cdsTransPairedPsl, opts.transGenomePsl,

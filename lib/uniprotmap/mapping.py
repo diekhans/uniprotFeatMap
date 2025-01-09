@@ -1,8 +1,11 @@
 ##
-# pslMap related functions
+# Common function for mapping of annotations to the genome using pslMap
+# and related
 ##
 from collections import defaultdict
+import pipettor
 from pycbio.tsv import TsvReader, strOrNoneType, intOrNoneType
+from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 def pslMapMkCmd(inPsl, mapPsl, outPsl, *, swapMap=False, mapInfo=None,
                 interPrefix=None, interMid=None, chainMapFile=False):
@@ -64,11 +67,54 @@ class PslMapInfoTbl(list):
         self.byMappingQMappedTNames = defaultdict(list)
         self.byMappedTName = defaultdict(list)
         for row in TsvReader(mapInfoTsv, typeMap=_mapInfoTypeMap):
-            self.append(row)
-            self.bySrcTName[row.srcTName].append(row)
-            if row.mappedTName is not None:
-                self.byMappingQMappedTNames[(row.mappingQName, row.mappedTName)].append(row)
-                self.byMappedTName[row.mappedTName].append(row)
+            self._load_row(row)
         self.bySrcTName.default_factory = None
         self.byMappingQMappedTNames.default_factory = None
         self.byMappedTName.default_factory = None
+
+    def _load_row(self, row):
+        self.append(row)
+        self.bySrcTName[row.srcTName].append(row)
+        if row.mappedTName is not None:
+            self.byMappingQMappedTNames[(row.mappingQName, row.mappedTName)].append(row)
+            self.byMappedTName[row.mappedTName].append(row)
+
+def getQuerySizes(pslFile):
+    """Get the sizes of all of queries in a PSL file."""
+    querySizes = {}
+    for psl in PslReader(pslFile):
+        querySizes[psl.qName] = psl.qSize
+    return querySizes
+
+def createAnnotToProteinCdsPsl(annotId, annotStartOff, annotEndOff,
+                               protId, protCdsSize):
+    """Create a PSL alignment of a protein annotation to it's protein.
+    The size and coordinates should be converted to bases (3x AA).
+    Results are in nucleic acid (CDS) coordinates."""
+    annotSize = annotEndOff - annotStartOff
+    psl = Psl(qName=annotId, qSize=annotSize, qStart=0, qEnd=annotSize,
+              tName=protId, tSize=protCdsSize, tStart=annotStartOff, tEnd=annotEndOff,
+              strand='+')
+    psl.addBlock(PslBlock(qStart=0, tStart=annotStartOff, size=annotSize))
+    psl.computeCounts()
+    return psl
+
+def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
+                 annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv,
+                 annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
+    # all of these pslMaps are NA/NA -> NA/NA -> NA/NA
+    cmds = []
+
+    # annotation on canonical transcripts to all transcripts alignment to canonical
+    cmds += pslMapMkCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout",
+                        interPrefix=interPrefix, interMid="annotTrans")
+    if xspeciesTransPsl is not None:
+        # transcript to other species transcript mapping
+        cmds += pslMapMkCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
+                            mapInfo=xspeciesTransMapInfoTsv,
+                            interPrefix=interPrefix, interMid="xspeciesAnnotTrans")
+
+    # per-transcript annotation to genome mapping
+    cmds += pslMapMkCmd("/dev/stdin", transGenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
+
+    pipettor.run(cmds, stdout=annotGenomePslFh)

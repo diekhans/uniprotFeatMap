@@ -12,19 +12,19 @@ def prMsg(msg):
 def dropVersion(ident):
     return ident.split('.')[0]
 
-def annotIdFmt(canonAcc, annotIdx):
-    return f"{canonAcc}|{annotIdx}"
+def annotIdFmt(protAcc, annotIdx):
+    return f"{protAcc}|{annotIdx}"
 
 def annotIdParse(annotId):
     parts = annotId.split('|')
     try:
         if len(parts) != 2:
-            raise ValueError(f"expected 'canonAcc|annotIdx', got '{annotId}'")
+            raise ValueError(f"expected 'protAcc|annotIdx', got '{annotId}'")
         return parts[0], int(parts[1])
     except Exception as ex:   # catch bad int
         raise ValueError(f"invalid annotation id: '{annotId}'") from ex
 
-def annotIdToCanonAcc(annotId):
+def annotIdToProtAcc(annotId):
     return annotIdParse(annotId)[0]
 
 def annotMapIdFmt(annotId, mapIdx):
@@ -34,14 +34,14 @@ def annotMapIdParse(annotMapId):
     parts = annotMapId.split('|')
     try:
         if len(parts) != 3:
-            raise ValueError(f"expected 'canonAcc|annotIdx|mapIdx', got '{annotMapId}'")
+            raise ValueError(f"expected 'protAcc|annotIdx|mapIdx', got '{annotMapId}'")
         return parts[0], int(parts[1]), int(parts[2])
     except Exception as ex:   # catch bad int
         raise ValueError(f"invalid annotation map id: '{annotMapId}'") from ex
 
 def annotMapIdToAnnotId(annotMapId):
-    canonAcc, annotIdx, _ = annotMapIdParse(annotMapId)
-    return annotIdFmt(canonAcc, annotIdx)
+    protAcc, annotIdx, _ = annotMapIdParse(annotMapId)
+    return annotIdFmt(protAcc, annotIdx)
 
 class TmpOrSaveFile(str):
     """an file that might be saved for debugging purposes

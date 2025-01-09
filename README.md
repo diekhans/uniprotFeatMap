@@ -60,7 +60,7 @@ additional input to `uniprotAnnotsMap`, to project UniProt features through to
 the target transcripts on the target genome.
 
 
-# Identification
+# Uniprot Mapped Annotation Identification
 
 Each feature mapping needs to be assigned a unique id for use in accessing
 individual feature annotations mappings, called the *annotation mapping id*
@@ -70,7 +70,7 @@ a decorator BED.
 
 The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
 
-- `canon_acc`: UniProt canonical isoform id
+- `canon_acc`: UniProt canonical protein isoform id
 - `annot_idx`: row index of the feature in the UniProt annotation tab file, relative to the first feature for the accession
 - `map_idx`: index of assignment of this feature annotation to a transcript mapping, uniquely identifying the mapping.  Deleted features that don't map still have map_idx assigned to them.
 
@@ -84,3 +84,14 @@ Disruption decorators will have an addition disruption index appended to `annotM
 1. `interproProteinTranscriptAlign`: Align InterProScan annotated protein sequences to transcript RNAs with BLAT or BLAST. Creates protein to NA PSL alignments for the transcript paired in the geneset.
    * input: gencodeMetaTsv, proteinFa, transFa
    * output: protTransPsl
+
+# InterProScan Mapped Annotation Identification
+
+The format of a `annotMapId` matches UniProt annotMapId, only using the
+protein id used in the InterProScan run instead of the `canon_acc`.
+
+
+A file `*.ref.tsv` file is created when annotations are mapped to using in mapping `annotMapId`s back to the UniProt feature and transcript.
+
+
+
