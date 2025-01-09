@@ -275,9 +275,6 @@ def getColorUses():
 # sort command options for sorting decorator BED. Include fields for test
 # reproducible and locality
 
-# chrom,  chromStart, chromEnd, decoratedItem, name, dataset
-decoratorBedSortOpts = ["-k1,1", "-k2,2n", "-k3,3n", "-k13,13", "-k4,4n", "-k17,17"]
-
 class AnnotType(SymEnum):
     feature = auto()
     disruption = auto()

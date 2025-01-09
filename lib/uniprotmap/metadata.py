@@ -6,6 +6,7 @@ annotMapIds are in the form: <canon_acc>|<annot_idx>|<map_idx>
 
 from collections import defaultdict
 from pycbio.sys import fileOps
+from pycbio.hgdata.coords import Coords
 from pycbio.tsv import TsvReader, TsvRow, strOrNoneType, intOrNoneType
 from uniprotmap import annotMapIdFmt, annotMapIdToAnnotId
 
@@ -88,3 +89,9 @@ class AnnotTransRefWriter:
         annotMapId = annotMapIdFmt(annotId, self.idxCounter[annotId])
         self.idxCounter[annotId] += 1
         fileOps.prRowv(self.fh, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)
+
+
+def xrefToItemArgs(annotTransRef):
+    "convert xref into into [name, start, end]"
+    coords = Coords.parse(annotTransRef.transcriptPos)
+    return annotTransRef.transcriptId, coords.start, coords.end

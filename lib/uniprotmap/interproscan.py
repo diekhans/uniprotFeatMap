@@ -48,7 +48,7 @@ class InterproAnnotTbl(list):
     def finish(self):
         self.byProtAcc.default_factory = None
 
-def interproResultsLoad(interproTsv):
+def interproAnnotsLoad(interproTsv):
     """Load interproscan results TSV """
 
     interproTbl = InterproAnnotTbl()

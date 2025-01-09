@@ -10,7 +10,7 @@ from pycbio.sys import fileOps, loggingOps
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
 from uniprotmap.mapping import PslMapInfoTbl, createAnnotToProteinCdsPsl, pslMapAnnots
-from uniprotmap.interproscan import interproResultsLoad
+from uniprotmap.interproscan import interproAnnotsLoad
 from uniprotmap.metadata import AnnotTransRefWriter
 
 ##
@@ -115,7 +115,7 @@ def mapAnnots(interproAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
 
 def interproAnnotsMap(interproAnnotTsv, protTransPsl, transGenomePsl,
                       annotGenomePsl, annotTransRefTsv, interPrefix):
-    interproAnnotTbl = interproResultsLoad(interproAnnotTsv)
+    interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
     cdsTransPairedPsl = convertProtRnaToCdsRna(protTransPsl, interPrefix)
     annotProtPsl = buildAnnotProtPsls(interproAnnotTbl, interPrefix)
 

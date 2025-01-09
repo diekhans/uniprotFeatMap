@@ -3,9 +3,9 @@ include ${root}/defs.mk
 
 # see bin/getTestData for updating test data
 
-# used nprocs= to change number of processes
-ifeq (${nprocs},)
-  nprocs = 8
+# used nproc= to change number of processes
+ifeq (${nproc},)
+  nproc = 8
 endif
 
 chromSizes = input/hg38.sizes
@@ -119,7 +119,7 @@ uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP testUniprotAnnot
 
 # $(call runUniprotAnnotsToDecorators,swissprot,SP)
 define runUniprotAnnotsToDecorators
-	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/$(1).9606.tab input/$(1).9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nproc=${nproc} input/$(1).9606.tab input/$(1).9606.annots.tab \
 	    expected/testUniprotAnnotsMap$(2).psl expected/testUniprotAnnotsMap$(2).ref.tsv \
             input/gencode.v43.pc.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -138,7 +138,7 @@ testUniprotAnnotsToDecoColorHelp: mkout
 
 # error handling, use to not terminate on fail to open files
 testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
-	! ${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissport.9606.annots.tab \
+	! ${uniprotAnnotsToDecorators} --nproc=${nproc} input/swissprot.9606.tab input/swissport.9606.annots.tab \
 	    expected/testUniprotAnnotsMapSP.psl expected/does-not-exist.tsv \
             input/gencode.v43.pc.psl output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
 	grep -q 'Exception: Pool initialization failed' output/$@.err 
@@ -188,7 +188,7 @@ testXSpeciesUniprotAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 testXSpeciesAnnotsToDeco: mkout
-	${uniprotAnnotsToDecorators} --nprocs=${nprocs} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nproc=${nproc} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
 	    expected/testXSpeciesUniprotAnnotsMap.psl expected/testXSpeciesUniprotAnnotsMap.ref.tsv \
             input/GCA_028885655.2.cat.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
