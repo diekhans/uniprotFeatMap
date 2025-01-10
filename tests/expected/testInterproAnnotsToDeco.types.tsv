@@ -1,0 +1,312 @@
+analysis	accession	description	annotCategory
+CDD	IPR001909	Krueppel-associated box	InterPro
+CDD	IPR003309	SCAN domain	InterPro
+CDD	IPR005900	6-phosphogluconolactonase, DevB-type	InterPro
+CDD	IPR006434	Pyrimidine 5'-nucleotidase, eukaryotic	InterPro
+CDD	IPR010908	Longin domain	InterPro
+CDD	IPR034646	ADCK3-like domain	InterPro
+CDD	IPR035837	Tyrosine-protein kinase ABL, SH2 domain	InterPro
+CDD	IPR041813	Alpha-2-macroglobulin, TED domain	InterPro
+CDD	cd02056	serpinA1_A1AT	other
+CDD	cd03263	ABC_subfamily_A	other
+CDD	cd05052	PTKc_Abl	other
+CDD	cd09811	3b-HSD_HSDB1_like_SDR_e	other
+CDD	cd11850	SH3_Abl	other
+CDD	cd15068	7tmA_Adenosine_R_A2A	other
+CDD	cd15069	7tmA_Adenosine_R_A2B	other
+CDD	cd15871	R-SNARE_VAMP7	other
+CDD	cd21023	IgC1_MHC_Ia_HLA-F	other
+Coils	Coil	Coil	other
+FunFam	G3DSA:1.10.150.340:FF:000001	Cytosolic 5-nucleotidase 3-like	other
+FunFam	G3DSA:1.10.4020.10:FF:000001	zinc finger protein 263 isoform X1	other
+FunFam	G3DSA:1.10.510.10:FF:000070	Tyrosine-protein kinase	other
+FunFam	G3DSA:1.10.510.10:FF:002964	Tyrosine-protein kinase	other
+FunFam	G3DSA:1.20.1070.10:FF:000061	Adenosine receptor A2	other
+FunFam	G3DSA:1.20.120.330:FF:000003	Tyrosine-protein kinase	other
+FunFam	G3DSA:1.20.5.110:FF:000004	Vesicle-associated membrane protein 7	other
+FunFam	G3DSA:1.25.40.20:FF:000107	cyclin-dependent kinase 4 inhibitor B	other
+FunFam	G3DSA:1.25.40.20:FF:000249	Cyclin-dependent kinase inhibitor 2A	other
+FunFam	G3DSA:1.50.10.20:FF:000001	CD109 isoform 1	other
+FunFam	G3DSA:2.10.310.10:FF:000001	Serpin family A member 1	other
+FunFam	G3DSA:2.30.30.40:FF:000010	Tyrosine-protein kinase	other
+FunFam	G3DSA:2.30.39.10:FF:000003	alpha-1-antitrypsin isoform X1	other
+FunFam	G3DSA:2.60.120.1540:FF:000007	Alpha-2-macroglobulin like 1	other
+FunFam	G3DSA:2.60.40.10:FF:000014	H-2 class I histocompatibility antigen, alpha chain	other
+FunFam	G3DSA:2.60.40.10:FF:000312	Alpha-2-macroglobulin like 1	other
+FunFam	G3DSA:2.60.40.1930:FF:000001	CD109 isoform 3	other
+FunFam	G3DSA:2.60.40.1940:FF:000004	Alpha-2-macroglobulin like 1	other
+FunFam	G3DSA:2.60.40.690:FF:000006	Alpha-2-macroglobulin like 1	other
+FunFam	G3DSA:3.30.160.60:FF:000006	Zinc finger protein 184 (Kruppel-like)	other
+FunFam	G3DSA:3.30.160.60:FF:000016	zinc finger protein 37 homolog	other
+FunFam	G3DSA:3.30.160.60:FF:000020	Zinc finger protein 14 homolog	other
+FunFam	G3DSA:3.30.160.60:FF:000029	GLI family zinc finger 4	other
+FunFam	G3DSA:3.30.160.60:FF:000044	zinc finger protein 37 homolog	other
+FunFam	G3DSA:3.30.160.60:FF:000094	Zinc finger protein 605	other
+FunFam	G3DSA:3.30.160.60:FF:000098	Zinc finger protein 614	other
+FunFam	G3DSA:3.30.160.60:FF:000139	zinc finger protein 1 homolog	other
+FunFam	G3DSA:3.30.160.60:FF:000223	zinc finger protein 64 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:000255	Zinc finger and AT-hook domain containing	other
+FunFam	G3DSA:3.30.160.60:FF:000281	Zinc finger protein 558 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:000320	Zinc finger protein 777	other
+FunFam	G3DSA:3.30.160.60:FF:000338	zinc finger protein 383	other
+FunFam	G3DSA:3.30.160.60:FF:000382	zinc finger protein 35 isoform X4	other
+FunFam	G3DSA:3.30.160.60:FF:000412	zinc finger protein 64 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:000443	Zinc finger protein 41	other
+FunFam	G3DSA:3.30.160.60:FF:000495	zinc finger protein 668	other
+FunFam	G3DSA:3.30.160.60:FF:000496	Zinc finger with KRAB and SCAN domains 1	other
+FunFam	G3DSA:3.30.160.60:FF:000555	Zinc finger protein 1 homolog	other
+FunFam	G3DSA:3.30.160.60:FF:000578	zinc finger protein 64 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:000660	zinc finger protein 64 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:000669	zinc finger protein 64 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:000688	zinc finger protein 197 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:000690	Zinc finger protein 354C	other
+FunFam	G3DSA:3.30.160.60:FF:000710	Zinc finger protein 768	other
+FunFam	G3DSA:3.30.160.60:FF:000770	zinc finger protein 16	other
+FunFam	G3DSA:3.30.160.60:FF:000848	Zinc finger protein 35	other
+FunFam	G3DSA:3.30.160.60:FF:001010	zinc finger protein 64 isoform X3	other
+FunFam	G3DSA:3.30.160.60:FF:001173	Zinc finger protein 613	other
+FunFam	G3DSA:3.30.160.60:FF:001174	zinc finger protein 527 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:001425	Zinc finger protein 331	other
+FunFam	G3DSA:3.30.160.60:FF:001432	Zinc finger protein 571	other
+FunFam	G3DSA:3.30.160.60:FF:001498	Zinc finger protein 404	other
+FunFam	G3DSA:3.30.160.60:FF:001531	Zinc finger protein 649	other
+FunFam	G3DSA:3.30.160.60:FF:001630	Zinc finger protein 888	other
+FunFam	G3DSA:3.30.160.60:FF:001662	Zinc finger protein 64	other
+FunFam	G3DSA:3.30.160.60:FF:001672	Zinc finger protein 614	other
+FunFam	G3DSA:3.30.160.60:FF:001727	Zinc finger protein 350	other
+FunFam	G3DSA:3.30.160.60:FF:001766	Zinc finger protein 17	other
+FunFam	G3DSA:3.30.160.60:FF:001865	Zinc finger protein 404	other
+FunFam	G3DSA:3.30.160.60:FF:001933	Zinc finger protein 870	other
+FunFam	G3DSA:3.30.160.60:FF:002004	Zinc finger protein 473	other
+FunFam	G3DSA:3.30.160.60:FF:002037	zinc finger protein 64 isoform X3	other
+FunFam	G3DSA:3.30.160.60:FF:002063	RB associated KRAB zinc finger	other
+FunFam	G3DSA:3.30.160.60:FF:002129	Zinc finger protein 304	other
+FunFam	G3DSA:3.30.160.60:FF:002254	Zinc finger protein 540	other
+FunFam	G3DSA:3.30.160.60:FF:002343	Zinc finger protein 33A	other
+FunFam	G3DSA:3.30.160.60:FF:002797	Zinc finger protein 613	other
+FunFam	G3DSA:3.30.160.60:FF:003143	ZNF749 isoform 1	other
+FunFam	G3DSA:3.30.160.60:FF:003149	ZNF649 isoform 1	other
+FunFam	G3DSA:3.30.160.60:FF:004135		other
+FunFam	G3DSA:3.30.160.60:FF:004496		other
+FunFam	G3DSA:3.30.200.20:FF:000037	Tyrosine-protein kinase	other
+FunFam	G3DSA:3.30.390.30:FF:000007	Putative apoptosis-inducing factor 1, mitochondrial	other
+FunFam	G3DSA:3.30.450.50:FF:000001	AP-3 complex subunit delta-1, putative	other
+FunFam	G3DSA:3.30.450.50:FF:000006	Vesicle-associated membrane protein 7	other
+FunFam	G3DSA:3.30.497.10:FF:000001	Serine protease inhibitor	other
+FunFam	G3DSA:3.30.500.10:FF:000001	H-2 class I histocompatibility antigen, alpha chain	other
+FunFam	G3DSA:3.30.505.10:FF:000004	Tyrosine-protein kinase	other
+FunFam	G3DSA:3.30.900.10:FF:000003	Mitotic spindle assembly checkpoint protein MAD2B	other
+FunFam	G3DSA:3.40.50.1000:FF:000032	Cytosolic 5-nucleotidase 3-like	other
+FunFam	G3DSA:3.40.50.11960:FF:000001	alpha- and gamma-adaptin-binding protein p34 isoform X1	other
+FunFam	G3DSA:3.40.50.1360:FF:000005	6-phosphogluconolactonase	other
+FunFam	G3DSA:3.40.50.1360:FF:000034	6-phosphogluconolactonase	other
+FunFam	G3DSA:3.40.50.300:FF:000298	ATP-binding cassette sub-family A member 12	other
+FunFam	G3DSA:3.40.50.300:FF:000335	ATP binding cassette subfamily A member 5	other
+FunFam	G3DSA:3.40.50.300:FF:000436	ATP binding cassette subfamily A member 9	other
+FunFam	G3DSA:3.40.50.300:FF:000511	ATP-binding cassette, sub-family A (ABC1), member 2	other
+FunFam	G3DSA:3.40.50.300:FF:000689	ATP binding cassette subfamily A member 12	other
+FunFam	G3DSA:3.40.50.300:FF:001235	ATP binding cassette subfamily A member 7	other
+FunFam	G3DSA:3.40.50.300:FF:001846	ATP binding cassette subfamily A member 8	other
+FunFam	G3DSA:3.40.50.300:FF:002668	ATP binding cassette subfamily A member 8	other
+FunFam	G3DSA:3.40.50.300:FF:006068	Putative ATP-binding cassette sub-family A member 11	other
+FunFam	G3DSA:3.40.50.720:FF:000220	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 1	other
+Gene3D	G3DSA:1.10.150.340		other
+Gene3D	G3DSA:1.10.287.580	Helix hairpin bin	other
+Gene3D	G3DSA:1.10.510.10	Transferase(Phosphotransferase) domain 1	other
+Gene3D	G3DSA:1.20.1070.10		other
+Gene3D	G3DSA:1.20.120.330	Nucleotidyltransferases  domain 2	other
+Gene3D	G3DSA:1.20.5.110		other
+Gene3D	G3DSA:1.50.10.20		other
+Gene3D	G3DSA:2.10.310.10	Serpins superfamily	other
+Gene3D	G3DSA:2.20.130.20		other
+Gene3D	G3DSA:2.30.30.40	SH3 Domains	other
+Gene3D	G3DSA:2.60.120.1540		other
+Gene3D	G3DSA:2.60.40.1930		other
+Gene3D	G3DSA:2.60.40.1940		other
+Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	other
+Gene3D	G3DSA:3.30.200.20	Phosphorylase Kinase; domain 1	other
+Gene3D	G3DSA:3.30.450.50	Longin domain	other
+Gene3D	G3DSA:3.40.50.11960		other
+Gene3D	G3DSA:3.40.50.1360		other
+Gene3D	G3DSA:3.40.50.720		other
+Gene3D	G3DSA:6.10.140.140		other
+Gene3D	G3DSA:6.20.50.160		other
+Gene3D	IPR013783	Immunoglobulin-like fold	InterPro
+Gene3D	IPR016156	FAD/NAD-linked reductase, dimerisation domain superfamily	InterPro
+Gene3D	IPR023214	HAD superfamily	InterPro
+Gene3D	IPR027417	P-loop containing nucleoside triphosphate hydrolase	InterPro
+Gene3D	IPR036188	FAD/NAD(P)-binding domain superfamily	InterPro
+Gene3D	IPR036570	HORMA domain superfamily	InterPro
+Gene3D	IPR036595	Alpha-macroglobulin, receptor-binding domain superfamily	InterPro
+Gene3D	IPR036770	Ankyrin repeat-containing domain superfamily	InterPro
+Gene3D	IPR036860	SH2 domain superfamily	InterPro
+Gene3D	IPR037055	MHC class I-like antigen recognition-like superfamily	InterPro
+Gene3D	IPR038269	SCAN domain superfamily	InterPro
+Gene3D	IPR042178	Serpin superfamily, domain 1	InterPro
+Gene3D	IPR042185	Serpin superfamily, domain 2	InterPro
+MobiDBLite	mobidb-lite	consensus disorder prediction	other
+NCBIfam	IPR005900	6-phosphogluconolactonase, DevB-type	InterPro
+NCBIfam	IPR006434	Pyrimidine 5'-nucleotidase, eukaryotic	InterPro
+NCBIfam	IPR011936	Myxococcus cysteine-rich repeat	InterPro
+PANTHER	IPR000215	Serpin family	InterPro
+PANTHER	IPR000615	Bestrophin	InterPro
+PANTHER	IPR010394	5-nucleotidase	InterPro
+PANTHER	IPR019341	Alpha/gamma-adaptin-binding protein p34	InterPro
+PANTHER	IPR026082	ABC transporter A	InterPro
+PANTHER	IPR027324	Microtubule associated protein MAP2/MAP4/Tau	InterPro
+PANTHER	IPR037519	LITAF domain containing protein	InterPro
+PANTHER	IPR039104	6-Phosphogluconolactonase	InterPro
+PANTHER	IPR045091	Mad2-like	InterPro
+PANTHER	IPR050149	Collagen superfamily	InterPro
+PANTHER	IPR050169	Krueppel C2H2-type zinc-finger	InterPro
+PANTHER	IPR050177	Bifunctional lipid A modification and metabolic enzymes	InterPro
+PANTHER	IPR050198	Non-receptor tyrosine kinases involved in cell signaling	InterPro
+PANTHER	IPR050208	Antigen-presenting and immune regulatory MHC class I-related	InterPro
+PANTHER	IPR050331	Zinc finger	InterPro
+PANTHER	IPR050446	FAD-dependent Oxidoreductases and Apoptosis Regulators	InterPro
+PANTHER	IPR050473	Alpha-2-macroglobulin/Complement system	InterPro
+PANTHER	IPR050527	Snail/Krueppel C2H2-type Zinc-finger	InterPro
+PANTHER	IPR050589	Ikaros C2H2-type zinc-finger	InterPro
+PANTHER	IPR050636	C2H2-type zinc finger domain-containing protein	InterPro
+PANTHER	IPR050657	Ankyrin repeat domain-containing protein	InterPro
+PANTHER	IPR050688	Zinc finger and ubiquitin peptidase domain-containing protein	InterPro
+PANTHER	IPR050717	C2H2-type Zinc-Finger Transcription Regulators	InterPro
+PANTHER	IPR050752	C2H2-type zinc-finger domain-containing protein	InterPro
+PANTHER	IPR050776	Ankyrin Repeat and Cyclin-Dependent Kinase Inhibitor	InterPro
+PANTHER	IPR050916	SCAN domain and C2H2-type zinc finger	InterPro
+PANTHER	IPR051097	Synaptobrevin-like vesicular transport protein	InterPro
+PANTHER	IPR051409	Atypical kinase ADCK	InterPro
+PANTHER	PTHR13045	5'-NUCLEOTIDASE	other
+PANTHER	PTHR23235	KRUEPPEL-LIKE TRANSCRIPTION FACTOR	other
+PANTHER	PTHR24246	OLFACTORY RECEPTOR AND ADENOSINE RECEPTOR	other
+PANTHER	PTHR24247	5-HYDROXYTRYPTAMINE RECEPTOR	other
+PANTHER	PTHR24393	ZINC FINGER PROTEIN	other
+PANTHER	PTHR24399	ZINC FINGER AND BTB DOMAIN-CONTAINING	other
+PANTHER	PTHR24637	COLLAGEN	other
+PRINTS	IPR000276	G protein-coupled receptor, rhodopsin-like	InterPro
+PRINTS	IPR000466	Adenosine A3 receptor	InterPro
+PRINTS	IPR001039	MHC class I alpha chain, alpha1 alpha2 domains	InterPro
+PRINTS	IPR001245	Serine-threonine/tyrosine-protein kinase, catalytic domain	InterPro
+PRINTS	IPR001388	Synaptobrevin-like	InterPro
+PRINTS	IPR001435	Adenosine A2B receptor	InterPro
+PRINTS	IPR001513	Adenosine A2A receptor	InterPro
+PRINTS	IPR001634	Adenosine receptor	InterPro
+PRINTS	IPR002110	Ankyrin repeat	InterPro
+PRINTS	PR00368	FAD-dependent pyridine nucleotide reductase signature	other
+PRINTS	PR00401	SH2 domain signature	other
+PRINTS	PR00411	Pyridine nucleotide disulphide reductase class-I signature	other
+Pfam	IPR000276	G protein-coupled receptor, rhodopsin-like	InterPro
+Pfam	IPR000980	SH2 domain	InterPro
+Pfam	IPR001084	Microtubule associated protein, tubulin-binding repeat	InterPro
+Pfam	IPR001245	Serine-threonine/tyrosine-protein kinase, catalytic domain	InterPro
+Pfam	IPR001452	SH3 domain	InterPro
+Pfam	IPR001599	Alpha-2-macroglobulin	InterPro
+Pfam	IPR001909	Krueppel-associated box	InterPro
+Pfam	IPR002110	Ankyrin repeat	InterPro
+Pfam	IPR002225	3-beta hydroxysteroid dehydrogenase/isomerase	InterPro
+Pfam	IPR002890	Macroglobulin domain	InterPro
+Pfam	IPR003309	SCAN domain	InterPro
+Pfam	IPR003439	ABC transporter-like, ATP-binding domain	InterPro
+Pfam	IPR003511	HORMA domain	InterPro
+Pfam	IPR003597	Immunoglobulin C1-set	InterPro
+Pfam	IPR004147	ABC1 atypical kinase-like domain	InterPro
+Pfam	IPR006148	Glucosamine/galactosamine-6-phosphate isomerase	InterPro
+Pfam	IPR006434	Pyrimidine 5'-nucleotidase, eukaryotic	InterPro
+Pfam	IPR006629	LPS-induced tumour necrosis factor alpha factor	InterPro
+Pfam	IPR008160	Collagen triple helix repeat	InterPro
+Pfam	IPR009048	Alpha-macroglobulin, receptor-binding	InterPro
+Pfam	IPR010394	5-nucleotidase	InterPro
+Pfam	IPR010868	Tumor suppressor ARF	InterPro
+Pfam	IPR010908	Longin domain	InterPro
+Pfam	IPR011161	MHC class I-like antigen recognition-like	InterPro
+Pfam	IPR011625	Alpha-2-macroglobulin, bait region domain	InterPro
+Pfam	IPR011626	Alpha-macroglobulin-like, TED domain	InterPro
+Pfam	IPR013087	Zinc finger C2H2-type	InterPro
+Pfam	IPR013525	ABC-2 type transporter, transmembrane domain	InterPro
+Pfam	IPR013588	MAP2/Tau projection	InterPro
+Pfam	IPR015015	F-actin binding	InterPro
+Pfam	IPR018459	RII binding domain	InterPro
+Pfam	IPR021134	Bestrophin-like	InterPro
+Pfam	IPR023753	FAD/NAD(P)-binding domain	InterPro
+Pfam	IPR023796	Serpin domain	InterPro
+Pfam	IPR029324	Mitochondrial apoptosis-inducing factor, C-terminal domain	InterPro
+Pfam	IPR032773	Protein MGARP, N-terminal	InterPro
+Pfam	IPR040839	Macroglobulin domain MG4	InterPro
+Pfam	IPR041555	Macroglobulin domain MG3	InterPro
+Pfam	IPR042855	v-SNARE, coiled-coil homology domain	InterPro
+Pfam	IPR056264	ABCA1-4-like, C-terminal R2 regulatory domain	InterPro
+Pfam	PF10199	Alpha and gamma adaptin binding protein p34	other
+Pfam	PF13465	Zinc-finger double domain	other
+Pfam	PF13909	C2H2-type zinc-finger domain	other
+Pfam	PF23561	C2H2 zinc finger	other
+Pfam	PF23611	C2H2 zinc finger	other
+ProSitePatterns	IPR000276	G protein-coupled receptor, rhodopsin-like	InterPro
+ProSitePatterns	IPR001084	Microtubule associated protein, tubulin-binding repeat	InterPro
+ProSitePatterns	IPR001388	Synaptobrevin-like	InterPro
+ProSitePatterns	IPR003006	Immunoglobulin/major histocompatibility complex, conserved site	InterPro
+ProSitePatterns	IPR008266	Tyrosine-protein kinase, active site	InterPro
+ProSitePatterns	IPR013087	Zinc finger C2H2-type	InterPro
+ProSitePatterns	IPR017441	Protein kinase, ATP binding site	InterPro
+ProSitePatterns	IPR017871	ABC transporter-like, conserved site	InterPro
+ProSitePatterns	IPR019742	Alpha-2-macroglobulin, conserved site	InterPro
+ProSitePatterns	IPR023795	Serpin, conserved site	InterPro
+ProSiteProfiles	IPR000719	Protein kinase domain	InterPro
+ProSiteProfiles	IPR000980	SH2 domain	InterPro
+ProSiteProfiles	IPR001084	Microtubule associated protein, tubulin-binding repeat	InterPro
+ProSiteProfiles	IPR001452	SH3 domain	InterPro
+ProSiteProfiles	IPR001909	Krueppel-associated box	InterPro
+ProSiteProfiles	IPR002110	Ankyrin repeat	InterPro
+ProSiteProfiles	IPR003309	SCAN domain	InterPro
+ProSiteProfiles	IPR003439	ABC transporter-like, ATP-binding domain	InterPro
+ProSiteProfiles	IPR003511	HORMA domain	InterPro
+ProSiteProfiles	IPR006629	LPS-induced tumour necrosis factor alpha factor	InterPro
+ProSiteProfiles	IPR007110	Immunoglobulin-like domain	InterPro
+ProSiteProfiles	IPR010908	Longin domain	InterPro
+ProSiteProfiles	IPR013087	Zinc finger C2H2-type	InterPro
+ProSiteProfiles	IPR017452	GPCR, rhodopsin-like, 7TM	InterPro
+ProSiteProfiles	IPR042855	v-SNARE, coiled-coil homology domain	InterPro
+ProSiteProfiles	PS50297	Ankyrin repeat region circular profile.	other
+SFLD	IPR006434	Pyrimidine 5'-nucleotidase, eukaryotic	InterPro
+SFLD	SFLDS00003	Haloacid Dehalogenase	other
+SMART	IPR000276	G protein-coupled receptor, rhodopsin-like	InterPro
+SMART	IPR000980	SH2 domain	InterPro
+SMART	IPR001452	SH3 domain	InterPro
+SMART	IPR001599	Alpha-2-macroglobulin	InterPro
+SMART	IPR001909	Krueppel-associated box	InterPro
+SMART	IPR002110	Ankyrin repeat	InterPro
+SMART	IPR003309	SCAN domain	InterPro
+SMART	IPR003593	AAA+ ATPase domain	InterPro
+SMART	IPR003597	Immunoglobulin C1-set	InterPro
+SMART	IPR006629	LPS-induced tumour necrosis factor alpha factor	InterPro
+SMART	IPR009048	Alpha-macroglobulin, receptor-binding	InterPro
+SMART	IPR010908	Longin domain	InterPro
+SMART	IPR011625	Alpha-2-macroglobulin, bait region domain	InterPro
+SMART	IPR013087	Zinc finger C2H2-type	InterPro
+SMART	IPR015015	F-actin binding	InterPro
+SMART	IPR020635	Tyrosine-protein kinase, catalytic domain	InterPro
+SMART	IPR023796	Serpin domain	InterPro
+SMART	IPR047565	Alpha-macroglobulin-like, thiol-ester bond-forming region	InterPro
+SMART	SM01353	AIF_C_2	other
+SUPERFAMILY	IPR008930	Terpenoid cyclases/protein prenyltransferase alpha-alpha toroid	InterPro
+SUPERFAMILY	IPR011009	Protein kinase-like domain superfamily	InterPro
+SUPERFAMILY	IPR011012	Longin-like domain superfamily	InterPro
+SUPERFAMILY	IPR011162	MHC classes I/II-like antigen recognition protein	InterPro
+SUPERFAMILY	IPR014756	Immunoglobulin E-set	InterPro
+SUPERFAMILY	IPR016156	FAD/NAD-linked reductase, dimerisation domain superfamily	InterPro
+SUPERFAMILY	IPR027417	P-loop containing nucleoside triphosphate hydrolase	InterPro
+SUPERFAMILY	IPR036028	SH3-like domain superfamily	InterPro
+SUPERFAMILY	IPR036051	KRAB domain superfamily	InterPro
+SUPERFAMILY	IPR036179	Immunoglobulin-like domain superfamily	InterPro
+SUPERFAMILY	IPR036186	Serpin superfamily	InterPro
+SUPERFAMILY	IPR036188	FAD/NAD(P)-binding domain superfamily	InterPro
+SUPERFAMILY	IPR036236	Zinc finger C2H2 superfamily	InterPro
+SUPERFAMILY	IPR036291	NAD(P)-binding domain superfamily	InterPro
+SUPERFAMILY	IPR036412	HAD-like superfamily	InterPro
+SUPERFAMILY	IPR036570	HORMA domain superfamily	InterPro
+SUPERFAMILY	IPR036595	Alpha-macroglobulin, receptor-binding domain superfamily	InterPro
+SUPERFAMILY	IPR036770	Ankyrin repeat-containing domain superfamily	InterPro
+SUPERFAMILY	IPR036860	SH2 domain superfamily	InterPro
+SUPERFAMILY	IPR037171	NagB/RpiA transferase-like	InterPro
+SUPERFAMILY	SSF47353	Retrovirus capsid dimerization domain-like	other
+SUPERFAMILY	SSF58038	SNARE fusion complex	other
+SUPERFAMILY	SSF81321	Family A G protein-coupled receptor-like	other

@@ -92,7 +92,7 @@ def writeTransRefs(interproAnnotTbl, transcriptId, transA2GMapInfos, refWriter):
     infos0 = transA2GMapInfos[0]
     transcriptPos = f"{infos0.mappingTName}:{infos0.mappingTStart}-{infos0.mappingTEnd}"
     protId = annotIdToProtAcc(infos0.srcQName)
-    allAnnots = interproAnnotTbl.byProtAcc[protId]
+    allAnnots = interproAnnotTbl.getByAcc(protId)
     writeAllTransRefs(protId, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, refWriter)
 
 def writeRefs(interproAnnotTbl, annotGenomeMapTbl, refWriter):

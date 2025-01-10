@@ -30,7 +30,7 @@ def _worker(alignBatch):
     """sub-process worker, if an error occurs an exception object is the returned.
     """
     if isinstance(_gAnnotationProcessor, Exception):
-        return gAnnotationProcessor
+        return _gAnnotationProcessor
     try:
         decoBeds = []
         for alignIdx, annotPsl in alignBatch:
@@ -77,8 +77,7 @@ def _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile):
     return featTypes
 
 def processSingle(annotationProcessorFactory, featTypeFunc,
-                  annotGenomePslFile, annotTransRefTsv, transGenomePsl,
-                  annotDecoratorBedFile, batchSize):
+                  annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile, batchSize):
     # this is easier to debug without mp
     _workerInit(annotationProcessorFactory)
     decoBedsList = []
@@ -91,8 +90,8 @@ def processSingle(annotationProcessorFactory, featTypeFunc,
     return featTypes
 
 def processMulti(annotationProcessorFactory, featTypeFunc,
-                 annotGenomePslFile, annotTransRefTsv, transGenomePsl,
-                 annotDecoratorBedFile, nprocs, batchSize):
+                 annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
+                 nprocs, batchSize):
     with mp.Pool(processes=nprocs, initializer=_workerInit,
                  initargs=((annotationProcessorFactory,))) as pool:
         decoBedIters = pool.imap_unordered(_worker,
@@ -101,9 +100,8 @@ def processMulti(annotationProcessorFactory, featTypeFunc,
         featTypes = _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile)
     return featTypes
 
-def buildDecorators(annotationProcessorFactory, featTypeFunc,
-                    annotGenomePslFile, annotTransRefTsv, transGenomePsl,
-                    annotDecoratorBedFile, nprocs, batchSize):
+def buildDecorators(annotationProcessorFactory, featTypeFunc, annotGenomePslFile,
+                    annotTransRefTsv, annotDecoratorBedFile, nprocs, batchSize):
     """
     Used to build decorators using multiple processes.  Special handling
     for nprocs=1 to build in current process to make debugging easier.
@@ -118,10 +116,8 @@ def buildDecorators(annotationProcessorFactory, featTypeFunc,
     # special case one process makes profiling easier
     if nprocs == 1:
         featTypes = processSingle(annotationProcessorFactory, featTypeFunc,
-                                  annotGenomePslFile, annotTransRefTsv, transGenomePsl,
-                                  annotDecoratorBedFile, batchSize)
+                                  annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile, batchSize)
     else:
         featTypes = processMulti(annotationProcessorFactory, featTypeFunc,
-                                 annotGenomePslFile, annotTransRefTsv, transGenomePsl,
-                                 annotDecoratorBedFile, nprocs, batchSize)
+                                 annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile, nprocs, batchSize)
     return featTypes

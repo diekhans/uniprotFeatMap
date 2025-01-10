@@ -156,5 +156,5 @@ class UniProtAnnotTbl(list):
     def getByAnnotId(self, annotId):
         annot = self.byAnnotId.get(annotId)
         if annot is None:
-            raise UniProtError(f"annotId '{annotId}' not found in annotation table")
+            raise UniProtError(f"UniProt annotId '{annotId}' not found in annotation table")
         return annot

@@ -226,7 +226,7 @@ def uniprotAnnotsToDecorators(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFi
     annotProcFunc = partial(AnnotationProcessor, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
 
     featTypes = buildDecorators(annotProcFunc, getFeatType,
-                                annotGenomePslFile, annotTransRefTsv, transGenomePsl,
+                                annotGenomePslFile, annotTransRefTsv,
                                 annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)

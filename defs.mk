@@ -28,6 +28,7 @@ xspeciesGencode2CatFilter = ${binDir}/xspeciesGencode2CatFilter
 uniprotInfo = ${binDir}/uniprotInfo
 interproProteinTranscriptAlign = ${binDir}/interproProteinTranscriptAlign
 interproAnnotsMap = ${binDir}/interproAnnotsMap
+interproAnnotsToDecorators = ${binDir}/interproAnnotsToDecorators
 
 dataDir = ${root}/data
 
@@ -51,4 +52,5 @@ uniprotAnnot= ${uniprotPrefix}.annots.tab
 unitprotFa = ${uniprotPrefix}.fa.gz
 
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
-decoAs =  ${root}/etc/uniprotDecoration.as
+uniprotDecoAs =  ${root}/etc/uniprotDecoration.as
+interproDecoAs =  ${root}/etc/interproDecoration.as

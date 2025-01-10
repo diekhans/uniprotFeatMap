@@ -26,6 +26,7 @@ _tsvTypeMap = {"sequence_length": int,
                "stop": int,
                "score": _parse_none_if_minus,  # don't bother converting to float
                "status": _parse_status,
+               "signature_description": _parse_none_if_minus,
                "interpro_accession": _parse_none_if_minus,
                "interpro_description": _parse_none_if_minus,
                "go": _parse_none_if_minus,
@@ -38,15 +39,31 @@ class InterproAnnotTbl(list):
     annotId - computed annotId with protein id and offset within proteins annotations
     """
     def __init__(self):
-        self.byProtAcc = defaultdict(list)
+        self.byAcc = defaultdict(list)
+        self.byAnnotId = {}
 
     def add(self, row):
         self.append(row)
-        self.byProtAcc[row.protein_accession].append(row)
-        row.annotId = annotIdFmt(row.protein_accession, len(self.byProtAcc[row.protein_accession]) - 1)
+        self.byAcc[row.protein_accession].append(row)
+        row.annotId = annotIdFmt(row.protein_accession, len(self.byAcc[row.protein_accession]) - 1)
+        assert row.annotId not in self.byAnnotId
+        self.byAnnotId[row.annotId] = row
 
     def finish(self):
-        self.byProtAcc.default_factory = None
+        self.byAcc.default_factory = None
+
+    def getByAcc(self, acc):
+        "Error if not found"
+        try:
+            return self.byAcc[acc]
+        except Exception as ex:
+            raise InterproError(f"InterPro acc not found {acc}") from ex
+
+    def getByAnnotId(self, annotId):
+        annot = self.byAnnotId.get(annotId)
+        if annot is None:
+            raise InterproError(f"InterPro annotId '{annotId}' not found in annotation table")
+        return annot
 
 def interproAnnotsLoad(interproTsv):
     """Load interproscan results TSV """

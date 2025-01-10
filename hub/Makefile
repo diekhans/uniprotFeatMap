@@ -24,7 +24,7 @@ decoratorsOutBb = hg38/uniprot-gencode.${gencodeVer}.${algo}.bb
 mkDecorators:  ${decoratorsOutBb}
 
 ${decoratorsOutBb}: ${decoratorsInBed}
-	bedToBigBed -type=bed12+ -as=${decoAs} -tab ${decoratorsInBed} ${chromSizes} $@.tmp
+	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -tab ${decoratorsInBed} ${chromSizes} $@.tmp
 	mv -f $@.tmp $@
 
 
@@ -75,7 +75,7 @@ ${xhub_cat_bb}: ${xspecies_cat_bb}
 
 ${xhub_deco_bb}: ${xspecies_decorators_bed}
 	@mkdir -p $(dir $@)
-	bedToBigBed -type=bed12+ -as=${decoAs} -tab $< ${xspecies_chromsizes} $@.tmp
+	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -tab $< ${xspecies_chromsizes} $@.tmp
 	mv -f $@.tmp $@
 
 ${xhub_deco_html}: ${root}/doc/deco-desc.html

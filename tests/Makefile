@@ -148,7 +148,7 @@ uniprotDecoratorsMergeTests: testUniprotDecoratorsMerge
 
 testUniprotDecoratorsMerge: mkout
 	${uniprotDecoratorsMerge} --outBed=output/$@.bed expected/testUniprotAnnotsToDecoratorsSP.bed expected/testUniprotAnnotsToDecoratorsTR.bed
-	bedToBigBed -type=bed12+ -as=${decoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
+	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
 
 
@@ -193,7 +193,7 @@ testXSpeciesAnnotsToDeco: mkout
             input/GCA_028885655.2.cat.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
-	bedToBigBed -type=bed12+ -as=${decoAs} -sizesIs2Bit -tab expected/$@.bed ${ponAbeTwobit} output/$@.bb
+	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -sizesIs2Bit -tab expected/$@.bed ${ponAbeTwobit} output/$@.bb
 
 ${cat_bigcat}: input/GCA_028885655.2.cat.bigCat input/bigCat.as
 	@mkdir -p $(dir $@)
@@ -225,7 +225,7 @@ interproAlignTests:  testInterproBlatAlign
 testInterproBlatAlign: mkout
 	$(call runIpAlignments,blat)
 
-interproTests: testInterproAnnotsMap
+interproTests: testInterproAnnotsMap testInterproAnnotsToDeco
 
 testInterproAnnotsMap: mkout
 	${interproAnnotsMap} \
@@ -236,6 +236,13 @@ testInterproAnnotsMap: mkout
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	pslCheck -verbose=0 output/$@.psl
 
+testInterproAnnotsToDeco: mkout
+	${interproAnnotsToDecorators} --nproc=${nproc} input/gencode.v43.interproscan.tsv \
+	    expected/testInterproAnnotsMap.psl expected/testInterproAnnotsMap.ref.tsv \
+            output/$@.bed --featTypesTsv=output/$@.types.tsv
+	diff expected/$@.bed output/$@.bed
+	diff expected/$@.types.tsv output/$@.types.tsv
+	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 
 ##
 # hub
