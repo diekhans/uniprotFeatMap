@@ -15,10 +15,16 @@ testHubFilesOutput = ${testHubFiles:%=output/%}
 
 testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/tests/output/hub.txt
 
-gencodeBed = output/gencode.v43.bed
+gencodeGp = input/gencode.v43.pc.gp
+gencodeMeta = input/gencode.v43.metadata.tsv
 gencodeBb = output/gencode.v43.bb
 gencodeBrowserDir = output/gencode-dir
 gencodeBrowserDirDone = ${gencodeBrowserDir}/done
+
+ponAbeCatBb = output/GCA_028885655.2.cat.bb
+ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_028885655.2/GCA_028885655.2.2bit
+
+
 
 all:
 	@echo "Note: targets are:"
@@ -76,7 +82,7 @@ uniprotProteinTranscriptMapInterPrefix = --interPrefix=output/$@.inter.
 # $call runUniprotProteinTranscriptMap,swissprot,SP)
 define runUniprotProteinTranscriptMap
 	${uniprotProteinTranscriptMap} ${uniprotProteinTranscriptMapInterPrefix} \
-		input/gencode.v43.metadata.tsv input/gencode.v43.pc.gp input/gencode.v43.pc.psl \
+		${gencodeMeta} ${gencodeGp} input/gencode.v43.pc.psl \
 		input/${1}.9606.tab expected/testProtTrans${2}BlatAlign.psl \
 		output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -152,16 +158,7 @@ testUniprotDecoratorsMerge: mkout
 	diff expected/$@.bed output/$@.bed
 
 
-# gene track can can be used to validate decorators
-${gencodeBb}: input/gencode.v43.pc.gp
-	genePredToBed $< /dev/stdout | sort -k1,1 -k2,2n > ${gencodeBed}
-	bedToBigBed -type=bed12 -tab ${gencodeBed} ${chromSizes} $@
-
-
 # cross-species mapping
-cat_bigcat = output/GCA_028885655.2.cat.bb
-ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_028885655.2/GCA_028885655.2.2bit
-
 xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotAnnotsMap \
 	testXSpeciesAnnotsToDeco
 
@@ -170,8 +167,8 @@ testXSpeciesRnaMap: mkout
 		input/GCA_028885655.2.chains input/GCA_028885655.2.cat.psl input/GCA_028885655.2.cat.fa output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
-testXSpeciesGencodeCatFilter: mkout ${cat_bigcat}
-	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${cat_bigcat} output/$@.psl
+testXSpeciesGencodeCatFilter: mkout ${ponAbeCatBb}
+	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${ponAbeCatBb} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXSpeciesUniprotAnnotsMap: mkout
@@ -195,11 +192,6 @@ testXSpeciesAnnotsToDeco: mkout
 	diff expected/$@.types.tsv output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -sizesIs2Bit -tab expected/$@.bed ${ponAbeTwobit} output/$@.bb
 
-${cat_bigcat}: input/GCA_028885655.2.cat.bigCat input/bigCat.as
-	@mkdir -p $(dir $@)
-	bedToBigBed -tab -type=bed12+ -as=input/bigCat.as -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
-	mv -f $@.tmp $@
-
 ###
 uniprotInfoTests: testUniprotInfoEnsTrans testUniprotInfoGeneName
 
@@ -215,7 +207,7 @@ testUniprotInfoGeneName:
 # $(call runUpAlignments,blat)
 define runIpAlignments
 	rm -rf output/$@.psl output/$@.work
-	${interproProteinTranscriptAlign} --algo=${1} input/gencode.v43.metadata.tsv input/gencode.v43.proteins.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} --algo=${1} ${gencodeMeta} input/gencode.v43.proteins.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 endef
@@ -245,14 +237,33 @@ testInterproAnnotsToDeco: mkout
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 
 ##
+# Gene tracks for hub
+##
+bigGenePredAs = output/bigGenePred.as
+gencodeBGpIn = output/gencode.v43.bpgin
+gencodeGeneNames = output/gencode.v43.genenames
+${gencodeBb}: ${gencodeGp} ${bigGenePredAs} mkout
+	tawk '{print $$4,$$3,$$1}' ${gencodeMeta} > ${gencodeGeneNames}
+	genePredToBigGenePred -geneNames=${gencodeGeneNames} $< /dev/stdout | sort -k1,1 -k2,2n > ${gencodeBGpIn}
+	bedToBigBed -type=bed12 -tab -as=${bigGenePredAs} ${gencodeBGpIn} ${chromSizes} $@
+
+${bigGenePredAs}: mkout
+	wget -O $@ -nv https://genome.ucsc.edu/goldenpath/help/examples/bigGenePred.as
+
+${ponAbeCatBb}: input/GCA_028885655.2.cat.bigCat input/bigCat.as mkout
+	bedToBigBed -tab -type=bed12+ -as=input/bigCat.as -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
+	mv -f $@.tmp $@
+
+##
 # hub
 ##
-hub: ${gencodeBrowserDirDone} ${testHubFilesOutput}
+hub: ${gencodeBrowserDirDone} ${testHubFilesOutput} ${gencodeBb} ${ponAbeCatBb}
 	hubCheck $$(pwd)/output/hub.txt
 
-${gencodeBrowserDirDone}: ${gencodeBb}
+${gencodeBrowserDirDone}: ${gencodeGp}
 	@mkdir -p ${gencodeBrowserDir}
-	bedToHtmlDir -hub ${testHubUrl} -title 'GENCODE Deco Test' hg38 ${gencodeBed} ${gencodeBrowserDir}
+	genePredToBed ${gencodeGp} /dev/stdout | \
+	   bedToHtmlDir -hub ${testHubUrl} -title 'GENCODE Deco Test' hg38 /dev/stdin ${gencodeBrowserDir}
 	touch $@
 
 output/%: hub-files/%

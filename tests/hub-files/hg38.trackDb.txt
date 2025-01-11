@@ -3,28 +3,28 @@ html ../empty.html
 shortLabel GENCODE Deco
 longLabel GENCODE Deco Test
 description GENCODE Deco Test
-type bigBed 12
+type bigGenePred
 group genes
 color 12,12,120
 priority 3
 visibility pack
 searchIndex name
 bigDataUrl gencode.v43.bb
-labelFields name
-defaultLabelFields name
+labelFields name,name2
+defaultLabelFields name,name2
 labelSeperator " / "
 html empty.html
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
-decorator.default.bigDataUrl testUniprotDecoratorsMerge.bb
-decorator.default.filterLabel.annotType Annotation type
-decorator.default.filterValues.annotType feature,disruption
-decorator.default.filterLabel.dataSet Uniprot dataset
-decorator.default.filterValues.dataSet SwissProt,TrEMBL
-decorator.default.filterValuesDefault.dataSet SwissProt
-decorator.default.filterLabel.categoryName Annotation category
-decorator.default.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Region of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation
-decorator.default.filterValuesDefault.categoryName Domain
-decorator.default.mouseOver \
+decorator.uniprot.bigDataUrl testUniprotDecoratorsMerge.bb
+decorator.uniprot.filterLabel.annotType Annotation type
+decorator.uniprot.filterValues.annotType feature,disruption
+decorator.uniprot.filterLabel.dataSet Uniprot dataset
+decorator.uniprot.filterValues.dataSet SwissProt,TrEMBL
+decorator.uniprot.filterValuesDefault.dataSet SwissProt
+decorator.uniprot.filterLabel.categoryName Annotation category
+decorator.uniprot.filterValues.categoryName Domain,Amino Acid Modification,Cytoplasmic Domains,Disulfide Bond,Extracellular Domain,Mutation,Polypeptide Chains,Protein Structure,Region of Interest,Repeat,Sequence Conflict,Signal Peptide,Transmembrane Domain,Other Annotation
+decorator.uniprot.filterValuesDefault.categoryName Domain
+decorator.uniprot.mouseOver \
    description: ${description}<br> \
    UniProt acc: <a href="https://www.uniprot.org/uniprot/${uniprotAcc}" target=_BLANK>${uniprotAcc}</a><br> \
    feature type: ${featType}<br> \
@@ -34,4 +34,11 @@ decorator.default.mouseOver \
    UniProt data set: ${dataSet}<br> \
    comment: ${comment}<br> \
    disease: ${disease}
+decorator.interpro.bigDataUrl testInterproAnnotsToDeco.bb
+decorator.interpro.filterLabel.annotCategory Annotation category
+decorator.interpro.filterValues.annotCategory InterPro,other
+decorator.interpro.mouseOver \
+   description: ${description}<br> \
+   accession: ${accession}<br> \
+   protein id: ${proteinAcc}
 
