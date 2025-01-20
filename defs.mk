@@ -12,7 +12,7 @@ MAKEFLAGS += -rR
 PYTHON = python3
 FLAKE8 = python3 -m flake8
 
-export PYTHONPATH:=${rootDir}/lib:${PYTHONPATH}
+export PYTHONPATH:=${root}/lib:${PYTHONPATH}
 export PYTHONWARNINGS=always
 
 binDir = ${root}/bin
@@ -52,5 +52,5 @@ uniprotAnnot= ${uniprotPrefix}.annots.tab
 unitprotFa = ${uniprotPrefix}.fa.gz
 
 chromSizes = /hive/data/genomes/hg38/chrom.sizes
-uniprotDecoAs =  ${root}/etc/uniprotDecoration.as
-interproDecoAs =  ${root}/etc/interproDecoration.as
+uniprotDecoAs = ${root}/etc/uniprotDecoration.as
+interproDecoAs = ${root}/etc/interproDecoration.as
