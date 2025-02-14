@@ -23,7 +23,7 @@ annotation -> uniprotCanonical -> transcript -> genome
    * input: uniprotFa, uniprotMetaTsv, transFa
    * output: protCanonTransPsl
 1. `uniprotProteinTranscriptMap`: Project the canonical alignments to other transcript isoforms using the genomic coordinates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in the combination of the canonical and projected transcript alignments, with  the protein convert to CDS coordinates.
-   * input: gencodeMetaTsv, uniprotMetaTsv, protCanonTransPsl
+   * input: gencodeMetaTsv, gencodeGp, gencodePsl, uniprotMetaTsv, protCanonTransPsl
    * output: cdsTransPairedPsl, problemLogTsv
 1. `uniprotAnnotsMap`: Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.  This can also map to other assembly via way of transcript-transcript alignments.
    * input: uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl
@@ -38,7 +38,34 @@ annotation -> uniprotCanonical -> transcript -> genome
 
 # Data required 
 
+## UniProt data
 * /hive/data/outside/otto/uniprot/
+
+## Gene set specification
+
+Due to different in gene set metadata, there is a requirement for
+code for each supported gene set.
+
+The data required for each gene set:
+- metadata - format varies
+- protein FASTA - protein sequences, metadata maps protein to transcript id.
+  They can be obtain with genePredToProt or other methods.
+- mRNA FASTA - CDS in upper case, UTR in lower case.
+  They can be obtained with getRnaPred -cdsUpper.
+- annotations to genome PSL alignments - which can be generated with genePredToPsl for annotations that don't have alignments.
+- genePred format annotations - must exactly match the PSL.
+  This is not needed for InterProScan.
+
+The inputs file maybe compressed.
+
+Different gene sets that are currently supported:
+
+- GENCODE - GENCODE using the UCSC import formats
+  - metadata in TSV format from UCSC import (not the table), which includes tags
+
+- CAT1 - CAT used in CHM13 and initial primate references
+  This is problematic in the fact that the name used the GENCODE transcript name, which is not stable and will not be unique when CAT maps paralogs.
+
 
 # Cross-species projection
 
@@ -79,13 +106,13 @@ A file `*.ref.tsv` file is created when annotations are mapped to using in mappi
 Disruption decorators will have an addition disruption index appended to `annotMapId` to make them unique.
 
 
-* InterProScan
+# InterProScan
 
 1. `interproProteinTranscriptAlign`: Align InterProScan annotated protein sequences to transcript RNAs with BLAT or BLAST. Creates protein to NA PSL alignments for the transcript paired in the geneset.
    * input: gencodeMetaTsv, proteinFa, transFa
    * output: protTransPsl
 
-# InterProScan Mapped Annotation Identification
+## InterProScan Mapped Annotation Identification
 
 The format of a `annotMapId` matches UniProt annotMapId, only using the
 protein id used in the InterProScan run instead of the `canon_acc`.

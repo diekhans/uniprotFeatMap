@@ -1,6 +1,10 @@
 #+STARTUP: nologdone
 #+TODO: TODO URGENT | DONE CANCELED
 
+* gene sets, etc
+abstraction causes issues, for instance uniprotAnnotsToDecorators just needs
+the PSL, but for xspecies, they are not from one of the data sets.
+
 * add a common exception class
 
 * uniprot.py  diff between id, acc, main isoform acc|id not clear

@@ -3,7 +3,7 @@ include ${root}/defs.mk
 include ${root}/xspecies.defs.mk
 
 decoDir = ${root}/bigtest/decorators
-bigGpAs =  ${HOME}/kent/src/hg/lib/bigGenePred.as
+bigGpAs =  ${HOME}/kent/src/hg/lib/big1GenePred.as
 
 hub_url = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/hub/hub.txt
 

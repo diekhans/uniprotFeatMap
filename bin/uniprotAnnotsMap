@@ -44,12 +44,12 @@ def parseArgs():
                         help="""PSL alignments of transcripts in the source genome to transcripts in a target genome for cross-species mapping of UniProt features.""")
     parser.add_argument("--interPrefix",
                         help="""Save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
+    parser.add_argument("transGenomePsl",
+                        help="""Transcript genome alignment; often from genePredToPsl. For cross-species mapping, this should be the target species transcript alignments. (input)""")
     parser.add_argument("uniprotAnnotsTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
     parser.add_argument("cdsTransPairedPsl",
                         help="""Paired protein to transcript CDS alignments from uniprotProteinTranscriptMap (input)""")
-    parser.add_argument("transGenomePsl",
-                        help="""Transcript genome alignment; often from genePredToPsl. For cross-species mapping, this should be the target species transcript alignments. (input)""")
     parser.add_argument("annotGenomePsl",
                         help="""Uniprot annotations mapped to genome (output)""")
     parser.add_argument("annotTransRefTsv",
@@ -222,7 +222,7 @@ def mapAnnots(uniprotAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
         writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
     cleanTmpFiles(xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
 
-def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
+def uniprotAnnotsMap(transGenomePsl, uniprotAnnotsTsv, cdsTransPairedPsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv,
                      xspeciesTransPsl, interPrefix):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
@@ -238,7 +238,7 @@ def uniprotAnnotsMap(uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl,
     cleanTmpFiles(annotProtPsl)
 
 def main(opts):
-    uniprotAnnotsMap(opts.uniprotAnnotsTsv, opts.cdsTransPairedPsl, opts.transGenomePsl,
+    uniprotAnnotsMap(opts.transGenomePsl, opts.uniprotAnnotsTsv, opts.cdsTransPairedPsl,
                      opts.annotGenomePsl, opts.annotTransRefTsv, opts.problemLogTsv,
                      opts.xspeciesTransPsl, opts.interPrefix)
 

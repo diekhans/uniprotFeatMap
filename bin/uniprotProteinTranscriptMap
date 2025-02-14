@@ -9,8 +9,9 @@ from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import dropVersion, TmpOrSaveFile, cleanTmpFiles
+from uniprotmap.clisupport import cliAddGeneSetParameters
 from uniprotmap.mapping import pslMapMkCmd
-from uniprotmap.gencode import loadGencodeMetadata, loadGencodeData
+from uniprotmap.geneset import geneSetFactory
 from uniprotmap.uniprot import UniProtMetaTbl
 
 # Terminology
@@ -36,12 +37,7 @@ def parseArgs():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--interPrefix",
                         help="""save the intermediate files to names starting with ${iterPrefix}.${name}""")
-    parser.add_argument("gencodeMetaTsv",
-                        help="""GENCODE metadata in TSV format UCSC import (not table), which includes tags (input)""")
-    parser.add_argument("gencodeGp",
-                        help="""GENCODE annotations in GenePred format (input)""")
-    parser.add_argument("gencodePsl",
-                        help="""GENCODE annotations in PSL format (input)""")
+    cliAddGeneSetParameters(parser, inclMetadata=True, inclTransGenomePsl=True, inclTransGenomeGp=True)
     parser.add_argument("uniprotMetaTsv",
                         help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("protCanonTransPsl",
@@ -102,23 +98,23 @@ def writeCanonCdsToTransAligns(canonCdsToTransAligns, interPrefix):
     writePsls(canonCdsToTransAligns, canonCdsToTransPslFile)
     return canonCdsToTransPslFile
 
-def writeCanonTransToGenomeAligns(geneSetMeta, geneSetData, uniprotMetaTbl, interPrefix):
+def writeCanonTransToGenomeAligns(geneSet, uniprotMetaTbl, interPrefix):
     canonTransToGenomePslFile = TmpOrSaveFile(interPrefix, "canon-trans-genome.psl")
     with open(canonTransToGenomePslFile, 'w') as pslFh:
-        for transId in sorted(geneSetMeta.transcriptIdIter()):
+        for transId in sorted(geneSet.meta.transcriptIdIter()):
             if uniprotMetaTbl.isCanonProtTrans(transId):
-                for entry in geneSetData.getEntries(transId):
-                    entry.alignPsl.write(pslFh)
+                for entry in geneSet.data.getEntries(transId):
+                    entry.psl.write(pslFh)
     return canonTransToGenomePslFile
 
-def writeNoncanonTransToGenome(geneSetMeta, geneSetData, uniprotMetaTbl, interPrefix):
+def writeNoncanonTransToGenome(geneSet, uniprotMetaTbl, interPrefix):
     "this will make UTR portions unaligned"
     noncanonTransToGenomePslFile = TmpOrSaveFile(interPrefix, "noncanon-trans-genome.psl")
     with open(noncanonTransToGenomePslFile, 'w') as pslFh:
-        for transcriptId in sorted(geneSetMeta.transcriptIdIter()):
+        for transcriptId in sorted(geneSet.meta.transcriptIdIter()):
             if not uniprotMetaTbl.isCanonProtTrans(transcriptId):
-                for entry in geneSetData.getEntries(transcriptId):
-                    buildCdsPsl(entry.annotGp, entry.alignPsl).write(pslFh)
+                for entry in geneSet.data.getEntries(transcriptId):
+                    buildCdsPsl(entry.gp, entry.psl).write(pslFh)
     return noncanonTransToGenomePslFile
 
 def saveBestAlign(alignsByProtTrans, psl):
@@ -143,15 +139,15 @@ def mapCanonicalToNoncanon(canonCdsToTransPslFile, canonTransToGenomePslFile, no
     with pipettor.Popen(cmds) as inFh:
         return readFilterMappedPsls(inFh)
 
-def projectUniPortAlignments(geneSetMeta, geneSetData, uniprotMetaTbl, canonCdsToTransAligns, interPrefix):
+def projectUniPortAlignments(geneSet, uniprotMetaTbl, canonCdsToTransAligns, interPrefix):
     # mapping pipeline is:
     #   portCds->canonTrans => canonTrans->genome => genome->isoTransCds => protCds->isoTrans
     # converted to CDS alignments to allow mapping to work.
     # isoFormGen
 
     canonCdsToTransPslFile = writeCanonCdsToTransAligns(canonCdsToTransAligns, interPrefix)
-    canonTransToGenomePslFile = writeCanonTransToGenomeAligns(geneSetMeta, geneSetData, uniprotMetaTbl, interPrefix)
-    noncanonTransToGenomePslFile = writeNoncanonTransToGenome(geneSetMeta, geneSetData, uniprotMetaTbl, interPrefix)
+    canonTransToGenomePslFile = writeCanonTransToGenomeAligns(geneSet, uniprotMetaTbl, interPrefix)
+    noncanonTransToGenomePslFile = writeNoncanonTransToGenome(geneSet, uniprotMetaTbl, interPrefix)
     noncanonCdsToTransAligns = mapCanonicalToNoncanon(canonCdsToTransPslFile, canonTransToGenomePslFile, noncanonTransToGenomePslFile, interPrefix)
 
     cleanTmpFiles(canonCdsToTransPslFile, canonTransToGenomePslFile, noncanonTransToGenomePslFile)
@@ -169,20 +165,20 @@ def getTNameAccSet(aligns):
 def problemLog(logFh, reason, uniprotId=None, geneId=None, transcriptId=None, transcriptType=None):
     fileOps.prRowv(logFh, reason, uniprotId, geneId, transcriptId, transcriptType)
 
-def reportMissingTrans(geneSetMeta, uniprotMeta, logFh):
+def reportMissingTrans(geneSet, uniprotMeta, logFh):
     "none of the transcripts are in the gene set"
-    if len(uniprotMeta.ensemblGeneAccs & geneSetMeta.transcriptAccs) == 0:
+    if len(uniprotMeta.ensemblGeneAccs & geneSet.meta.transcriptAccs) == 0:
         reason = "no_gene_transcript_in_geneset"
     else:
         reason = "no_transcript_in_geneset"
     problemLog(logFh, reason, uniprotId=uniprotMeta.acc,
                geneId=uniprotMeta.ensemblGene, transcriptId=uniprotMeta.ensemblTrans)
 
-def reportUniproiNotAligned(geneSetMeta, uniprotMeta, alignedUniprotIds, logFh):
+def reportUniproiNotAligned(geneSet, uniprotMeta, alignedUniprotIds, logFh):
     # find associated transcript info
-    transRecs = [geneSetMeta.getTranscriptByAcc(transAcc)
+    transRecs = [geneSet.meta.getTranscriptByAcc(transAcc)
                  for transAcc in uniprotMeta.ensemblTransAccs
-                 if geneSetMeta.haveTranscriptAcc(transAcc)]
+                 if geneSet.meta.haveTranscriptAcc(transAcc)]
     if len(transRecs) == 0:
         problemLog(logFh, "uniprot_not_aligned", uniprotId=uniprotMeta.acc)
     else:
@@ -191,59 +187,59 @@ def reportUniproiNotAligned(geneSetMeta, uniprotMeta, alignedUniprotIds, logFh):
                        geneId=transRec.geneId, transcriptId=transRec.transId, transcriptType=transRec.transType)
 
 
-def reportUnalignedUniprot(geneSetMeta, uniprotMeta, alignedUniprotIds, logFh):
+def reportUnalignedUniprot(geneSet, uniprotMeta, alignedUniprotIds, logFh):
     # explain why
     if len(uniprotMeta.ensemblTransIds) == 0:
         pass  # no transcripts, don't report
-    elif len(uniprotMeta.ensemblTransAccs & geneSetMeta.transcriptAccs) == 0:
+    elif len(uniprotMeta.ensemblTransAccs & geneSet.meta.transcriptAccs) == 0:
         # report because none of the transcripts in gene set (checked non-coding too)
-        reportMissingTrans(geneSetMeta, uniprotMeta, logFh)
+        reportMissingTrans(geneSet, uniprotMeta, logFh)
     else:
         # have transcript, but not aligned, might be biotype change
-        reportUniproiNotAligned(geneSetMeta, uniprotMeta, alignedUniprotIds, logFh)
+        reportUniproiNotAligned(geneSet, uniprotMeta, alignedUniprotIds, logFh)
 
-def reportUnalignedUniprots(geneSetMeta, uniprotMetaTbl, canonCdsToTransAligns, logFh):
+def reportUnalignedUniprots(geneSet, uniprotMetaTbl, canonCdsToTransAligns, logFh):
     alignedUniprotIds = getQNameAccSet(canonCdsToTransAligns)
     unalignedUniprotIds = frozenset(uniprotMetaTbl.byMainIsoAcc.keys()) - alignedUniprotIds
     for uniprotId in sorted(unalignedUniprotIds):
-        reportUnalignedUniprot(geneSetMeta, uniprotMetaTbl.getByMainIsoAcc(uniprotId), alignedUniprotIds, logFh)
+        reportUnalignedUniprot(geneSet, uniprotMetaTbl.getByMainIsoAcc(uniprotId), alignedUniprotIds, logFh)
 
-def reportUnpairedNoncanonTrans(geneSetMeta, uniprotMetaTbl, transAcc, logFh):
+def reportUnpairedNoncanonTrans(geneSet, uniprotMetaTbl, transAcc, logFh):
     # ones without uniprot are skipped
-    transRec = geneSetMeta.getTranscriptByAcc(transAcc)
+    transRec = geneSet.meta.getTranscriptByAcc(transAcc)
     for uniprotMeta in uniprotMetaTbl.getGeneAccMetas(transRec.gene.geneAcc):
         problemLog(logFh, "noncanon_trans_not_mapped", uniprotId=uniprotMeta.acc, geneId=transRec.gene.geneId,
                    transcriptId=transRec.transId, transcriptType=transRec.transType)
 
-def reportUnpairedNoncanonTranses(geneSetMeta, uniprotMetaTbl, noncanonCdsToTransAligns, logFh):
-    noncanonTransAccs = geneSetMeta.transcriptAccs - uniprotMetaTbl.getCanonEnsemblAccSet()
+def reportUnpairedNoncanonTranses(geneSet, uniprotMetaTbl, noncanonCdsToTransAligns, logFh):
+    noncanonTransAccs = geneSet.meta.transcriptAccs - uniprotMetaTbl.getCanonEnsemblAccSet()
     alignedTransAccs = getTNameAccSet(noncanonCdsToTransAligns)
     unmappedTransAccs = noncanonTransAccs - alignedTransAccs
     for transAcc in sorted(unmappedTransAccs):
-        reportUnpairedNoncanonTrans(geneSetMeta, uniprotMetaTbl, transAcc, logFh)
+        reportUnpairedNoncanonTrans(geneSet, uniprotMetaTbl, transAcc, logFh)
 
-def report(geneSetMeta, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv):
+def report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv):
     with fileOps.opengz(problemLogTsv, 'w') as logFh:
         problemLog(logFh, "reason", "uniprotId", "geneId", "transcriptId", "transcriptType")
-        reportUnalignedUniprots(geneSetMeta, uniprotMetaTbl, canonCdsToTransAligns, logFh)
-        reportUnpairedNoncanonTranses(geneSetMeta, uniprotMetaTbl, noncanonCdsToTransAligns, logFh)
+        reportUnalignedUniprots(geneSet, uniprotMetaTbl, canonCdsToTransAligns, logFh)
+        reportUnpairedNoncanonTranses(geneSet, uniprotMetaTbl, noncanonCdsToTransAligns, logFh)
 
-def proteinTranscriptAlign(gencodeMetaTsv, gencodeGpFile, gencodePslFile, uniprotMetaTsv, protCanonTransPslFile,
+def proteinTranscriptAlign(geneSetName, geneSetMetadata, transGenomePsl, transGenomeGp,
+                           uniprotMetaTsv, protCanonTransPslFile,
                            cdsTransPslFile, problemLogTsv, interPrefix):
-    geneSetMeta = loadGencodeMetadata(gencodeMetaTsv)
-    geneSetData = loadGencodeData(gencodePslFile, gencodeGpFile)
+    geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp)
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
     canonCdsToTransAligns = loadConvertCanonProtTransPsls(protCanonTransPslFile)
-    noncanonCdsToTransAligns = projectUniPortAlignments(geneSetMeta, geneSetData, uniprotMetaTbl,
+    noncanonCdsToTransAligns = projectUniPortAlignments(geneSet, uniprotMetaTbl,
                                                         canonCdsToTransAligns, interPrefix)
 
-    report(geneSetMeta, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv)
+    report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv)
 
     writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, cdsTransPslFile)
 
 def main(opts):
-    proteinTranscriptAlign(opts.gencodeMetaTsv, opts.gencodeGp, opts.gencodePsl,
+    proteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.transGenomePsl, opts.transGenomeGp,
                            opts.uniprotMetaTsv, opts.protCanonTransPsl,
                            opts.cdsTransPsl, opts.problemLogTsv,
                            opts.interPrefix)

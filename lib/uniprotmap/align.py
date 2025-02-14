@@ -54,8 +54,9 @@ def _runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
     "alignCmdPre is list of program and initial arguments"
     fileOps.ensureDir(alignBatchDir)
     jobFile = _makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
-    para = Para(conf.paraHost, jobFile=jobFile, paraDir=alignBatchDir, retries=2)
-    para.free()
+    para = Para(paraHost=conf.paraHost, jobFile=jobFile, paraDir=alignBatchDir, retries=2)
+    para.clearSickNodes()
+    para.freeBatch()
     try:
         para.make()
     except pipettor.exceptions.ProcessException as ex:

@@ -17,7 +17,7 @@ from uniprotmap.uniprotDecorators import (getAnnotColor, getProblemColor, getAnn
                                           UNIPROT_CANON_ISO_OUTLINE_COLOR, UNIPROT_NONCANON_ISO_OUTLINE_COLOR,
                                           FEAT_INSERTION_COLOR, FEAT_DELETION_COLOR, AnnotType, FeatStatus,
                                           UniprotDecoration)
-from uniprotmap.gencode import loadGencodeData
+from uniprotmap.geneset import GeneSetData, geneSetLoadAnnotPsl
 from uniprotmap.metadata import AnnotTransRefs, xrefToItemArgs
 from uniprotmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
 from uniprotmap.decoratorsBuilder import buildDecorators
@@ -58,6 +58,8 @@ def parseArgs():
                         help="""Is the UniProt dataset SwissProt or TrEMBL?""")
     parser.add_argument("--featTypesTsv",
                         help="""unique category and feature types for constructing track filters (output)""")
+    parser.add_argument("transGenomePsl",
+                        help="""Transcript genome alignment; often from genePredToPsl. For cross-species mapping, this should be the target species transcript alignments. (input)""")
     parser.add_argument("uniprotMetaTsv",
                         help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("uniprotAnnotsTsv",
@@ -67,9 +69,6 @@ def parseArgs():
                         be the target species genome.""")
     parser.add_argument("annotTransRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
-    parser.add_argument("transGenomePsl",
-                        help="""transcript genome alignment; often from genePredToPsl (input).For cross-species mapping, this must
-                        be the target species genome.""")
     parser.add_argument("annotDecoratorBedFile",
                         help="""annotation decorator BED file (output)""")
     profiler = Profile(parser)
@@ -186,17 +185,18 @@ class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the
     processing to the pool sub-process"""
 
-    def __init__(self, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet):
+    def __init__(self, transGenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, dataSet):
         self.dataSet = dataSet
+        self.geneSetData = GeneSetData()
+        geneSetLoadAnnotPsl(self.geneSetData, transGenomePsl)
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
         self.uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
         self.annotTransRefs = AnnotTransRefs(annotTransRefTsv)
-        self.transGenomeAlns = loadGencodeData(transGenomePsl)
 
     def _buildAnnotation(self, annotPsl, annot, alignIdx):
         annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
         uniprotMeta = self.uniprotMetaTbl.getByAcc(annot.acc)
-        transPsl = self.transGenomeAlns.getAlign(annotTransRef.transcriptId, annotPsl.tName)
+        transPsl = self.geneSetData.getAlign(annotTransRef.transcriptId, annotPsl.tName)
         transCategory = calcTransCategory(uniprotMeta, annotTransRef.transcriptId)
         # package up since so many parameters
         ad = AnnotData(transPsl=transPsl, annotPsl=annotPsl, annot=annot, annotTransRef=annotTransRef,
@@ -220,20 +220,19 @@ def writeFeatTypes(featTypes, featTypesTsv):
         for ft in sorted(featTypes):
             fileOps.prRowv(fh, *ft)
 
-def uniprotAnnotsToDecorators(uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv, transGenomePsl,
+def uniprotAnnotsToDecorators(transGenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv,
                               annotDecoratorBedFile, dataSet, nprocs, batchSize, featTypesTsv):
+    annotProcFunc = partial(AnnotationProcessor, transGenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, dataSet)
 
-    annotProcFunc = partial(AnnotationProcessor, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, transGenomePsl, dataSet)
-
-    featTypes = buildDecorators(annotProcFunc, getFeatType,
-                                annotGenomePslFile, annotTransRefTsv,
+    featTypes = buildDecorators(annotProcFunc, getFeatType, annotGenomePslFile, annotTransRefTsv,
                                 annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
 
 def main(opts):
-    uniprotAnnotsToDecorators(opts.uniprotMetaTsv, opts.uniprotAnnotsTsv, opts.annotGenomePsl, opts.annotTransRefTsv,
-                              opts.transGenomePsl, opts.annotDecoratorBedFile, opts.dataset, opts.nprocs, opts.batchSize,
+    uniprotAnnotsToDecorators(opts.transGenomePsl, opts.uniprotMetaTsv, opts.uniprotAnnotsTsv,
+                              opts.annotGenomePsl, opts.annotTransRefTsv,
+                              opts.annotDecoratorBedFile, opts.dataset, opts.nprocs, opts.batchSize,
                               opts.featTypesTsv)
 
 if __name__ == '__main__':

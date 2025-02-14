@@ -42,15 +42,24 @@ test: uniprotTests interproTests hub
 	@echo "==========================================" >&2
 
 fulltest: aligntest test
-aligntest: protTransAlignTests interproAlignTests
+
+# alignment tests must be done serially due to parasol losing small jobs on multiple
+# batches with short jobs
+aligntest:
+	${MAKE} protTransAlignTests
+	${MAKE} interproAlignTests
 
 ####
 uniprotTests: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDecoratorsTests \
 	uniprotDecoratorsMergeTests xspeciesTests uniprotInfoTests 
 
 
-protTransAlignTests: testProtTransSPBlastAlign testProtTransSPBlatAlign \
-	testProtTransTRBlastAlign testProtTransTRBlatAlign \
+# serial due to parasol bug
+protTransAlignTests:
+	${MAKE} testProtTransSPBlastAlign
+	${MAKE} testProtTransSPBlatAlign
+	${MAKE} testProtTransTRBlastAlign
+	${MAKE} testProtTransTRBlatAlign
 
 # $(call runUpAlignments,blat,swissprot)
 define runUpAlignments
@@ -82,7 +91,7 @@ uniprotProteinTranscriptMapInterPrefix = --interPrefix=output/$@.inter.
 # $call runUniprotProteinTranscriptMap,swissprot,SP)
 define runUniprotProteinTranscriptMap
 	${uniprotProteinTranscriptMap} ${uniprotProteinTranscriptMapInterPrefix} \
-		${gencodeMeta} ${gencodeGp} input/gencode.v43.pc.psl \
+		GENCODE ${gencodeMeta} input/gencode.v43.pc.psl ${gencodeGp} \
 		input/${1}.9606.tab expected/testProtTrans${2}BlatAlign.psl \
 		output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -103,8 +112,8 @@ uniprotAnnotsMapTests: testUniprotAnnotsMapSP testUniprotAnnotsMapTR
 # $(call runMapAnnots,swissprot,SP)
 define runMapAnnots
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
-	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
 	    input/gencode.v43.pc.psl \
+	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
@@ -125,9 +134,10 @@ uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP testUniprotAnnot
 
 # $(call runUniprotAnnotsToDecorators,swissprot,SP)
 define runUniprotAnnotsToDecorators
-	${uniprotAnnotsToDecorators} --nproc=${nproc} input/$(1).9606.tab input/$(1).9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nproc=${nproc} input/gencode.v43.pc.psl \
+	    input/$(1).9606.tab input/$(1).9606.annots.tab \
 	    expected/testUniprotAnnotsMap$(2).psl expected/testUniprotAnnotsMap$(2).ref.tsv \
-            input/gencode.v43.pc.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
+            output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
 endef
@@ -144,9 +154,10 @@ testUniprotAnnotsToDecoColorHelp: mkout
 
 # error handling, use to not terminate on fail to open files
 testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
-	! ${uniprotAnnotsToDecorators} --nproc=${nproc} input/swissprot.9606.tab input/swissport.9606.annots.tab \
+	! ${uniprotAnnotsToDecorators} --nproc=${nproc} input/gencode.v43.pc.psl \
+	    input/swissprot.9606.tab input/swissport.9606.annots.tab \
 	    expected/testUniprotAnnotsMapSP.psl expected/does-not-exist.tsv \
-            input/gencode.v43.pc.psl output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
+            output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
 	grep -q 'Exception: Pool initialization failed' output/$@.err 
 
 ###
@@ -157,7 +168,7 @@ testUniprotDecoratorsMerge: mkout
 	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
 
-
+###
 # cross-species mapping
 xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotAnnotsMap \
 	testXSpeciesAnnotsToDeco
@@ -174,8 +185,8 @@ testXSpeciesGencodeCatFilter: mkout ${ponAbeCatBb}
 testXSpeciesUniprotAnnotsMap: mkout
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
 	    --xspeciesTransPsl=expected/testXSpeciesGencodeCatFilter.psl \
-	    input/swissprot.9606.annots.tab expected/testUniprotProteinTranscriptMapSP.psl \
 	    input/GCA_028885655.2.cat.psl \
+	    input/swissprot.9606.annots.tab expected/testUniprotProteinTranscriptMapSP.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
@@ -185,9 +196,10 @@ testXSpeciesUniprotAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 testXSpeciesAnnotsToDeco: mkout
-	${uniprotAnnotsToDecorators} --nproc=${nproc} input/swissprot.9606.tab input/swissprot.9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nproc=${nproc} input/GCA_028885655.2.cat.psl \
+	    input/swissprot.9606.tab input/swissprot.9606.annots.tab \
 	    expected/testXSpeciesUniprotAnnotsMap.psl expected/testXSpeciesUniprotAnnotsMap.ref.tsv \
-            input/GCA_028885655.2.cat.psl output/$@.bed --featTypesTsv=output/$@.types.tsv
+            output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -sizesIs2Bit -tab expected/$@.bed ${ponAbeTwobit} output/$@.bb
@@ -207,12 +219,14 @@ testUniprotInfoGeneName:
 # $(call runUpAlignments,blat)
 define runIpAlignments
 	rm -rf output/$@.psl output/$@.work
-	${interproProteinTranscriptAlign} --algo=${1} ${gencodeMeta} input/gencode.v43.proteins.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} --algo=${1} GENCODE ${gencodeMeta} input/gencode.v43.pc.fa input/gencode.v43.proteins.fa output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 endef
 
-interproAlignTests:  testInterproBlatAlign
+# serial due to parasol bug
+interproAlignTests:
+	${MAKE} testInterproBlatAlign
 
 testInterproBlatAlign: mkout
 	$(call runIpAlignments,blat)
@@ -221,8 +235,8 @@ interproTests: testInterproAnnotsMap testInterproAnnotsToDeco
 
 testInterproAnnotsMap: mkout
 	${interproAnnotsMap} \
-	    input/gencode.v43.interproscan.tsv expected/testInterproBlatAlign.psl \
 	    input/gencode.v43.pc.psl \
+	    input/gencode.v43.interproscan.tsv expected/testInterproBlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv

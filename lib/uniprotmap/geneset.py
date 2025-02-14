@@ -2,14 +2,24 @@
 Abstraction of a gene set, allowing code to work with GENCODE, RefSeq and CAT.
 """
 from collections import namedtuple, defaultdict
+from pycbio.sys.symEnum import SymEnum, auto
 from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.genePred import GenePredReader
 from pycbio.hgdata.rangeFinder import RangeFinder
 from uniprotmap import dropVersion
 
 ##
-# note: this came from a different project, so not all of the functionality is used.
+# Note: this came from a different project, so not all of the functionality is
+# used.
+#
+# If metadata is not need, the GeneSetData class and load functions maybe used
+# directly.
 ##
+
+class GeneSetName(SymEnum):
+    """Identifies the supported gene sets"""
+    GENCODE = auto()
+    CAT1 = auto()
 
 class GeneSetError(Exception):
     pass
@@ -127,16 +137,37 @@ class GeneSetMetadata:
 
 class Entry:
     "PSL and option genePred"
-    __slots__ = ("alignPsl", "annotGp")
+    __slots__ = ("psl", "gp")
 
-    def __init__(self, alignPsl):
-        self.alignPsl = alignPsl
-        self.annotGp = None  # load second
+    def __init__(self):
+        self.psl = None
+        self.gp = None
+
+    @property
+    def name(self):
+        return self.psl.qName if self.psl is not None else self.gp.name
+
+    @property
+    def chrom(self):
+        return self.psl.tName if self.psl is not None else self.gp.chrom
+
+    @property
+    def start(self):
+        return self.psl.tStart if self.psl is not None else self.gp.txStart
+
+    @property
+    def end(self):
+        return self.psl.tEnd if self.psl is not None else self.gp.txEnd
+
+    @property
+    def strand(self):
+        return self.psl.qStrand if self.psl is not None else self.gp.strand
 
 class GeneSetData:
     """contains PSL alignments and optional genePred annotation records."""
 
-    # Note: older GENCODEs and RefSeq will have same transcript ids for PARs, so we must keep
+    ##
+    # Note: RefSeq and older GENCODEs will have same transcript ids for PARs, so we must keep
     # list of entries
     ##
 
@@ -148,18 +179,25 @@ class GeneSetData:
     def finish(self):
         self.byTransId.default_factory = None
 
+    def _obtainEntry(self, name, chrom):
+        entry = self.findEntry(name, chrom)
+        if entry is None:
+            entry = Entry()
+            self.entries.append(entry)
+            self.byTransId[name].append(entry)
+        return entry
+
     def addAlign(self, psl):
-        self.byTransId[psl.qName].append(Entry(psl))
+        self._obtainEntry(psl.qName, psl.tName).psl = psl
 
     def addAnnot(self, gp):
-        entry = self.getEntry(gp.name, gp.chrom)
-        entry.annotGp = gp
+        self._obtainEntry(gp.name, gp.chrom).gp = gp
 
     def _buildRangeIdx(self):
         self.rangeIdx = RangeFinder()
         for entries in self.byTransId.values():
             for entry in entries:
-                self.rangeIdx.add(entry.alignPsl.tName, entry.alignPsl.tStart, entry.alignPsl.tEnd)
+                self.rangeIdx.add(entry.name, entry.start, entry.end)
 
     def findEntries(self, transId):
         return self.byTransId.get(transId, ())
@@ -174,7 +212,7 @@ class GeneSetData:
         # handle multi-location entries
         entries = self.byTransId.get(transId, ())
         for entry in entries:
-            if entry.alignPsl.tName == chrom:
+            if entry.chrom == chrom:
                 return entry
         return None
 
@@ -185,28 +223,52 @@ class GeneSetData:
         return entry
 
     def getAlign(self, transId, chrom):
-        return self.getEntry(transId, chrom).alignPsl
+        return self.getEntry(transId, chrom).psl
 
     def getAnnot(self, transId, chrom):
-        return self.getEntry(transId, chrom).annotGp
+        return self.getEntry(transId, chrom).gp
 
-    def getOverEntries(self, tName, tStart, tEnd, qStrand):
+    def getOverEntries(self, name, start, end, strand):
         if self.rangeIdx is None:
             self._buildRangeIdx()
-        for entry in self.rangeIdx.overlapping(self, tName, tStart, tEnd):
-            if entry.annotPsl.qStrand == qStrand:
+        for entry in self.rangeIdx.overlapping(self, name, start, end):
+            if entry.strand == strand:
                 yield entry
 
-def geneSetDataLoad(alignPslFile, annotGenePredFile=None):
-    """"load PSL and options genePreds into a GeneSetData object"""
-    geneSetData = GeneSetData()
-
-    for psl in PslReader(alignPslFile):
+def geneSetLoadAnnotPsl(geneSetData, transGenomePslFile):
+    """"load PSLs into a GeneSe object"""
+    for psl in PslReader(transGenomePslFile):
         geneSetData.addAlign(psl)
 
-    if annotGenePredFile is not None:
-        for gp in GenePredReader(annotGenePredFile):
-            geneSetData.addAnnot(gp)
+def geneSetLoadAnnotGp(geneSetData, annotGenePredFile):
+    """"load genePreds into a GeneSetData object"""
+    for gp in GenePredReader(annotGenePredFile):
+        geneSetData.addAnnot(gp)
 
-    geneSetData.finish()
-    return geneSetData
+
+class GeneSet:
+    """Meta data and data for GeneSet. A factory function builds this
+    to allow set specific functions. Data that is loaded depends on
+    what is requested by the program."""
+    def __init__(self, geneSetName):
+        self.geneSetName = geneSetName
+        self.meta = GeneSetMetadata()
+        self.data = GeneSetData()
+        self.transFa = None
+
+    def finish(self):
+        self.data.finish()
+        self.meta.finish()
+
+
+def geneSetFactory(geneSetName, *, geneSetMetadata=None, transGenomePsl=None, transGenomeGp=None, transFa=None):
+    """Build gene set object of the specified type GeneSet"""
+
+    if geneSetName is GeneSetName.GENCODE:
+        from uniprotmap.gencode import gencodeGeneSetFactory
+        return gencodeGeneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp, transFa=transFa)
+    elif geneSetName is GeneSetName.CAT1:
+        from uniprotmap.catgenes import cat1GeneSetFactory
+        return cat1GeneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp, transFa=transFa)
+    else:
+        assert False, f"Bug: no handler for {geneSetName}"

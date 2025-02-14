@@ -33,12 +33,12 @@ def parseArgs():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--interPrefix",
                         help="""Save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
+    parser.add_argument("transGenomePsl",
+                        help="""Transcript genome alignment; often from genePredToPsl. (input)""")
     parser.add_argument("interproAnnotTsv",
                         help="""InterProScan TSV results (input)""")
     parser.add_argument("protTransPsl",
                         help="""Paired protein to transcript alignments from interproProteinTranscriptAlign (input)""")
-    parser.add_argument("transGenomePsl",
-                        help="""Transcript genome alignment; often from genePredToPsl. (input)""")
     parser.add_argument("annotGenomePsl",
                         help="""InterProScan annotations mapped to the genome (output)""")
     parser.add_argument("annotTransRefTsv",

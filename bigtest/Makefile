@@ -72,7 +72,7 @@ protTransPairProbTsv = ${protTransMapPre}.paired.problems.tsv
 mkProtTransMap: ${protTransPairedAln}
 ${protTransPairedAln}: ${protTransRawAln}
 	@mkdir -p $(dir $@) ${protTransInterDir}
-	${time} ${uniprotProteinTranscriptMap} ${protTransInterOpt} ${gencodeMeta} ${gencodeGp} ${gencodePsl} ${uniprotMeta} $< $@.${tmpext} ${protTransPairProbTsv}
+	${time} ${uniprotProteinTranscriptMap} GENCODE ${gencodeMeta} ${gencodePsl} ${gencodeGp} ${protTransInterOpt} ${uniprotMeta} $< $@.${tmpext} ${protTransPairProbTsv}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
@@ -93,7 +93,7 @@ mkUniprotMapAnnots: ${mapAnnotsPsl}
 
 ${mapAnnotsPsl}: ${protTransPairedAln} ${uniprotAnnot}
 	@mkdir -p $(dir $@) ${mapAnnotsInterDir}
-	${time} ${uniprotAnnotsMap} ${uniprotAnnot} ${protTransPairedAln} ${gencodePsl} \
+	${time} ${uniprotAnnotsMap} ${gencodePsl} ${uniprotAnnot} ${protTransPairedAln} \
             $@.${tmpext} ${mapAnnotsRefTsv} ${mapAnnotsProblemsTsv} ${mapAnnotsInterOpt}
 	pslCheck $@.${tmpext}
 	mv -f $@.${tmpext} $@
@@ -110,7 +110,7 @@ mkDecorators: ${decoratorsBed}
 ${decoratorsBed}: ${upannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
 	${time} ${uniprotAnnotsToDecorators} --dataset=${uniprotDataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
-	    ${uniprotMeta} ${uniprotAnnot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} ${gencodePsl} $@.${tmpext}
+	     ${gencodePsl} ${uniprotMeta} ${uniprotAnnot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
 ##
@@ -136,15 +136,15 @@ xspeciesMap: ${asm_names:%=%_xspeciesMap}
 
 xspeciesMapAsm: ${xspecies_mapannot_psl} ${src_xspecies_rna_aln} ${xspecies_decorators_bed}
 
-${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv}
-	${uniprotAnnotsToDecorators} --nprocs=${nprocs} --dataset=SwissProt ${uniprotMeta} ${uniprotAnnot} \
-	    ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} \
-	    ${xspecies_cat_psl} $@.tmp
+${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} CAT1 ${xspecies_cat_psl} \
+	${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv}
+	${uniprotAnnotsToDecorators} --nprocs=${nprocs} --dataset=SwissProt \
+	   ${xspecies_mapannot_psl} ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_ref_tsv} $@.tmp
 	mv -f $@.tmp $@
 
 ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv} &: ${uniprotAnnot} ${protTransPairedAln} ${xspecies_cat_psl} ${src_xspecies_rna_aln}
 	${uniprotAnnotsMap} --xspeciesTransPsl=${src_xspecies_rna_aln} \
-	    ${uniprotAnnot} ${protTransPairedAln} ${xspecies_cat_psl} \
+	    ${xspecies_cat_psl} ${uniprotAnnot} ${protTransPairedAln} \
             ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv}
 	mv -f ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_psl}
 

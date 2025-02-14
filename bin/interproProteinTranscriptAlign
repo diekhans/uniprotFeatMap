@@ -6,8 +6,8 @@ import argparse
 import functools
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap.gencode import loadGencodeMetadata
-from uniprotmap.geneset import GeneSetError
+from uniprotmap.geneset import GeneSetError, geneSetFactory
+from uniprotmap.clisupport import cliAddGeneSetParameters
 from uniprotmap.interproscan import InterproError
 from uniprotmap.align import updateCompoundFastaHeader, proteinTranscriptAlign
 
@@ -24,39 +24,36 @@ def parseArgs():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--algo", choices=("blast", "blat"), default="blat",
                         help="alignment algorithm")
-    parser.add_argument("gencodeMetaTsv",
-                        help="""GENCODE metadata in TSV format UCSC import (not table), which includes tags (input)""")
+    cliAddGeneSetParameters(parser, inclMetadata=True, inclTransFa=True)
     parser.add_argument("proteinFa",
                         help="""protein FASTA matching InterProScan results (input)""")
-    parser.add_argument("transFa",
-                        help="""transcript FASTA, CDS must be in upper-case and UTR in lowercase (input)""")
     parser.add_argument("protTransPsl",
                         help="""alignments of proteins to their transcripts, sorted by transcript (output)""")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
     return parser.parse_args()
 
-def queryFaEditFilter(geneSetMeta, faRec):
+def queryFaEditFilter(geneSet, faRec):
     updateCompoundFastaHeader(faRec)
-    if faRec.id not in geneSetMeta.byProteinId:
+    if faRec.id not in geneSet.meta.byProteinId:
         raise InterproError(f"protein id '{faRec}' not found in GENCODE metadata")
     return True
 
-def alignFilter(geneSetMeta, psl):
+def alignFilter(geneSet, psl):
     try:
-        trans = geneSetMeta.getTranscript(psl.tName)
+        trans = geneSet.meta.getTranscript(psl.tName)
     except GeneSetError as ex:
         raise InterproError(f"transcript id '{psl.tName}' not found in gene set metadata for protein/transcript alignment '{psl.qName}'/'{psl.tName}'") from ex
     return trans.proteinId == psl.qName
 
-def interproProteinTranscriptAlign(gencodeMetaTsv, proteinFa, transFa, protTransPsl, algo, workDir):
-    geneSetMeta = loadGencodeMetadata(gencodeMetaTsv)
-    proteinTranscriptAlign(proteinFa, transFa, protTransPsl, algo, workDir,
-                           queryFaEditFilterFunc=functools.partial(queryFaEditFilter, geneSetMeta),
-                           alignFilterFunc=functools.partial(alignFilter, geneSetMeta))
+def interproProteinTranscriptAlign(geneSetName, geneSetMetadata, transFa, proteinFa, protTransPsl, algo, workDir):
+    geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transFa=transFa)
+    proteinTranscriptAlign(proteinFa, geneSet.transFa, protTransPsl, algo, workDir,
+                           queryFaEditFilterFunc=functools.partial(queryFaEditFilter, geneSet),
+                           alignFilterFunc=functools.partial(alignFilter, geneSet))
 
 def main(opts):
-    interproProteinTranscriptAlign(opts.gencodeMetaTsv, opts.proteinFa, opts.transFa,
-                                   opts.protTransPsl, opts.algo, opts.workDir)
+    interproProteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.transFa,
+                                   opts.proteinFa, opts.protTransPsl, opts.algo, opts.workDir)
 
 main(parseArgs())
