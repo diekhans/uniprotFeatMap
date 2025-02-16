@@ -37,9 +37,10 @@ src_target_chains=${xspecies_rootdir}/${target_asmname}/${src_asmname}-${target_
 
 out_bigcat=${outdir}/${target_asmname}.cat.bigCat
 out_metatsv=${outdir}/${target_asmname}.cat.meta.tsv
-out_catfa=${outdir}/${target_asmname}.cat.fa
-out_catgp=${outdir}/${target_asmname}.cat.gp
-out_catpsl=${outdir}/${target_asmname}.cat.psl
+out_rna_fa=${outdir}/${target_asmname}.cat.rna.fa
+out_prot_fa=${outdir}/${target_asmname}.cat.prot.fa
+out_gp=${outdir}/${target_asmname}.cat.gp
+out_psl=${outdir}/${target_asmname}.cat.psl
 out_interpro_tsv=${outdir}/${target_asmname}.interpro.tsv
 out_scr_target_chains=${outdir}/${target_asmname}.chains
 
@@ -59,12 +60,14 @@ bigBedToBed -tsv ${target_catbb} /dev/stdout | \
     selectById -tsv 1 ${cat_trans_names_tmp} 4 /dev/stdin > ${out_metatsv}
 
 bigGenePredToGenePred ${target_catbb} /dev/stdout | \
-    selectById 1 ${cat_trans_names_tmp} 1 /dev/stdin > ${out_catgp}
+    selectById 1 ${cat_trans_names_tmp} 1 /dev/stdin > ${out_gp}
 
-twoBitToFa -bed=<(cut -f 1-12 ${out_bigcat}) ${target_genome} ${out_catfa}
+twoBitToFa -bed=<(cut -f 1-12 ${out_bigcat}) ${target_genome} ${out_rna_fa}
 
-genePredToPsl ${target_chromsizes_tmp} ${out_catgp} /dev/stdout | \
-    pslRecalcMatch /dev/stdin ${target_genome} ${out_catfa} ${out_catpsl}
+genePredToProt -protIdSuffix=_prot ${out_gp} ${target_genome} ${out_prot_fa}
+
+genePredToPsl ${target_chromsizes_tmp} ${out_gp} /dev/stdout | \
+    pslRecalcMatch /dev/stdin ${target_genome} ${out_rna_fa} ${out_psl}
 
 overlapSelect -selectFmt=bed -inFmt=chain ${out_bigcat} -inFmt=chain ${src_target_chains} ${out_scr_target_chains}
 

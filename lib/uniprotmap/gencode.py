@@ -1,17 +1,17 @@
 from pycbio.tsv import TsvReader, strOrNoneType
 from uniprotmap.geneset import GeneSet, geneSetLoadAnnotPsl, geneSetLoadAnnotGp
 
-_codingTranscriptTypes = frozenset(["protein_coding",
-                                    "nonsense_mediated_decay",
-                                    "non_stop_decay",
-                                    "protein_coding_LoF",
-                                    "TR_V_gene", "TR_D_gene", "TR_J_gene", "TR_C_gene",
-                                    "IG_C_gene", "IG_J_gene", "IG_D_gene", "IG_V_gene"])
+codingTranscriptTypes = frozenset(["protein_coding",
+                                   "nonsense_mediated_decay",
+                                   "non_stop_decay",
+                                   "protein_coding_LoF",
+                                   "TR_V_gene", "TR_D_gene", "TR_J_gene", "TR_C_gene",
+                                   "IG_C_gene", "IG_J_gene", "IG_D_gene", "IG_V_gene"])
 
 def _loadMetadata(geneSet, gencodeMetaTsv):
     """read from GENCODE metadata TSV, from UCSC GENCODE import"""
     for row in TsvReader(gencodeMetaTsv, typeMap={"proteinId": strOrNoneType}):
-        if row.transcriptType in _codingTranscriptTypes:
+        if row.transcriptType in codingTranscriptTypes:
             geneSet.meta.addTranscript(row.geneId, row.geneName, row.geneType,
                                        row.transcriptId, row.transcriptType,
                                        row.proteinId)

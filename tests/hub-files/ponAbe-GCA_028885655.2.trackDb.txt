@@ -9,12 +9,13 @@ color 12,12,120
 priority 3
 visibility pack
 searchIndex name
-bigDataUrl GCA_028885655.2.cat.bb
+bigDataUrl ponAbe-GCA_028885655.2.cat.bb
 labelFields name
 defaultLabelFields name
 labelSeperator " / "
 html empty.html
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
+##
 decorator.default.bigDataUrl testXSpeciesAnnotsToDeco.bb
 decorator.default.filterLabel.annotType Annotation type
 decorator.default.filterValues.annotType feature,disruption
@@ -34,4 +35,17 @@ decorator.default.mouseOver \
    UniProt data set: ${dataSet}<br> \
    comment: ${comment}<br> \
    disease: ${disease}
+##
+##
+decorator.interpro.bigDataUrl testInterproCat1AnnotsToDeco.bb
+decorator.interpro.filterLabel.annotCategory Annotation category
+decorator.interpro.filterValues.annotCategory InterPro,other
+decorator.interpro.filterLabel.analysis Analysis
+decorator.interpro.filterValues.analysis CDD,Coils,FunFam,Gene3D,MobiDBLite,NCBIfam,PANTHER,PRINTS,Pfam,ProSitePatterns,ProSiteProfiles,SFLD,SMART,SUPERFAMILY
+decorator.interpro.mouseOver \
+   description: ${description}<br> \
+   accession: ${accession}<br> \
+   protein id: ${proteinAcc}<br> \
+   analysis: ${analysis}
+
 

@@ -18,7 +18,7 @@ cp output/*.{psl,tsv,bed} expected/
 ** to get the test CAT data for cross-species 
 
 # only get ZNFs or the chain files ends up huge
-tawk '$2~/^ZNF.*/{print $4}' input/gencode.v43.metadata.tsv > gencode.ids
+tawk '$2~/^ZNF.*/ && ($6 == "protein_coding") {print $4}' input/gencode.v43.metadata.tsv > gencode.ids
 ./bin/getOrthoData gencode.ids tmp
 
 

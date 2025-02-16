@@ -8,23 +8,39 @@ ifeq (${nproc},)
   nproc = 8
 endif
 
-chromSizes = input/hg38.sizes
+hg38ChromSizes = input/hg38.sizes
 
 testHubFiles = empty.html genomes.txt hub.txt hg38.trackDb.txt ponAbe-GCA_028885655.2.trackDb.txt
 testHubFilesOutput = ${testHubFiles:%=output/%}
 
 testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/tests/output/hub.txt
 
+swissprotMeta = input/swissprot.9606.tab
+swissprotAnnots = input/swissprot.9606.annots.tab
+
 gencodeGp = input/gencode.v43.pc.gp
+gencodePcFa = input/gencode.v43.pc.fa
+gencodePcPsl = input/gencode.v43.pc.psl
+gencodeProtFa = input/gencode.v43.proteins.fa
 gencodeMeta = input/gencode.v43.metadata.tsv
 gencodeBb = output/gencode.v43.bb
 gencodeBrowserDir = output/gencode-dir
 gencodeBrowserDirDone = ${gencodeBrowserDir}/done
+gencodeInterproTsv = input/gencode.v43.interproscan.tsv
 
-ponAbeCatBb = output/GCA_028885655.2.cat.bb
+ponAbeCat1BigCat = input/ponAbe-GCA_028885655.2.cat.bigCat
+ponAbeCat1Gp = input/ponAbe-GCA_028885655.2.cat.gp
+ponAbeCat1Psl = input/ponAbe-GCA_028885655.2.cat.psl
+ponAbeCat1RnaFa = input/ponAbe-GCA_028885655.2.cat.rna.fa
+ponAbeCat1ProtFa = input/ponAbe-GCA_028885655.2.cat.prot.fa
+ponAbeCat1Meta = input/ponAbe-GCA_028885655.2.cat.meta.tsv
+ponAbeCat1Bb = output/ponAbe-GCA_028885655.2.cat.bb
+ponAbeCat1InterproTsv = input/ponAbe-GCA_028885655.2.interpro.tsv
 ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_028885655.2/GCA_028885655.2.2bit
+ponAbeChains = input/ponAbe-GCA_028885655.2.chains
+ponAbeChromSizes = input/ponAbe-GCA_028885655.2.sizes
 
-
+bigCatAs = input/bigCat.as
 
 all:
 	@echo "Note: targets are:"
@@ -64,7 +80,7 @@ protTransAlignTests:
 # $(call runUpAlignments,blat,swissprot)
 define runUpAlignments
 	rm -rf output/$@.psl output/$@.work
-	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.tab input/${2}.9606.fa input/gencode.v43.pc.fa output/$@.psl output/$@.work
+	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.tab input/${2}.9606.fa ${gencodePcFa} output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 endef
@@ -91,7 +107,7 @@ uniprotProteinTranscriptMapInterPrefix = --interPrefix=output/$@.inter.
 # $call runUniprotProteinTranscriptMap,swissprot,SP)
 define runUniprotProteinTranscriptMap
 	${uniprotProteinTranscriptMap} ${uniprotProteinTranscriptMapInterPrefix} \
-		GENCODE ${gencodeMeta} input/gencode.v43.pc.psl ${gencodeGp} \
+		GENCODE ${gencodeMeta} ${gencodePcPsl} ${gencodeGp} \
 		input/${1}.9606.tab expected/testProtTrans${2}BlatAlign.psl \
 		output/$@.psl output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -112,7 +128,7 @@ uniprotAnnotsMapTests: testUniprotAnnotsMapSP testUniprotAnnotsMapTR
 # $(call runMapAnnots,swissprot,SP)
 define runMapAnnots
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
-	    input/gencode.v43.pc.psl \
+	    ${gencodePcPsl} \
 	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -134,7 +150,7 @@ uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP testUniprotAnnot
 
 # $(call runUniprotAnnotsToDecorators,swissprot,SP)
 define runUniprotAnnotsToDecorators
-	${uniprotAnnotsToDecorators} --nproc=${nproc} input/gencode.v43.pc.psl \
+	${uniprotAnnotsToDecorators} --nproc=${nproc} ${gencodePcPsl} \
 	    input/$(1).9606.tab input/$(1).9606.annots.tab \
 	    expected/testUniprotAnnotsMap$(2).psl expected/testUniprotAnnotsMap$(2).ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
@@ -154,8 +170,7 @@ testUniprotAnnotsToDecoColorHelp: mkout
 
 # error handling, use to not terminate on fail to open files
 testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
-	! ${uniprotAnnotsToDecorators} --nproc=${nproc} input/gencode.v43.pc.psl \
-	    input/swissprot.9606.tab input/swissport.9606.annots.tab \
+	! ${uniprotAnnotsToDecorators} --nproc=${nproc} ${gencodePcPsl} ${swissprotMeta} ${swissprotAnnots} \
 	    expected/testUniprotAnnotsMapSP.psl expected/does-not-exist.tsv \
             output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
 	grep -q 'Exception: Pool initialization failed' output/$@.err 
@@ -165,7 +180,7 @@ uniprotDecoratorsMergeTests: testUniprotDecoratorsMerge
 
 testUniprotDecoratorsMerge: mkout
 	${uniprotDecoratorsMerge} --outBed=output/$@.bed expected/testUniprotAnnotsToDecoratorsSP.bed expected/testUniprotAnnotsToDecoratorsTR.bed
-	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
+	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
 
 ###
@@ -174,19 +189,18 @@ xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUnipr
 	testXSpeciesAnnotsToDeco
 
 testXSpeciesRnaMap: mkout
-	${xspeciesTrans2TransMap} input/gencode.v43.pc.psl input/gencode.v43.pc.fa \
-		input/ponAbe-GCA_028885655.2.chains input/ponAbe-GCA_028885655.2.cat.psl input/ponAbe-GCA_028885655.2.cat.fa output/$@.psl
+	${xspeciesTrans2TransMap} ${gencodePcPsl} ${gencodePcFa} \
+		${ponAbeChains} ${ponAbeCat1Psl} ${ponAbeCat1RnaFa} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
-testXSpeciesGencodeCatFilter: mkout ${ponAbeCatBb}
-	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${ponAbeCatBb} output/$@.psl
+testXSpeciesGencodeCatFilter: mkout ${ponAbeCat1Bb}
+	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${ponAbeCat1Bb} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXSpeciesUniprotAnnotsMap: mkout
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
 	    --xspeciesTransPsl=expected/testXSpeciesGencodeCatFilter.psl \
-	    input/ponAbe-GCA_028885655.2.cat.psl \
-	    input/swissprot.9606.annots.tab expected/testUniprotProteinTranscriptMapSP.psl \
+	    ${ponAbeCat1Psl} ${swissprotAnnots} expected/testUniprotProteinTranscriptMapSP.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
@@ -196,8 +210,7 @@ testXSpeciesUniprotAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 testXSpeciesAnnotsToDeco: mkout
-	${uniprotAnnotsToDecorators} --nproc=${nproc} input/ponAbe-GCA_028885655.2.cat.psl \
-	    input/swissprot.9606.tab input/swissprot.9606.annots.tab \
+	${uniprotAnnotsToDecorators} --nproc=${nproc} ${ponAbeCat1Psl} ${swissprotMeta} ${swissprotAnnots} \
 	    expected/testXSpeciesUniprotAnnotsMap.psl expected/testXSpeciesUniprotAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -208,47 +221,65 @@ testXSpeciesAnnotsToDeco: mkout
 uniprotInfoTests: testUniprotInfoEnsTrans testUniprotInfoGeneName
 
 testUniprotInfoEnsTrans: mkout
-	${uniprotInfo} ensemblTransId input/swissprot.9606.tab output/$@.tsv
+	${uniprotInfo} ensemblTransId ${swissprotMeta} output/$@.tsv
 	diff expected/$@.tsv output/$@.tsv
 
 testUniprotInfoGeneName:
-	${uniprotInfo} geneName input/swissprot.9606.tab output/$@.tsv
+	${uniprotInfo} geneName ${swissprotMeta} output/$@.tsv
 	diff expected/$@.tsv output/$@.tsv
 
 ####
-# $(call runUpAlignments,blat)
-define runIpAlignments
-	rm -rf output/$@.psl output/$@.work
-	${interproProteinTranscriptAlign} --algo=${1} GENCODE ${gencodeMeta} input/gencode.v43.pc.fa input/gencode.v43.proteins.fa output/$@.psl output/$@.work
-	diff expected/$@.psl output/$@.psl
-	pslCheck -verbose=0 output/$@.psl
-endef
-
 # serial due to parasol bug
 interproAlignTests:
 	${MAKE} testInterproBlatAlign
+	${MAKE} testInterproCat1BlatAlign
 
 testInterproBlatAlign: mkout
-	$(call runIpAlignments,blat)
+	rm -rf output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} GENCODE ${gencodeMeta} ${gencodePcFa} ${gencodeProtFa} output/$@.psl output/$@.work
+	diff expected/$@.psl output/$@.psl
+	pslCheck -verbose=0 output/$@.psl
 
-interproTests: testInterproAnnotsMap testInterproAnnotsToDeco
+testInterproCat1BlatAlign: mkout
+	rm -rf output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} CAT1 ${ponAbeCat1Meta} ${ponAbeCat1RnaFa} ${ponAbeCat1ProtFa} output/$@.psl output/$@.work
+	diff expected/$@.psl output/$@.psl
+	pslCheck -verbose=0 output/$@.psl
+
+interproTests: testInterproAnnotsMap testInterproAnnotsToDeco \
+	testInterproCat1AnnotsMap testInterproCat1AnnotsToDeco
 
 testInterproAnnotsMap: mkout
-	${interproAnnotsMap} \
-	    input/gencode.v43.pc.psl \
-	    input/gencode.v43.interproscan.tsv expected/testInterproBlatAlign.psl \
+	${interproAnnotsMap} ${gencodePcPsl} \
+	    ${gencodeInterproTsv} expected/testInterproBlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	pslCheck -verbose=0 output/$@.psl
 
 testInterproAnnotsToDeco: mkout
-	${interproAnnotsToDecorators} --nproc=${nproc} input/gencode.v43.interproscan.tsv \
+	${interproAnnotsToDecorators} --nproc=${nproc} ${gencodeInterproTsv} \
 	    expected/testInterproAnnotsMap.psl expected/testInterproAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
-	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${chromSizes} output/$@.bb
+	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
+
+testInterproCat1AnnotsMap: mkout
+	${interproAnnotsMap} ${ponAbeCat1Psl} \
+	    ${ponAbeCat1InterproTsv} expected/testInterproCat1BlatAlign.psl \
+            output/$@.psl output/$@.ref.tsv
+	diff expected/$@.psl output/$@.psl
+	diff expected/$@.ref.tsv output/$@.ref.tsv
+	pslCheck -verbose=0 output/$@.psl
+
+testInterproCat1AnnotsToDeco: mkout
+	${interproAnnotsToDecorators} --nproc=${nproc} ${ponAbeCat1InterproTsv} \
+	    expected/testInterproCat1AnnotsMap.psl expected/testInterproCat1AnnotsMap.ref.tsv \
+            output/$@.bed --featTypesTsv=output/$@.types.tsv
+	diff expected/$@.bed output/$@.bed
+	diff expected/$@.types.tsv output/$@.types.tsv
+	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${ponAbeChromSizes} output/$@.bb
 
 ##
 # Gene tracks for hub
@@ -259,19 +290,19 @@ gencodeGeneNames = output/gencode.v43.genenames
 ${gencodeBb}: ${gencodeGp} ${bigGenePredAs} mkout
 	tawk '{print $$4,$$3,$$1}' ${gencodeMeta} > ${gencodeGeneNames}
 	genePredToBigGenePred -geneNames=${gencodeGeneNames} $< /dev/stdout | sort -k1,1 -k2,2n > ${gencodeBGpIn}
-	bedToBigBed -type=bed12 -tab -as=${bigGenePredAs} ${gencodeBGpIn} ${chromSizes} $@
+	bedToBigBed -type=bed12 -tab -as=${bigGenePredAs} ${gencodeBGpIn} ${hg38ChromSizes} $@
 
 ${bigGenePredAs}: mkout
 	wget -O $@ -nv https://genome.ucsc.edu/goldenpath/help/examples/bigGenePred.as
 
-${ponAbeCatBb}: input/ponAbe-GCA_028885655.2.cat.bigCat input/bigCat.as mkout
-	bedToBigBed -tab -type=bed12+ -as=input/bigCat.as -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
+${ponAbeCat1Bb}: ${ponAbeCat1BigCat} ${bigCatAs} mkout
+	bedToBigBed -tab -type=bed12+ -as=${bigCatAs} -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
 	mv -f $@.tmp $@
 
 ##
 # hub
 ##
-hub: ${gencodeBrowserDirDone} ${testHubFilesOutput} ${gencodeBb} ${ponAbeCatBb}
+hub: ${gencodeBrowserDirDone} ${testHubFilesOutput} ${gencodeBb} ${ponAbeCat1Bb}
 	hubCheck $$(pwd)/output/hub.txt
 
 ${gencodeBrowserDirDone}: ${gencodeGp}
