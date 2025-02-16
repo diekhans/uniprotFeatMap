@@ -21,7 +21,6 @@ cp output/*.{psl,tsv,bed} expected/
 tawk '$2~/^ZNF.*/{print $4}' input/gencode.v43.metadata.tsv > gencode.ids
 ./bin/getOrthoData gencode.ids tmp
 
-# grap interproscan
 
 ** interproscan test cases
 use latest version of interproscan to match lookup service, don't install from

@@ -31,11 +31,16 @@ src_asmname=hg38
 src_genome=/hive/data/genomes/hg38/hg38.2bit
 src_chromSizes=/hive/data/genomes/hg38/chrom.sizes
 
+src_interpro_tsv=../../../kznf-primate-domains/results/${target_asmname}/transmap.znf.interpro.tsv
+
 src_target_chains=${xspecies_rootdir}/${target_asmname}/${src_asmname}-${target_asmname}.chain.gz
 
 out_bigcat=${outdir}/${target_asmname}.cat.bigCat
+out_metatsv=${outdir}/${target_asmname}.cat.meta.tsv
 out_catfa=${outdir}/${target_asmname}.cat.fa
+out_catgp=${outdir}/${target_asmname}.cat.gp
 out_catpsl=${outdir}/${target_asmname}.cat.psl
+out_interpro_tsv=${outdir}/${target_asmname}.interpro.tsv
 out_scr_target_chains=${outdir}/${target_asmname}.chains
 
 mkdir -p ${outdir}
@@ -43,16 +48,29 @@ mkdir -p ${outdir}
 target_chromsizes_tmp=${outdir}/target.chrom.sizes.tmp
 twoBitInfo ${target_genome} ${target_chromsizes_tmp}
 
-
-# sourceTranscript  22
+# sourceTranscript is column 22
 bigBedToBed ${target_catbb} /dev/stdout | \
-    selectById -tsv -novers 1 ${transacctsv} 22 /dev/stdin > ${out_bigcat}
+    selectById -novers 1 ${transacctsv} 22 /dev/stdin > ${out_bigcat}
+
+cat_trans_names_tmp=${outdir}/${target_asmname}.trans_names.tmp
+cut -f 4 ${out_bigcat} > ${cat_trans_names_tmp}
+
+bigBedToBed -tsv ${target_catbb} /dev/stdout | \
+    selectById -tsv 1 ${cat_trans_names_tmp} 4 /dev/stdin > ${out_metatsv}
+
+bigGenePredToGenePred ${target_catbb} /dev/stdout | \
+    selectById 1 ${cat_trans_names_tmp} 1 /dev/stdin > ${out_catgp}
 
 twoBitToFa -bed=<(cut -f 1-12 ${out_bigcat}) ${target_genome} ${out_catfa}
 
-bedToPsl -tabs ${target_chromsizes_tmp} ${out_bigcat} /dev/stdout | \
+genePredToPsl ${target_chromsizes_tmp} ${out_catgp} /dev/stdout | \
     pslRecalcMatch /dev/stdin ${target_genome} ${out_catfa} ${out_catpsl}
 
 overlapSelect -selectFmt=bed -inFmt=chain ${out_bigcat} -inFmt=chain ${src_target_chains} ${out_scr_target_chains}
+
+# interpro
+protids_tmp=${outdir}/prot_ids.tmp
+awk '{print $1 "_prot"}' ${cat_trans_names_tmp} >${protids_tmp}
+selectById 1 ${protids_tmp} 1 ${src_interpro_tsv} >${out_interpro_tsv}
 
 rm -f ${outdir}/*.tmp

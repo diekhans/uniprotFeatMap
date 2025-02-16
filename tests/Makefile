@@ -10,7 +10,7 @@ endif
 
 chromSizes = input/hg38.sizes
 
-testHubFiles = empty.html genomes.txt hub.txt hg38.trackDb.txt GCA_028885655.2.trackDb.txt
+testHubFiles = empty.html genomes.txt hub.txt hg38.trackDb.txt ponAbe-GCA_028885655.2.trackDb.txt
 testHubFilesOutput = ${testHubFiles:%=output/%}
 
 testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/tests/output/hub.txt
@@ -175,7 +175,7 @@ xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUnipr
 
 testXSpeciesRnaMap: mkout
 	${xspeciesTrans2TransMap} input/gencode.v43.pc.psl input/gencode.v43.pc.fa \
-		input/GCA_028885655.2.chains input/GCA_028885655.2.cat.psl input/GCA_028885655.2.cat.fa output/$@.psl
+		input/ponAbe-GCA_028885655.2.chains input/ponAbe-GCA_028885655.2.cat.psl input/ponAbe-GCA_028885655.2.cat.fa output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXSpeciesGencodeCatFilter: mkout ${ponAbeCatBb}
@@ -185,7 +185,7 @@ testXSpeciesGencodeCatFilter: mkout ${ponAbeCatBb}
 testXSpeciesUniprotAnnotsMap: mkout
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
 	    --xspeciesTransPsl=expected/testXSpeciesGencodeCatFilter.psl \
-	    input/GCA_028885655.2.cat.psl \
+	    input/ponAbe-GCA_028885655.2.cat.psl \
 	    input/swissprot.9606.annots.tab expected/testUniprotProteinTranscriptMapSP.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -196,7 +196,7 @@ testXSpeciesUniprotAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 testXSpeciesAnnotsToDeco: mkout
-	${uniprotAnnotsToDecorators} --nproc=${nproc} input/GCA_028885655.2.cat.psl \
+	${uniprotAnnotsToDecorators} --nproc=${nproc} input/ponAbe-GCA_028885655.2.cat.psl \
 	    input/swissprot.9606.tab input/swissprot.9606.annots.tab \
 	    expected/testXSpeciesUniprotAnnotsMap.psl expected/testXSpeciesUniprotAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
@@ -264,7 +264,7 @@ ${gencodeBb}: ${gencodeGp} ${bigGenePredAs} mkout
 ${bigGenePredAs}: mkout
 	wget -O $@ -nv https://genome.ucsc.edu/goldenpath/help/examples/bigGenePred.as
 
-${ponAbeCatBb}: input/GCA_028885655.2.cat.bigCat input/bigCat.as mkout
+${ponAbeCatBb}: input/ponAbe-GCA_028885655.2.cat.bigCat input/bigCat.as mkout
 	bedToBigBed -tab -type=bed12+ -as=input/bigCat.as -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
 	mv -f $@.tmp $@
 

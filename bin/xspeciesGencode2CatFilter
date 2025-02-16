@@ -39,7 +39,7 @@ def loadAlnsByTarget(srcTargetFiltPsl):
     return alnsByTarget
 
 def isCatSourceMatch(targetAln, catSources):
-    return dropVersion(targetAln.qName) == catSources[targetAln.tName]
+    return dropVersion(targetAln.qName) == catSources.get(targetAln.tName)
 
 def getMatchNonMatchAlns(targetAlns, catSources):
     matchAlns = []
