@@ -18,13 +18,14 @@ outdir="$2"
 
 target_asmname=ponAbe-GCA_028885655.2
 target_asmacc=GCA_028885655.2
+target_asmscc_parts=GCA/028/885/655
 
 xspecies_rootdir=/hive/users/markd/gencode/projs/cls/cls-t2t-primate/hg38/data/assemblies
 xspecies_url=https://public.gi.ucsc.edu/~pnhebbar/t2t_autosomes/assemblyHub
+xspecies_genark_url=https://hgdownload.soe.ucsc.edu/hubs/${target_asmscc_parts}/${target_asmacc}
 
 target_catbb=${xspecies_url}/${target_asmacc}/tm.bb
-target_genome=${xspecies_url}/${target_asmacc}/${target_asmacc}.2bit
-target_chromsizes=${xspecies_url}/${target_asmacc}/chrom.sizes
+target_genome=${xspecies_genark_url}/${target_asmacc}.2bit
 
 src_asmname=hg38
 src_genome=/hive/data/genomes/hg38/hg38.2bit
@@ -32,16 +33,16 @@ src_chromSizes=/hive/data/genomes/hg38/chrom.sizes
 
 src_target_chains=${xspecies_rootdir}/${target_asmname}/${src_asmname}-${target_asmname}.chain.gz
 
-out_bigcat=${outdir}/${target_asmacc}.cat.bigCat
-out_catfa=${outdir}/${target_asmacc}.cat.fa
-out_catpsl=${outdir}/${target_asmacc}.cat.psl
-out_scr_target_chains=${outdir}/${target_asmacc}.chains
+out_bigcat=${outdir}/${target_asmname}.cat.bigCat
+out_catfa=${outdir}/${target_asmname}.cat.fa
+out_catpsl=${outdir}/${target_asmname}.cat.psl
+out_scr_target_chains=${outdir}/${target_asmname}.chains
 
 mkdir -p ${outdir}
 
 target_chromsizes_tmp=${outdir}/target.chrom.sizes.tmp
-wget -nv -O ${target_chromsizes_tmp}  ${target_chromsizes}
- 
+twoBitInfo ${target_genome} ${target_chromsizes_tmp}
+
 
 # sourceTranscript  22
 bigBedToBed ${target_catbb} /dev/stdout | \
