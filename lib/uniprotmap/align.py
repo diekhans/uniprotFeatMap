@@ -54,7 +54,7 @@ def _runBatch(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir):
     "alignCmdPre is list of program and initial arguments"
     fileOps.ensureDir(alignBatchDir)
     jobFile = _makeJobFile(alignCmdPre, queriesDir, targetDbFa, alignDir, alignBatchDir)
-    para = Para(paraHost=conf.paraHost, jobFile=jobFile, paraDir=alignBatchDir, retries=2)
+    para = Para(paraHost=conf.paraHost, jobFile=jobFile, paraDir=alignBatchDir)
     para.clearSickNodes()
     para.freeBatch()
     try:

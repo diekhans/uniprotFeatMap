@@ -5,6 +5,12 @@
 abstraction causes issues, for instance uniprotAnnotsToDecorators just needs
 the PSL, but for xspecies, they are not from one of the data sets.
 
+* protein/rna alignmennts could group by gene?
+speed up by not doing all against all
+query and target genes group should use both id and symbol
+but what about things like readthroughs
+could use genomic locations of RNAs to make batches
+
 * add a common exception class
 
 * uniprot.py  diff between id, acc, main isoform acc|id not clear
