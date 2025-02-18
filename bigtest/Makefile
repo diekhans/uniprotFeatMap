@@ -3,9 +3,14 @@ include ${root}/defs.mk
 include ${root}/xspecies.defs.mk
 
 
-# used nprocs= to change number of processes
+# used nprocs= or xspecies_nprocs to change number of processes uses in multiprocessing programs
+# Don't use too high a number for comparive or it will drag /hive down, even
+# slow down these jobs
 ifeq (${nprocs},)
-  nprocs = 64
+  nprocs = 16
+endif
+ifeq (${xspecies_nprocs},)
+  xspecies_nprocs = 4
 endif
 
 MAKEFLAGS += -rR
@@ -136,10 +141,10 @@ xspeciesMap: ${asm_names:%=%_xspeciesMap}
 
 xspeciesMapAsm: ${xspecies_mapannot_psl} ${src_xspecies_rna_aln} ${xspecies_decorators_bed}
 
-${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} CAT1 ${xspecies_cat_psl} \
+${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} ${xspecies_cat_psl} \
 	${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv}
-	${uniprotAnnotsToDecorators} --nprocs=${nprocs} --dataset=SwissProt \
-	   ${xspecies_mapannot_psl} ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_ref_tsv} $@.tmp
+	${uniprotAnnotsToDecorators} --nprocs=${xspecies_nprocs} --dataset=SwissProt \
+	    ${xspecies_cat_psl} ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} $@.tmp
 	mv -f $@.tmp $@
 
 ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv} &: ${uniprotAnnot} ${protTransPairedAln} ${xspecies_cat_psl} ${src_xspecies_rna_aln}

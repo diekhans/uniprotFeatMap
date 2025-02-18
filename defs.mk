@@ -34,7 +34,7 @@ dataDir = ${root}/data
 
 # GENCODE set
 gencodeVer = v47
-gencodePre = ${root}/data/gencode.${gencodeVer}
+gencodePre = ${dataDir}/gencode.${gencodeVer}
 gencodeGp = ${gencodePre}.pc.gp 
 gencodePsl = ${gencodePre}.pc.psl
 gencodeMeta = ${gencodePre}.tsv

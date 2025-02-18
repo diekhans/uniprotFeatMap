@@ -184,7 +184,7 @@ def reportUniproiNotAligned(geneSet, uniprotMeta, alignedUniprotIds, logFh):
     else:
         for transRec in transRecs:
             problemLog(logFh, "uniprot_not_aligned", uniprotId=uniprotMeta.acc,
-                       geneId=transRec.geneId, transcriptId=transRec.transId, transcriptType=transRec.transType)
+                       geneId=transRec.gene.geneId, transcriptId=transRec.transId, transcriptType=transRec.transType)
 
 
 def reportUnalignedUniprot(geneSet, uniprotMeta, alignedUniprotIds, logFh):

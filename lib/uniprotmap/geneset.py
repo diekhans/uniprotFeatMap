@@ -115,6 +115,9 @@ class GeneSetMetadata:
         except Exception as ex:
             raise GeneSetError(f"can't find metadata for transcript accession `{transAcc}'") from ex
 
+    def haveTranscriptAcc(self, transAcc):
+        return transAcc in self.byTransAcc
+
     def transcriptIdIter(self):
         "iterator for transcript ids"
         return self.byTransId.keys()

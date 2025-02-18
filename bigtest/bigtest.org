@@ -6,7 +6,7 @@ https://hgwdev.gi.ucsc.edu/~markd/kznf/deco-hub/hub.txt
 cd data
 
 # copy because they change
-cp -pf uniprot/tab/*.9606.* . 
+cp -pf /hive/data/outside/otto/uniprot/tab/*.9606.* . 
 
 # GENCODE must get our own sequences, since transcripts rna fasta doesn't include alts
 cp /hive/data/genomes/hg38/bed/gencodeV47/hgcImport/data/gencode.gp gencode.v47.gp
@@ -21,9 +21,8 @@ getRnaPred -cdsUpper -genomeSeqs=/hive/data/genomes/hg38/hg38.2bit no ./gencode.
 
 
 * cross-species
-Need chains from hg38 to target species.  Have them already for cls, so
-just link
-cd /hive/users/markd/gencode/projs/cls/cls-t2t-primate/hg38/data/assemblies
+Need chains from hg38 to target species.  Have them already for cls, so just link
+pushd /hive/users/markd/gencode/projs/cls/cls-t2t-primate/hg38/data/assemblies
 
 find . -name '*.chain.gz' -o -name '*.2bit' -o -name '*.sizes' | cpio -pduml /hive/users/markd/kznf/projs/bed-decorators/uniprotFeatMap/data/t2t-primates/
 
