@@ -1,5 +1,5 @@
 
-* alignment of protein to transcripts
+* Alignment of protein to transcripts
 
 Converting protein to transcript alignments to CDS to transcript alignment, by
 multiplying the AA coordinates by three handles spliced codons once mapped to
@@ -20,9 +20,29 @@ proteins.  When aligning only to the canonical transcript, the difference
 were negligible. Could probably avoid a lot of the BLAT alignments by
 check if the transcript version was the same and just construct it.
 
+An optimization would be to avoid alignments to the canonical mRNA
+when there is an exact match.
 
-* interproscan
-Do alignments with BLAT in the same manner as UniProt protein to transcript alignment
-to reuse code.  This could be optimized in the future to manually do paired alignments,
-interproscan should be exact matches.  This approach would be good to UniProt too, which
-in most cases they match.
+* Cross-species projection of UniProt/SwissProt annotations
+Native TrEMBL annotations at available for many species and these can be
+mapped to the genome using this pipeline. SwissProt annotations, when
+available, are more extensive and can be mapped using cross-species genomic
+alignments
+
+* InterProScan
+InterProScan is run directly on proteins generated from the annotations, thus
+an alignment step is unnecessary.
+
+* Cross-species comparison
+Projection (TransMap) alignments of SwissProt from a reference genome to the
+target genome can find deleted and modified domains; however the do not
+identify novel domains.  Comparison with InterProScan may fine novel insertions.
+
+Comparison is done by:
+ - Associate each target mRNAs annotation with the TransMap alignment of the source genome  with the closest similarity.  A given source annotation 
+ - Compare domain annotation with source and target annotations, reporting
+   changes
+ - Mapped SwissProt annotations are more comprehensive than native TrEMBL or
+   InterProScan
+   
+   
