@@ -19,12 +19,11 @@ def parseArgs():
     return cmdOps.parse(parser)
 
 
-def xspeciesCompare(opts, srcTargetMRnaPsl):
+#def xspeciesCompare(opts, srcTargetMRnaPsl):
 
 def main():
     opts, args = parseArgs()
-    cmdOps.ErrorHandler() {
+    with cmdOps.ErrorHandler():
         xspeciesCompare()
-    }
 
 main()

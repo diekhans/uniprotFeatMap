@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
-import os.path as osp
-import graphviz as gv  # pip install graphviz
+import graphlib
 
 
 def _parse_args():
@@ -14,8 +13,7 @@ def _parse_args():
     parser.add_argument("outfile",
                         help="output file, extension is .pdf or .png, which determines type")
     args = parser.parse_args()
-    if _get_output_format(args.outfile) not in gv.FORMATS:
-        parser.error("output file must end in one of the format extensions: {} ".format(", ".join(gv.FORMATS)))
+    graphlib.check_output_file_type(parser, args.outfile)
     return args
 
 ###
@@ -52,88 +50,6 @@ data_uniprotAnnotsTsv = 'uniprotAnnots.tsv'
 data_xspeciesTransPsl = 'xspeciesTrans.psl'
 
 
-###
-# graphviz
-###
-class GraphBuilder:
-    def __init__(self, title, fmt, size=None):
-        fontname = "helvetica"
-        graph_attr = {"fontname": fontname}
-        if size is not None:
-            graph_attr["size"] = size
-        node_attr = {"fontname": fontname}
-        edge_attr = {"fontname": fontname}
-        self.graph = gv.Digraph(
-            title,
-            format=fmt,
-            graph_attr=graph_attr,
-            node_attr=node_attr,
-            edge_attr=edge_attr)
-        self.data_files = set()
-
-    def ensure_optional_data_file(self, name):
-        "create an data file node, if it does not already exist"
-        if name not in self.data_files:
-            self.graph.node(name, label=name,
-                            shape="cylinder",
-                            style="dashed,filled",
-                            fillcolor="yellow",
-                            fontcolor="black")
-            self.data_files.add(name)
-
-    def ensure_data_file(self, name):
-        "create an data file node, if it does not already exist"
-        if name not in self.data_files:
-            self.graph.node(name, label=name,
-                            shape="cylinder",
-                            style="filled",
-                            fillcolor="cyan",
-                            fontcolor="black")
-            self.data_files.add(name)
-
-    def ensure_data_files(self, names):
-        for name in names:
-            self.ensure_data_file(name)
-
-    def add_task(self, name, inputs=(), outputs=()):
-        "create a task node, inputs and outputs are other node names"
-        label = name.replace(" ", "\\n")
-        self.graph.node(name, label=label,
-                        shape="box",
-                        style="filled",
-                        fillcolor="maroon",
-                        fontcolor="white")
-        for n in inputs:
-            self.ensure_data_file(n)
-            self.graph.edge(n, name)
-        for n in outputs:
-            self.ensure_data_file(n)
-            self.graph.edge(name, n)
-
-    def add_program(self, name, inputs=(), outputs=()):
-        self.graph.node(name,
-                        label=name,
-                        shape="trapezium",
-                        style="filled",
-                        fillcolor="darkgreen",
-                        fontcolor="white")
-        for n in inputs:
-            self.ensure_data_file(n)
-            self.graph.edge(n, name)
-        for n in outputs:
-            self.ensure_data_file(n)
-            self.graph.edge(name, n)
-
-    def cluster(self, name):
-        invis = {"style": "invis"}
-        return self.graph.subgraph(name="cluster_" + name, graph_attr=invis)
-
-    def group(self, name):
-        return self.graph.subgraph(name="relevant")
-
-    def render(self, out_base, keep=False):
-        self.graph.render(out_base, cleanup=not keep)
-
 ##
 # processing definitions
 ##
@@ -159,7 +75,6 @@ def _task_uniprot_annots_to_decorators(graph):
                     data_annotGenomePsl, data_annotTransRefTsv),
                    (data_annotDecoratorBed,))
 
-
 def _construct_graph(graph):
     _task_proten_transcript_align(graph)
     _task_protein_transcript_map(graph)
@@ -170,30 +85,10 @@ def _construct_graph(graph):
 # main functions
 ##
 
-def _build_graph(fmt, size=None):
-    fontname = "helvetica"
-    graph_attr = {"fontname": fontname}
-    if size is not None:
-        graph_attr["size"] = size
-    node_attr = {"fontname": fontname}
-    edge_attr = {"fontname": fontname}
-    graph = gv.Digraph(
-        "uniprotFeatMap flow",
-        format=fmt,
-        graph_attr=graph_attr,
-        node_attr=node_attr,
-        edge_attr=edge_attr)
-    _construct_graph(graph)
-    return graph
-
-def _get_output_format(outfile):
-    return osp.splitext(outfile)[1][1:]
-
 def mkFlowGraph(size, keep, outfile):
-    fmt = _get_output_format(outfile)
-    graph = GraphBuilder("uniprotFeatMap", fmt, size)
+    graph = graphlib.GraphBuilder("uniprotFeatMap", outfile, size)
     _construct_graph(graph)
-    graph.render(osp.splitext(outfile)[0], keep)
+    graph.render(keep)
 
 def _main():
     args = _parse_args()
