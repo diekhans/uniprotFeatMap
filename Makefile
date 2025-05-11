@@ -1,7 +1,7 @@
 root = .
 include ${root}/defs.mk
 
-pyprogs = $(shell file -F $$'\t' bin/* | awk '/Python script/{print $$1}')
+pyprogs = $(shell file -F $$'\t' bin/* doc/bin/* | awk '/Python script/{print $$1}')
 
 all:  lint
 

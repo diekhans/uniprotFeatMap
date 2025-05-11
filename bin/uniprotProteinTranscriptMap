@@ -42,8 +42,8 @@ def parseArgs():
                         help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("protCanonTransPsl",
                         help="protein to paired canonical transcript alignment PSL (input)")
-    parser.add_argument("cdsTransPsl",
-                        help="""filtered alignments, in codon coordinates (output)""")
+    parser.add_argument("cdsTransPairPsl",
+                        help="""alignments of protein's CDS to paired transcript, in CDS codon coordinates (output)""")
     parser.add_argument("problemLogTsv",
                         help="""Log file of issues that happened (output)""")
     return parser.parse_args()
@@ -226,7 +226,7 @@ def report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAli
 
 def proteinTranscriptAlign(geneSetName, geneSetMetadata, transGenomePsl, transGenomeGp,
                            uniprotMetaTsv, protCanonTransPslFile,
-                           cdsTransPslFile, problemLogTsv, interPrefix):
+                           cdsTransPairPslFile, problemLogTsv, interPrefix):
     geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp)
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
@@ -236,12 +236,12 @@ def proteinTranscriptAlign(geneSetName, geneSetMetadata, transGenomePsl, transGe
 
     report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv)
 
-    writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, cdsTransPslFile)
+    writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, cdsTransPairPslFile)
 
 def main(opts):
     proteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.transGenomePsl, opts.transGenomeGp,
                            opts.uniprotMetaTsv, opts.protCanonTransPsl,
-                           opts.cdsTransPsl, opts.problemLogTsv,
+                           opts.cdsTransPairPsl, opts.problemLogTsv,
                            opts.interPrefix)
 
 main(parseArgs())

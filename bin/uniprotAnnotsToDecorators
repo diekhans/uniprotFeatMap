@@ -69,7 +69,7 @@ def parseArgs():
                         be the target species genome.""")
     parser.add_argument("annotTransRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
-    parser.add_argument("annotDecoratorBedFile",
+    parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
     profiler = Profile(parser)
     opts = parser.parse_args()
@@ -232,7 +232,7 @@ def uniprotAnnotsToDecorators(transGenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, 
 def main(opts):
     uniprotAnnotsToDecorators(opts.transGenomePsl, opts.uniprotMetaTsv, opts.uniprotAnnotsTsv,
                               opts.annotGenomePsl, opts.annotTransRefTsv,
-                              opts.annotDecoratorBedFile, opts.dataset, opts.nprocs, opts.batchSize,
+                              opts.annotDecoratorBed, opts.dataset, opts.nprocs, opts.batchSize,
                               opts.featTypesTsv)
 
 if __name__ == '__main__':

@@ -35,7 +35,7 @@ def parseArgs():
                         be the target species genome.""")
     parser.add_argument("annotTransRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
-    parser.add_argument("annotDecoratorBedFile",
+    parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
     profiler = Profile(parser)
     opts = parser.parse_args()
@@ -116,7 +116,7 @@ def interproAnnotsToDecorators(interproAnnotTsv, annotGenomePslFile, annotTransR
 
 def main(opts):
     interproAnnotsToDecorators(opts.interproAnnotTsv, opts.annotGenomePsl, opts.annotTransRefTsv,
-                               opts.annotDecoratorBedFile, opts.nprocs, opts.batchSize,
+                               opts.annotDecoratorBed, opts.nprocs, opts.batchSize,
                                opts.featTypesTsv)
 
 if __name__ == '__main__':
