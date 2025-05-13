@@ -6,7 +6,7 @@ import argparse
 import logging
 from collections import defaultdict
 import pipettor
-from pycbio.sys import fileOps, loggingOps
+from pycbio.sys import fileOps, cmdOps, loggingOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
@@ -42,6 +42,8 @@ def parseArgs():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--xspeciesTransPsl",
                         help="""PSL alignments of transcripts in the source genome to transcripts in a target genome for cross-species mapping of UniProt features.""")
+    parser.add_argument("--annotTransPsl",
+                        help="""PSL alignments of UniProt annotations to transcripts, with protein in codon coordinates.""")
     parser.add_argument("--interPrefix",
                         help="""Save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
     parser.add_argument("transGenomePsl",
@@ -57,10 +59,10 @@ def parseArgs():
     parser.add_argument("problemLogTsv",
                         help="""Log file of issues that happened (output)""")
     loggingOps.addCmdOptions(parser)
-    opts = parser.parse_args()
+    opts, args = cmdOps.parse(parser)
     loggingOps.setupFromCmd(opts)
     pipettor.setDefaultLogger(logging.getLogger())
-    return opts
+    return opts, args
 
 class OutOfSyncError(Exception):
     "error when UniProt and mapped files are out-of-sycn "
@@ -206,40 +208,44 @@ def writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter
         for uniprotAcc, uniprotA2GMapInfos in sorted(splitByUniprotAcc(transA2GMapInfos).items(), key=lambda v: v[0]):
             writeTransRefs(uniprotAnnotTbl, transIdChrom[0], uniprotA2GMapInfos, xspeciesTransMapTbl, refWriter)
 
-def mapAnnots(uniprotAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
-              annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
-    annotGenomeMapInfoTsv = TmpOrSaveFile(interPrefix, "annotGenome.mapinfo.tsv")
-    xspeciesTransMapInfoTsv = None if xspeciesTransPsl is None else TmpOrSaveFile(interPrefix, "xspeciesTrans.mapinfo.tsv")
+def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
+              annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl=None):
+    annotGenomeMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "annotGenome.mapinfo.tsv")
 
-    pslMapAnnots(annotProtPsl, cdsTransPairedPsl, transGenomePsl,
-                 annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv,
-                 annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix)
+    xspeciesTransMapInfoTsv = None
+    if xspeciesTransPsl is not None:
+        xspeciesTransMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "xspeciesTrans.mapinfo.tsv")
+
+    pslMapAnnots(annotProtPsl, cdsTransPairedPsl, transGenomePsl, annotGenomeMapInfoTsv,
+                 annotGenomePslFh, annotTransPsl=opts.annotTransPsl, interPrefix=opts.interPrefix,
+                 xspeciesTransPsl=xspeciesTransPsl, xspeciesTransMapInfoTsv=xspeciesTransMapInfoTsv)
 
     annotGenomeMapTbl = PslMapInfoTbl(annotGenomeMapInfoTsv)
-    xspeciesTransMapTbl = PslMapInfoTbl(xspeciesTransMapInfoTsv) if xspeciesTransMapInfoTsv is not None else None
+    xspeciesTransMapTbl = None
+    if xspeciesTransMapInfoTsv is not None:
+        xspeciesTransMapTbl = PslMapInfoTbl(xspeciesTransMapInfoTsv)
 
     with AnnotTransRefWriter(annotTransRefTsv) as refWriter:
         writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
     cleanTmpFiles(xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
 
-def uniprotAnnotsMap(transGenomePsl, uniprotAnnotsTsv, cdsTransPairedPsl,
-                     annotGenomePsl, annotTransRefTsv, problemLogTsv,
-                     xspeciesTransPsl, interPrefix):
+def uniprotAnnotsMap(opts, transGenomePsl, uniprotAnnotsTsv, cdsTransPairedPsl,
+                     annotGenomePsl, annotTransRefTsv, problemLogTsv):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
     protCdsSizes = getQuerySizes(cdsTransPairedPsl)
 
     with problemLogOpen(problemLogTsv) as logFh:
-        annotProtPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh)
+        annotProtPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, opts.interPrefix, logFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
-        mapAnnots(uniprotAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
-                  annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix)
+        mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, cdsTransPairedPsl, transGenomePsl,
+                  annotGenomePslFh, annotTransRefTsv, opts.xspeciesTransPsl)
 
     cleanTmpFiles(annotProtPsl)
 
-def main(opts):
-    uniprotAnnotsMap(opts.transGenomePsl, opts.uniprotAnnotsTsv, opts.cdsTransPairedPsl,
-                     opts.annotGenomePsl, opts.annotTransRefTsv, opts.problemLogTsv,
-                     opts.xspeciesTransPsl, opts.interPrefix)
+def main():
+    opts, args = parseArgs()
+    uniprotAnnotsMap(opts, args.transGenomePsl, args.uniprotAnnotsTsv, args.cdsTransPairedPsl,
+                     args.annotGenomePsl, args.annotTransRefTsv, args.problemLogTsv)
 
-main(parseArgs())
+main()

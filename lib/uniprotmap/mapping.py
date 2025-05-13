@@ -7,11 +7,13 @@ import pipettor
 from pycbio.tsv import TsvReader, strOrNoneType, intOrNoneType
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
-def pslMapMkCmd(inPsl, mapPsl, outPsl, *, swapMap=False, mapInfo=None,
+def pslMapMkCmd(inPsl, mapPsl, outPsl, *, swapMap=False, outPslCopy=None, mapInfo=None,
                 interPrefix=None, interMid=None, chainMapFile=False):
     """Build pslMap command, possibly saving intermediate files for debugging.
     Intermediate files are save if interPrefix is not None, and include
     interMid.  interMid is ignored if interPrefix is None.
+    The outPslCopy is used to save output when main output is going to
+    stdout.
     """
     assert (interPrefix is None) or (interMid is not None)
     inter = None if interPrefix is None else f"{interPrefix}{interMid}"
@@ -26,11 +28,12 @@ def pslMapMkCmd(inPsl, mapPsl, outPsl, *, swapMap=False, mapInfo=None,
         cmd1.append(f"-mapInfo={mapInfo}")
     cmd1.extend((inPsl, mapPsl, outPsl))
 
+    if outPslCopy is not None:
+        cmds.append(["tee", outPslCopy])
     if inter is not None:
         if mapInfo is None:
             cmd1.append(f"-mapInfo={inter}.mapInfo.tsv")
-        cmd2 = ["tee", f"{inter}.psl"]
-        cmds.append(cmd2)
+        cmds.append(["tee", f"{inter}.psl"])
     return cmds
 
 _mapInfoTypeMap = {
@@ -100,14 +103,14 @@ def createAnnotToProteinCdsPsl(annotId, annotStartOff, annotEndOff,
     return psl
 
 def pslMapAnnots(annotCanonPsl, cdsTransPairedPsl, transGenomePsl,
-                 annotGenomeMapInfoTsv, xspeciesTransMapInfoTsv,
-                 annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl, interPrefix):
+                 annotGenomeMapInfoTsv, annotGenomePslFh, *, annotTransPsl=None,
+                 interPrefix=None, xspeciesTransPsl=None, xspeciesTransMapInfoTsv=None):
     # all of these pslMaps are NA/NA -> NA/NA -> NA/NA
     cmds = []
 
     # annotation on canonical transcripts to all transcripts alignment to canonical
     cmds += pslMapMkCmd(annotCanonPsl, cdsTransPairedPsl, "/dev/stdout",
-                        interPrefix=interPrefix, interMid="annotTrans")
+                        outPslCopy=annotTransPsl, interPrefix=interPrefix, interMid="annotTrans")
     if xspeciesTransPsl is not None:
         # transcript to other species transcript mapping
         cmds += pslMapMkCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",

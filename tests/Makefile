@@ -128,6 +128,7 @@ uniprotAnnotsMapTests: testUniprotAnnotsMapSP testUniprotAnnotsMapTR
 # $(call runMapAnnots,swissprot,SP)
 define runMapAnnots
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
+	    --annotTransPsl=output/$@.annotsTrans.psl \
 	    ${gencodePcPsl} \
 	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
@@ -135,6 +136,8 @@ define runMapAnnots
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 	diff expected/$@.inter.annotTrans.psl output/$@.inter.annotTrans.psl
+	diff expected/$@.inter.annotTrans.psl output/$@.annotsTrans.psl
+	diff expected/$@.annotsTrans.psl output/$@.annotsTrans.psl
 	pslCheck -verbose=0 output/$@.psl
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 endef
@@ -199,6 +202,7 @@ testXSpeciesGencodeCatFilter: mkout ${ponAbeCat1Bb}
 
 testXSpeciesUniprotAnnotsMap: mkout
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
+	    --annotTransPsl=output/$@.annotsTrans.psl \
 	    --xspeciesTransPsl=expected/testXSpeciesGencodeCatFilter.psl \
 	    ${ponAbeCat1Psl} ${swissprotAnnots} expected/testUniprotProteinTranscriptMapSP.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
@@ -206,6 +210,8 @@ testXSpeciesUniprotAnnotsMap: mkout
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	diff expected/$@.problems.tsv output/$@.problems.tsv
 	diff expected/$@.inter.annotTrans.psl output/$@.inter.annotTrans.psl
+	diff expected/$@.inter.annotTrans.psl output/$@.annotsTrans.psl
+	diff expected/$@.annotsTrans.psl output/$@.annotsTrans.psl
 	pslCheck -verbose=0 output/$@.psl
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
@@ -251,10 +257,12 @@ interproTests: testInterproAnnotsMap testInterproAnnotsToDeco \
 
 testInterproAnnotsMap: mkout
 	${interproAnnotsMap} ${gencodePcPsl} \
+	    --annotTransPsl=output/$@.annotsTrans.psl \
 	    ${gencodeInterproTsv} expected/testInterproBlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
+	diff expected/$@.annotsTrans.psl output/$@.annotsTrans.psl
 	pslCheck -verbose=0 output/$@.psl
 
 testInterproAnnotsToDeco: mkout

@@ -1,17 +1,20 @@
 #!/usr/bin/env python3
 
-import os
+# import os
 import os.path as osp
 import sys
 import argparse
-import pipettor
-from pycbio.sys import fileOps, cmdOps
+# import pipettor
+from pycbio.sys import cmdOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap.mapping import pslMapMkCmd
 
 def parseArgs():
-    desc = """"""
+    desc = """Compare protein annotations between assemblies.  This find the
+    difference between a source reference genome and another target assembly.
+    This looks at both mapped annotations and annotations from other sources,
+    such as native UniProt and InterProScan.
+    """
 
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("srcTargetMRnaPsl",
@@ -19,7 +22,8 @@ def parseArgs():
     return cmdOps.parse(parser)
 
 
-#def xspeciesCompare(opts, srcTargetMRnaPsl):
+def xspeciesCompare(opts, srcTargetMRnaPsl):
+    pass
 
 def main():
     opts, args = parseArgs()

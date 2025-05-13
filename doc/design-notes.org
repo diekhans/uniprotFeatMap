@@ -38,11 +38,20 @@ Projection (TransMap) alignments of SwissProt from a reference genome to the
 target genome can find deleted and modified domains; however the do not
 identify novel domains.  Comparison with InterProScan may fine novel insertions.
 
-Comparison is done by:
- - Associate each target mRNAs annotation with the TransMap alignment of the source genome  with the closest similarity.  A given source annotation 
+** Comparison is done by:
+ - Associate each target mRNAs annotation with the TransMap alignment of the
+   source genome mRNAs with the closest similarity.  A given source annotation
  - Compare domain annotation with source and target annotations, reporting
    changes
  - Mapped SwissProt annotations are more comprehensive than native TrEMBL or
    InterProScan
    
-   
+** Details:
+*** src annotation to src RNA alignments
+- input from uniprotAnnotsMap
+    - annotTrans.swissprot.src.psl
+*** target annotation to RNA alignments
+- input from uniprotAnnotsMap native (TrEMBL) and InterProScan
+    - annotTrans.target.psl
+    - annotGenome.target.psl
+
