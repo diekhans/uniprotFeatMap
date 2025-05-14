@@ -24,9 +24,9 @@ annotation -> uniprotCanonical -> transcript -> genome
    * output: protCanonTransPsl
 1. `uniprotProteinTranscriptMap`: Project the canonical alignments to other transcript isoforms using the genomic coordinates.  This proved more accurate than doing protein alignments to other isoforms.  Output is in the combination of the canonical and projected transcript alignments, with  the protein convert to CDS coordinates.
    * input: gencodeMetaTsv, gencodeGp, gencodePsl, uniprotMetaTsv, protCanonTransPsl
-   * output: cdsTransPairedPsl, problemLogTsv
+   * output: protCdsTransPairedPsl, problemLogTsv
 1. `uniprotAnnotsMap`: Map Uniprot annotations to the genome via protein and transcript alignments.  The output will be a CDS to transcript (NA to NA) PSL alignments of annotations of all annotation types that are mapped.  They can be filtered later when building decorators.  This can also map to other assembly via way of transcript-transcript alignments.
-   * input: uniprotAnnotsTsv, cdsTransPairedPsl, transGenomePsl
+   * input: uniprotAnnotsTsv, protCdsTransPairedPsl, transGenomePsl
    * output: annotGenomePsl, annotTransRefTsv
 1. `uniprotAnnotsToDecorators`: Convert domain annotations alignments create by uniprotAnnotsMap to a decorator BED file in uniprotDecoration.as format.  Possibly filtering the results.
    * input: uniprotAnnotsTsv, annotGenomePsl, annotTransRefTsv

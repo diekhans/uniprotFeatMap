@@ -6,6 +6,8 @@ import graphlib
 def _parse_args():
     desc = "generate graph of data flow"
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--xspecies", action="store_true",
+                        help="cross-species mapping diagram")
     parser.add_argument("--size",
                         help="output size, in inches in the form x,y")
     parser.add_argument("--keep", action='store_true',
@@ -40,12 +42,13 @@ prog_blat = 'blat'
 data_uniprotMetaTsv = 'uniprotMeta.tsv'
 data_proteinFa = 'protein.fa'
 data_transFa = 'trans.fa'
+data_transGenomePsl = 'transGenome.psl'
+data_protCdsTransPairedPsl = 'cdsTransPaired.psl'
 data_protCanonTransPsl = 'protCanonTrans.psl'
 data_annotDecoratorBed = 'annotDecorator.bed'
 data_annotGenomePsl = 'annotGenome.psl'
 data_annotTransRefTsv = 'annotTransRef.tsv'
-data_cdsTransPairedPsl = 'cdsTransPaired.psl'
-data_transGenomePsl = 'transGenome.psl'
+data_annotTransPsl = 'annotTrans.psl'
 data_uniprotAnnotsTsv = 'uniprotAnnots.tsv'
 data_xspeciesTransPsl = 'xspeciesTrans.psl'
 
@@ -61,13 +64,17 @@ def _task_proten_transcript_align(graph):
 def _task_protein_transcript_map(graph):
     graph.add_task(prog_uniprotProteinTranscriptMap,
                    (data_uniprotMetaTsv, data_protCanonTransPsl),
-                   (data_cdsTransPairedPsl,))
+                   (data_protCdsTransPairedPsl,))
 
 def _task_uniprot_annots_map(graph):
-    graph.ensure_optional_data_file(data_xspeciesTransPsl)
     graph.add_task(prog_uniprotAnnotsMap,
-                   (data_transGenomePsl, data_uniprotAnnotsTsv, data_cdsTransPairedPsl, data_xspeciesTransPsl),
+                   (data_transGenomePsl, data_uniprotAnnotsTsv),
                    (data_annotGenomePsl, data_annotTransRefTsv))
+
+def _task_uniprot_annots_xspecies_map(graph):
+    graph.add_task(prog_uniprotAnnotsMap,
+                   (data_transGenomePsl, data_uniprotAnnotsTsv, data_protCdsTransPairedPsl, data_xspeciesTransPsl),
+                   (data_annotGenomePsl, data_annotTransRefTsv, data_annotTransPsl))
 
 def _task_uniprot_annots_to_decorators(graph):
     graph.add_task(prog_uniprotAnnotsToDecorators,
@@ -75,23 +82,26 @@ def _task_uniprot_annots_to_decorators(graph):
                     data_annotGenomePsl, data_annotTransRefTsv),
                    (data_annotDecoratorBed,))
 
-def _construct_graph(graph):
+def _construct_graph(graph, xspecies):
     _task_proten_transcript_align(graph)
     _task_protein_transcript_map(graph)
-    _task_uniprot_annots_map(graph)
-    _task_uniprot_annots_to_decorators(graph)
+    if xspecies:
+        _task_uniprot_annots_xspecies_map(graph)
+    else:
+        _task_uniprot_annots_map(graph)
+        _task_uniprot_annots_to_decorators(graph)
 
 ##
 # main functions
 ##
 
-def mkFlowGraph(size, keep, outfile):
+def mkFlowGraph(size, keep, xspecies, outfile):
     graph = graphlib.GraphBuilder("uniprotFeatMap", outfile, size)
-    _construct_graph(graph)
+    _construct_graph(graph, xspecies)
     graph.render(keep)
 
 def _main():
     args = _parse_args()
-    mkFlowGraph(args.size, args.keep, args.outfile)
+    mkFlowGraph(args.size, args.keep, args.xspecies, args.outfile)
 
 _main()
