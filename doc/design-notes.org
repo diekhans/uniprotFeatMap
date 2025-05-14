@@ -47,11 +47,21 @@ identify novel domains.  Comparison with InterProScan may fine novel insertions.
    InterProScan
    
 ** Details:
-*** src annotation to src RNA alignments
+*** src annotation to src mRNA alignments
 - input from uniprotAnnotsMap
     - annotTrans.swissprot.src.psl
-*** target annotation to RNA alignments
+    - annotGenome.swissprot.mapped.psl
+*** target annotation to mRNA alignments
 - input from uniprotAnnotsMap native (TrEMBL) and InterProScan
     - annotTrans.target.psl
     - annotGenome.target.psl
+
+*** Associate each target mRNA with the most similar src mRNA
+
+*** scan through paired mRNAs and note differences in annotations
+**** mapping via implict RNA/RNA aligns in target genome
+srcAnnot-srcTrans <->
+srcTrans-targetGenome <->
+targetGenome-targetTrans <->
+targetTrans-targetAnnot
 

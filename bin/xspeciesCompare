@@ -17,6 +17,9 @@ def parseArgs():
     """
 
     parser = argparse.ArgumentParser(description=desc)
+
+
+
     parser.add_argument("srcTargetMRnaPsl",
                         help="""alignments of source to target transcripts from xspeciesTrans2TransMap""")
     return cmdOps.parse(parser)
