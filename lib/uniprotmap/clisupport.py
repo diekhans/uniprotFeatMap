@@ -13,7 +13,7 @@ def cliAddGeneSetParameters(parser, *, inclMetadata=False, inclTransGenomePsl=Fa
         parser.add_argument("geneSetMetadata",
                             help="""Metadata file for the GeneSet, format depends on which set (input)""")
     if inclTransGenomePsl:
-        parser.add_argument("transGenomePsl",
+        parser.add_argument("trans2GenomePsl",
                             help="""Transcript genome alignment; often from genePredToPsl. For cross-species mapping, this should be the target species transcript alignments. (input)""")
     if inclTransGenomeGp:
         parser.add_argument("transGenomeGp",

@@ -151,19 +151,19 @@ def _processAlignedPsls(inPslFh, outPslFh, filterFunc):
         if psl is not None:
             psl.write(outPslFh)
 
-def _combinePairAligns(alignDir, protTransPsl, filterFunc):
+def _combinePairAligns(alignDir, prot2TransPsl, filterFunc):
     "concatenate, filter, and sort by tName (transcript))"
 
     findSortCmd = (["find", alignDir, "-name", "*.fa.psl", "-print0"],
                    ["sort", "-k14,14", "-k10,10", "--files0-from=-"])
     with pipettor.Popen(findSortCmd, 'r') as inPslFh:
-        with fileOps.opengz(protTransPsl, 'w') as outPslFh:
+        with fileOps.opengz(prot2TransPsl, 'w') as outPslFh:
             _processAlignedPsls(inPslFh, outPslFh, filterFunc)
 
 ##
 # overall pipeline, parameterized with files and functions.
 ##
-def proteinTranscriptAlign(proteinFa, transFa, protTransPsl, algo, workDir, *,
+def proteinTranscriptAlign(protFa, transFa, prot2TransPsl, algo, workDir, *,
                            queryFaEditFilterFunc=None, targetFaEditFilterFunc=None, alignFilterFunc=None,
                            querySplitSize=DEFAULT_QUERY_SPLIT_APPROX_SIZE):
     targetDir = osp.join(workDir, "transDb")
@@ -174,10 +174,10 @@ def proteinTranscriptAlign(proteinFa, transFa, protTransPsl, algo, workDir, *,
             _targetBuildDb(transFa, transDbFa, algo, targetFaEditFilterFunc, targetDir)
 
     queryDir = osp.join(workDir, "queryDir")
-    with runIfNotDone(queryDir, depends=proteinFa) as do:
+    with runIfNotDone(queryDir, depends=protFa) as do:
         if do:
             prMsg("split proteins")
-            _queryBuildDb(proteinFa, queryDir, queryFaEditFilterFunc, querySplitSize)
+            _queryBuildDb(protFa, queryDir, queryFaEditFilterFunc, querySplitSize)
 
     alignDir = osp.join(workDir, "aligns")
     with runIfNotDone(alignDir, doneDepends=[targetDir, queryDir]) as do:
@@ -186,9 +186,9 @@ def proteinTranscriptAlign(proteinFa, transFa, protTransPsl, algo, workDir, *,
             _runBatch([proteinTranscriptAlignJob, algo], queryDir, transDbFa, alignDir,
                       osp.join(workDir, "batch"))
 
-    with runIfOutOfDate(protTransPsl, doneDepends=alignDir) as do:
+    with runIfOutOfDate(prot2TransPsl, doneDepends=alignDir) as do:
         if do:
             prMsg("combining alignments")
-            with fileOps.AtomicFileCreate(protTransPsl) as tmpPsl:
+            with fileOps.AtomicFileCreate(prot2TransPsl) as tmpPsl:
                 _combinePairAligns(alignDir, tmpPsl, alignFilterFunc)
     prMsg("finished")

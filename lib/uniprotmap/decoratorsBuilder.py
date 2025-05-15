@@ -43,12 +43,12 @@ def _worker(alignBatch):
         ex2.__cause__ = ex
         return ex
 
-def _annotGenomeBatchReader(annotGenomePslFile, batchSize):
+def _annotGenomeBatchReader(annot2GenomePslFile, batchSize):
     """return tuples of (alignIdx, annotPsl)"""
     alignIdx = 0
     alignBatch = []
 
-    for annotPsl in PslReader(annotGenomePslFile):
+    for annotPsl in PslReader(annot2GenomePslFile):
         alignBatch.append((alignIdx, annotPsl))
         alignIdx += 1
         if len(alignBatch) >= batchSize:
@@ -77,11 +77,11 @@ def _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile):
     return featTypes
 
 def processSingle(annotationProcessorFactory, featTypeFunc,
-                  annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile, batchSize):
+                  annot2GenomePslFile, annot2TransRefTsv, annotDecoratorBedFile, batchSize):
     # this is easier to debug without mp
     _workerInit(annotationProcessorFactory)
     decoBedsList = []
-    for alignBatch in _annotGenomeBatchReader(annotGenomePslFile, batchSize):
+    for alignBatch in _annotGenomeBatchReader(annot2GenomePslFile, batchSize):
         decoBeds = _worker(alignBatch)
         _checkForWorkerFail(decoBeds)
         decoBedsList.append(decoBeds)
@@ -90,18 +90,18 @@ def processSingle(annotationProcessorFactory, featTypeFunc,
     return featTypes
 
 def processMulti(annotationProcessorFactory, featTypeFunc,
-                 annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile,
+                 annot2GenomePslFile, annot2TransRefTsv, annotDecoratorBedFile,
                  nprocs, batchSize):
     with mp.Pool(processes=nprocs, initializer=_workerInit,
                  initargs=((annotationProcessorFactory,))) as pool:
         decoBedIters = pool.imap_unordered(_worker,
-                                           _annotGenomeBatchReader(annotGenomePslFile, batchSize))
+                                           _annotGenomeBatchReader(annot2GenomePslFile, batchSize))
 
         featTypes = _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile)
     return featTypes
 
-def buildDecorators(annotationProcessorFactory, featTypeFunc, annotGenomePslFile,
-                    annotTransRefTsv, annotDecoratorBedFile, nprocs, batchSize):
+def buildDecorators(annotationProcessorFactory, featTypeFunc, annot2GenomePslFile,
+                    annot2TransRefTsv, annotDecoratorBedFile, nprocs, batchSize):
     """
     Used to build decorators using multiple processes.  Special handling
     for nprocs=1 to build in current process to make debugging easier.
@@ -116,8 +116,8 @@ def buildDecorators(annotationProcessorFactory, featTypeFunc, annotGenomePslFile
     # special case one process makes profiling easier
     if nprocs == 1:
         featTypes = processSingle(annotationProcessorFactory, featTypeFunc,
-                                  annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile, batchSize)
+                                  annot2GenomePslFile, annot2TransRefTsv, annotDecoratorBedFile, batchSize)
     else:
         featTypes = processMulti(annotationProcessorFactory, featTypeFunc,
-                                 annotGenomePslFile, annotTransRefTsv, annotDecoratorBedFile, nprocs, batchSize)
+                                 annot2GenomePslFile, annot2TransRefTsv, annotDecoratorBedFile, nprocs, batchSize)
     return featTypes

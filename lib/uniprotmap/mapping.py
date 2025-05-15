@@ -102,22 +102,22 @@ def createAnnotToProteinCdsPsl(annotId, annotStartOff, annotEndOff,
     psl.computeCounts()
     return psl
 
-def pslMapAnnots(annotCanonPsl, protTransPairedPsl, transGenomePsl,
-                 annotGenomeMapInfoTsv, annotGenomePslFh, *, annotTransPsl=None,
-                 interPrefix=None, xspeciesTransPsl=None, xspeciesTransMapInfoTsv=None):
+def pslMapAnnots(annotCanonPsl, prot2TransPairedPsl, trans2GenomePsl,
+                 annotGenomeMapInfoTsv, annot2GenomePslFh, *, annot2TransPsl=None,
+                 interPrefix=None, xspeciesTrans2TransPsl=None, xspeciesTransMapInfoTsv=None):
     # all of these pslMaps are NA/NA -> NA/NA -> NA/NA
     cmds = []
 
     # annotation on canonical transcripts to all transcripts alignment to canonical
-    cmds += pslMapMkCmd(annotCanonPsl, protTransPairedPsl, "/dev/stdout",
-                        outPslCopy=annotTransPsl, interPrefix=interPrefix, interMid="annotTrans")
-    if xspeciesTransPsl is not None:
+    cmds += pslMapMkCmd(annotCanonPsl, prot2TransPairedPsl, "/dev/stdout",
+                        outPslCopy=annot2TransPsl, interPrefix=interPrefix, interMid="annotTrans")
+    if xspeciesTrans2TransPsl is not None:
         # transcript to other species transcript mapping
-        cmds += pslMapMkCmd("/dev/stdin", xspeciesTransPsl, "/dev/stdout",
+        cmds += pslMapMkCmd("/dev/stdin", xspeciesTrans2TransPsl, "/dev/stdout",
                             mapInfo=xspeciesTransMapInfoTsv,
                             interPrefix=interPrefix, interMid="xspeciesAnnotTrans")
 
     # per-transcript annotation to genome mapping
-    cmds += pslMapMkCmd("/dev/stdin", transGenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
+    cmds += pslMapMkCmd("/dev/stdin", trans2GenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
 
-    pipettor.run(cmds, stdout=annotGenomePslFh)
+    pipettor.run(cmds, stdout=annot2GenomePslFh)

@@ -30,10 +30,10 @@ def parseArgs():
                         help="""unique category and feature types for constructing track filters (output)""")
     parser.add_argument("interproAnnotTsv",
                         help="""Interpro annotations TSV from interproToTab (input)""")
-    parser.add_argument("annotGenomePsl",
+    parser.add_argument("annot2GenomePsl",
                         help="""Interpro annotations mapped to genome from interproAnnotsMap (input). For cross-species mapping, this will
                         be the target species genome.""")
-    parser.add_argument("annotTransRefTsv",
+    parser.add_argument("annot2TransRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
@@ -79,9 +79,9 @@ def makeDecorator(annot, annotPsl, annotTransRef):
 class AnnotationProcessor:
     """Class used to generate decorators."""
 
-    def __init__(self, interproAnnotTsv, annotTransRefTsv):
+    def __init__(self, interproAnnotTsv, annot2TransRefTsv):
         self.interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
-        self.annotTransRefs = AnnotTransRefs(annotTransRefTsv)
+        self.annotTransRefs = AnnotTransRefs(annot2TransRefTsv)
 
     def _buildAnnotation(self, annotPsl, annot, alignIdx):
         annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
@@ -104,18 +104,18 @@ def writeFeatTypes(featTypes, featTypesTsv):
         for ft in sorted(featTypes):
             fileOps.prRowv(fh, *ft)
 
-def interproAnnotsToDecorators(interproAnnotTsv, annotGenomePslFile, annotTransRefTsv,
+def interproAnnotsToDecorators(interproAnnotTsv, annot2GenomePslFile, annot2TransRefTsv,
                                annotDecoratorBedFile, nprocs, batchSize, featTypesTsv):
-    annotProcFunc = partial(AnnotationProcessor, interproAnnotTsv, annotTransRefTsv)
+    annotProcFunc = partial(AnnotationProcessor, interproAnnotTsv, annot2TransRefTsv)
 
     featTypes = buildDecorators(annotProcFunc, getFeatType,
-                                annotGenomePslFile, annotTransRefTsv,
+                                annot2GenomePslFile, annot2TransRefTsv,
                                 annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
 
 def main(opts):
-    interproAnnotsToDecorators(opts.interproAnnotTsv, opts.annotGenomePsl, opts.annotTransRefTsv,
+    interproAnnotsToDecorators(opts.interproAnnotTsv, opts.annot2GenomePsl, opts.annot2TransRefTsv,
                                opts.annotDecoratorBed, opts.nprocs, opts.batchSize,
                                opts.featTypesTsv)
 

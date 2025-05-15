@@ -142,7 +142,7 @@ xspeciesMap: ${asm_names:%=%_xspeciesMap}
 xspeciesMapAsm: ${xspecies_mapannot_psl} ${src_xspecies_rna_aln} ${xspecies_decorators_bed}
 
 ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv} &: ${uniprotAnnot} ${protTransPairedAln} ${xspecies_cat_psl} ${src_xspecies_rna_aln}
-	${uniprotAnnotsMap} --xspeciesTransPsl=${src_xspecies_rna_aln} \
+	${uniprotAnnotsMap} --xspeciesTrans2TransPsl=${src_xspecies_rna_aln} \
 	    ${xspecies_cat_psl} ${uniprotAnnot} ${protTransPairedAln} \
             ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv}
 	mv -f ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_psl}

@@ -16,13 +16,16 @@ class GraphBuilder:
     def __init__(self, title, outfile, size=None):
         self.outfile = outfile
         fontname = "helvetica"
-        graph_attr = {"fontname": fontname}
+        graph_attr = {"fontname": fontname,
+                      "label": title,
+                      "labelloc": "top",
+                      "fontsize": "25"}
         if size is not None:
             graph_attr["size"] = size
         node_attr = {"fontname": fontname}
         edge_attr = {"fontname": fontname}
         self.graph = gv.Digraph(
-            title,
+            name=title,
             format=_get_output_format(self.outfile),
             graph_attr=graph_attr,
             node_attr=node_attr,

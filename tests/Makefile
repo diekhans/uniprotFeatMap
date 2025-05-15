@@ -128,7 +128,7 @@ uniprotAnnotsMapTests: testUniprotAnnotsMapSP testUniprotAnnotsMapTR
 # $(call runMapAnnots,swissprot,SP)
 define runMapAnnots
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
-	    --annotTransPsl=output/$@.annotsTrans.psl \
+	    --annot2TransPsl=output/$@.annotsTrans.psl \
 	    ${gencodePcPsl} \
 	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
@@ -202,8 +202,8 @@ testXSpeciesGencodeCatFilter: mkout ${ponAbeCat1Bb}
 
 testXSpeciesUniprotAnnotsMap: mkout
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
-	    --annotTransPsl=output/$@.annotsTrans.psl \
-	    --xspeciesTransPsl=expected/testXSpeciesGencodeCatFilter.psl \
+	    --annot2TransPsl=output/$@.annotsTrans.psl \
+	    --xspeciesTrans2TransPsl=expected/testXSpeciesGencodeCatFilter.psl \
 	    ${ponAbeCat1Psl} ${swissprotAnnots} expected/testUniprotProteinTranscriptMapSP.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -257,7 +257,7 @@ interproTests: testInterproAnnotsMap testInterproAnnotsToDeco \
 
 testInterproAnnotsMap: mkout
 	${interproAnnotsMap} ${gencodePcPsl} \
-	    --annotTransPsl=output/$@.annotsTrans.psl \
+	    --annot2TransPsl=output/$@.annotsTrans.psl \
 	    ${gencodeInterproTsv} expected/testInterproBlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl

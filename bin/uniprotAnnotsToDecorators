@@ -48,7 +48,7 @@ def parseArgs():
     the results.
     """
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument('--help-colors', action=HelpColors, nargs=0,
+    parser.add_argument("--help-colors", action=HelpColors, nargs=0,
                         help="""Show description of colors used, mostly for producing documentation""")
     parser.add_argument("--nprocs", type=int, default=1,
                         help="""number of processers to use""")
@@ -58,16 +58,16 @@ def parseArgs():
                         help="""Is the UniProt dataset SwissProt or TrEMBL?""")
     parser.add_argument("--featTypesTsv",
                         help="""unique category and feature types for constructing track filters (output)""")
-    parser.add_argument("transGenomePsl",
+    parser.add_argument("trans2GenomePsl",
                         help="""Transcript genome alignment; often from genePredToPsl. For cross-species mapping, this should be the target species transcript alignments. (input)""")
     parser.add_argument("uniprotMetaTsv",
                         help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("uniprotAnnotsTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
-    parser.add_argument("annotGenomePsl",
+    parser.add_argument("annot2GenomePsl",
                         help="""Uniprot annotations mapped to genome from uniprotAnnotsMap (input). For cross-species mapping, this will
                         be the target species genome.""")
-    parser.add_argument("annotTransRefTsv",
+    parser.add_argument("annot2TransRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
@@ -185,13 +185,13 @@ class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the
     processing to the pool sub-process"""
 
-    def __init__(self, transGenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, dataSet):
+    def __init__(self, trans2GenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annot2TransRefTsv, dataSet):
         self.dataSet = dataSet
         self.geneSetData = GeneSetData()
-        geneSetLoadAnnotPsl(self.geneSetData, transGenomePsl)
+        geneSetLoadAnnotPsl(self.geneSetData, trans2GenomePsl)
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
         self.uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
-        self.annotTransRefs = AnnotTransRefs(annotTransRefTsv)
+        self.annotTransRefs = AnnotTransRefs(annot2TransRefTsv)
 
     def _buildAnnotation(self, annotPsl, annot, alignIdx):
         annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
@@ -220,18 +220,18 @@ def writeFeatTypes(featTypes, featTypesTsv):
         for ft in sorted(featTypes):
             fileOps.prRowv(fh, *ft)
 
-def uniprotAnnotsToDecorators(transGenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annotGenomePslFile, annotTransRefTsv,
+def uniprotAnnotsToDecorators(trans2GenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annot2GenomePslFile, annot2TransRefTsv,
                               annotDecoratorBedFile, dataSet, nprocs, batchSize, featTypesTsv):
-    annotProcFunc = partial(AnnotationProcessor, transGenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annotTransRefTsv, dataSet)
+    annotProcFunc = partial(AnnotationProcessor, trans2GenomePsl, uniprotMetaTsv, uniprotAnnotsTsv, annot2TransRefTsv, dataSet)
 
-    featTypes = buildDecorators(annotProcFunc, getFeatType, annotGenomePslFile, annotTransRefTsv,
+    featTypes = buildDecorators(annotProcFunc, getFeatType, annot2GenomePslFile, annot2TransRefTsv,
                                 annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
 
 def main(opts):
-    uniprotAnnotsToDecorators(opts.transGenomePsl, opts.uniprotMetaTsv, opts.uniprotAnnotsTsv,
-                              opts.annotGenomePsl, opts.annotTransRefTsv,
+    uniprotAnnotsToDecorators(opts.trans2GenomePsl, opts.uniprotMetaTsv, opts.uniprotAnnotsTsv,
+                              opts.annot2GenomePsl, opts.annot2TransRefTsv,
                               opts.annotDecoratorBed, opts.dataset, opts.nprocs, opts.batchSize,
                               opts.featTypesTsv)
 

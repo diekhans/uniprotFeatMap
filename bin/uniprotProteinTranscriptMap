@@ -40,9 +40,9 @@ def parseArgs():
     cliAddGeneSetParameters(parser, inclMetadata=True, inclTransGenomePsl=True, inclTransGenomeGp=True)
     parser.add_argument("uniprotMetaTsv",
                         help="""Uniprot metadata in TSV format (input)""")
-    parser.add_argument("protCanonTransPsl",
+    parser.add_argument("prot2CanonTransPsl",
                         help="protein to paired canonical transcript alignment PSL (input)")
-    parser.add_argument("protTransPairedPsl",
+    parser.add_argument("prot2TransPairedPsl",
                         help="""alignments of protein's CDS to paired transcript, in CDS codon coordinates (output)""")
     parser.add_argument("problemLogTsv",
                         help="""Log file of issues that happened (output)""")
@@ -51,9 +51,9 @@ def parseArgs():
 ##
 # data loading and filtering
 ##
-def loadConvertCanonProtTransPsls(protCanonTransPslFile):
+def loadConvertCanonProtTransPsls(prot2CanonTransPslFile):
     """load aligned PSL, converting them to CDS->NA PSL."""
-    with pipettor.Popen(["pslProtToRnaCoords", protCanonTransPslFile, "/dev/stdout"]) as fh:
+    with pipettor.Popen(["pslProtToRnaCoords", prot2CanonTransPslFile, "/dev/stdout"]) as fh:
         return [psl for psl in PslReader(fh)]
 
 def writePsls(psls, pslFile):
@@ -224,24 +224,24 @@ def report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAli
         reportUnalignedUniprots(geneSet, uniprotMetaTbl, canonCdsToTransAligns, logFh)
         reportUnpairedNoncanonTranses(geneSet, uniprotMetaTbl, noncanonCdsToTransAligns, logFh)
 
-def proteinTranscriptAlign(geneSetName, geneSetMetadata, transGenomePsl, transGenomeGp,
-                           uniprotMetaTsv, protCanonTransPslFile,
-                           protTransPairedPslFile, problemLogTsv, interPrefix):
-    geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp)
+def proteinTranscriptAlign(geneSetName, geneSetMetadata, trans2GenomePsl, transGenomeGp,
+                           uniprotMetaTsv, prot2CanonTransPslFile,
+                           prot2TransPairedPslFile, problemLogTsv, interPrefix):
+    geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, trans2GenomePsl=trans2GenomePsl, transGenomeGp=transGenomeGp)
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
-    canonCdsToTransAligns = loadConvertCanonProtTransPsls(protCanonTransPslFile)
+    canonCdsToTransAligns = loadConvertCanonProtTransPsls(prot2CanonTransPslFile)
     noncanonCdsToTransAligns = projectUniPortAlignments(geneSet, uniprotMetaTbl,
                                                         canonCdsToTransAligns, interPrefix)
 
     report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv)
 
-    writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, protTransPairedPslFile)
+    writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, prot2TransPairedPslFile)
 
 def main(opts):
-    proteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.transGenomePsl, opts.transGenomeGp,
-                           opts.uniprotMetaTsv, opts.protCanonTransPsl,
-                           opts.protTransPairedPsl, opts.problemLogTsv,
+    proteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.trans2GenomePsl, opts.transGenomeGp,
+                           opts.uniprotMetaTsv, opts.prot2CanonTransPsl,
+                           opts.prot2TransPairedPsl, opts.problemLogTsv,
                            opts.interPrefix)
 
 main(parseArgs())

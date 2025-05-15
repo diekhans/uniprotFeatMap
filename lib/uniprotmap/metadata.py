@@ -46,9 +46,9 @@ class AnnotTransRefError(Exception):
 
 class AnnotTransRefs:
     """look up transcript for a PSL row"""
-    def __init__(self, annotTransRefTsv):
+    def __init__(self, annot2TransRefTsv):
         self.byAlignIdx = {}
-        for row in TsvReader(annotTransRefTsv, typeMap=_annotTransRefTypeMap, rowClass=AnnotTransRef):
+        for row in TsvReader(annot2TransRefTsv, typeMap=_annotTransRefTypeMap, rowClass=AnnotTransRef):
             self._readRow(row)
 
     def _readRow(self, row):
@@ -57,15 +57,15 @@ class AnnotTransRefs:
     def get(self, annotId, alignIdx):
         annotTransRef = self.byAlignIdx[alignIdx]
         if annotTransRef.annotId != annotId:
-            raise AnnotTransRefError(f"annotGenomePsl '{annotId}' and  annotTransRefTsv '{annotTransRef.annotId}' out-of-sync")
+            raise AnnotTransRefError(f"annot2GenomePsl '{annotId}' and  annot2TransRefTsv '{annotTransRef.annotId}' out-of-sync")
         return annotTransRef
 
 
 class AnnotTransRefWriter:
     header = ["annotMapId", "transcriptPos", "transcriptId", "xspeciesSrcTransId", "alignIdx"]
 
-    def __init__(self, annotTransRefTsv):
-        self.fh = fileOps.opengz(annotTransRefTsv, 'w')
+    def __init__(self, annot2TransRefTsv):
+        self.fh = fileOps.opengz(annot2TransRefTsv, 'w')
         self.idxCounter = defaultdict(int)  # used to get globally unique id
         fileOps.prRow(self.fh, self.header)
 

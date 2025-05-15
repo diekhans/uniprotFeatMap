@@ -16,14 +16,14 @@ def _loadMetadata(geneSet, gencodeMetaTsv):
                                        row.transcriptId, row.transcriptType,
                                        row.proteinId)
 
-def gencodeGeneSetFactory(geneSetName, *, geneSetMetadata=None, transGenomePsl=None, transGenomeGp=None, transFa=None):
+def gencodeGeneSetFactory(geneSetName, *, geneSetMetadata=None, trans2GenomePsl=None, transGenomeGp=None, transFa=None):
     """load GENCODE data as requested"""
 
     geneSet = GeneSet(geneSetName)
     if geneSetMetadata is not None:
         _loadMetadata(geneSet, geneSetMetadata)
-    if transGenomePsl is not None:
-        geneSetLoadAnnotPsl(geneSet.data, transGenomePsl)
+    if trans2GenomePsl is not None:
+        geneSetLoadAnnotPsl(geneSet.data, trans2GenomePsl)
     if transGenomeGp is not None:
         geneSetLoadAnnotGp(geneSet.data, transGenomeGp)
     geneSet.transFa = transFa

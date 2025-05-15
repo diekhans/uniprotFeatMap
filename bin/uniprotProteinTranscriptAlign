@@ -29,7 +29,7 @@ def parseArgs():
                         help="""UniProt FASTA (input)""")
     parser.add_argument("transFa",
                         help="""transcript FASTA, CDS must be in upper-case and UTR in lowercase (input)""")
-    parser.add_argument("protCanonTransPsl",
+    parser.add_argument("prot2CanonTransPsl",
                         help="""alignments of UniProt proteins to their canonical transcripts, sorted by transcript (output)""")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
@@ -51,16 +51,16 @@ def alignFilter(uniprotMetaTbl, psl):
     uniprotMeta = uniprotMetaTbl.getByAcc(dropUniportIsoformModifier(psl.qName))
     return ((psl.qName == uniprotMeta.mainIsoAcc) and uniprotMeta.isCanonProtTrans(psl.tName))
 
-def uniprotProteinTranscriptAlign(uniprotMetaTsv, proteinFa, transFa, protCanonTransPsl, algo, workDir):
+def uniprotProteinTranscriptAlign(uniprotMetaTsv, proteinFa, transFa, prot2CanonTransPsl, algo, workDir):
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
-    proteinTranscriptAlign(proteinFa, transFa, protCanonTransPsl, algo, workDir,
+    proteinTranscriptAlign(proteinFa, transFa, prot2CanonTransPsl, algo, workDir,
                            queryFaEditFilterFunc=queryFaEditFilter,
                            targetFaEditFilterFunc=functools.partial(targetFaEditFilter, uniprotMetaTbl),
                            alignFilterFunc=functools.partial(alignFilter, uniprotMetaTbl))
 
 def main(opts):
     uniprotProteinTranscriptAlign(opts.uniprotMetaTsv, opts.proteinFa, opts.transFa,
-                                  opts.protCanonTransPsl, opts.algo, opts.workDir)
+                                  opts.prot2CanonTransPsl, opts.algo, opts.workDir)
 
 main(parseArgs())

@@ -17,15 +17,12 @@ def parseArgs():
     """
 
     parser = argparse.ArgumentParser(description=desc)
-
-
-
-    parser.add_argument("srcTargetMRnaPsl",
+    parser.add_argument("src2TargetTransPsl",
                         help="""alignments of source to target transcripts from xspeciesTrans2TransMap""")
     return cmdOps.parse(parser)
 
 
-def xspeciesCompare(opts, srcTargetMRnaPsl):
+def xspeciesCompare(opts, src2TargetTransPsl):
     pass
 
 def main():
