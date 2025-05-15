@@ -34,6 +34,7 @@ prog_uniprotProteinTranscriptMap = 'uniprotProteinTranscriptMap'
 prog_xspeciesCompare = 'xspeciesCompare'
 prog_xspeciesGencode2CatFilter = 'xspeciesGencode2CatFilter'
 prog_xspeciesTrans2TransMap = 'xspeciesTrans2TransMap'
+prog_xspeciesGencode2CatFilter = 'xspeciesGencode2CatFilter'
 prog_blat = 'blat'
 
 ##
@@ -43,15 +44,20 @@ data_uniprotMetaTsv = 'uniprotMeta.tsv'
 data_proteinFa = 'protein.fa'
 data_transFa = 'trans.fa'
 data_transGenomePsl = 'transGenome.psl'
-data_protCdsTransPairedPsl = 'protCdsTransPaired.psl'
+data_protTransPairedPsl = 'protTransPaired.psl'
 data_protCanonTransPsl = 'protCanonTrans.psl'
 data_annotDecoratorBed = 'annotDecorator.bed'
 data_annotGenomePsl = 'annotGenome.psl'
 data_annotTransRefTsv = 'annotTransRef.tsv'
 data_annotTransPsl = 'annotTrans.psl'
 data_uniprotAnnotsTsv = 'uniprotAnnots.tsv'
-data_xspeciesTransPsl = 'xspeciesTrans.psl'
 
+data_xspeciesTransPsl = 'xspeciesTrans.psl'
+data_srcTargetGenomeChains = "srcTargetGenome.chain"
+data_targetTransGenomePsl = "targetTransGenome.psl"
+data_srcTransTargetTransPsl = "srcTransTargetTrans.psl"
+data_annotTargetGenomePsl = "annotTargetGenome.psl"
+data_annotTargetTransRefTsv = "annotTargetTransRef.tsv"
 
 ##
 # processing definitions
@@ -59,33 +65,48 @@ data_xspeciesTransPsl = 'xspeciesTrans.psl'
 def _task_proten_transcript_align(graph):
     graph.add_task(prog_uniprotProteinTranscriptAlign,
                    (data_uniprotMetaTsv, data_proteinFa, data_transFa),
+                   (),
                    (data_protCanonTransPsl,))
 
 def _task_protein_transcript_map(graph):
     graph.add_task(prog_uniprotProteinTranscriptMap,
-                   (data_uniprotMetaTsv, data_protCanonTransPsl),
-                   (data_protCdsTransPairedPsl,))
+                   (data_uniprotMetaTsv,),
+                   (data_protCanonTransPsl,),
+                   (data_protTransPairedPsl,))
 
 def _task_uniprot_annots_map(graph):
     graph.add_task(prog_uniprotAnnotsMap,
                    (data_transGenomePsl, data_uniprotAnnotsTsv),
+                   (),
                    (data_annotGenomePsl, data_annotTransRefTsv))
+
+def _task_xspecies_transmap(graph):
+    graph.add_task(prog_xspeciesTrans2TransMap,
+                   (data_transGenomePsl, data_srcTargetGenomeChains, data_targetTransGenomePsl),
+                   (), ())
+    graph.graph.edge(prog_xspeciesTrans2TransMap,
+                     prog_xspeciesGencode2CatFilter)
+    graph.add_task(prog_xspeciesGencode2CatFilter,
+                   (), (),
+                   (data_srcTransTargetTransPsl,))
 
 def _task_uniprot_annots_xspecies_map(graph):
     graph.add_task(prog_uniprotAnnotsMap,
-                   (data_transGenomePsl, data_uniprotAnnotsTsv, data_protCdsTransPairedPsl, data_xspeciesTransPsl),
-                   (data_annotGenomePsl, data_annotTransRefTsv, data_annotTransPsl))
+                   (data_transGenomePsl, data_uniprotAnnotsTsv, data_xspeciesTransPsl),
+                   (data_srcTransTargetTransPsl, data_protTransPairedPsl),
+                   (data_annotTargetGenomePsl, data_annotTargetTransRefTsv, data_annotTransPsl))
 
 def _task_uniprot_annots_to_decorators(graph):
     graph.add_task(prog_uniprotAnnotsToDecorators,
-                   (data_transGenomePsl, data_uniprotMetaTsv, data_uniprotAnnotsTsv,
-                    data_annotGenomePsl, data_annotTransRefTsv),
+                   (data_transGenomePsl, data_uniprotMetaTsv, data_uniprotAnnotsTsv),
+                   (data_annotGenomePsl, data_annotTransRefTsv),
                    (data_annotDecoratorBed,))
 
 def _construct_graph(graph, xspecies):
     _task_proten_transcript_align(graph)
     _task_protein_transcript_map(graph)
     if xspecies:
+        _task_xspecies_transmap(graph)
         _task_uniprot_annots_xspecies_map(graph)
     else:
         _task_uniprot_annots_map(graph)

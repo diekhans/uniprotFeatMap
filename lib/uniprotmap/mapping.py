@@ -102,14 +102,14 @@ def createAnnotToProteinCdsPsl(annotId, annotStartOff, annotEndOff,
     psl.computeCounts()
     return psl
 
-def pslMapAnnots(annotCanonPsl, protCdsTransPairedPsl, transGenomePsl,
+def pslMapAnnots(annotCanonPsl, protTransPairedPsl, transGenomePsl,
                  annotGenomeMapInfoTsv, annotGenomePslFh, *, annotTransPsl=None,
                  interPrefix=None, xspeciesTransPsl=None, xspeciesTransMapInfoTsv=None):
     # all of these pslMaps are NA/NA -> NA/NA -> NA/NA
     cmds = []
 
     # annotation on canonical transcripts to all transcripts alignment to canonical
-    cmds += pslMapMkCmd(annotCanonPsl, protCdsTransPairedPsl, "/dev/stdout",
+    cmds += pslMapMkCmd(annotCanonPsl, protTransPairedPsl, "/dev/stdout",
                         outPslCopy=annotTransPsl, interPrefix=interPrefix, interMid="annotTrans")
     if xspeciesTransPsl is not None:
         # transcript to other species transcript mapping

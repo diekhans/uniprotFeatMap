@@ -141,17 +141,17 @@ xspeciesMap: ${asm_names:%=%_xspeciesMap}
 
 xspeciesMapAsm: ${xspecies_mapannot_psl} ${src_xspecies_rna_aln} ${xspecies_decorators_bed}
 
-${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} ${xspecies_cat_psl} \
-	${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv}
-	${uniprotAnnotsToDecorators} --nprocs=${xspecies_nprocs} --dataset=SwissProt \
-	    ${xspecies_cat_psl} ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} $@.tmp
-	mv -f $@.tmp $@
-
 ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv} &: ${uniprotAnnot} ${protTransPairedAln} ${xspecies_cat_psl} ${src_xspecies_rna_aln}
 	${uniprotAnnotsMap} --xspeciesTransPsl=${src_xspecies_rna_aln} \
 	    ${xspecies_cat_psl} ${uniprotAnnot} ${protTransPairedAln} \
             ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_ref_tsv} ${xspecies_mapannot_problems_tsv}
 	mv -f ${xspecies_mapannot_psl}.tmp ${xspecies_mapannot_psl}
+
+${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} ${xspecies_cat_psl} \
+	${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv}
+	${uniprotAnnotsToDecorators} --nprocs=${xspecies_nprocs} --dataset=SwissProt \
+	    ${xspecies_cat_psl} ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} $@.tmp
+	mv -f $@.tmp $@
 
 ${src_xspecies_rna_aln}: ${gencodePsl} ${gencodeFa} ${src_xspecies_chains} ${xspecies_cat_psl} ${xspecies_cat_fa} ${xspecies_cat_bigcat}
 	@mkdir -p $(dir $@)

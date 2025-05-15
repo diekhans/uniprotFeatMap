@@ -41,7 +41,7 @@ def parseArgs():
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--xspeciesTransPsl",
-                        help="""PSL alignments of transcripts in the source genome to transcripts in a target genome for cross-species mapping of UniProt features.""")
+                        help="""PSL alignments of transcripts in the source genome to transcripts in a target genome for cross-species mapping of UniProt features from xspeciesTrans2TransMap""")
     parser.add_argument("--annotTransPsl",
                         help="""PSL alignments of UniProt annotations to transcripts, with protein in codon coordinates.""")
     parser.add_argument("--interPrefix",
@@ -50,7 +50,7 @@ def parseArgs():
                         help="""Transcript genome alignment; often from genePredToPsl. For cross-species mapping, this should be the target species transcript alignments. (input)""")
     parser.add_argument("uniprotAnnotsTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
-    parser.add_argument("protCdsTransPairedPsl",
+    parser.add_argument("protTransPairedPsl",
                         help="""Paired protein to transcript CDS alignments from uniprotProteinTranscriptMap (input)""")
     parser.add_argument("annotGenomePsl",
                         help="""Uniprot annotations mapped to genome (output)""")
@@ -208,7 +208,7 @@ def writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter
         for uniprotAcc, uniprotA2GMapInfos in sorted(splitByUniprotAcc(transA2GMapInfos).items(), key=lambda v: v[0]):
             writeTransRefs(uniprotAnnotTbl, transIdChrom[0], uniprotA2GMapInfos, xspeciesTransMapTbl, refWriter)
 
-def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, protCdsTransPairedPsl, transGenomePsl,
+def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, protTransPairedPsl, transGenomePsl,
               annotGenomePslFh, annotTransRefTsv, xspeciesTransPsl=None):
     annotGenomeMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "annotGenome.mapinfo.tsv")
 
@@ -216,7 +216,7 @@ def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, protCdsTransPairedPsl, transG
     if xspeciesTransPsl is not None:
         xspeciesTransMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "xspeciesTrans.mapinfo.tsv")
 
-    pslMapAnnots(annotProtPsl, protCdsTransPairedPsl, transGenomePsl, annotGenomeMapInfoTsv,
+    pslMapAnnots(annotProtPsl, protTransPairedPsl, transGenomePsl, annotGenomeMapInfoTsv,
                  annotGenomePslFh, annotTransPsl=opts.annotTransPsl, interPrefix=opts.interPrefix,
                  xspeciesTransPsl=xspeciesTransPsl, xspeciesTransMapInfoTsv=xspeciesTransMapInfoTsv)
 
@@ -229,23 +229,23 @@ def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, protCdsTransPairedPsl, transG
         writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
     cleanTmpFiles(xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
 
-def uniprotAnnotsMap(opts, transGenomePsl, uniprotAnnotsTsv, protCdsTransPairedPsl,
+def uniprotAnnotsMap(opts, transGenomePsl, uniprotAnnotsTsv, protTransPairedPsl,
                      annotGenomePsl, annotTransRefTsv, problemLogTsv):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
-    protCdsSizes = getQuerySizes(protCdsTransPairedPsl)
+    protCdsSizes = getQuerySizes(protTransPairedPsl)
 
     with problemLogOpen(problemLogTsv) as logFh:
         annotProtPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, opts.interPrefix, logFh)
 
     with fileOps.AtomicFileCreate(annotGenomePsl) as annotGenomePslFh:
-        mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, protCdsTransPairedPsl, transGenomePsl,
+        mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, protTransPairedPsl, transGenomePsl,
                   annotGenomePslFh, annotTransRefTsv, opts.xspeciesTransPsl)
 
     cleanTmpFiles(annotProtPsl)
 
 def main():
     opts, args = parseArgs()
-    uniprotAnnotsMap(opts, args.transGenomePsl, args.uniprotAnnotsTsv, args.protCdsTransPairedPsl,
+    uniprotAnnotsMap(opts, args.transGenomePsl, args.uniprotAnnotsTsv, args.protTransPairedPsl,
                      args.annotGenomePsl, args.annotTransRefTsv, args.problemLogTsv)
 
 main()

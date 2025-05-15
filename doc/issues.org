@@ -1,6 +1,8 @@
 #+STARTUP: nologdone
 #+TODO: TODO URGENT | DONE CANCELED
 
+* xspeciesTrans2TransMap is a dumb name
+
 * gene sets, etc
 abstraction causes issues, for instance uniprotAnnotsToDecorators just needs
 the PSL, but for xspecies, they are not from one of the data sets.

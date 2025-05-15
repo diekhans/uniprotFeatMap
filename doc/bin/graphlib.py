@@ -29,16 +29,6 @@ class GraphBuilder:
             edge_attr=edge_attr)
         self.data_files = set()
 
-    def ensure_optional_data_file(self, name):
-        "create an data file node, if it does not already exist"
-        if name not in self.data_files:
-            self.graph.node(name, label=name,
-                            shape="cylinder",
-                            style="dashed,filled",
-                            fillcolor="yellow",
-                            fontcolor="black")
-            self.data_files.add(name)
-
     def ensure_data_file(self, name):
         "create an data file node, if it does not already exist"
         if name not in self.data_files:
@@ -49,11 +39,17 @@ class GraphBuilder:
                             fontcolor="black")
             self.data_files.add(name)
 
-    def ensure_data_files(self, names):
-        for name in names:
-            self.ensure_data_file(name)
+    def ensure_ext_data_file(self, name):
+        "create an external data file node, if it does not already exist"
+        if name not in self.data_files:
+            self.graph.node(name, label=name,
+                            shape="cylinder",
+                            style="filled",
+                            fillcolor="yellow",
+                            fontcolor="black")
+            self.data_files.add(name)
 
-    def add_task(self, name, inputs=(), outputs=()):
+    def add_task(self, name, externs=(), inputs=(), outputs=()):
         "create a task node, inputs and outputs are other node names"
         label = name.replace(" ", "\\n")
         self.graph.node(name, label=label,
@@ -61,6 +57,9 @@ class GraphBuilder:
                         style="filled",
                         fillcolor="maroon",
                         fontcolor="white")
+        for n in externs:
+            self.ensure_ext_data_file(n)
+            self.graph.edge(n, name)
         for n in inputs:
             self.ensure_data_file(n)
             self.graph.edge(n, name)

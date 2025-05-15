@@ -42,7 +42,7 @@ def parseArgs():
                         help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("protCanonTransPsl",
                         help="protein to paired canonical transcript alignment PSL (input)")
-    parser.add_argument("protCdsTransPairedPsl",
+    parser.add_argument("protTransPairedPsl",
                         help="""alignments of protein's CDS to paired transcript, in CDS codon coordinates (output)""")
     parser.add_argument("problemLogTsv",
                         help="""Log file of issues that happened (output)""")
@@ -226,7 +226,7 @@ def report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAli
 
 def proteinTranscriptAlign(geneSetName, geneSetMetadata, transGenomePsl, transGenomeGp,
                            uniprotMetaTsv, protCanonTransPslFile,
-                           protCdsTransPairedPslFile, problemLogTsv, interPrefix):
+                           protTransPairedPslFile, problemLogTsv, interPrefix):
     geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp)
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
@@ -236,12 +236,12 @@ def proteinTranscriptAlign(geneSetName, geneSetMetadata, transGenomePsl, transGe
 
     report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv)
 
-    writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, protCdsTransPairedPslFile)
+    writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, protTransPairedPslFile)
 
 def main(opts):
     proteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.transGenomePsl, opts.transGenomeGp,
                            opts.uniprotMetaTsv, opts.protCanonTransPsl,
-                           opts.protCdsTransPairedPsl, opts.problemLogTsv,
+                           opts.protTransPairedPsl, opts.problemLogTsv,
                            opts.interPrefix)
 
 main(parseArgs())
