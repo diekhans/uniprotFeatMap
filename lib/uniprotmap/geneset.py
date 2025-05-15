@@ -238,9 +238,9 @@ class GeneSetData:
             if entry.strand == strand:
                 yield entry
 
-def geneSetLoadAnnotPsl(geneSetData, transGenomePslFile):
+def geneSetLoadAnnotPsl(geneSetData, trans2GenomePslFile):
     """"load PSLs into a GeneSe object"""
-    for psl in PslReader(transGenomePslFile):
+    for psl in PslReader(trans2GenomePslFile):
         geneSetData.addAlign(psl)
 
 def geneSetLoadAnnotGp(geneSetData, annotGenePredFile):
@@ -264,14 +264,14 @@ class GeneSet:
         self.meta.finish()
 
 
-def geneSetFactory(geneSetName, *, geneSetMetadata=None, transGenomePsl=None, transGenomeGp=None, transFa=None):
+def geneSetFactory(geneSetName, *, geneSetMetadata=None, trans2GenomePsl=None, transGenomeGp=None, transFa=None):
     """Build gene set object of the specified type GeneSet"""
 
     if geneSetName is GeneSetName.GENCODE:
         from uniprotmap.gencode import gencodeGeneSetFactory
-        return gencodeGeneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp, transFa=transFa)
+        return gencodeGeneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, trans2GenomePsl=trans2GenomePsl, transGenomeGp=transGenomeGp, transFa=transFa)
     elif geneSetName is GeneSetName.CAT1:
         from uniprotmap.catgenes import cat1GeneSetFactory
-        return cat1GeneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transGenomePsl=transGenomePsl, transGenomeGp=transGenomeGp, transFa=transFa)
+        return cat1GeneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, trans2GenomePsl=trans2GenomePsl, transGenomeGp=transGenomeGp, transFa=transFa)
     else:
         assert False, f"Bug: no handler for {geneSetName}"
