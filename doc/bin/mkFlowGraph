@@ -2,6 +2,11 @@
 import argparse
 import graphlib
 
+from pycbio.sys.symEnum import SymEnum, auto
+
+class What(SymEnum):
+    uniprot = auto()
+    xspecies = auto()
 
 def _parse_args():
     desc = "generate graph of data flow"
@@ -33,6 +38,7 @@ prog_uniprotProteinTranscriptAlign = 'uniprotProteinTranscriptAlign'
 prog_uniprotProteinTranscriptMap = 'uniprotProteinTranscriptMap'
 prog_xspeciesCompare = 'xspeciesCompare'
 prog_xspeciesGencode2CatFilter = 'xspeciesGencode2CatFilter'
+prog_xspeciesTrans2GenomeMap = 'xspeciesTrans2GenomeMap'
 prog_xspeciesTrans2TransMap = 'xspeciesTrans2TransMap'
 prog_xspeciesGencode2CatFilter = 'xspeciesGencode2CatFilter'
 prog_blat = 'blat'
@@ -52,72 +58,73 @@ data_annot2TransRefTsv = 'annot2TransRef.tsv'
 data_annot2TransPsl = 'annot2Trans.psl'
 data_uniprotAnnotsTsv = 'uniprotAnnots.tsv'
 
-data_xspeciesTrans2TransPsl = 'xspeciesTrans2Trans.psl'
-data_src2TargetGenomeChains = "src2TargetGenome.chain"
-data_srcTrans2TargetGenomePsl = "srcTrans2TargetGenome.psl"
-data_targetTrans2GenomePsl = "targetTrans2Genome.psl"
-data_srcTrans2TargetTransPsl = "srcTrans2TargetTrans.psl"
 data_annot2TargetGenomePsl = "annot2TargetGenome.psl"
 data_annot2TargetTransPsl = "annot2TargetTrans.psl"
 data_annot2TargetTransRefTsv = "annot2TargetTransRef.tsv"
+
+data_targetTrans2GenomePsl = "targetTrans2Genome.psl"
+data_src2TargetGenomeChains = "src2TargetGenome.chain"
+data_srcTrans2TargetGenomePsl = "srcTrans2TargetGenome.psl"
+data_srcTrans2TargetTransPsl = "srcTrans2TargetTrans.psl"
+
 
 ##
 # within assemble
 ##
 def _task_proten_transcript_align(graph):
     graph.add_task(prog_uniprotProteinTranscriptAlign,
-                   (data_uniprotMetaTsv, data_protFa, data_transFa),
-                   (),
-                   (data_prot2CanonTransPsl,))
+                   extins=(data_uniprotMetaTsv, data_protFa, data_transFa),
+                   outputs=(data_prot2CanonTransPsl,))
 
 def _task_protein_transcript_map(graph):
     graph.add_task(prog_uniprotProteinTranscriptMap,
-                   (data_uniprotMetaTsv,),
-                   (data_prot2CanonTransPsl,),
-                   (data_prot2TransPairedPsl,))
+                   extins=(data_uniprotMetaTsv,),
+                   inputs=(data_prot2CanonTransPsl,),
+                   outputs=(data_prot2TransPairedPsl,))
 
 def _task_uniprot_annots_map(graph):
     graph.add_task(prog_uniprotAnnotsMap,
-                   (data_trans2GenomePsl, data_uniprotAnnotsTsv, data_prot2TransPairedPsl),
-                   (),
-                   (data_annot2GenomePsl, data_annot2TransRefTsv))
+                   extins=(data_trans2GenomePsl, data_uniprotAnnotsTsv,),
+                   inputs=(data_prot2TransPairedPsl,),
+                   outputs=(data_annot2GenomePsl, data_annot2TransRefTsv))
 
 def _task_uniprot_annots_to_decorators(graph):
     graph.add_task(prog_uniprotAnnotsToDecorators,
-                   (data_trans2GenomePsl, data_uniprotMetaTsv, data_uniprotAnnotsTsv),
-                   (data_annot2GenomePsl, data_annot2TransRefTsv),
-                   (data_annotDecoratorBed,))
+                   extins=(data_trans2GenomePsl, data_uniprotMetaTsv, data_uniprotAnnotsTsv),
+                   inputs=(data_annot2GenomePsl, data_annot2TransRefTsv),
+                   outputs=(data_annotDecoratorBed,))
 
 ##
 # xspecies
 ##
 def _task_xspecies_transmap(graph):
+    graph.add_task(prog_xspeciesTrans2GenomeMap,
+                   extins=(data_trans2GenomePsl, data_src2TargetGenomeChains),
+                   outputs=(data_srcTrans2TargetGenomePsl,))
     graph.add_task(prog_xspeciesTrans2TransMap,
-                   (data_trans2GenomePsl, data_src2TargetGenomeChains, data_targetTrans2GenomePsl),
-                   (), ())
+                   extins=(data_srcTrans2TargetGenomePsl, data_targetTrans2GenomePsl,),
+                   outputs=(data_srcTrans2TargetTransPsl,))
     graph.graph.edge(prog_xspeciesTrans2TransMap,
                      prog_xspeciesGencode2CatFilter)
     graph.add_task(prog_xspeciesGencode2CatFilter,
-                   (), (),
-                   (data_srcTrans2TargetTransPsl,))
+                   outputs=(data_srcTrans2TargetTransPsl,))
 
 def _task_uniprot_annots_xspecies_map(graph):
     graph.add_task(prog_uniprotAnnotsMap,
-                   (data_trans2GenomePsl, data_uniprotAnnotsTsv, data_xspeciesTrans2TransPsl),
-                   (data_srcTrans2TargetTransPsl, data_prot2TransPairedPsl),
-                   (data_annot2TargetGenomePsl, data_annot2TargetTransRefTsv, data_annot2TargetTransPsl))
+                   extins=(data_srcTrans2GenomePsl, data_uniprotAnnotsTsv),
+                   inputs=(data_srcTrans2TargetTransPsl, data_prot2TransPairedPsl),
+                   outputs=(data_annot2TargetGenomePsl, data_annot2TargetTransRefTsv, data_annot2TargetTransPsl))
 
 def _task_uniprot_annots_to_xspecies_decorators(graph):
     graph.add_task(prog_uniprotAnnotsToDecorators,
-                   (data_targetTrans2GenomePsl, data_uniprotMetaTsv, data_uniprotAnnotsTsv),
-                   (data_annot2TargetGenomePsl, data_annot2TransRefTsv),
-                   (data_annotDecoratorBed,))
+                   extins=(data_targetTrans2GenomePsl, data_uniprotMetaTsv, data_uniprotAnnotsTsv),
+                   inputs=(data_annot2TargetGenomePsl, data_annot2TransRefTsv, data_annot2TransPsl),
+                   outputs=(data_annotDecoratorBed,))
 
 def _task_xspecies_compare(graph):
-    graph.add_task(prog_xspeciesCompare, (),
-                   (data_srcTrans2TargetGenomePsl, data_annot2TransPsl,
-                    data_targetTrans2GenomePsl, data_annot2TargetTransPsl),
-                   ())
+    graph.add_task(prog_xspeciesCompare,
+                   inputs=(data_srcTrans2TargetGenomePsl, data_annot2TransPsl,
+                           data_targetTrans2GenomePsl, data_annot2TargetTransPsl))
 
 def _construct_graph(graph, xspecies):
     _task_proten_transcript_align(graph)
@@ -126,7 +133,7 @@ def _construct_graph(graph, xspecies):
         _task_xspecies_transmap(graph)
         _task_uniprot_annots_xspecies_map(graph)
         _task_uniprot_annots_to_xspecies_decorators(graph)
-        _task_xspecies_compare(graph)
+        #_task_xspecies_compare(graph)
     else:
         _task_uniprot_annots_map(graph)
         _task_uniprot_annots_to_decorators(graph)
@@ -134,7 +141,6 @@ def _construct_graph(graph, xspecies):
 ##
 # main functions
 ##
-
 def mkFlowGraph(size, keep, xspecies, outfile):
     if xspecies:
         title = "Cross-assembly Uniprot Feature Mapping"

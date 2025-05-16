@@ -52,7 +52,7 @@ class GraphBuilder:
                             fontcolor="black")
             self.data_files.add(name)
 
-    def add_task(self, name, externs=(), inputs=(), outputs=()):
+    def add_task(self, name, *, extins=(), inputs=(), outputs=()):
         "create a task node, inputs and outputs are other node names"
         label = name.replace(" ", "\\n")
         self.graph.node(name, label=label,
@@ -60,7 +60,7 @@ class GraphBuilder:
                         style="filled",
                         fillcolor="maroon",
                         fontcolor="white")
-        for n in externs:
+        for n in extins:
             self.ensure_ext_data_file(n)
             self.graph.edge(n, name)
         for n in inputs:
@@ -70,7 +70,7 @@ class GraphBuilder:
             self.ensure_data_file(n)
             self.graph.edge(name, n)
 
-    def add_program(self, name, inputs=(), outputs=()):
+    def add_program(self, name, *, inputs=(), outputs=()):
         self.graph.node(name,
                         label=name,
                         shape="trapezium",
