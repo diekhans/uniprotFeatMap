@@ -13,15 +13,18 @@ def _get_output_base(outfile):
     return osp.splitext(outfile)[0]
 
 class GraphBuilder:
-    def __init__(self, title, outfile, size=None):
+    def __init__(self, title, outfile, page=None):
         self.outfile = outfile
         fontname = "helvetica"
         graph_attr = {"fontname": fontname,
                       "label": title,
                       "labelloc": "top",
-                      "fontsize": "25"}
-        if size is not None:
-            graph_attr["size"] = size
+                      "fontsize": "25",
+                      "rankdir": 'TB',
+                      'ratio': 'auto'}
+        graph_attr['ranksep'] = '0.5'
+        if page is not None:
+            graph_attr["page"] = page
         node_attr = {"fontname": fontname}
         edge_attr = {"fontname": fontname}
         self.graph = gv.Digraph(
@@ -31,6 +34,7 @@ class GraphBuilder:
             node_attr=node_attr,
             edge_attr=edge_attr)
         self.data_files = set()
+        self.stack = []
 
     def ensure_data_file(self, name):
         "create an data file node, if it does not already exist"
@@ -84,12 +88,17 @@ class GraphBuilder:
             self.ensure_data_file(n)
             self.graph.edge(name, n)
 
-    def cluster(self, name):
+    def push_cluster(self, name):
         invis = {"style": "invis"}
-        return self.graph.subgraph(name="cluster_" + name, graph_attr=invis)
+        self.stack.append(graph)
+        self.graph = self.graph.subgraph(name="cluster_" + name, graph_attr=invis)
 
-    def group(self, name):
-        return self.graph.subgraph(name="relevant")
+    def push_group(self, name):
+        self.stack.append(graph)
+        self.graph = self.graph.subgraph(name=name)
+
+    def pop(self):
+        self.graph = self.stack.pop()
 
     def render(self, keep=False):
         self.graph.render(_get_output_base(self.outfile), cleanup=not keep)

@@ -1,19 +1,23 @@
 
 code = ./bin/mkFlowGraph ./bin/graphlib.py
 
-all: flow xspecies
+parts = prot_trans_map uniprot_annot xspecies_trans_map xspecies_annot xspecies_compare
+all_pdfs = ${parts:%=output/%.pdf}
+flow_pdf = output/flow.pdf
+# page = --page=8.5,11
 
-flow: output/mapping-flow.pdf
-output/mapping-flow.pdf: ${code}
+all: ${flow_pdf}
+
+${flow_pdf}: ${all_pdfs}
 	@mkdir -p $(dir $@)
-	./bin/mkFlowGraph $@.tmp.pdf
+	pdfunite ${all_pdfs} $@.tmp.pdf
 	mv -f $@.tmp.pdf $@
 
-xspecies: output/xspecies-mapping-flow.pdf
-output/xspecies-mapping-flow.pdf: ${code}
+output/%.pdf: ${code}
 	@mkdir -p $(dir $@)
-	./bin/mkFlowGraph --xspecies $@.tmp.pdf
+	./bin/mkFlowGraph ${page} $* $@.tmp.pdf
 	mv -f $@.tmp.pdf $@
+
 
 
 clean:
