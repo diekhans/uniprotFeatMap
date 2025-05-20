@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+import os.path as osp
+import sys
+import argparse
+import pipettor
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap.mapping import pslMapMkCmd
+
+# Algorithm
+#  - srcTransAln  -> srcTargetGenome -> srcTransTargetGenomeAln
+#
+
+def parseArgs():
+    desc = """Create cross-species source mRNA to target genome transmap alignments.
+    """
+
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("srcTrans2GenomePsl",
+                        help="""source mRNA alignments""")
+    parser.add_argument("srcTransFa",
+                        help="""source mRNA sequences""")
+    parser.add_argument("src2TargetChains",
+                        help="""alignment chains between species""")
+    parser.add_argument("targetGenome2bit",
+                        help="""target genome 2bit""")
+    parser.add_argument("srcTrans2TargetGenomePsl",
+                        help="""alignment source mRNAs to target """)
+    return parser.parse_args()
+
+
+def transMapPipeline(srcTrans2GenomePsl, srcTransFa, src2TargetChains,
+                     targetGenome2bit, srcTrans2TargetGenomePsl):
+    cmds = (pslMapMkCmd(srcTrans2GenomePsl, src2TargetChains, "/dev/stdout", chainMapFile=True) +
+            [["pslMapPostChain", "/dev/stdin", "/dev/stdout"],
+             ["pslRecalcMatch", "/dev/stdin", targetGenome2bit, srcTransFa, "/dev/stdout"],
+             ["sort", "-k10,10", "-k12,12n"]])
+    pipettor.run(cmds, stdout=srcTrans2TargetGenomePsl)
+
+def xspeciesTrans2GenomeMap(srcTrans2GenomePsl, srcTransFa, src2TargetChains,
+                            targetGenome2bit, srcTrans2TargetGenomePsl):
+    transMapPipeline(srcTrans2GenomePsl, srcTransFa, src2TargetChains,
+                     targetGenome2bit, srcTrans2TargetGenomePsl)
+
+def main(args):
+    xspeciesTrans2GenomeMap(args.srcTrans2GenomePsl, args.srcTransFa, args.src2TargetChains,
+                            args.targetGenome2bit, args.srcTrans2TargetGenomePsl)
+
+
+main(parseArgs())

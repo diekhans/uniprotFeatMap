@@ -59,6 +59,7 @@ identify novel domains.  Comparison with InterProScan may fine novel insertions.
 *** Associate each target mRNA with the most similar src mRNA
 
 *** scan through paired mRNAs and note differences in annotations
+options for mappings
 **** mapping via implict RNA/RNA aligns in target genome
 srcAnnot-srcTrans <->
 srcTrans-targetGenome <->

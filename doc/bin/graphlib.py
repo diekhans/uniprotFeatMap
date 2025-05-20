@@ -88,14 +88,16 @@ class GraphBuilder:
             self.ensure_data_file(n)
             self.graph.edge(name, n)
 
+    def _push(self, new_graph):
+        self.stack.append(self.graph)
+        self.graph = new_graph
+
     def push_cluster(self, name):
         invis = {"style": "invis"}
-        self.stack.append(graph)
-        self.graph = self.graph.subgraph(name="cluster_" + name, graph_attr=invis)
+        self._push(self.graph.subgraph(name="cluster_" + name, graph_attr=invis))
 
     def push_group(self, name):
-        self.stack.append(graph)
-        self.graph = self.graph.subgraph(name=name)
+        self._push(self.graph.subgraph(name=name))
 
     def pop(self):
         self.graph = self.stack.pop()

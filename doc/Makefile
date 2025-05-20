@@ -1,7 +1,7 @@
 
 code = ./bin/mkFlowGraph ./bin/graphlib.py
 
-parts = prot_trans_map uniprot_annot xspecies_trans_map xspecies_annot xspecies_compare
+parts = prot_trans_map uniprot_annot xspecies_trans_map xspecies_annot interpro_annot xspecies_compare
 all_pdfs = ${parts:%=output/%.pdf}
 flow_pdf = output/flow.pdf
 # page = --page=8.5,11

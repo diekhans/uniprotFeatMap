@@ -188,12 +188,17 @@ testUniprotDecoratorsMerge: mkout
 
 ###
 # cross-species mapping
-xspeciesTests: testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotAnnotsMap \
+xspeciesTests: testXSpeciesTransMap testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotAnnotsMap \
 	testXSpeciesAnnotsToDeco
 
+testXSpeciesTransMap: mkout
+	${xspeciesTrans2GenomeMap} ${gencodePcPsl} ${gencodePcFa} \
+		${ponAbeChains} ${ponAbeTwobit} output/$@.psl
+	diff expected/$@.psl output/$@.psl
+
 testXSpeciesRnaMap: mkout
-	${xspeciesTrans2TransMap} ${gencodePcPsl} ${gencodePcFa} \
-		${ponAbeChains} ${ponAbeCat1Psl} ${ponAbeCat1RnaFa} output/$@.psl
+	${xspeciesTrans2TransMap} expected/testXSpeciesTransMap.psl ${gencodePcFa} \
+		${ponAbeCat1Psl} ${ponAbeCat1RnaFa} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXSpeciesGencodeCatFilter: mkout ${ponAbeCat1Bb}

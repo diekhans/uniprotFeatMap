@@ -11,7 +11,6 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.mapping import pslMapMkCmd
 
 # Algorithm
-#  - srcTransAln  -> srcTargetGenome -> srcTransTargetGenomeAln
 #  - srcTransTargetGenomeAln -> targetMRnaGenomeAln -> srcTargetMRnaAln
 #
 
@@ -20,43 +19,39 @@ def parseArgs():
     via transmap"""
 
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument("srcTrans2GenomePsl",
-                        help="""source inferred mRNA alignments""")
+    parser.add_argument("srcTrans2TargetGenomePsl",
+                        help="""source mRNA alignments""")
     parser.add_argument("srcTransFa",
                         help="""source mRNA sequences""")
-    parser.add_argument("src2TargetChains",
-                        help="""alignment chains between species""")
     parser.add_argument("targetTrans2GenomePsl",
-                        help="""target assembly inferred mRNA to genome alignments""")
+                        help="""target assemble inferred mRNA to genome alignments""")
     parser.add_argument("targetTransFa",
                         help="""target assembly mRNA sequences""")
-    parser.add_argument("src2TargetTransPsl",
+    parser.add_argument("srcTrans2TargetTransPsl",
                         help="""alignments of source to target transcripts """)
     return parser.parse_args()
 
 
-def transMapPipeline(srcTrans2GenomePsl, srcTransFa, src2TargetChains,
-                     targetTrans2GenomePsl, targetMRnaTwoBit, src2TargetTransPsl):
-    cmds = (pslMapMkCmd(srcTrans2GenomePsl, src2TargetChains, "/dev/stdout", chainMapFile=True) +
-            pslMapMkCmd("/dev/stdin", targetTrans2GenomePsl, "/dev/stdout", swapMap=True) +
+def transMapPipeline(srcTrans2TargetGenomePsl, srcTransFa, targetTrans2GenomePsl, targetMRnaTwoBit, srcTrans2TargetTransPsl):
+    cmds = (pslMapMkCmd(srcTrans2TargetGenomePsl, targetTrans2GenomePsl, "/dev/stdout", swapMap=True) +
             [["pslMapPostChain", "/dev/stdin", "/dev/stdout"],
              ["pslRecalcMatch", "/dev/stdin", targetMRnaTwoBit, srcTransFa, "/dev/stdout"],
              ["sort", "-k10,10", "-k12,12n"]])
-    pipettor.run(cmds, stdout=src2TargetTransPsl)
+    pipettor.run(cmds, stdout=srcTrans2TargetTransPsl)
 
-def xspeciesTrans2TransMap(srcTrans2GenomePsl, srcTransFa, src2TargetChains,
-                           targetTrans2GenomePsl, targetTransFa, src2TargetTransPsl):
+def xspeciesTrans2TransMap(srcTrans2TargetGenomePsl, srcTransFa, targetTrans2GenomePsl, targetTransFa,
+                           srcTrans2TargetTransPsl):
     tmpTargetMRnaTwoBit = fileOps.tmpFileGet("rnatwobit")
     try:
         pipettor.run(["faToTwoBit", "-long", targetTransFa, tmpTargetMRnaTwoBit])
-        transMapPipeline(srcTrans2GenomePsl, srcTransFa, src2TargetChains,
-                         targetTrans2GenomePsl, tmpTargetMRnaTwoBit, src2TargetTransPsl)
+        transMapPipeline(srcTrans2TargetGenomePsl, srcTransFa, targetTrans2GenomePsl,
+                         tmpTargetMRnaTwoBit, srcTrans2TargetTransPsl)
     finally:
         os.unlink(tmpTargetMRnaTwoBit)
 
-def main(opts):
-    xspeciesTrans2TransMap(opts.srcTrans2GenomePsl, opts.srcTransFa, opts.src2TargetChains,
-                           opts.targetTrans2GenomePsl, opts.targetTransFa, opts.src2TargetTransPsl)
+def main(args):
+    xspeciesTrans2TransMap(args.srcTrans2TargetGenomePsl, args.srcTransFa, args.targetTrans2GenomePsl,
+                           args.targetTransFa, args.srcTrans2TargetTransPsl)
 
 
 main(parseArgs())

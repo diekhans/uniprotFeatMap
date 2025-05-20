@@ -59,6 +59,7 @@ ${protTransRawAln}: ${unitprotFa} ${gencodeFa}
 	rm -rf ${protTransAlnTmpDir}
 	${time} ${uniprotProteinTranscriptAlign} --algo=${algo} ${uniprotMeta} ${unitprotFa} ${gencodeFa} $@.${tmpext} ${protTransAlnTmpDir}
 	mv -f $@.${tmpext} $@
+	rm -rf ${protTransAlnTmpDir}
 
 ##
 # protein/transcript alignment
@@ -153,9 +154,15 @@ ${xspecies_decorators_bed}: ${uniprotMeta} ${uniprotAnnot} ${xspecies_cat_psl} \
 	    ${xspecies_cat_psl} ${uniprotMeta} ${uniprotAnnot} ${xspecies_mapannot_psl} ${xspecies_mapannot_ref_tsv} $@.tmp
 	mv -f $@.tmp $@
 
-${src_xspecies_rna_aln}: ${gencodePsl} ${gencodeFa} ${src_xspecies_chains} ${xspecies_cat_psl} ${xspecies_cat_fa} ${xspecies_cat_bigcat}
+${src_xspecies_genome_aln}: ${gencodePsl} ${gencodeFa} ${src_xspecies_chains}
 	@mkdir -p $(dir $@)
-	${xspeciesTrans2TransMap} ${gencodePsl} ${gencodeFa} ${src_xspecies_chains} ${xspecies_cat_psl} ${xspecies_cat_fa} /dev/stdout | \
+	${xspeciesTrans2GenomeMap} ${gencodePsl} ${gencodeFa} ${src_xspecies_chains} ${xspecies_2${xspecies_cat_psl} ${xspecies_cat_fa} /dev/stdout | \
+	    ${xspeciesGencode2CatFilter} /dev/stdin ${xspecies_cat_bb} $@.tmp
+	mv -f $@.tmp $@
+
+${src_xspecies_rna_aln}: ${gencodeFa} ${xspecies_cat_psl} ${xspecies_cat_fa} ${xspecies_cat_bb}
+	@mkdir -p $(dir $@)
+	${xspeciesTrans2TransMap} ${src_xspecies_genome_aln} ${gencodeFa} ${xspecies_cat_psl} ${xspecies_cat_fa} /dev/stdout | \
 	    ${xspeciesGencode2CatFilter} /dev/stdin ${xspecies_cat_bb} $@.tmp
 	mv -f $@.tmp $@
 

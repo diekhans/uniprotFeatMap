@@ -32,7 +32,7 @@ def parseArgs():
     """
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--annot2TransPsl",
-                        help="""PSL alignments of UniProt annotations to transcripts, with protein in codon coordinates.""")
+                        help="""PSL alignments of interproscan  annotations to transcripts, with protein in codon coordinates. (output)""")
     parser.add_argument("--interPrefix",
                         help="""Save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
     parser.add_argument("trans2GenomePsl",

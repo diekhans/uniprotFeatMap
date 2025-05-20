@@ -28,6 +28,7 @@ xspecies_chromsizes_url = ${xspecies_url}/${asmacc}/chrom.sizes
 src_xspecies_chains = ${xspecies_rootdir}/${asmname}/${src_asmname}-${asmname}.chain.gz
 
 xspecies_dir = ${root}/bigtest/xspecies/${asmname}
+xspecies_twobit = ${xspecies_dir}/${asmname}.2bit
 xspecies_chromsizes = ${xspecies_dir}/${asmname}.sizes
 xspecies_cat_pre = ${xspecies_dir}/${asmname}.cat
 xspecies_cat_bb = ${xspecies_cat_pre}.bb
@@ -35,6 +36,7 @@ xspecies_cat_psl = ${xspecies_cat_pre}.psl
 xspecies_cat_bed = ${xspecies_cat_pre}.bed
 xspecies_cat_fa = ${xspecies_cat_pre}.fa
 
+src_xspecies_genome_aln = ${xspecies_dir}/${src_asmname}-${asmname}.genome.psl
 src_xspecies_rna_aln = ${xspecies_dir}/${src_asmname}-${asmname}.rna.psl
 xspecies_mapannot_pre = ${xspecies_dir}/${src_asmname}-${asmname}.mapAnnots
 xspecies_mapannot_psl = ${xspecies_mapannot_pre}.psl
