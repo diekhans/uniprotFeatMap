@@ -22,6 +22,15 @@ titles = {
     What.xspecies_compare: "Cross-species Compare",
 }
 
+rankdirs = {
+    What.xspecies_compare: 'LR'
+}
+
+def get_rankdir(what):
+    return rankdirs.get(what, 'TB')
+
+
+
 def _parse_args():
     desc = "generate graph of data flow"
     parser = argparse.ArgumentParser(description=desc)
@@ -220,7 +229,8 @@ def _graph_xspecies_compare(graph):
 # main functions
 ##
 def mkFlowGraph(opts, what, outfile):
-    graph = graphlib.GraphBuilder(titles[what], outfile, opts.page)
+    graph = graphlib.GraphBuilder(titles[what], outfile, page=opts.page,
+                                  rankdir=get_rankdir(what))
     if what is What.prot_trans_map:
         _graph_prot_trans_map(graph)
     elif what is What.uniprot_annot:

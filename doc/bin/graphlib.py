@@ -13,14 +13,14 @@ def _get_output_base(outfile):
     return osp.splitext(outfile)[0]
 
 class GraphBuilder:
-    def __init__(self, title, outfile, page=None):
+    def __init__(self, title, outfile, *, page=None, rankdir='TB'):
         self.outfile = outfile
         fontname = "helvetica"
         graph_attr = {"fontname": fontname,
                       "label": title,
                       "labelloc": "top",
                       "fontsize": "25",
-                      "rankdir": 'TB',
+                      "rankdir": rankdir,
                       'ratio': 'auto'}
         graph_attr['ranksep'] = '0.5'
         if page is not None:
