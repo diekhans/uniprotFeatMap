@@ -174,13 +174,13 @@ def _task_interpro_annots_to_decorators(graph):
                    inputs=(data_targetTrans2GenomePsl,
                            data_prot2TransPairedPsl,
                            data_interproAnnot2TransRefTsv),
-                   output=(data_interproAnnot2GenomePsl,
-                           data_interproAnnot2TransPsl))
+                   outputs=(data_interproAnnot2GenomePsl,
+                            data_interproAnnot2TransPsl))
     graph.add_task(prog_interproAnnotsToDecorators,
                    extins=(data_interproAnnotTsv,),
                    inputs=(data_interproAnnot2TransRefTsv,
                            data_interproAnnot2GenomePsl),
-                   output=(data_interproAnnotDecoratorBed,))
+                   outputs=(data_interproAnnotDecoratorBed,))
 
 
 def _task_xspecies_compare(graph):
@@ -229,7 +229,7 @@ def mkFlowGraph(opts, what, outfile):
         _graph_xspecies_trans_map(graph)
     elif what is What.xspecies_annot:
         _graph_xspecies_annot(graph)
-    elif what is What.intro_annot:
+    elif what is What.interpro_annot:
         _graph_interpro_annot(graph)
     elif what is What.xspecies_compare:
         _graph_xspecies_compare(graph)
