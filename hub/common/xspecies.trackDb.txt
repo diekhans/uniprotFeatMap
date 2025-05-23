@@ -9,7 +9,7 @@ group genes
 color 12,12,120
 priority 2
 visibility pack
-searchIndex name,geneName,geneName2
+searchIndex name,name2,geneName,geneName2
 bigDataUrl @genebb@
 labelFields name,name2,geneName,sourceTranscript
 defaultLabelFields name2

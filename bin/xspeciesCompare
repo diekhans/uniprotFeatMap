@@ -9,8 +9,8 @@ from pycbio.sys import cmdOps
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 
 def parseArgs():
-    desc = """Compare protein annotations between assemblies.  This find the
-    difference between a source reference genome and another target assembly.
+    desc = """Compare protein annotations between assemblies.  This identifies
+    differences between a source reference genome and another target assembly.
     This looks at both mapped annotations and annotations from other sources,
     such as native UniProt and InterProScan.
     """
