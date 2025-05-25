@@ -1,0 +1,9 @@
+category	categoryName	featType	shortFeatType
+Mut	Mutation	sequence variant	variant
+Chain	Polypeptide Chains	chain	chain
+Conflict	Sequence Conflict	sequence conflict	conflict
+Domain	Domain	domain	domain
+Domain	Domain	zinc finger region	zinc finger
+Interest	Region of Interest	region of interest	interest
+Other	Other Annotation	compositionally biased region	biased
+Other	Other Annotation	cross-link	cross-link

@@ -1,5 +1,4 @@
-track cat_blat_deco
-html cat_blat_deco.html
+track cat_uniprot_deco
 shortLabel CAT + UniProt
 longLabel CAT w mapped UniProt Decorators
 description CAT w mapped UniProt Decorators

@@ -99,7 +99,7 @@ def createAnnotToProteinCdsPsl(annotId, annotStartOff, annotEndOff,
               tName=protId, tSize=protCdsSize, tStart=annotStartOff, tEnd=annotEndOff,
               strand='+')
     psl.addBlock(PslBlock(qStart=0, tStart=annotStartOff, size=annotSize))
-    psl.computeCounts()
+    psl.updateCounts()
     return psl
 
 def pslMapAnnots(annotCanonPsl, prot2TransPairedPsl, trans2GenomePsl,

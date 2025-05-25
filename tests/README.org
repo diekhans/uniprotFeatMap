@@ -19,8 +19,13 @@ cp output/*.{psl,tsv,bed} expected/
 
 # only get ZNFs or the chain files ends up huge
 tawk '$2~/^ZNF.*/ && ($6 == "protein_coding") {print $4}' input/gencode.v43.metadata.tsv > gencode.ids
-./bin/getOrthoData gencode.ids tmp
+./bin/getOrthoData ponAbe-GCA_028885655.2 gencode.ids tmp
 
+
+** additiona CAT xspecies for Gibbon ZNF649 where domains are deleted
+
+tawk '$2~/^ZNF649/ && ($6 == "protein_coding") {print $4}' input/gencode.v43.metadata.tsv > znf649.ids
+./bin/getOrthoData symSyn-GCA_028878055.2 znf649.ids  tmp
 
 ** interproscan test cases
 use latest version of interproscan to match lookup service, don't install from

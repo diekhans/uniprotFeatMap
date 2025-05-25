@@ -7,22 +7,22 @@ set -beEu -o pipefail
 
 gencodeRel=43
 
-usage="$0 transacctsv outdir"
+usage="$0 asmname transacctsv outdir"
 
-if [ $# != 2 ] ; then
+if [ $# != 3 ] ; then
     echo "Wrong # args: $usage" >&2
     exit 1
 fi
-transacctsv="$1"
-outdir="$2"
+target_asmname="$1" ; shift
+transacctsv="$1" ; shift
+outdir="$1" ; shift
 
-target_asmname=ponAbe-GCA_028885655.2
-target_asmacc=GCA_028885655.2
-target_asmscc_parts=GCA/028/885/655
+target_asmacc=$(echo "${target_asmname}" | cut -d'-' -f2)
+target_asmscc_parts=$(echo "${target_asmacc}" | sed -E 's/(GCA)_([0-9]{3})([0-9]{3})([0-9]{3}).*/\1\/\2\/\3\/\4/')
 
-xspecies_rootdir=/hive/users/markd/gencode/projs/cls/cls-t2t-primate/hg38/data/assemblies
-xspecies_url=https://public.gi.ucsc.edu/~pnhebbar/t2t_autosomes/assemblyHub
-xspecies_genark_url=https://hgdownload.soe.ucsc.edu/hubs/${target_asmscc_parts}/${target_asmacc}
+xspecies_rootdir="/hive/users/markd/gencode/projs/cls/cls-t2t-primate/hg38/data/assemblies"
+xspecies_url="https://public.gi.ucsc.edu/~pnhebbar/t2t_autosomes/assemblyHub"
+xspecies_genark_url="https://hgdownload.soe.ucsc.edu/hubs/${target_asmscc_parts}/${target_asmacc}"
 
 target_catbb=${xspecies_url}/${target_asmacc}/tm.bb
 target_genome=${xspecies_genark_url}/${target_asmacc}.2bit
@@ -31,7 +31,7 @@ src_asmname=hg38
 src_genome=/hive/data/genomes/hg38/hg38.2bit
 src_chromSizes=/hive/data/genomes/hg38/chrom.sizes
 
-src_interpro_tsv=../../../kznf-primate-domains/results/${target_asmname}/transmap.znf.interpro.tsv
+src_interpro_tsv=../../../kznf-primate-domains/results/${target_asmname}/transmap.interpro.annot.tsv
 
 src_target_chains=${xspecies_rootdir}/${target_asmname}/${src_asmname}-${target_asmname}.chain.gz
 

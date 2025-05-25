@@ -40,6 +40,18 @@ ponAbeTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/885/655/GCA_02888565
 ponAbeChains = input/ponAbe-GCA_028885655.2.chains
 ponAbeChromSizes = input/ponAbe-GCA_028885655.2.sizes
 
+symSynCat1BigCat = input/symSyn-GCA_028878055.2.cat.bigCat
+symSynCat1Gp = input/symSyn-GCA_028878055.2.cat.gp
+symSynCat1Psl = input/symSyn-GCA_028878055.2.cat.psl
+symSynCat1RnaFa = input/symSyn-GCA_028878055.2.cat.rna.fa
+symSynCat1ProtFa = input/symSyn-GCA_028878055.2.cat.prot.fa
+symSynCat1Meta = input/symSyn-GCA_028878055.2.cat.meta.tsv
+symSynCat1Bb = output/symSyn-GCA_028878055.2.cat.bb
+symSynTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/878/055/GCA_028878055.2/GCA_028878055.2.2bit
+symSynChains = input/symSyn-GCA_028878055.2.chains
+symSynChromSizes = input/symSyn-GCA_028878055.2.sizes
+
+
 bigCatAs = input/bigCat.as
 
 all:
@@ -67,7 +79,7 @@ aligntest:
 
 ####
 uniprotTests: uniprotProteinTranscriptMapTests uniprotAnnotsMapTests uniprotAnnotsToDecoratorsTests \
-	uniprotDecoratorsMergeTests xspeciesTests uniprotInfoTests 
+	uniprotDecoratorsMergeTests xspeciesPonAbeTests xspeciesSymSynTests uniprotInfoTests 
 
 
 # serial due to parasol bug
@@ -187,28 +199,29 @@ testUniprotDecoratorsMerge: mkout
 	diff expected/$@.bed output/$@.bed
 
 ###
-# cross-species mapping
-xspeciesTests: testXSpeciesTransMap testXSpeciesRnaMap testXSpeciesGencodeCatFilter testXSpeciesUniprotAnnotsMap \
-	testXSpeciesAnnotsToDeco
+# cross-species mapping with orangutan
+###
+xspeciesPonAbeTests: testXsPonAbeTransMap testXsPonAbeRnaMap testXsPonAbeGencodeCatFilter testXsPonAbeUniprotAnnotsMap \
+	testXsPonAbeAnnotsToDeco
 
-testXSpeciesTransMap: mkout
+testXsPonAbeTransMap: mkout
 	${xspeciesTrans2GenomeMap} ${gencodePcPsl} ${gencodePcFa} \
 		${ponAbeChains} ${ponAbeTwobit} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
-testXSpeciesRnaMap: mkout
-	${xspeciesTrans2TransMap} expected/testXSpeciesTransMap.psl ${gencodePcFa} \
+testXsPonAbeRnaMap: mkout
+	${xspeciesTrans2TransMap} expected/testXsPonAbeTransMap.psl ${gencodePcFa} \
 		${ponAbeCat1Psl} ${ponAbeCat1RnaFa} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
-testXSpeciesGencodeCatFilter: mkout ${ponAbeCat1Bb}
-	${xspeciesGencode2CatFilter} expected/testXSpeciesRnaMap.psl ${ponAbeCat1Bb} output/$@.psl
+testXsPonAbeGencodeCatFilter: mkout ${ponAbeCat1Bb}
+	${xspeciesGencode2CatFilter} expected/testXsPonAbeRnaMap.psl ${ponAbeCat1Bb} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
-testXSpeciesUniprotAnnotsMap: mkout
+testXsPonAbeUniprotAnnotsMap: mkout
 	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
 	    --annot2TransPsl=output/$@.annotsTrans.psl \
-	    --xspeciesTrans2TransPsl=expected/testXSpeciesGencodeCatFilter.psl \
+	    --xspeciesTrans2TransPsl=expected/testXsPonAbeGencodeCatFilter.psl \
 	    ${ponAbeCat1Psl} ${swissprotAnnots} expected/testUniprotProteinTranscriptMapSP.psl \
             output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
 	diff expected/$@.psl output/$@.psl
@@ -220,13 +233,58 @@ testXSpeciesUniprotAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.psl
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
-testXSpeciesAnnotsToDeco: mkout
+testXsPonAbeAnnotsToDeco: mkout
 	${uniprotAnnotsToDecorators} --nproc=${nproc} ${ponAbeCat1Psl} ${swissprotMeta} ${swissprotAnnots} \
-	    expected/testXSpeciesUniprotAnnotsMap.psl expected/testXSpeciesUniprotAnnotsMap.ref.tsv \
+	    expected/testXsPonAbeUniprotAnnotsMap.psl expected/testXsPonAbeUniprotAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -sizesIs2Bit -tab expected/$@.bed ${ponAbeTwobit} output/$@.bb
+
+##
+# Cross-species mapping with gibbon
+# Gibbon has a domain deletion in ZNF649
+#
+xspeciesSymSynTests: testXsSymSynTransMap testXsSymSynRnaMap testXsSymSynGencodeCatFilter testXsSymSynUniprotAnnotsMap \
+	testXsSymSynAnnotsToDeco
+
+testXsSymSynTransMap: mkout
+	${xspeciesTrans2GenomeMap} ${gencodePcPsl} ${gencodePcFa} \
+		${symSynChains} ${symSynTwobit} output/$@.psl
+	diff expected/$@.psl output/$@.psl
+
+testXsSymSynRnaMap: mkout
+	${xspeciesTrans2TransMap} expected/testXsSymSynTransMap.psl ${gencodePcFa} \
+		${symSynCat1Psl} ${symSynCat1RnaFa} output/$@.psl
+	diff expected/$@.psl output/$@.psl
+
+testXsSymSynGencodeCatFilter: mkout ${symSynCat1Bb}
+	${xspeciesGencode2CatFilter} expected/testXsSymSynRnaMap.psl ${symSynCat1Bb} output/$@.psl
+	diff expected/$@.psl output/$@.psl
+
+testXsSymSynUniprotAnnotsMap: mkout
+	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
+	    --annot2TransPsl=output/$@.annotsTrans.psl \
+	    --xspeciesTrans2TransPsl=expected/testXsSymSynGencodeCatFilter.psl \
+	    ${symSynCat1Psl} ${swissprotAnnots} expected/testUniprotProteinTranscriptMapSP.psl \
+            output/$@.psl output/$@.ref.tsv output/$@.problems.tsv
+	diff expected/$@.psl output/$@.psl
+	diff expected/$@.ref.tsv output/$@.ref.tsv
+	diff expected/$@.problems.tsv output/$@.problems.tsv
+	diff expected/$@.inter.annotTrans.psl output/$@.inter.annotTrans.psl
+	diff expected/$@.inter.annotTrans.psl output/$@.annotsTrans.psl
+	diff expected/$@.annotsTrans.psl output/$@.annotsTrans.psl
+	pslCheck -verbose=0 output/$@.psl
+	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
+
+testXsSymSynAnnotsToDeco: mkout
+	${uniprotAnnotsToDecorators} --nproc=${nproc} ${symSynCat1Psl} ${swissprotMeta} ${swissprotAnnots} \
+	    expected/testXsSymSynUniprotAnnotsMap.psl expected/testXsSymSynUniprotAnnotsMap.ref.tsv \
+            output/$@.bed --featTypesTsv=output/$@.types.tsv
+	diff expected/$@.bed output/$@.bed
+	diff expected/$@.types.tsv output/$@.types.tsv
+	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -sizesIs2Bit -tab expected/$@.bed ${symSynTwobit} output/$@.bb
+
 
 ###
 uniprotInfoTests: testUniprotInfoEnsTrans testUniprotInfoGeneName
@@ -310,6 +368,10 @@ ${bigGenePredAs}: mkout
 
 ${ponAbeCat1Bb}: ${ponAbeCat1BigCat} ${bigCatAs} mkout
 	bedToBigBed -tab -type=bed12+ -as=${bigCatAs} -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
+	mv -f $@.tmp $@
+
+${symSynCat1Bb}: ${symSynCat1BigCat} ${bigCatAs} mkout
+	bedToBigBed -tab -type=bed12+ -as=${bigCatAs} -extraIndex=name -sizesIs2Bit $< ${symSynTwobit} $@.tmp
 	mv -f $@.tmp $@
 
 ##

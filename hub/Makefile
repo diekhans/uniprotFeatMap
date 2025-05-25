@@ -42,9 +42,9 @@ ${gencodeTrackPre}.bed: ${gencodeGp}
 	genePredToBigGenePred -geneNames=hg38/gencode.names -geneType=hg38/gencode.types $< /dev/stdout | sort -k1,1 -k2,2n > $@.tmp
 	mv -f $@.tmp $@
 
-mkDoc: hg38/gencodeV45_blat_deco.html
+mkDoc: hg38/gencodeV47_blat_deco.html
 
-hg38/gencodeV45_blat_deco.html: ${root}/doc/deco-desc.html
+hg38/gencodeV47_blat_deco.html: ${root}/doc/deco-desc.html
 	@mkdir -p $(dir $@)
 	cp -f $< $@
 

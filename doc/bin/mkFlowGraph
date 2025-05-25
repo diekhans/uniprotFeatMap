@@ -29,8 +29,6 @@ rankdirs = {
 def get_rankdir(what):
     return rankdirs.get(what, 'TB')
 
-
-
 def _parse_args():
     desc = "generate graph of data flow"
     parser = argparse.ArgumentParser(description=desc)
