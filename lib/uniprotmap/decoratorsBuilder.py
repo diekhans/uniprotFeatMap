@@ -5,7 +5,7 @@ generate decorators given PSLs in each subprocess.
 import multiprocessing as mp
 import pipettor
 from pycbio.sys import fileOps
-from uniprotmap.mappingAnalysis import annotMappingReader
+from uniprotmap.mappingAnalysis import transAnnotMappingReader
 
 # chrom,  chromStart, chromEnd, decoratedItem, name, dataset
 decoratorBedSortOpts = ["-k1,1", "-k2,2n", "-k3,3n", "-k13,13", "-k4,4n", "-k17,17"]
@@ -33,8 +33,8 @@ def _worker(mappingBatch):
         return _gAnnotationProcessor
     try:
         decoBeds = []
-        for annotMapping in mappingBatch:
-            beds = _gAnnotationProcessor.create(annotMapping)
+        for transAnnotMappings in mappingBatch:
+            beds = _gAnnotationProcessor.create(transAnnotMappings)
             if beds is not None:
                 decoBeds.extend(beds)
         return decoBeds
@@ -43,12 +43,12 @@ def _worker(mappingBatch):
         ex2.__cause__ = ex
         return ex
 
-def _annotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize):
+def _transAnnotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize):
     """return list of AnnotMapping"""
     mappingBatch = []
 
-    for annotMapping in annotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
-        mappingBatch.append(annotMapping)
+    for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
+        mappingBatch.append(transAnnotMappings)
         if len(mappingBatch) >= batchSize:
             yield mappingBatch
             mappingBatch = []
@@ -79,7 +79,7 @@ def processSingle(annotationProcessorFactory, featTypeFunc,
     # this is easier to debug without mp
     _workerInit(annotationProcessorFactory)
     decoBedsList = []
-    for mappingBatch in _annotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize):
+    for mappingBatch in _transAnnotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize):
         decoBeds = _worker(mappingBatch)
         _checkForWorkerFail(decoBeds)
         decoBedsList.append(decoBeds)
@@ -93,7 +93,7 @@ def processMulti(annotationProcessorFactory, featTypeFunc,
     with mp.Pool(processes=nprocs, initializer=_workerInit,
                  initargs=((annotationProcessorFactory,))) as pool:
         decoBedIters = pool.imap_unordered(_worker,
-                                           _annotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize))
+                                           _transAnnotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize))
 
         featTypes = _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile)
     return featTypes
@@ -106,7 +106,7 @@ def buildDecorators(annotationProcessorFactory, featTypeFunc, annot2GenomePslFil
 
     - annotationProcessorFactory function, usually a partial with arguments,
       creates an object convert PSLs to decorators.  It should have one function
-        annotationProcessor.create(alignIdx, annotPsl)
+        annotationProcessor.create(transAnnotMappings)
       that either returns a *list* of decorator BED records or None.
     - featTypeFunc - a function that given a decorate BED returns an tuple
       that describes features used in the decorates to use in building filters.

@@ -52,7 +52,7 @@ def parseArgs():
                         help="""Show description of colors used, mostly for producing documentation""")
     parser.add_argument("--nprocs", type=int, default=1,
                         help="""number of processers to use""")
-    parser.add_argument("--batchSize", type=int, default=1000,
+    parser.add_argument("--batchSize", type=int, default=250,
                         help="""size of batch to sent to task""")
     parser.add_argument("--dataset", type=UniProtDataSet, choices=UniProtDataSet, default=UniProtDataSet.SwissProt,
                         help="""Is the UniProt dataset SwissProt or TrEMBL?""")
@@ -175,7 +175,7 @@ def mkBrokenAnnotDecorators(ainfo, featIndels):
 def buildAnnotation(ainfo):
     "converts BEDs to strings so this work is distributed"
     decoBeds = []
-    featIndels = analyzeFeatureMapping(ainfo.transPsl, ainfo.annotPsl)
+    featIndels = analyzeFeatureMapping(ainfo.annotTransRef, ainfo.transPsl, ainfo.annotPsl)
     decoBeds.append(mkMainAnnotDecorator(ainfo, featIndels))
     if len(featIndels) > 0:
         decoBeds.extend(mkBrokenAnnotDecorators(ainfo, featIndels))
@@ -201,12 +201,22 @@ class AnnotationProcessor:
                           transCategory=transCategory, dataSet=self.dataSet)
         return buildAnnotation(ainfo)
 
-    def create(self, annotMapping):
+    def _createAnnot(self, annotMapping):
+        if annotMapping.annotPsl is None:
+            return None
         annot = self.uniprotAnnotTbl.getByAnnotId(annotMapping.annotTransRef.annotId)
-        if (annotMapping.annotPsl is not None) and includeAnnot(annot):
+        if includeAnnot(annot):
             return self._buildAnnotation(annotMapping.annotPsl, annot, annotMapping.annotTransRef)
         else:
             return None
+
+    def create(self, transAnnotMappings):
+        beds = []
+        for annotMapping in transAnnotMappings.annotMappings:
+            bed = self._createAnnot(annotMapping)
+            if bed is not None:
+                beds.extend(bed)
+        return beds
 
 def getFeatType(decoBed):
     """use to return tuple for collecting feature types that used when defining filters"""

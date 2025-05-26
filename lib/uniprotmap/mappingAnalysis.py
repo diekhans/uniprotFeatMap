@@ -11,23 +11,39 @@ from uniprotmap.metadata import annotTransRefReader
 ###
 class AnnotMapping(namedtuple("AnnotMapping",
                               ("annotTransRef", "annotPsl"))):
-    """annotPsl is None if not mapped"""
+    """A single mapping for an annotation. annotPsl is None if not mapped"""
     __slots__ = ()
 
 
-def _nextAnnotMapping(annotTransRef, annotPsls):
+class TransAnnotMappings(namedtuple("TransAnnotMappings",
+                                    ("transcriptId", "annotMappings",))):
+    """Mappings for all annotations on a transcript.  The full list is
+    needed to place deleted annotations."""
+    __slots__ = ()
+
+
+def _makeAnnotMapping(annotTransRef, annotPsls):
     if annotTransRef.alignIdx is None:
         return AnnotMapping(annotTransRef, None)
     else:
         return AnnotMapping(annotTransRef, annotPsls[annotTransRef.alignIdx])
 
-def annotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
-    """Reads mapped annotation alignments and metadata.  Returns only
-    metadata for annotations that don't map. Yields AnnotMapping objects"""
+def transAnnotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
+    """Reads mapped annotation alignments and metadata for a target transcript.  Returns only
+    metadata for annotations that don't map. Yields TransAnnotMappings objects"""
 
     annotPsls = [p for p in PslReader(annot2GenomePslFile)]
+    prevAnnotRef = None
+    annotMappings = []
     for annotTransRef in annotTransRefReader(annot2TransRefTsv):
-        yield _nextAnnotMapping(annotTransRef, annotPsls)
+        if (prevAnnotRef is not None) and (annotTransRef.transcriptId != prevAnnotRef.transcriptId):
+            yield TransAnnotMappings(prevAnnotRef.transcriptId, tuple(annotMappings))
+            annotMappings = []
+        annotMappings.append(_makeAnnotMapping(annotTransRef, annotPsls))
+        prevAnnotRef = annotTransRef
+    if len(annotMappings) > 0:
+        yield TransAnnotMappings(prevAnnotRef.transcriptId, tuple(annotMappings))
+
 
 ###
 # Analysis of annotation INDELs
@@ -113,14 +129,15 @@ def _analyzeBlocks(transPsl, annotPsl):
     for iBlk in range(len(annotPsl.blocks) - 1):
         yield from _analyzeBlock(transPsl, annotPsl, iBlk)
 
-def _featureIndelGen(transPsl, annotPsl):
-    yield from _analyzeStart(annotPsl)
-    yield from _analyzeBlocks(transPsl, annotPsl)
-    yield from _analyzeEnd(annotPsl)
+def _featureIndelGen(annotTransRef, transPsl, annotPsl):
+    if annotPsl is not None:
+        yield from _analyzeStart(annotPsl)
+        yield from _analyzeBlocks(transPsl, annotPsl)
+        yield from _analyzeEnd(annotPsl)
 
-def analyzeFeatureMapping(transPsl, annotPsl):
+def analyzeFeatureMapping(annotTransRef, transPsl, annotPsl):
     """product list of feature disruptions, either
     unmapped regions of feature or insertions in
     feature that don't correspond to introns in
     transcripts."""
-    return tuple(_featureIndelGen(transPsl, annotPsl))
+    return tuple(_featureIndelGen(annotTransRef, transPsl, annotPsl))

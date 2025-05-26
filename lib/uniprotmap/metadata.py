@@ -94,7 +94,7 @@ class AnnotTransRefWriter:
             self.close()
 
     def write(self, annotId, transcriptId, transcriptPos, xspeciesSrcTransId, alignIdx):
-        "write record, return assigned annotMapId"
+        """Write record, return assigned annotMapId. Must be grouped and sorted by mapped transcript id"""
         annotMapId = annotMapIdFmt(annotId, self.idxCounter[annotId])
         self.idxCounter[annotId] += 1
         fileOps.prRowv(self.fh, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)
