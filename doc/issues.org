@@ -1,10 +1,14 @@
 #+STARTUP: nologdone
 #+TODO: TODO URGENT | DONE CANCELED
 
+* uniprotAnnotsToDecorators has gotten convoluted.
+Maybe have a processor object per transcript
+
 * metadata doesn't parallel PSLs, see
 lib/uniprotmap/mappingAnalysis.py
 this is done for unique ids assign, which could be handled
 by a level of indirection
+but maybe just leave it with reading into memory
 
 * xspeciesTrans2TransMap is a dumb name
 

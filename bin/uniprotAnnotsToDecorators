@@ -77,9 +77,10 @@ def parseArgs():
     return opts
 
 class AnnotInfo(namedtuple("AnnotInfo",
-                           ("transPsl", "annotPsl", "annot", "annotTransRef",
+                           ("transPsl", "annotTransRef", "annotPsl", "annot",
                             "transCategory", "dataSet"))):
-    "common data passed through a lot of functions"
+    """Common data passed through a lot of functions.  Includes full transcripts references,
+    as they are needed for finding context for deleted annotations."""
     pass
 
 ##
@@ -192,28 +193,29 @@ class AnnotationProcessor:
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
         self.uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
 
-    def _buildAnnotation(self, annotPsl, annot, annotTransRef):
+    def _buildAnnotation(self, transAnnotMappings, annotMapping, annot):
         uniprotMeta = self.uniprotMetaTbl.getByAcc(annot.acc)
-        transPsl = self.geneSetData.getAlign(annotTransRef.transcriptId, annotPsl.tName)
-        transCategory = calcTransCategory(uniprotMeta, annotTransRef.transcriptId)
+        transPsl = self.geneSetData.getAlign(transAnnotMappings.transcriptId, transAnnotMappings.chrom)
+        transCategory = calcTransCategory(uniprotMeta, transAnnotMappings.transcriptId)
         # package up since so many parameters
-        ainfo = AnnotInfo(transPsl=transPsl, annotPsl=annotPsl, annot=annot, annotTransRef=annotTransRef,
+        ainfo = AnnotInfo(transPsl=transPsl, annotPsl=annotMapping.annotPsl,
+                          annotTransRef=annotMapping.annotTransRef, annot=annot,
                           transCategory=transCategory, dataSet=self.dataSet)
         return buildAnnotation(ainfo)
 
-    def _createAnnot(self, annotMapping):
+    def _createAnnot(self, transAnnotMappings, annotMapping):
         if annotMapping.annotPsl is None:
             return None
         annot = self.uniprotAnnotTbl.getByAnnotId(annotMapping.annotTransRef.annotId)
         if includeAnnot(annot):
-            return self._buildAnnotation(annotMapping.annotPsl, annot, annotMapping.annotTransRef)
+            return self._buildAnnotation(transAnnotMappings, annotMapping, annot)
         else:
             return None
 
     def create(self, transAnnotMappings):
         beds = []
         for annotMapping in transAnnotMappings.annotMappings:
-            bed = self._createAnnot(annotMapping)
+            bed = self._createAnnot(transAnnotMappings, annotMapping)
             if bed is not None:
                 beds.extend(bed)
         return beds

@@ -128,7 +128,7 @@ The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
 Disruption annotations are in the form `<canon_acc>|<annot_idx>|<map_idx>|<distrib_idx>`
   
 - `disrupt_idx` - for disruption decorators, and an addition disruption index appended to
-`annotMapId` to make them unique.
+  `annotMapId` to make them unique, as a given annotation maybe have multiple disruptions.
 
 A file `*.ref.tsv` file is created when annotations are mapped to using in
 mapping `annotMapId`s back to the UniProt feature and transcript.

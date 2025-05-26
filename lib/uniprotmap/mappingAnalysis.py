@@ -16,17 +16,22 @@ class AnnotMapping(namedtuple("AnnotMapping",
 
 
 class TransAnnotMappings(namedtuple("TransAnnotMappings",
-                                    ("transcriptId", "annotMappings",))):
+                                    ("transcriptId", "chrom", "annotMappings",))):
     """Mappings for all annotations on a transcript.  The full list is
     needed to place deleted annotations."""
     __slots__ = ()
-
 
 def _makeAnnotMapping(annotTransRef, annotPsls):
     if annotTransRef.alignIdx is None:
         return AnnotMapping(annotTransRef, None)
     else:
         return AnnotMapping(annotTransRef, annotPsls[annotTransRef.alignIdx])
+
+def _makeTransAnnotMapping(annotMappings):
+    annotTransRef0 = annotMappings[0].annotTransRef
+    return TransAnnotMappings(annotTransRef0.transcriptId,
+                              annotTransRef0.transcriptPos.name,
+                              tuple(annotMappings))
 
 def transAnnotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
     """Reads mapped annotation alignments and metadata for a target transcript.  Returns only
@@ -36,13 +41,16 @@ def transAnnotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
     prevAnnotRef = None
     annotMappings = []
     for annotTransRef in annotTransRefReader(annot2TransRefTsv):
-        if (prevAnnotRef is not None) and (annotTransRef.transcriptId != prevAnnotRef.transcriptId):
-            yield TransAnnotMappings(prevAnnotRef.transcriptId, tuple(annotMappings))
+        # ensure on same chrom for PAR issues
+        if ((prevAnnotRef is not None) and
+            ((annotTransRef.transcriptId != prevAnnotRef.transcriptId) or
+             (annotTransRef.transcriptPos.name != prevAnnotRef.transcriptPos.name))):
+            yield _makeTransAnnotMapping(annotMappings)
             annotMappings = []
         annotMappings.append(_makeAnnotMapping(annotTransRef, annotPsls))
         prevAnnotRef = annotTransRef
     if len(annotMappings) > 0:
-        yield TransAnnotMappings(prevAnnotRef.transcriptId, tuple(annotMappings))
+        yield _makeTransAnnotMapping(annotMappings)
 
 
 ###
@@ -129,11 +137,19 @@ def _analyzeBlocks(transPsl, annotPsl):
     for iBlk in range(len(annotPsl.blocks) - 1):
         yield from _analyzeBlock(transPsl, annotPsl, iBlk)
 
+def _analyzePartialDeletion(transPsl, annotPsl):
+    yield from _analyzeStart(annotPsl)
+    yield from _analyzeBlocks(transPsl, annotPsl)
+    yield from _analyzeEnd(annotPsl)
+
+def _analyzeFullDeletion():
+    raise Exception("_analyzeFullDeletion not implemented yet")
+
 def _featureIndelGen(annotTransRef, transPsl, annotPsl):
-    if annotPsl is not None:
-        yield from _analyzeStart(annotPsl)
-        yield from _analyzeBlocks(transPsl, annotPsl)
-        yield from _analyzeEnd(annotPsl)
+    if annotPsl is None:
+        yield from _analyzeFullDeletion()
+    else:
+        yield from _analyzePartialDeletion(transPsl, annotPsl)
 
 def analyzeFeatureMapping(annotTransRef, transPsl, annotPsl):
     """product list of feature disruptions, either

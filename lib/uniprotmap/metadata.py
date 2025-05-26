@@ -27,7 +27,7 @@ class AnnotTransRef(namedtuple("AnnotTransRef",
         annotId: identifies annotation within an UniProt entry (Q9BXI3|0) [not stored in file]
         annotMapId: identifies mapping of annotation to a given transcript (Q9BXI3|0|0), None if
             not mapped.
-        transcriptPos: chr1:11674479-11691650 position of transcript (FIXME needed, in PSL)
+        transcriptPos: position of transcript as a Coords object
         transcriptId: ENST00000235310.7
         xspeciesSrcTransId: transcript id of the source transcript that was mapped to the other
             species transcript
@@ -45,6 +45,7 @@ def _annotTransRefParseRow(reader, row):
 _annotTransRefTypeMap = {
     "xspeciesSrcTransId": strOrNoneType,
     "alignIdx": intOrNoneType,
+    "transcriptPos": Coords.parse,
 }
 
 class AnnotTransRefError(Exception):
@@ -100,6 +101,5 @@ class AnnotTransRefWriter:
         fileOps.prRowv(self.fh, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)
 
 def xrefToItemArgs(annotTransRef):
-    "convert xref into into [name, start, end]"
-    coords = Coords.parse(annotTransRef.transcriptPos)
-    return annotTransRef.transcriptId, coords.start, coords.end
+    "convert xref into into [name, start, end] for decorator"
+    return annotTransRef.transcriptId, annotTransRef.transcriptPos.start, annotTransRef.transcriptPos.end
