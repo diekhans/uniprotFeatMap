@@ -8,7 +8,7 @@ group genes
 color 12,12,120
 priority 3
 visibility pack
-searchIndex name
+searchIndex name,name2,geneName,geneName2
 bigDataUrl gencode.v43.bb
 labelFields name,name2
 defaultLabelFields name,name2

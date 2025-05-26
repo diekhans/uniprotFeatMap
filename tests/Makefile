@@ -10,7 +10,9 @@ endif
 
 hg38ChromSizes = input/hg38.sizes
 
-testHubFiles = empty.html genomes.txt hub.txt hg38.trackDb.txt ponAbe-GCA_028885655.2.trackDb.txt
+testHubFiles = empty.html genomes.txt hub.txt hg38.trackDb.txt \
+	ponAbe-GCA_028885655.2.trackDb.txt \
+	symSyn-GCA_028878055.2.trackDb.txt
 testHubFilesOutput = ${testHubFiles:%=output/%}
 
 testHubUrl = https://hgwdev.gi.ucsc.edu/~markd/kznf/uniprotFeatMap/tests/output/hub.txt
@@ -361,23 +363,23 @@ gencodeGeneNames = output/gencode.v43.genenames
 ${gencodeBb}: ${gencodeGp} ${bigGenePredAs} mkout
 	tawk '{print $$4,$$3,$$1}' ${gencodeMeta} > ${gencodeGeneNames}
 	genePredToBigGenePred -geneNames=${gencodeGeneNames} $< /dev/stdout | sort -k1,1 -k2,2n > ${gencodeBGpIn}
-	bedToBigBed -type=bed12 -tab -as=${bigGenePredAs} ${gencodeBGpIn} ${hg38ChromSizes} $@
+	bedToBigBed -type=bed12 -tab -extraIndex=name,name2,geneName,geneName2 -as=${bigGenePredAs} ${gencodeBGpIn} ${hg38ChromSizes} $@
 
 ${bigGenePredAs}: mkout
 	wget -O $@ -nv https://genome.ucsc.edu/goldenpath/help/examples/bigGenePred.as
 
 ${ponAbeCat1Bb}: ${ponAbeCat1BigCat} ${bigCatAs} mkout
-	bedToBigBed -tab -type=bed12+ -as=${bigCatAs} -extraIndex=name -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
+	bedToBigBed -tab -type=bed12+ -as=${bigCatAs} -extraIndex=name,name2,geneName -sizesIs2Bit $< ${ponAbeTwobit} $@.tmp
 	mv -f $@.tmp $@
 
 ${symSynCat1Bb}: ${symSynCat1BigCat} ${bigCatAs} mkout
-	bedToBigBed -tab -type=bed12+ -as=${bigCatAs} -extraIndex=name -sizesIs2Bit $< ${symSynTwobit} $@.tmp
+	bedToBigBed -tab -type=bed12+ -as=${bigCatAs}  -extraIndex=name,name2,geneName -sizesIs2Bit $< ${symSynTwobit} $@.tmp
 	mv -f $@.tmp $@
 
 ##
 # hub
 ##
-hub: ${gencodeBrowserDirDone} ${testHubFilesOutput} ${gencodeBb} ${ponAbeCat1Bb}
+hub: ${gencodeBrowserDirDone} ${testHubFilesOutput} ${gencodeBb} ${ponAbeCat1Bb} ${symSynCat1Bb}
 	hubCheck $$(pwd)/output/hub.txt
 
 ${gencodeBrowserDirDone}: ${gencodeGp}
