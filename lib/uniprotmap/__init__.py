@@ -6,6 +6,10 @@ import sys
 import os
 from pycbio.sys import fileOps
 
+class OutOfSyncError(Exception):
+    "error when files that should be matched are out-of-sync"
+    pass
+
 def prMsg(msg):
     print(msg, file=sys.stderr, flush=True)
 

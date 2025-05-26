@@ -12,7 +12,7 @@ from pycbio.hgdata.decoration import BedBlock
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.interproscan import interproAnnotsLoad
 from uniprotmap.interproDecorators import InterproDecoration, AnnotCategory, INTERPRO_COLOR, OTHER_COLOR
-from uniprotmap.metadata import AnnotTransRefs, xrefToItemArgs
+from uniprotmap.metadata import xrefToItemArgs
 from uniprotmap.decoratorsBuilder import buildDecorators
 
 def parseArgs():
@@ -79,18 +79,16 @@ def makeDecorator(annot, annotPsl, annotTransRef):
 class AnnotationProcessor:
     """Class used to generate decorators."""
 
-    def __init__(self, interproAnnotTsv, annot2TransRefTsv):
+    def __init__(self, interproAnnotTsv):
         self.interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
-        self.annotTransRefs = AnnotTransRefs(annot2TransRefTsv)
 
-    def _buildAnnotation(self, annotPsl, annot, alignIdx):
-        annotTransRef = self.annotTransRefs.get(annotPsl.qName, alignIdx)
+    def _buildAnnotation(self, annotPsl, annot, annotTransRef):
         return makeDecorator(annot, annotPsl, annotTransRef)
 
-    def create(self, alignIdx, annotPsl):
-        annot = self.interproAnnotTbl.getByAnnotId(annotPsl.qName)
-        if includeAnnot(annot):
-            return [self._buildAnnotation(annotPsl, annot, alignIdx)]
+    def create(self, annotMapping):
+        annot = self.interproAnnotTbl.getByAnnotId(annotMapping.annotTransRef.annotId)
+        if (annotMapping.annotPsl is not None) and includeAnnot(annot):
+            return [self._buildAnnotation(annotMapping.annotPsl, annot, annotMapping.annotTransRef)]
         else:
             return None
 
@@ -106,7 +104,7 @@ def writeFeatTypes(featTypes, featTypesTsv):
 
 def interproAnnotsToDecorators(interproAnnotTsv, annot2GenomePslFile, annot2TransRefTsv,
                                annotDecoratorBedFile, nprocs, batchSize, featTypesTsv):
-    annotProcFunc = partial(AnnotationProcessor, interproAnnotTsv, annot2TransRefTsv)
+    annotProcFunc = partial(AnnotationProcessor, interproAnnotTsv)
 
     featTypes = buildDecorators(annotProcFunc, getFeatType,
                                 annot2GenomePslFile, annot2TransRefTsv,

@@ -3,17 +3,47 @@ Analyze mappings of features to transcripts.
 """
 from collections import namedtuple
 from pycbio.sys.symEnum import SymEnum, auto
+from pycbio.hgdata.psl import PslReader
+from uniprotmap.metadata import annotTransRefReader
 
+###
+# Reading annotation mappings
+###
+class AnnotMapping(namedtuple("AnnotMapping",
+                              ("annotTransRef", "annotPsl"))):
+    """annotPsl is None if not mapped"""
+    __slots__ = ()
+
+
+def _nextAnnotMapping(annotTransRef, annotPsls):
+    if annotTransRef.alignIdx is None:
+        return AnnotMapping(annotTransRef, None)
+    else:
+        return AnnotMapping(annotTransRef, annotPsls[annotTransRef.alignIdx])
+
+def annotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
+    """Reads mapped annotation alignments and metadata.  Returns only
+    metadata for annotations that don't map. Yields AnnotMapping objects"""
+
+    annotPsls = [p for p in PslReader(annot2GenomePslFile)]
+    for annotTransRef in annotTransRefReader(annot2TransRefTsv):
+        yield _nextAnnotMapping(annotTransRef, annotPsls)
+
+###
+# Analysis of annotation INDELs
+###
 class FeatureIndelType(SymEnum):
     del_5p = auto()
     del_3p = auto()
     del_int = auto()
+    del_full = auto()
     insert = auto()
 
 _featIndelText = {
     FeatureIndelType.del_5p: "5' deletion",
     FeatureIndelType.del_3p: "5' deletion",
     FeatureIndelType.del_int: "internal deletion",
+    FeatureIndelType.del_full: "full deletion",
     FeatureIndelType.insert: "insertion"
 }
 
@@ -21,10 +51,8 @@ def getFeatureIndelText(indelType):
     return _featIndelText[indelType]
 
 class FeatureIndel(namedtuple("FeatureIndel",
-                              ("indelType", "length",
-                               "tStart", "tEnd",
-                               ))):
-    """Describes an INDEL.  For featDel, length is bases deleted, for inst it
+                              ("indelType", "length", "tStart", "tEnd"))):
+    """Describes an INDEL.  For featDel, length in bases deleted, for insert it
     is length of insert.  ranges can be zero length."""
     __slots__ = ()
 
@@ -91,7 +119,6 @@ def _featureIndelGen(transPsl, annotPsl):
     yield from _analyzeEnd(annotPsl)
 
 def analyzeFeatureMapping(transPsl, annotPsl):
-
     """product list of feature disruptions, either
     unmapped regions of feature or insertions in
     feature that don't correspond to introns in

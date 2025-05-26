@@ -4,15 +4,19 @@ Metadata support associated with annotation mappings.
 annotMapIds are in the form: <canon_acc>|<annot_idx>|<map_idx>
 """
 
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from pycbio.sys import fileOps
 from pycbio.hgdata.coords import Coords
-from pycbio.tsv import TsvReader, TsvRow, strOrNoneType, intOrNoneType
+from pycbio.tsv import TsvReader, strOrNoneType, intOrNoneType
 from uniprotmap import annotMapIdFmt, annotMapIdToAnnotId
 
 ###
 
-class AnnotTransRef(TsvRow):
+_annotTransRefRowFields = ("annotMapId", "transcriptPos", "transcriptId",
+                           "xspeciesSrcTransId", "alignIdx")
+
+class AnnotTransRef(namedtuple("AnnotTransRef",
+                    ("annotId",) + _annotTransRefRowFields)):
     """ Metadata for mapping of an annotation to a transcript.
     This parallels the PSL file containing the annotation to transcript
     alignments.  Annotations that did not map to the transcript have entries
@@ -30,11 +34,13 @@ class AnnotTransRef(TsvRow):
         alignIdx: zero-based line numner of PSL alignment file associated with this annotation, or
            None if not mapped
     """
+    # This needs to be a namedtuple to be pickled
     __slots__ = ()
 
-    def __init__(self, reader, row):
-        super().__init__(reader, row)
-        self.annotId = annotMapIdToAnnotId(self.annotMapId)
+def _annotTransRefParseRow(reader, row):
+    values = [row[reader.colMap[f]] for f in _annotTransRefRowFields]
+    annotId = annotMapIdToAnnotId(values[0])
+    return AnnotTransRef(annotId, *values)
 
 _annotTransRefTypeMap = {
     "xspeciesSrcTransId": strOrNoneType,
@@ -44,11 +50,14 @@ _annotTransRefTypeMap = {
 class AnnotTransRefError(Exception):
     pass
 
+def annotTransRefReader(annot2TransRefTsv):
+    return TsvReader(annot2TransRefTsv, typeMap=_annotTransRefTypeMap, rowClass=_annotTransRefParseRow)
+
 class AnnotTransRefs:
     """look up transcript for a PSL row"""
     def __init__(self, annot2TransRefTsv):
         self.byAlignIdx = {}
-        for row in TsvReader(annot2TransRefTsv, typeMap=_annotTransRefTypeMap, rowClass=AnnotTransRef):
+        for row in annotTransRefReader(annot2TransRefTsv):
             self._readRow(row)
 
     def _readRow(self, row):
@@ -89,7 +98,6 @@ class AnnotTransRefWriter:
         annotMapId = annotMapIdFmt(annotId, self.idxCounter[annotId])
         self.idxCounter[annotId] += 1
         fileOps.prRowv(self.fh, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)
-
 
 def xrefToItemArgs(annotTransRef):
     "convert xref into into [name, start, end]"

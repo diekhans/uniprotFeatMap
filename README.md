@@ -125,11 +125,13 @@ The format of a `annotMapId` is `<canon_acc>|<annot_idx>|<map_idx>`, where
   mapping, uniquely identifying the mapping.  Deleted features that don't map
   still have map_idx assigned to them.
 
+Disruption annotations are in the form `<canon_acc>|<annot_idx>|<map_idx>|<distrib_idx>`
+  
+- `disrupt_idx` - for disruption decorators, and an addition disruption index appended to
+`annotMapId` to make them unique.
+
 A file `*.ref.tsv` file is created when annotations are mapped to using in
 mapping `annotMapId`s back to the UniProt feature and transcript.
-
-Disruption decorators will have an addition disruption index appended to
-`annotMapId` to make them unique.
 
 
 # InterProScan

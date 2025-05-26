@@ -51,9 +51,6 @@ def parseArgs():
     pipettor.setDefaultLogger(logging.getLogger())
     return opts, args
 
-class OutOfSyncError(Exception):
-    "error when Interpro and mapped files are out-of-sycn "
-
 def createAnnotPsl(annot):
     # qName will have the annotMapId in the form
     #  <protein_acc>|<feature_idx>|<annot_idx>

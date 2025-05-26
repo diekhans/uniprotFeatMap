@@ -9,7 +9,7 @@ import pipettor
 from pycbio.sys import fileOps, cmdOps, loggingOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
-from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
+from uniprotmap import OutOfSyncError, TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
 from uniprotmap.mapping import PslMapInfoTbl, getQuerySizes, createAnnotToProteinCdsPsl, pslMapAnnots
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.metadata import AnnotTransRefWriter
@@ -43,7 +43,7 @@ def parseArgs():
     parser.add_argument("--xspeciesTrans2TransPsl",
                         help="""PSL alignments of soruce transcripts target transcripts in a target genome for cross-species mapping of UniProt features from xspeciesTrans2TransMap""")
     parser.add_argument("--annot2TransPsl",
-                        help="""PSL alignments of UniProt annotations to transcripts, with protein in codon coordinates.""")
+                        help="""PSL alignments of UniProt annotations to transcripts, with protein in codon coordinates (output)""")
     parser.add_argument("--interPrefix",
                         help="""Save the intermediate files to names starting with ${iterPrefix}.${name} (output)""")
     parser.add_argument("trans2GenomePsl",
@@ -63,9 +63,6 @@ def parseArgs():
     loggingOps.setupFromCmd(opts)
     pipettor.setDefaultLogger(logging.getLogger())
     return opts, args
-
-class OutOfSyncError(Exception):
-    "error when UniProt and mapped files are out-of-sycn "
 
 def problemLogOpen(problemLogTsv):
     logFh = open(problemLogTsv, 'w')

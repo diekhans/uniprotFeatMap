@@ -5,7 +5,7 @@ generate decorators given PSLs in each subprocess.
 import multiprocessing as mp
 import pipettor
 from pycbio.sys import fileOps
-from pycbio.hgdata.psl import PslReader
+from uniprotmap.mappingAnalysis import annotMappingReader
 
 # chrom,  chromStart, chromEnd, decoratedItem, name, dataset
 decoratorBedSortOpts = ["-k1,1", "-k2,2n", "-k3,3n", "-k13,13", "-k4,4n", "-k17,17"]
@@ -26,15 +26,15 @@ def _workerInit(annotationProcessorFactory):
         _gAnnotationProcessor = Exception("Pool initialization failed")
         _gAnnotationProcessor.__cause__ = ex
 
-def _worker(alignBatch):
+def _worker(mappingBatch):
     """sub-process worker, if an error occurs an exception object is the returned.
     """
     if isinstance(_gAnnotationProcessor, Exception):
         return _gAnnotationProcessor
     try:
         decoBeds = []
-        for alignIdx, annotPsl in alignBatch:
-            beds = _gAnnotationProcessor.create(alignIdx, annotPsl)
+        for annotMapping in mappingBatch:
+            beds = _gAnnotationProcessor.create(annotMapping)
             if beds is not None:
                 decoBeds.extend(beds)
         return decoBeds
@@ -43,19 +43,17 @@ def _worker(alignBatch):
         ex2.__cause__ = ex
         return ex
 
-def _annotGenomeBatchReader(annot2GenomePslFile, batchSize):
-    """return tuples of (alignIdx, annotPsl)"""
-    alignIdx = 0
-    alignBatch = []
+def _annotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize):
+    """return list of AnnotMapping"""
+    mappingBatch = []
 
-    for annotPsl in PslReader(annot2GenomePslFile):
-        alignBatch.append((alignIdx, annotPsl))
-        alignIdx += 1
-        if len(alignBatch) >= batchSize:
-            yield alignBatch
-            alignBatch = []
-    if len(alignBatch) > 0:
-        yield alignBatch
+    for annotMapping in annotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
+        mappingBatch.append(annotMapping)
+        if len(mappingBatch) >= batchSize:
+            yield mappingBatch
+            mappingBatch = []
+    if len(mappingBatch) > 0:
+        yield mappingBatch
 
 def _checkForWorkerFail(decoBeds):
     if isinstance(decoBeds, Exception):
@@ -81,8 +79,8 @@ def processSingle(annotationProcessorFactory, featTypeFunc,
     # this is easier to debug without mp
     _workerInit(annotationProcessorFactory)
     decoBedsList = []
-    for alignBatch in _annotGenomeBatchReader(annot2GenomePslFile, batchSize):
-        decoBeds = _worker(alignBatch)
+    for mappingBatch in _annotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize):
+        decoBeds = _worker(mappingBatch)
         _checkForWorkerFail(decoBeds)
         decoBedsList.append(decoBeds)
 
@@ -95,7 +93,7 @@ def processMulti(annotationProcessorFactory, featTypeFunc,
     with mp.Pool(processes=nprocs, initializer=_workerInit,
                  initargs=((annotationProcessorFactory,))) as pool:
         decoBedIters = pool.imap_unordered(_worker,
-                                           _annotGenomeBatchReader(annot2GenomePslFile, batchSize))
+                                           _annotMappingBatchReader(annot2GenomePslFile, annot2TransRefTsv, batchSize))
 
         featTypes = _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile)
     return featTypes

@@ -1,6 +1,11 @@
 #+STARTUP: nologdone
 #+TODO: TODO URGENT | DONE CANCELED
 
+* metadata doesn't parallel PSLs, see
+lib/uniprotmap/mappingAnalysis.py
+this is done for unique ids assign, which could be handled
+by a level of indirection
+
 * xspeciesTrans2TransMap is a dumb name
 
 * gene sets, etc

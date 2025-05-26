@@ -3,10 +3,28 @@ include ${root}/defs.mk
 
 # see bin/getTestData for updating test data
 
+
 # used nproc= to change number of processes
 ifeq (${nproc},)
   nproc = 8
 endif
+
+all:
+	@echo "Note: targets are:"
+	@echo "      make test"
+	@echo "      make fulltest"
+	@echo "      make aligntest"
+	@echo "      make hub"
+	@echo "      make clean"
+	@exit 1
+
+
+test: uniprotTests interproTests hub
+	@echo "==========================================" >&2
+	@echo "Note to test alignments use: make fulltest" >&2
+	@echo "==========================================" >&2
+
+fulltest: aligntest test
 
 hg38ChromSizes = input/hg38.sizes
 
@@ -53,25 +71,7 @@ symSynTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/878/055/GCA_02887805
 symSynChains = input/symSyn-GCA_028878055.2.chains
 symSynChromSizes = input/symSyn-GCA_028878055.2.sizes
 
-
 bigCatAs = input/bigCat.as
-
-all:
-	@echo "Note: targets are:"
-	@echo "      make test"
-	@echo "      make fulltest"
-	@echo "      make aligntest"
-	@echo "      make hub"
-	@echo "      make clean"
-	@exit 1
-
-
-test: uniprotTests interproTests hub
-	@echo "==========================================" >&2
-	@echo "Note to test alignments use: make fulltest" >&2
-	@echo "==========================================" >&2
-
-fulltest: aligntest test
 
 # alignment tests must be done serially due to parasol losing small jobs on multiple
 # batches with short jobs
@@ -185,12 +185,16 @@ testUniprotAnnotsToDecoColorHelp: mkout
 	${uniprotAnnotsToDecorators} --help-colors >output/$@.out
 	diff expected/$@.out output/$@.out
 
-# error handling, use to not terminate on fail to open files
+# error handling for pools, use to not terminate on fail to open files
+ifeq (${nproc},1)
+testUniprotAnnotsToDecoratorsError:
+else
 testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
-	! ${uniprotAnnotsToDecorators} --nproc=${nproc} ${gencodePcPsl} ${swissprotMeta} ${swissprotAnnots} \
-	    expected/testUniprotAnnotsMapSP.psl expected/does-not-exist.tsv \
+	! ${uniprotAnnotsToDecorators} --nproc=${nproc} no_gencodePcPsl ${swissprotMeta} ${swissprotAnnots} \
+	    expected/testUniprotAnnotsMapSP.psl expected/testUniprotAnnotsMapSP.ref.tsv \
             output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
 	grep -q 'Exception: Pool initialization failed' output/$@.err 
+endif
 
 ###
 uniprotDecoratorsMergeTests: testUniprotDecoratorsMerge

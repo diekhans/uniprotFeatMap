@@ -16,7 +16,6 @@ class AnnotMap:
         self.mapRanges = mapRanges
 
 
-
 class TransAnnots:
     "transcript annotations from UniProt, etc"
     def __init__(self, annotSet, transId):
@@ -28,5 +27,5 @@ class TargetTranscript:
         self.transId = transId
 
 
-def _mapTransAnnots(transGenomePsl, annotTransPsls):
-    for annotTransPsl in annotTransPsls:
+# def _mapTransAnnots(transGenomePsl, annotTransPsls):
+#    for annotTransPsl in annotTransPsls:
