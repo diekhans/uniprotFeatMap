@@ -46,9 +46,9 @@ def alignFilter(geneSet, psl):
         raise InterproError(f"transcript id '{psl.tName}' not found in gene set metadata for protein/transcript alignment '{psl.qName}'/'{psl.tName}'") from ex
     return trans.proteinId == psl.qName
 
-def interproProteinTranscriptAlign(geneSetName, geneSetMetadata, transFa, protFa, prot2TransPsl, algo, workDir):
+def interproProteinTranscriptAlign(geneSetName, geneSetMetadata, transFa, protFa, prot2TransPslFile, algo, workDir):
     geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transFa=transFa)
-    proteinTranscriptAlign(protFa, geneSet.transFa, prot2TransPsl, algo, workDir,
+    proteinTranscriptAlign(protFa, geneSet.transFa, prot2TransPslFile, algo, workDir,
                            queryFaEditFilterFunc=functools.partial(queryFaEditFilter, geneSet),
                            alignFilterFunc=functools.partial(alignFilter, geneSet))
 

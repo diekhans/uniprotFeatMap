@@ -14,8 +14,8 @@ class MappingError(Exception):
 # Reading annotation mappings
 ###
 class AnnotMapping(namedtuple("AnnotMapping",
-                              ("annot2GenomeRef", "annotPsl"))):
-    """A single mapping for an annotation. annotPsl is None if not mapped"""
+                              ("annotRef", "annotPsl"))):
+    """A single mapping for an annotation to a genome. annotPsl is None if not mapped"""
     __slots__ = ()
 
 
@@ -60,23 +60,23 @@ class AnnotMappingsTbl(list):
         return entry
 
 
-def _makeAnnotMapping(annot2GenomeRef, annotPsls):
+def _makeAnnotMapping(annot2GenomeRef, annot2GenomePsls):
     if annot2GenomeRef.alignIdx is None:
         return AnnotMapping(annot2GenomeRef, None)
     else:
-        return AnnotMapping(annot2GenomeRef, annotPsls[annot2GenomeRef.alignIdx])
+        return AnnotMapping(annot2GenomeRef, annot2GenomePsls[annot2GenomeRef.alignIdx])
 
 def _makeTransAnnotMapping(annotMappings):
-    annot2GenomeRef0 = annotMappings[0].annot2GenomeRef
-    return TransAnnotMappings(annot2GenomeRef0.transcriptId,
-                              annot2GenomeRef0.transcriptPos.name,
+    annotRef = annotMappings[0].annotRef
+    return TransAnnotMappings(annotRef.transcriptId,
+                              annotRef.transcriptPos.name,
                               tuple(annotMappings))
 
 def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv):
     """Reads mapped annotation alignments and metadata for a target transcript.  Returns only
     metadata for annotations that don't map. Yields TransAnnotMappings objects"""
 
-    annotPsls = [p for p in PslReader(annot2GenomePslFile)]
+    annot2GenomePsls = [p for p in PslReader(annot2GenomePslFile)]
     prevAnnotRef = None
     annotMappings = []
     for annot2GenomeRef in annot2GenomeRefReader(annot2GenomeRefTsv):
@@ -86,7 +86,7 @@ def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv):
              (annot2GenomeRef.transcriptPos.name != prevAnnotRef.transcriptPos.name))):
             yield _makeTransAnnotMapping(annotMappings)
             annotMappings = []
-        annotMappings.append(_makeAnnotMapping(annot2GenomeRef, annotPsls))
+        annotMappings.append(_makeAnnotMapping(annot2GenomeRef, annot2GenomePsls))
         prevAnnotRef = annot2GenomeRef
     if len(annotMappings) > 0:
         yield _makeTransAnnotMapping(annotMappings)

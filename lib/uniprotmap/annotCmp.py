@@ -35,8 +35,8 @@ def targetAnnotSetLoad(targetAnnotConf):
         annotData = UniProtAnnotTbl(targetAnnotConf.annotTsv)
     else:
         annotData = interproAnnotsLoad(targetAnnotConf.annotTsv)
-
-    return TargetAnnotSet(targetAnnotConf.annotSet, annotData)
+    return TargetAnnotSet(targetAnnotConf.annotSet, annotData
+                          )
 
     # annotTsv: str    # either uniprotAnnotTsv or interproAnnotTsv output
     # annot2TransPsl: str
@@ -52,7 +52,7 @@ class AnnotMap:
         self.annotId = annotId
         self.mapRanges = mapRanges
 
-class SrcTrans:
+class SrcTranscript:
     "source transcript annotations from UniProt, etc"
     def __init__(self, annotSet, transId):
         self.transId = transId
@@ -62,8 +62,8 @@ class TargetTranscript:
         self.transId = transId
 
 
-# def _mapTransAnnots(transGenomePsl, annotTransPsls):
-#    for annotTransPsl in annotTransPsls:
+def _intersectAnnots(srcAnnot2GenomePsls, targetAnnot2GenomePsls, featurePairings):
+    pass
 
-
-# annot2TransPsl
+def _annotCmpTransUniprot(srcTrans, targetTrans, featurePairings):
+    pass

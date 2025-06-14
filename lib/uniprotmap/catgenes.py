@@ -13,15 +13,15 @@ def _loadMetadata(geneSet, geneSetMetadata):
                                        row.name, row.type,
                                        row.name + '_prot')
 
-def cat1GeneSetFactory(geneSetName, *, geneSetMetadata=None, trans2GenomePsl=None, transGenomeGp=None, transFa=None):
+def cat1GeneSetFactory(geneSetName, *, geneSetMetadata=None, trans2GenomePslFile=None, transGenomeGpFile=None, transFa=None):
     """load CAT format 1 data as requested"""
 
     geneSet = GeneSet(geneSetName)
     if geneSetMetadata is not None:
         _loadMetadata(geneSet, geneSetMetadata)
-    if trans2GenomePsl is not None:
-        geneSetLoadAnnotPsl(geneSet.data, trans2GenomePsl)
-    if transGenomeGp is not None:
+    if trans2GenomePslFile is not None:
+        geneSetLoadAnnotPsl(geneSet.data, trans2GenomePslFile)
+    if transGenomeGpFile is not None:
         assert False, "cat1GeneSetFactory transGenomeGp not implemented"
     geneSet.transFa = transFa
     geneSet.finish()

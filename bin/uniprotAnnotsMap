@@ -124,10 +124,10 @@ def createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotProtPslFh, logFh):
             createAnnotPsl(annot, protCdsSizes).write(annotProtPslFh)
 
 def buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, interPrefix, logFh):
-    annotProtPsl = TmpOrSaveFile(interPrefix, "annotProt.psl")
-    with fileOps.opengz(annotProtPsl, 'w') as annotProtPslFh:
+    annotProtPslFile = TmpOrSaveFile(interPrefix, "annotProt.psl")
+    with fileOps.opengz(annotProtPslFile, 'w') as annotProtPslFh:
         createAnnotPsls(uniprotAnnotTbl, protCdsSizes, annotProtPslFh, logFh)
-    return annotProtPsl
+    return annotProtPslFile
 
 def getXSpeciesSrcTrans(mappedTransId, xspeciesTransMapTbl):
     recs = xspeciesTransMapTbl.byMappedTName.get(mappedTransId)
@@ -205,17 +205,17 @@ def writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter
         for uniprotAcc, uniprotA2GMapInfos in sorted(splitByUniprotAcc(transA2GMapInfos).items(), key=lambda v: v[0]):
             writeTransRefs(uniprotAnnotTbl, transIdChrom[0], uniprotA2GMapInfos, xspeciesTransMapTbl, refWriter)
 
-def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2GenomePsl,
-              annot2GenomePslFh, annot2GenomeRefTsv, xspeciesTrans2TransPsl=None):
+def mapAnnots(opts, uniprotAnnotTbl, annotProtPslFh, prot2TransPairedPslFile, trans2GenomePslFile,
+              annot2GenomePslFh, annot2GenomeRefTsv, xspeciesTrans2TransPslFile=None):
     annotGenomeMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "annotGenome.mapinfo.tsv")
 
     xspeciesTransMapInfoTsv = None
-    if xspeciesTrans2TransPsl is not None:
+    if xspeciesTrans2TransPslFile is not None:
         xspeciesTransMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "xspeciesTrans.mapinfo.tsv")
 
-    pslMapAnnots(annotProtPsl, prot2TransPairedPsl, trans2GenomePsl, annotGenomeMapInfoTsv,
-                 annot2GenomePslFh, annot2TransPsl=opts.annot2TransPsl, interPrefix=opts.interPrefix,
-                 xspeciesTrans2TransPsl=xspeciesTrans2TransPsl, xspeciesTransMapInfoTsv=xspeciesTransMapInfoTsv)
+    pslMapAnnots(annotProtPslFh, prot2TransPairedPslFile, trans2GenomePslFile, annotGenomeMapInfoTsv,
+                 annot2GenomePslFh, annot2TransPslFile=opts.annot2TransPsl, interPrefix=opts.interPrefix,
+                 xspeciesTrans2TransPslFile=xspeciesTrans2TransPslFile, xspeciesTransMapInfoTsv=xspeciesTransMapInfoTsv)
 
     annotGenomeMapTbl = PslMapInfoTbl(annotGenomeMapInfoTsv)
     xspeciesTransMapTbl = None
@@ -226,19 +226,19 @@ def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2Ge
         writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
     cleanTmpFiles(xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
 
-def uniprotAnnotsMap(opts, trans2GenomePsl, uniprotAnnotsTsv, prot2TransPairedPsl,
-                     annot2GenomePsl, annot2GenomeRefTsv, problemLogTsv):
+def uniprotAnnotsMap(opts, trans2GenomePslFile, uniprotAnnotsTsv, prot2TransPairedPslFile,
+                     annot2GenomePslFile, annot2GenomeRefTsv, problemLogTsv):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
-    protCdsSizes = getQuerySizes(prot2TransPairedPsl)
+    protCdsSizes = getQuerySizes(prot2TransPairedPslFile)
 
     with problemLogOpen(problemLogTsv) as logFh:
-        annotProtPsl = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, opts.interPrefix, logFh)
+        annotProtPslFile = buildAnnotCanonPsls(uniprotAnnotTbl, protCdsSizes, opts.interPrefix, logFh)
 
-    with fileOps.AtomicFileCreate(annot2GenomePsl) as annot2GenomePslFh:
-        mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2GenomePsl,
+    with fileOps.AtomicFileCreate(annot2GenomePslFile) as annot2GenomePslFh:
+        mapAnnots(opts, uniprotAnnotTbl, annotProtPslFile, prot2TransPairedPslFile, trans2GenomePslFile,
                   annot2GenomePslFh, annot2GenomeRefTsv, opts.xspeciesTrans2TransPsl)
 
-    cleanTmpFiles(annotProtPsl)
+    cleanTmpFiles(annotProtPslFile)
 
 def main():
     opts, args = parseArgs()

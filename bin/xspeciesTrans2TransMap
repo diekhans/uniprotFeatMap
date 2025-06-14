@@ -4,8 +4,9 @@ import os
 import os.path as osp
 import sys
 import argparse
+import logging
 import pipettor
-from pycbio.sys import fileOps
+from pycbio.sys import fileOps, cmdOps, loggingOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.mapping import pslMapMkCmd
@@ -29,29 +30,36 @@ def parseArgs():
                         help="""target assembly mRNA sequences""")
     parser.add_argument("srcTrans2TargetTransPsl",
                         help="""alignments of source to target transcripts """)
-    return parser.parse_args()
+    loggingOps.addCmdOptions(parser)
+    opts, args = cmdOps.parse(parser)
+    loggingOps.setupFromCmd(opts)
+    pipettor.setDefaultLogger(logging.getLogger())
+    return opts, args
 
 
-def transMapPipeline(srcTrans2TargetGenomePsl, srcTransFa, targetTrans2GenomePsl, targetMRnaTwoBit, srcTrans2TargetTransPsl):
-    cmds = (pslMapMkCmd(srcTrans2TargetGenomePsl, targetTrans2GenomePsl, "/dev/stdout", swapMap=True) +
+def transMapPipeline(srcTrans2TargetGenomePslFile, srcTransFa, targetTrans2GenomePslFile,
+                     targetMRnaTwoBit, srcTrans2TargetTransPslFile):
+    cmds = (pslMapMkCmd(srcTrans2TargetGenomePslFile, targetTrans2GenomePslFile,
+                        "/dev/stdout", swapMap=True, interPrefix="output/damn.", interMid="it") +
             [["pslMapPostChain", "/dev/stdin", "/dev/stdout"],
              ["pslRecalcMatch", "/dev/stdin", targetMRnaTwoBit, srcTransFa, "/dev/stdout"],
              ["sort", "-k10,10", "-k12,12n"]])
-    pipettor.run(cmds, stdout=srcTrans2TargetTransPsl)
+    pipettor.run(cmds, stdout=srcTrans2TargetTransPslFile)
 
-def xspeciesTrans2TransMap(srcTrans2TargetGenomePsl, srcTransFa, targetTrans2GenomePsl, targetTransFa,
-                           srcTrans2TargetTransPsl):
+def xspeciesTrans2TransMap(srcTrans2TargetGenomePslFile, srcTransFa, targetTrans2GenomePslFile, targetTransFa,
+                           srcTrans2TargetTransPslFile):
     tmpTargetMRnaTwoBit = fileOps.tmpFileGet("rnatwobit")
     try:
         pipettor.run(["faToTwoBit", "-long", targetTransFa, tmpTargetMRnaTwoBit])
-        transMapPipeline(srcTrans2TargetGenomePsl, srcTransFa, targetTrans2GenomePsl,
-                         tmpTargetMRnaTwoBit, srcTrans2TargetTransPsl)
+        transMapPipeline(srcTrans2TargetGenomePslFile, srcTransFa, targetTrans2GenomePslFile,
+                         tmpTargetMRnaTwoBit, srcTrans2TargetTransPslFile)
     finally:
         os.unlink(tmpTargetMRnaTwoBit)
 
-def main(args):
+def main():
+    _, args = parseArgs()
     xspeciesTrans2TransMap(args.srcTrans2TargetGenomePsl, args.srcTransFa, args.targetTrans2GenomePsl,
                            args.targetTransFa, args.srcTrans2TargetTransPsl)
 
 
-main(parseArgs())
+main()

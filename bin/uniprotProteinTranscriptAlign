@@ -51,10 +51,10 @@ def alignFilter(uniprotMetaTbl, psl):
     uniprotMeta = uniprotMetaTbl.getByAcc(dropUniportIsoformModifier(psl.qName))
     return ((psl.qName == uniprotMeta.mainIsoAcc) and uniprotMeta.isCanonProtTrans(psl.tName))
 
-def uniprotProteinTranscriptAlign(uniprotMetaTsv, proteinFa, transFa, prot2CanonTransPsl, algo, workDir):
+def uniprotProteinTranscriptAlign(uniprotMetaTsv, proteinFa, transFa, prot2CanonTransPslFile, algo, workDir):
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
-    proteinTranscriptAlign(proteinFa, transFa, prot2CanonTransPsl, algo, workDir,
+    proteinTranscriptAlign(proteinFa, transFa, prot2CanonTransPslFile, algo, workDir,
                            queryFaEditFilterFunc=queryFaEditFilter,
                            targetFaEditFilterFunc=functools.partial(targetFaEditFilter, uniprotMetaTbl),
                            alignFilterFunc=functools.partial(alignFilter, uniprotMetaTbl))

@@ -88,10 +88,10 @@ class AnnotationProcessor:
 
     def _createAnnot(self, annotMapping):
         if annotMapping.annotPsl is None:
-            raise OutOfSyncError(f"annotation {annotMapping.annot2GenomeRef.annotId} does not have a corresponding alignment")
-        annot = self.interproAnnotTbl.getByAnnotId(annotMapping.annot2GenomeRef.annotId)
+            raise OutOfSyncError(f"annotation {annotMapping.annotRef.annotId} does not have a corresponding alignment")
+        annot = self.interproAnnotTbl.getByAnnotId(annotMapping.annotRef.annotId)
         if includeAnnot(annot):
-            return [self._buildAnnotation(annotMapping.annotPsl, annot, annotMapping.annot2GenomeRef)]
+            return [self._buildAnnotation(annotMapping.annotPsl, annot, annotMapping.annotRef)]
         else:
             return None
 

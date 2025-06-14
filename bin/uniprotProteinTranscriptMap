@@ -224,10 +224,10 @@ def report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAli
         reportUnalignedUniprots(geneSet, uniprotMetaTbl, canonCdsToTransAligns, logFh)
         reportUnpairedNoncanonTranses(geneSet, uniprotMetaTbl, noncanonCdsToTransAligns, logFh)
 
-def proteinTranscriptAlign(geneSetName, geneSetMetadata, trans2GenomePsl, transGenomeGp,
+def proteinTranscriptAlign(geneSetName, geneSetMetadata, trans2GenomePslFile, transGenomeGpFile,
                            uniprotMetaTsv, prot2CanonTransPslFile,
                            prot2TransPairedPslFile, problemLogTsv, interPrefix):
-    geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, trans2GenomePsl=trans2GenomePsl, transGenomeGp=transGenomeGp)
+    geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, trans2GenomePslFile=trans2GenomePslFile, transGenomeGpFile=transGenomeGpFile)
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
     canonCdsToTransAligns = loadConvertCanonProtTransPsls(prot2CanonTransPslFile)

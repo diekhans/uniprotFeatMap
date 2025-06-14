@@ -151,19 +151,19 @@ def _processAlignedPsls(inPslFh, outPslFh, filterFunc):
         if psl is not None:
             psl.write(outPslFh)
 
-def _combinePairAligns(alignDir, prot2TransPsl, filterFunc):
+def _combinePairAligns(alignDir, prot2TransPslFile, filterFunc):
     "concatenate, filter, and sort by tName (transcript))"
 
     findSortCmd = (["find", alignDir, "-name", "*.fa.psl", "-print0"],
                    ["sort", "-k14,14", "-k10,10", "--files0-from=-"])
     with pipettor.Popen(findSortCmd, 'r') as inPslFh:
-        with fileOps.opengz(prot2TransPsl, 'w') as outPslFh:
+        with fileOps.opengz(prot2TransPslFile, 'w') as outPslFh:
             _processAlignedPsls(inPslFh, outPslFh, filterFunc)
 
 ##
 # overall pipeline, parameterized with files and functions.
 ##
-def proteinTranscriptAlign(protFa, transFa, prot2TransPsl, algo, workDir, *,
+def proteinTranscriptAlign(protFa, transFa, prot2TransPslFile, algo, workDir, *,
                            queryFaEditFilterFunc=None, targetFaEditFilterFunc=None, alignFilterFunc=None,
                            querySplitSize=DEFAULT_QUERY_SPLIT_APPROX_SIZE):
     targetDir = osp.join(workDir, "transDb")
@@ -186,9 +186,9 @@ def proteinTranscriptAlign(protFa, transFa, prot2TransPsl, algo, workDir, *,
             _runBatch([proteinTranscriptAlignJob, algo], queryDir, transDbFa, alignDir,
                       osp.join(workDir, "batch"))
 
-    with runIfOutOfDate(prot2TransPsl, doneDepends=alignDir) as do:
+    with runIfOutOfDate(prot2TransPslFile, doneDepends=alignDir) as do:
         if do:
             prMsg("combining alignments")
-            with fileOps.AtomicFileCreate(prot2TransPsl) as tmpPsl:
-                _combinePairAligns(alignDir, tmpPsl, alignFilterFunc)
+            with fileOps.AtomicFileCreate(prot2TransPslFile) as tmpPslFile:
+                _combinePairAligns(alignDir, tmpPslFile, alignFilterFunc)
     prMsg("finished")

@@ -18,9 +18,9 @@ class SrcAnnotConf:
     """Source (reference) annotation data to use in comparison, mapped to the target assembly"""
     annotSet: AnnotSet
     uniprotAnnotTsv: str
-    annot2GenomePsl: str
+    annot2GenomePslFile: str
     annot2GenomeRefTsv: str
-    xspeciesTrans2TransPsl: str
+    xspeciesTrans2TransPslFile: str
 
 @dataclass
 class TargetAnnotConf:

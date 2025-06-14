@@ -74,10 +74,10 @@ def filterAligns(alnsByTarget, catSources, alnFh):
         bestAln = pickBestBySource(alnsByTarget[targetAcc], catSources)
         bestAln.write(alnFh)
 
-def xspeciesGencode2CatFilter(src2TargetTransPsl, targetCatBigBed, src2TargetMatchedPsl):
-    alnsByTarget = loadAlnsByTarget(src2TargetTransPsl)
+def xspeciesGencode2CatFilter(src2TargetTransPslFile, targetCatBigBed, src2TargetMatchedPslFile):
+    alnsByTarget = loadAlnsByTarget(src2TargetTransPslFile)
     catSources = loadCatSource(targetCatBigBed)
-    with fileOps.opengz(src2TargetMatchedPsl, 'w') as alnFh:
+    with fileOps.opengz(src2TargetMatchedPslFile, 'w') as alnFh:
         filterAligns(alnsByTarget, catSources, alnFh)
 
 def main(opts):

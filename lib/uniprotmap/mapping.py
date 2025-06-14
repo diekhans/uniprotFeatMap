@@ -7,7 +7,7 @@ import pipettor
 from pycbio.tsv import TsvReader, strOrNoneType, intOrNoneType
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
-def pslMapMkCmd(inPsl, mapPsl, outPsl, *, swapMap=False, outPslCopy=None, mapInfo=None,
+def pslMapMkCmd(inPslFile, mapPslFile, outPslFile, *, swapMap=False, outPslFileCopy=None, mapInfo=None,
                 interPrefix=None, interMid=None, chainMapFile=False):
     """Build pslMap command, possibly saving intermediate files for debugging.
     Intermediate files are save if interPrefix is not None, and include
@@ -15,7 +15,7 @@ def pslMapMkCmd(inPsl, mapPsl, outPsl, *, swapMap=False, outPslCopy=None, mapInf
     The outPslCopy is used to save output when main output is going to
     stdout.
     """
-    assert (interPrefix is None) or (interMid is not None)
+    assert (interPrefix is None) or (interMid is not None), "must specify interMid with interPrefix"
     inter = None if interPrefix is None else f"{interPrefix}{interMid}"
 
     cmd1 = ["pslMap", "-tsv", "-check", "-inType=na_na", "-mapType=na_na"]
@@ -26,10 +26,10 @@ def pslMapMkCmd(inPsl, mapPsl, outPsl, *, swapMap=False, outPslCopy=None, mapInf
         cmd1.append("-chainMapFile")
     if mapInfo is not None:
         cmd1.append(f"-mapInfo={mapInfo}")
-    cmd1.extend((inPsl, mapPsl, outPsl))
+    cmd1.extend((inPslFile, mapPslFile, outPslFile))
 
-    if outPslCopy is not None:
-        cmds.append(["tee", outPslCopy])
+    if outPslFileCopy is not None:
+        cmds.append(["tee", outPslFileCopy])
     if inter is not None:
         if mapInfo is None:
             cmd1.append(f"-mapInfo={inter}.mapInfo.tsv")
@@ -102,22 +102,22 @@ def createAnnotToProteinCdsPsl(annotId, annotStartOff, annotEndOff,
     psl.updateCounts()
     return psl
 
-def pslMapAnnots(annotCanonPsl, prot2TransPairedPsl, trans2GenomePsl,
-                 annotGenomeMapInfoTsv, annot2GenomePslFh, *, annot2TransPsl=None,
-                 interPrefix=None, xspeciesTrans2TransPsl=None, xspeciesTransMapInfoTsv=None):
+def pslMapAnnots(annotCanonPslFile, prot2TransPairedPslFile, trans2GenomePslFile,
+                 annotGenomeMapInfoTsv, annot2GenomePslFh, *, annot2TransPslFile=None,
+                 interPrefix=None, xspeciesTrans2TransPslFile=None, xspeciesTransMapInfoTsv=None):
     # all of these pslMaps are NA/NA -> NA/NA -> NA/NA
     cmds = []
 
     # annotation on canonical transcripts to all transcripts alignment to canonical
-    cmds += pslMapMkCmd(annotCanonPsl, prot2TransPairedPsl, "/dev/stdout",
-                        outPslCopy=annot2TransPsl, interPrefix=interPrefix, interMid="annotTrans")
-    if xspeciesTrans2TransPsl is not None:
+    cmds += pslMapMkCmd(annotCanonPslFile, prot2TransPairedPslFile, "/dev/stdout",
+                        outPslFileCopy=annot2TransPslFile, interPrefix=interPrefix, interMid="annotTrans")
+    if xspeciesTrans2TransPslFile is not None:
         # transcript to other species transcript mapping
-        cmds += pslMapMkCmd("/dev/stdin", xspeciesTrans2TransPsl, "/dev/stdout",
+        cmds += pslMapMkCmd("/dev/stdin", xspeciesTrans2TransPslFile, "/dev/stdout",
                             mapInfo=xspeciesTransMapInfoTsv,
                             interPrefix=interPrefix, interMid="xspeciesAnnotTrans")
 
     # per-transcript annotation to genome mapping
-    cmds += pslMapMkCmd("/dev/stdin", trans2GenomePsl, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
+    cmds += pslMapMkCmd("/dev/stdin", trans2GenomePslFile, "/dev/stdout", mapInfo=annotGenomeMapInfoTsv)
 
     pipettor.run(cmds, stdout=annot2GenomePslFh)

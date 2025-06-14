@@ -69,15 +69,15 @@ def createAnnotPsls(interproAnnotTbl, annotProtPslFh):
         createAnnotPsl(annot).write(annotProtPslFh)
 
 def buildAnnotProtPsls(opts, interproAnnotTbl):
-    annotProtPsl = TmpOrSaveFile(opts.interPrefix, "annotProt.psl")
-    with fileOps.opengz(annotProtPsl, 'w') as annotProtPslFh:
+    annotProtPslFile = TmpOrSaveFile(opts.interPrefix, "annotProt.psl")
+    with fileOps.opengz(annotProtPslFile, 'w') as annotProtPslFh:
         createAnnotPsls(interproAnnotTbl, annotProtPslFh)
-    return annotProtPsl
+    return annotProtPslFile
 
-def convertProtRnaToCdsRna(opts, prot2TransPsl):
-    prot2TransPairedPsl = TmpOrSaveFile(opts.interPrefix, "protTrans.psl")
-    pipettor.run(["pslProtToRnaCoords", prot2TransPsl, prot2TransPairedPsl])
-    return prot2TransPairedPsl
+def convertProtRnaToCdsRna(opts, prot2TransPslFile):
+    prot2TransPairedPslFile = TmpOrSaveFile(opts.interPrefix, "protTrans.psl")
+    pipettor.run(["pslProtToRnaCoords", prot2TransPslFile, prot2TransPairedPslFile])
+    return prot2TransPairedPslFile
 
 def writeMappedRef(transA2GMapInfo, transcriptId, transcriptPos, refWriter):
     refWriter.write(transA2GMapInfo.srcQName, transcriptId, transcriptPos,
@@ -99,30 +99,30 @@ def writeRefs(interproAnnotTbl, annotGenomeMapTbl, refWriter):
     for transIdChrom in sorted(annotGenomeMapTbl.byMappingQMappedTNames.keys(), key=lambda v: v[0]):
         writeTransRefs(interproAnnotTbl, transIdChrom[0], annotGenomeMapTbl.byMappingQMappedTNames[transIdChrom], refWriter)
 
-def mapAnnots(opts, interproAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2GenomePsl,
+def mapAnnots(opts, interproAnnotTbl, annotProtPslFile, prot2TransPairedPslFile, trans2GenomePslFile,
               annot2GenomePslFh, annot2GenomeRefTsv):
     annotGenomeMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "annotGenome.mapinfo.tsv")
 
-    pslMapAnnots(annotProtPsl, prot2TransPairedPsl, trans2GenomePsl, annotGenomeMapInfoTsv,
-                 annot2GenomePslFh, annot2TransPsl=opts.annot2TransPsl, interPrefix=opts.interPrefix)
+    pslMapAnnots(annotProtPslFile, prot2TransPairedPslFile, trans2GenomePslFile, annotGenomeMapInfoTsv,
+                 annot2GenomePslFh, annot2TransPslFile=opts.annot2TransPsl, interPrefix=opts.interPrefix)
 
     annotGenomeMapTbl = PslMapInfoTbl(annotGenomeMapInfoTsv)
 
     with Annot2GenomeRefWriter(annot2GenomeRefTsv) as refWriter:
         writeRefs(interproAnnotTbl, annotGenomeMapTbl, refWriter)
-    cleanTmpFiles(annotGenomeMapInfoTsv)
+        cleanTmpFiles(annotGenomeMapInfoTsv)
 
-def interproAnnotsMap(opts, interproAnnotTsv, prot2TransPsl, trans2GenomePsl,
-                      annot2GenomePsl, annot2GenomeRefTsv):
+def interproAnnotsMap(opts, interproAnnotTsv, prot2TransPslFile, trans2GenomePslFile,
+                      annot2GenomePslFile, annot2GenomeRefTsv):
     interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
-    prot2TransPairedPsl = convertProtRnaToCdsRna(opts, prot2TransPsl)
-    annotProtPsl = buildAnnotProtPsls(opts, interproAnnotTbl)
+    prot2TransPairedPslFile = convertProtRnaToCdsRna(opts, prot2TransPslFile)
+    annotProtPslFile = buildAnnotProtPsls(opts, interproAnnotTbl)
 
-    with fileOps.AtomicFileCreate(annot2GenomePsl) as annot2GenomePslFh:
-        mapAnnots(opts, interproAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2GenomePsl,
+    with fileOps.AtomicFileCreate(annot2GenomePslFile) as annot2GenomePslFh:
+        mapAnnots(opts, interproAnnotTbl, annotProtPslFile, prot2TransPairedPslFile, trans2GenomePslFile,
                   annot2GenomePslFh, annot2GenomeRefTsv)
 
-    cleanTmpFiles(annotProtPsl, prot2TransPairedPsl)
+    cleanTmpFiles(annotProtPslFile, prot2TransPairedPslFile)
 
 def main():
     opts, args = parseArgs()
