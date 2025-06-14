@@ -1,10 +1,14 @@
 """
 Analyze mappings of features to transcripts.
 """
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from pycbio.sys.symEnum import SymEnum, auto
 from pycbio.hgdata.psl import PslReader
 from uniprotmap.metadata import annotTransRefReader
+
+class MappingError(Exception):
+    pass
+
 
 ###
 # Reading annotation mappings
@@ -20,6 +24,41 @@ class TransAnnotMappings(namedtuple("TransAnnotMappings",
     """Mappings for all annotations on a transcript.  The full list is
     needed to place deleted annotations."""
     __slots__ = ()
+
+class AnnotMappingsTbl(list):
+    """Table of TransAnnotMappings, all the mappings annotations to a genome"""
+    def __init__(self, annot2GenomePslFile, annot2TransRefTsv):
+        self.byTransId = defaultdict(list)
+        for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
+            self._add(transAnnotMappings)
+        self.byTransId.default_factory = None
+
+    def _add(self, transAnnotMappings):
+        self.byTransId[transAnnotMappings.transcriptId].append(transAnnotMappings)
+
+    def findEntries(self, transId):
+        return self.byTransId.get(transId, ())
+
+    def getEntries(self, transId):
+        entries = self.findEntries(transId)
+        if len(entries) == 0:
+            raise MappingError(f"transcript not found for '{transId}'")
+        return entries
+
+    def findEntry(self, transId, chrom):
+        # handle multi-location entries
+        entries = self.byTransId.get(transId, ())
+        for entry in entries:
+            if entry.chrom == chrom:
+                return entry
+        return None
+
+    def getEntry(self, transId, chrom):
+        entry = self.findEntry(transId, chrom)
+        if entry is None:
+            raise MappingError(f"transcript not found for '{transId}' on chrom '{chrom}'")
+        return entry
+
 
 def _makeAnnotMapping(annotTransRef, annotPsls):
     if annotTransRef.alignIdx is None:

@@ -239,7 +239,7 @@ class GeneSetData:
                 yield entry
 
 def geneSetLoadAnnotPsl(geneSetData, trans2GenomePslFile):
-    """"load PSLs into a GeneSe object"""
+    """"load PSLs into a GeneSetData object"""
     for psl in PslReader(trans2GenomePslFile):
         geneSetData.addAlign(psl)
 

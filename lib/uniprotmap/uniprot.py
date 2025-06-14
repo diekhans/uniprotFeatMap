@@ -137,7 +137,7 @@ class UniProtMetaTbl(list):
         return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
 class UniProtAnnotTbl(list):
-    """reads swissprot.9606.annots.tab, trembl.9606.annots.tab"""
+    """reads swissprot.9606.annots.tab or trembl.9606.annots.tab"""
     def __init__(self, uniprotAnnotsTsv):
         self.byAnnotId = {}
         self.byMainIsoAcc = defaultdict(list)

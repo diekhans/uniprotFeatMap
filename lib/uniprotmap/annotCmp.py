@@ -1,11 +1,48 @@
 """
 Compares annotations on transcripts from different sources.
 """
+from dataclasses import dataclass
+from typing import List, Union
+from pycbio.hgdata.psl import PslTbl
+from uniprotmap.annotCmpConf import AnnotSet
+from uniprotmap.uniprot import UniProtAnnotTbl
+from uniprotmap.interproscan import InterproAnnotTbl, interproAnnotsLoad
+from uniprotmap.mappingAnalysis import AnnotMappingsTbl
 
+@dataclass
+class SrcAnnotSet:
+    """Source annotations loaded into memory"""
+    annotSet: AnnotSet
+    uniprotAnnotTbl: UniProtAnnotTbl
+    annotMappingsTbl: AnnotMappingsTbl
+    xspeciesTrans2TransTbl: PslTbl
 
-class AnnotSet:
-    def __init__(self, setName):
-        set.setName = setName
+def srcAnnotSetLoad(srcAnnotConf):
+    return SrcAnnotSet(srcAnnotConf.annotSet,
+                       UniProtAnnotTbl(srcAnnotConf.uniprotAnnotTsv),
+                       AnnotMappingsTbl(srcAnnotConf.annot2GenomePsl,
+                                        srcAnnotConf.annot2TransRefTsv),
+                       PslTbl(srcAnnotConf.xspeciesTrans2TransPsl, qNameIdx=True))
+
+@dataclass
+class TargetAnnotSet:
+    """Set to evaluate against source"""
+    annotSet: AnnotSet
+    annotData: Union[UniProtAnnotTbl, InterproAnnotTbl]
+
+def targetAnnotSetLoad(targetAnnotConf):
+    if targetAnnotConf.annotSet is AnnotSet.InterPro:
+        annotData = UniProtAnnotTbl(targetAnnotConf.annotTsv)
+    else:
+        annotData = interproAnnotsLoad(targetAnnotConf.annotTsv)
+
+    return TargetAnnotSet(targetAnnotConf.annotSet, annotData)
+
+    # annotTsv: str    # either uniprotAnnotTsv or interproAnnotTsv output
+    # annot2TransPsl: str
+    # annot2GenomePsl: str
+    # annot2TransRefTsv: str
+
 
 class AnnotMap:
     """Mappings of an annotation to target genome"""
@@ -15,11 +52,9 @@ class AnnotMap:
         self.annotId = annotId
         self.mapRanges = mapRanges
 
-
-class TransAnnots:
-    "transcript annotations from UniProt, etc"
+class SrcTrans:
+    "source transcript annotations from UniProt, etc"
     def __init__(self, annotSet, transId):
-        self.annotSet = annotSet
         self.transId = transId
 
 class TargetTranscript:
@@ -29,3 +64,6 @@ class TargetTranscript:
 
 # def _mapTransAnnots(transGenomePsl, annotTransPsls):
 #    for annotTransPsl in annotTransPsls:
+
+
+# annot2TransPsl

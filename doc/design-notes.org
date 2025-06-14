@@ -59,10 +59,21 @@ identify novel domains.  Comparison with InterProScan may fine novel insertions.
 *** Associate each target mRNA with the most similar src mRNA
 
 *** scan through paired mRNAs and note differences in annotations
-options for mappings
-**** mapping via implict RNA/RNA aligns in target genome
-srcAnnot-srcTrans <->
-srcTrans-targetGenome <->
-targetGenome-targetTrans <->
-targetTrans-targetAnnot
+**** mapping via implicit RNA/RNA aligns in target genome
+srcAnnot-srcTrans -> 
+srcTrans-targetGenome <-> targetGenome-targetTrans
+<- targetTrans-targetAnnot
+***** implicit means mapping to the same target genome
+***** src annotation files
+uniprotMetaTsv
+annot2GenomePsl
+annot2TransRefTsv
+xspeciesTrans2TransPsl
+***** target annotation files
 
+**** Collect differences based on similarity
+Collection is done based on annotations pairing
+defined in a configuration file.
+For SwissProt mapped, this is the same annotation type,
+for InterProScan, association is needed, which maybe
+one to many.

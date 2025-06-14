@@ -67,6 +67,7 @@ prog_blat = 'blat'
 # data
 ##
 data_uniprotMetaTsv = 'uniprotMeta.tsv'
+data_uniprotAnnotsTsv = 'uniprotAnnots.tsv'
 data_protFa = 'protein.fa'
 data_transFa = 'trans.fa'
 data_trans2GenomePsl = 'trans2Genome.psl'
@@ -76,7 +77,6 @@ data_annotDecoratorBed = 'annotDecorator.bed'
 data_annot2GenomePsl = 'annot2Genome.psl'
 data_annot2TransRefTsv = 'annot2TransRef.tsv'
 data_annot2TransPsl = 'annot2Trans.psl'
-data_uniprotAnnotsTsv = 'uniprotAnnots.tsv'
 data_targetProtFa = 'targetProtein.fa'
 data_targetTransFa = 'targetTrans.fa'
 
@@ -192,7 +192,7 @@ def _task_interpro_annots_to_decorators(graph):
 
 def _task_xspecies_compare(graph):
     graph.add_task(prog_xspeciesCompare,
-                   extins=(data_uniprotMetaTsv,
+                   extins=(data_uniprotAnnotsTsv,
                            data_interproAnnotTsv),
                    inputs=(data_srcAnnot2SrcTransPsl,
                            data_srcTrans2TargetGenomePsl,
