@@ -19,7 +19,7 @@ class SrcAnnotConf:
     annotSet: AnnotSet
     uniprotAnnotTsv: str
     annot2GenomePsl: str
-    annot2TransRefTsv: str
+    annot2GenomeRefTsv: str
     xspeciesTrans2TransPsl: str
 
 @dataclass
@@ -29,7 +29,7 @@ class TargetAnnotConf:
     annotTsv: str    # either uniprotAnnotTsv or interproAnnotTsv output
     annot2TransPsl: str
     annot2GenomePsl: str
-    annot2TransRefTsv: str
+    annot2GenomeRefTsv: str
 
 @dataclass
 class AnnotCmpConf:

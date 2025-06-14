@@ -21,7 +21,7 @@ def srcAnnotSetLoad(srcAnnotConf):
     return SrcAnnotSet(srcAnnotConf.annotSet,
                        UniProtAnnotTbl(srcAnnotConf.uniprotAnnotTsv),
                        AnnotMappingsTbl(srcAnnotConf.annot2GenomePsl,
-                                        srcAnnotConf.annot2TransRefTsv),
+                                        srcAnnotConf.annot2GenomeRefTsv),
                        PslTbl(srcAnnotConf.xspeciesTrans2TransPsl, qNameIdx=True))
 
 @dataclass
@@ -41,7 +41,7 @@ def targetAnnotSetLoad(targetAnnotConf):
     # annotTsv: str    # either uniprotAnnotTsv or interproAnnotTsv output
     # annot2TransPsl: str
     # annot2GenomePsl: str
-    # annot2TransRefTsv: str
+    # annot2GenomeRefTsv: str
 
 
 class AnnotMap:

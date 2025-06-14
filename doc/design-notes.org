@@ -67,7 +67,7 @@ srcTrans-targetGenome <-> targetGenome-targetTrans
 ***** src annotation files
 uniprotMetaTsv
 annot2GenomePsl
-annot2TransRefTsv
+annot2GenomeRefTsv
 xspeciesTrans2TransPsl
 ***** target annotation files
 

@@ -12,7 +12,7 @@ sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import OutOfSyncError, TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
 from uniprotmap.mapping import PslMapInfoTbl, getQuerySizes, createAnnotToProteinCdsPsl, pslMapAnnots
 from uniprotmap.uniprot import UniProtAnnotTbl
-from uniprotmap.metadata import AnnotTransRefWriter
+from uniprotmap.metadata import Annot2GenomeRefWriter
 
 ##
 # Same-species mapping pipeline:
@@ -54,7 +54,7 @@ def parseArgs():
                         help="""Paired protein to transcript CDS alignments from uniprotProteinTranscriptMap (input)""")
     parser.add_argument("annot2GenomePsl",
                         help="""Uniprot annotations mapped to genome (output)""")
-    parser.add_argument("annot2TransRefTsv",
+    parser.add_argument("annot2GenomeRefTsv",
                         help="""Association of annotations to mapped transcripts (output)""")
     parser.add_argument("problemLogTsv",
                         help="""Log file of issues that happened (output)""")
@@ -206,7 +206,7 @@ def writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter
             writeTransRefs(uniprotAnnotTbl, transIdChrom[0], uniprotA2GMapInfos, xspeciesTransMapTbl, refWriter)
 
 def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2GenomePsl,
-              annot2GenomePslFh, annot2TransRefTsv, xspeciesTrans2TransPsl=None):
+              annot2GenomePslFh, annot2GenomeRefTsv, xspeciesTrans2TransPsl=None):
     annotGenomeMapInfoTsv = TmpOrSaveFile(opts.interPrefix, "annotGenome.mapinfo.tsv")
 
     xspeciesTransMapInfoTsv = None
@@ -222,12 +222,12 @@ def mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2Ge
     if xspeciesTransMapInfoTsv is not None:
         xspeciesTransMapTbl = PslMapInfoTbl(xspeciesTransMapInfoTsv)
 
-    with AnnotTransRefWriter(annot2TransRefTsv) as refWriter:
+    with Annot2GenomeRefWriter(annot2GenomeRefTsv) as refWriter:
         writeRefs(uniprotAnnotTbl, annotGenomeMapTbl, xspeciesTransMapTbl, refWriter)
     cleanTmpFiles(xspeciesTransMapInfoTsv, annotGenomeMapInfoTsv)
 
 def uniprotAnnotsMap(opts, trans2GenomePsl, uniprotAnnotsTsv, prot2TransPairedPsl,
-                     annot2GenomePsl, annot2TransRefTsv, problemLogTsv):
+                     annot2GenomePsl, annot2GenomeRefTsv, problemLogTsv):
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
     protCdsSizes = getQuerySizes(prot2TransPairedPsl)
 
@@ -236,13 +236,13 @@ def uniprotAnnotsMap(opts, trans2GenomePsl, uniprotAnnotsTsv, prot2TransPairedPs
 
     with fileOps.AtomicFileCreate(annot2GenomePsl) as annot2GenomePslFh:
         mapAnnots(opts, uniprotAnnotTbl, annotProtPsl, prot2TransPairedPsl, trans2GenomePsl,
-                  annot2GenomePslFh, annot2TransRefTsv, opts.xspeciesTrans2TransPsl)
+                  annot2GenomePslFh, annot2GenomeRefTsv, opts.xspeciesTrans2TransPsl)
 
     cleanTmpFiles(annotProtPsl)
 
 def main():
     opts, args = parseArgs()
     uniprotAnnotsMap(opts, args.trans2GenomePsl, args.uniprotAnnotsTsv, args.prot2TransPairedPsl,
-                     args.annot2GenomePsl, args.annot2TransRefTsv, args.problemLogTsv)
+                     args.annot2GenomePsl, args.annot2GenomeRefTsv, args.problemLogTsv)
 
 main()

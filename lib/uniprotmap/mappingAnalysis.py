@@ -4,7 +4,7 @@ Analyze mappings of features to transcripts.
 from collections import namedtuple, defaultdict
 from pycbio.sys.symEnum import SymEnum, auto
 from pycbio.hgdata.psl import PslReader
-from uniprotmap.metadata import annotTransRefReader
+from uniprotmap.metadata import annot2GenomeRefReader
 
 class MappingError(Exception):
     pass
@@ -14,7 +14,7 @@ class MappingError(Exception):
 # Reading annotation mappings
 ###
 class AnnotMapping(namedtuple("AnnotMapping",
-                              ("annotTransRef", "annotPsl"))):
+                              ("annot2GenomeRef", "annotPsl"))):
     """A single mapping for an annotation. annotPsl is None if not mapped"""
     __slots__ = ()
 
@@ -27,9 +27,9 @@ class TransAnnotMappings(namedtuple("TransAnnotMappings",
 
 class AnnotMappingsTbl(list):
     """Table of TransAnnotMappings, all the mappings annotations to a genome"""
-    def __init__(self, annot2GenomePslFile, annot2TransRefTsv):
+    def __init__(self, annot2GenomePslFile, annot2GenomeRefTsv):
         self.byTransId = defaultdict(list)
-        for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
+        for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv):
             self._add(transAnnotMappings)
         self.byTransId.default_factory = None
 
@@ -60,34 +60,34 @@ class AnnotMappingsTbl(list):
         return entry
 
 
-def _makeAnnotMapping(annotTransRef, annotPsls):
-    if annotTransRef.alignIdx is None:
-        return AnnotMapping(annotTransRef, None)
+def _makeAnnotMapping(annot2GenomeRef, annotPsls):
+    if annot2GenomeRef.alignIdx is None:
+        return AnnotMapping(annot2GenomeRef, None)
     else:
-        return AnnotMapping(annotTransRef, annotPsls[annotTransRef.alignIdx])
+        return AnnotMapping(annot2GenomeRef, annotPsls[annot2GenomeRef.alignIdx])
 
 def _makeTransAnnotMapping(annotMappings):
-    annotTransRef0 = annotMappings[0].annotTransRef
-    return TransAnnotMappings(annotTransRef0.transcriptId,
-                              annotTransRef0.transcriptPos.name,
+    annot2GenomeRef0 = annotMappings[0].annot2GenomeRef
+    return TransAnnotMappings(annot2GenomeRef0.transcriptId,
+                              annot2GenomeRef0.transcriptPos.name,
                               tuple(annotMappings))
 
-def transAnnotMappingReader(annot2GenomePslFile, annot2TransRefTsv):
+def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv):
     """Reads mapped annotation alignments and metadata for a target transcript.  Returns only
     metadata for annotations that don't map. Yields TransAnnotMappings objects"""
 
     annotPsls = [p for p in PslReader(annot2GenomePslFile)]
     prevAnnotRef = None
     annotMappings = []
-    for annotTransRef in annotTransRefReader(annot2TransRefTsv):
+    for annot2GenomeRef in annot2GenomeRefReader(annot2GenomeRefTsv):
         # ensure on same chrom for PAR issues
         if ((prevAnnotRef is not None) and
-            ((annotTransRef.transcriptId != prevAnnotRef.transcriptId) or
-             (annotTransRef.transcriptPos.name != prevAnnotRef.transcriptPos.name))):
+            ((annot2GenomeRef.transcriptId != prevAnnotRef.transcriptId) or
+             (annot2GenomeRef.transcriptPos.name != prevAnnotRef.transcriptPos.name))):
             yield _makeTransAnnotMapping(annotMappings)
             annotMappings = []
-        annotMappings.append(_makeAnnotMapping(annotTransRef, annotPsls))
-        prevAnnotRef = annotTransRef
+        annotMappings.append(_makeAnnotMapping(annot2GenomeRef, annotPsls))
+        prevAnnotRef = annot2GenomeRef
     if len(annotMappings) > 0:
         yield _makeTransAnnotMapping(annotMappings)
 
@@ -184,15 +184,15 @@ def _analyzePartialDeletion(transPsl, annotPsl):
 def _analyzeFullDeletion():
     raise Exception("_analyzeFullDeletion not implemented yet")
 
-def _featureIndelGen(annotTransRef, transPsl, annotPsl):
+def _featureIndelGen(annot2GenomeRef, transPsl, annotPsl):
     if annotPsl is None:
         yield from _analyzeFullDeletion()
     else:
         yield from _analyzePartialDeletion(transPsl, annotPsl)
 
-def analyzeFeatureMapping(annotTransRef, transPsl, annotPsl):
+def analyzeFeatureMapping(annot2GenomeRef, transPsl, annotPsl):
     """product list of feature disruptions, either
     unmapped regions of feature or insertions in
     feature that don't correspond to introns in
     transcripts."""
-    return tuple(_featureIndelGen(annotTransRef, transPsl, annotPsl))
+    return tuple(_featureIndelGen(annot2GenomeRef, transPsl, annotPsl))

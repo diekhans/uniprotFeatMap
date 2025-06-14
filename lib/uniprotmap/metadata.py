@@ -12,11 +12,11 @@ from uniprotmap import annotMapIdFmt, annotMapIdToAnnotId
 
 ###
 
-_annotTransRefRowFields = ("annotMapId", "transcriptPos", "transcriptId",
-                           "xspeciesSrcTransId", "alignIdx")
+_annot2GenomeRefRowFields = ("annotMapId", "transcriptPos", "transcriptId",
+                             "xspeciesSrcTransId", "alignIdx")
 
-class AnnotTransRef(namedtuple("AnnotTransRef",
-                    ("annotId",) + _annotTransRefRowFields)):
+class Annot2GenomeRef(namedtuple("Annot2GenomeRef",
+                                 ("annotId",) + _annot2GenomeRefRowFields)):
     """ Metadata for mapping of an annotation to a transcript.
     This parallels the PSL file containing the annotation to transcript
     alignments.  Annotations that did not map to the transcript have entries
@@ -37,45 +37,45 @@ class AnnotTransRef(namedtuple("AnnotTransRef",
     # This needs to be a namedtuple to be pickled
     __slots__ = ()
 
-def _annotTransRefParseRow(reader, row):
-    values = [row[reader.colMap[f]] for f in _annotTransRefRowFields]
+def _annot2GenomeRefParseRow(reader, row):
+    values = [row[reader.colMap[f]] for f in _annot2GenomeRefRowFields]
     annotId = annotMapIdToAnnotId(values[0])
-    return AnnotTransRef(annotId, *values)
+    return Annot2GenomeRef(annotId, *values)
 
-_annotTransRefTypeMap = {
+_annot2GenomeRefTypeMap = {
     "xspeciesSrcTransId": strOrNoneType,
     "alignIdx": intOrNoneType,
     "transcriptPos": Coords.parse,
 }
 
-class AnnotTransRefError(Exception):
+class Annot2GenomeRefError(Exception):
     pass
 
-def annotTransRefReader(annot2TransRefTsv):
-    return TsvReader(annot2TransRefTsv, typeMap=_annotTransRefTypeMap, rowClass=_annotTransRefParseRow)
+def annot2GenomeRefReader(annot2GenomeRefTsv):
+    return TsvReader(annot2GenomeRefTsv, typeMap=_annot2GenomeRefTypeMap, rowClass=_annot2GenomeRefParseRow)
 
-class AnnotTransRefs:
+class Annot2GenomeRefs:
     """look up transcript for a PSL row"""
-    def __init__(self, annot2TransRefTsv):
+    def __init__(self, annot2GenomeRefTsv):
         self.byAlignIdx = {}
-        for row in annotTransRefReader(annot2TransRefTsv):
+        for row in annot2GenomeRefReader(annot2GenomeRefTsv):
             self._readRow(row)
 
     def _readRow(self, row):
         self.byAlignIdx[row.alignIdx] = row
 
     def get(self, annotId, alignIdx):
-        annotTransRef = self.byAlignIdx[alignIdx]
-        if annotTransRef.annotId != annotId:
-            raise AnnotTransRefError(f"annot2GenomePsl '{annotId}' and  annot2TransRefTsv '{annotTransRef.annotId}' out-of-sync")
-        return annotTransRef
+        annot2GenomeRef = self.byAlignIdx[alignIdx]
+        if annot2GenomeRef.annotId != annotId:
+            raise Annot2GenomeRefError(f"annot2GenomePsl '{annotId}' and  annot2GenomeRefTsv '{annot2GenomeRef.annotId}' out-of-sync")
+        return annot2GenomeRef
 
 
-class AnnotTransRefWriter:
+class Annot2GenomeRefWriter:
     header = ["annotMapId", "transcriptPos", "transcriptId", "xspeciesSrcTransId", "alignIdx"]
 
-    def __init__(self, annot2TransRefTsv):
-        self.fh = fileOps.opengz(annot2TransRefTsv, 'w')
+    def __init__(self, annot2GenomeRefTsv):
+        self.fh = fileOps.opengz(annot2GenomeRefTsv, 'w')
         self.idxCounter = defaultdict(int)  # used to get globally unique id
         fileOps.prRow(self.fh, self.header)
 
@@ -100,6 +100,6 @@ class AnnotTransRefWriter:
         self.idxCounter[annotId] += 1
         fileOps.prRowv(self.fh, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)
 
-def xrefToItemArgs(annotTransRef):
+def xrefToItemArgs(annot2GenomeRef):
     "convert xref into into [name, start, end] for decorator"
-    return annotTransRef.transcriptId, annotTransRef.transcriptPos.start, annotTransRef.transcriptPos.end
+    return annot2GenomeRef.transcriptId, annot2GenomeRef.transcriptPos.start, annot2GenomeRef.transcriptPos.end

@@ -34,7 +34,7 @@ def parseArgs():
     parser.add_argument("annot2GenomePsl",
                         help="""Interpro annotations mapped to genome from interproAnnotsMap (input). For cross-species mapping, this will
                         be the target species genome.""")
-    parser.add_argument("annot2TransRefTsv",
+    parser.add_argument("annot2GenomeRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
@@ -60,10 +60,10 @@ def getAnnotCatFields(annot):
                 AnnotCategory.other,
                 OTHER_COLOR)
 
-def makeDecorator(annot, annotPsl, annotTransRef):
+def makeDecorator(annot, annotPsl, annot2GenomeRef):
     accession, description, annotCategory, color = getAnnotCatFields(annot)
     bedBlocks = [BedBlock(pb.tStart, pb.tEnd) for pb in annotPsl.blocks]
-    itemName, itemStart, itemEnd = xrefToItemArgs(annotTransRef)
+    itemName, itemStart, itemEnd = xrefToItemArgs(annot2GenomeRef)
 
     return InterproDecoration(annotPsl.tName, bedBlocks, annot.annotId, annotPsl.qStrand, color,
                               itemName, itemStart, itemEnd, None, None,
@@ -83,15 +83,15 @@ class AnnotationProcessor:
     def __init__(self, interproAnnotTsv):
         self.interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
 
-    def _buildAnnotation(self, annotPsl, annot, annotTransRef):
-        return makeDecorator(annot, annotPsl, annotTransRef)
+    def _buildAnnotation(self, annotPsl, annot, annot2GenomeRef):
+        return makeDecorator(annot, annotPsl, annot2GenomeRef)
 
     def _createAnnot(self, annotMapping):
         if annotMapping.annotPsl is None:
-            raise OutOfSyncError(f"annotation {annotMapping.annotTransRef.annotId} does not have a corresponding alignment")
-        annot = self.interproAnnotTbl.getByAnnotId(annotMapping.annotTransRef.annotId)
+            raise OutOfSyncError(f"annotation {annotMapping.annot2GenomeRef.annotId} does not have a corresponding alignment")
+        annot = self.interproAnnotTbl.getByAnnotId(annotMapping.annot2GenomeRef.annotId)
         if includeAnnot(annot):
-            return [self._buildAnnotation(annotMapping.annotPsl, annot, annotMapping.annotTransRef)]
+            return [self._buildAnnotation(annotMapping.annotPsl, annot, annotMapping.annot2GenomeRef)]
         else:
             return None
 
@@ -114,18 +114,18 @@ def writeFeatTypes(featTypes, featTypesTsv):
         for ft in sorted(featTypes):
             fileOps.prRowv(fh, *ft)
 
-def interproAnnotsToDecorators(interproAnnotTsv, annot2GenomePslFile, annot2TransRefTsv,
+def interproAnnotsToDecorators(interproAnnotTsv, annot2GenomePslFile, annot2GenomeRefTsv,
                                annotDecoratorBedFile, nprocs, batchSize, featTypesTsv):
     annotProcFunc = partial(AnnotationProcessor, interproAnnotTsv)
 
     featTypes = buildDecorators(annotProcFunc, getFeatType,
-                                annot2GenomePslFile, annot2TransRefTsv,
+                                annot2GenomePslFile, annot2GenomeRefTsv,
                                 annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
 
 def main(opts):
-    interproAnnotsToDecorators(opts.interproAnnotTsv, opts.annot2GenomePsl, opts.annot2TransRefTsv,
+    interproAnnotsToDecorators(opts.interproAnnotTsv, opts.annot2GenomePsl, opts.annot2GenomeRefTsv,
                                opts.annotDecoratorBed, opts.nprocs, opts.batchSize,
                                opts.featTypesTsv)
 
