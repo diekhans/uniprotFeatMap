@@ -35,8 +35,9 @@ def targetAnnotSetLoad(targetAnnotConf):
         annotData = UniProtAnnotTbl(targetAnnotConf.annotTsv)
     else:
         annotData = interproAnnotsLoad(targetAnnotConf.annotTsv)
-    return TargetAnnotSet(targetAnnotConf.annotSet, annotData
-                          )
+    return TargetAnnotSet(targetAnnotConf.annotSet, annotData)
+
+def
 
     # annotTsv: str    # either uniprotAnnotTsv or interproAnnotTsv output
     # annot2TransPsl: str

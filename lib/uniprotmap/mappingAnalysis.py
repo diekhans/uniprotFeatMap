@@ -14,8 +14,10 @@ class MappingError(Exception):
 # Reading annotation mappings
 ###
 class AnnotMapping(namedtuple("AnnotMapping",
-                              ("annotRef", "annotPsl"))):
-    """A single mapping for an annotation to a genome. annotPsl is None if not mapped"""
+                              ("annotRef", "annotPsl", "annot"))):
+    """A single mapping for an annotation to a genome. annotPsl is None if not mapped.
+    The annot field depends on the type of annotation (UniProt or Interpro).
+    """
     __slots__ = ()
 
 
@@ -60,11 +62,11 @@ class AnnotMappingsTbl(list):
         return entry
 
 
-def _makeAnnotMapping(annot2GenomeRef, annot2GenomePsls):
+def _makeAnnotMapping(annot2GenomeRef, annot2GenomePsls, annot):
     if annot2GenomeRef.alignIdx is None:
-        return AnnotMapping(annot2GenomeRef, None)
+        return AnnotMapping(annot2GenomeRef, None, annot)
     else:
-        return AnnotMapping(annot2GenomeRef, annot2GenomePsls[annot2GenomeRef.alignIdx])
+        return AnnotMapping(annot2GenomeRef, annot2GenomePsls[annot2GenomeRef.alignIdx], annot)
 
 def _makeTransAnnotMapping(annotMappings):
     annotRef = annotMappings[0].annotRef
@@ -72,21 +74,27 @@ def _makeTransAnnotMapping(annotMappings):
                               annotRef.transcriptPos.name,
                               tuple(annotMappings))
 
-def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv):
+def _differentTranscript(prevAnnotRef, annot2GenomeRef):
+    # ensure on same chrom for PAR issues
+    return ((prevAnnotRef is not None) and
+            ((annot2GenomeRef.transcriptId != prevAnnotRef.transcriptId) or
+             (annot2GenomeRef.transcriptPos.name != prevAnnotRef.transcriptPos.name)))
+def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotTbl):
     """Reads mapped annotation alignments and metadata for a target transcript.  Returns only
-    metadata for annotations that don't map. Yields TransAnnotMappings objects"""
+    metadata for annotations that don't map. Yields TransAnnotMappings objects,
+    The annotTbl.getByAnnotId() function is given the annotation id and should return the specific
+    annotation data.
+    """
 
     annot2GenomePsls = [p for p in PslReader(annot2GenomePslFile)]
     prevAnnotRef = None
     annotMappings = []
     for annot2GenomeRef in annot2GenomeRefReader(annot2GenomeRefTsv):
-        # ensure on same chrom for PAR issues
-        if ((prevAnnotRef is not None) and
-            ((annot2GenomeRef.transcriptId != prevAnnotRef.transcriptId) or
-             (annot2GenomeRef.transcriptPos.name != prevAnnotRef.transcriptPos.name))):
+        if _differentTranscript(prevAnnotRef, annot2GenomeRef):
             yield _makeTransAnnotMapping(annotMappings)
             annotMappings = []
-        annotMappings.append(_makeAnnotMapping(annot2GenomeRef, annot2GenomePsls))
+        annotMappings.append(_makeAnnotMapping(annot2GenomeRef, annot2GenomePsls,
+                                               annotTbl.getByAnnotId(annot2GenomeRef.annotId)))
         prevAnnotRef = annot2GenomeRef
     if len(annotMappings) > 0:
         yield _makeTransAnnotMapping(annotMappings)

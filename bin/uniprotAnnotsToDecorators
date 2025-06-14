@@ -81,6 +81,7 @@ class AnnotInfo(namedtuple("AnnotInfo",
                             "transCategory", "dataSet"))):
     """Common data passed through a lot of functions.  Includes full transcripts references,
     as they are needed for finding context for deleted annotations."""
+    # FIXME just keep annotMapping instead of  "annotRef", "annotPsl", "annot",
     pass
 
 ##
@@ -191,24 +192,22 @@ class AnnotationProcessor:
         self.geneSetData = GeneSetData()
         geneSetLoadAnnotPsl(self.geneSetData, trans2GenomePslFile)
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
-        self.uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
 
-    def _buildAnnotation(self, transAnnotMappings, annotMapping, annot):
-        uniprotMeta = self.uniprotMetaTbl.getByAcc(annot.acc)
+    def _buildAnnotation(self, transAnnotMappings, annotMapping):
+        uniprotMeta = self.uniprotMetaTbl.getByAcc(annotMapping.annot.acc)
         transPsl = self.geneSetData.getAlign(transAnnotMappings.transcriptId, transAnnotMappings.chrom)
         transCategory = calcTransCategory(uniprotMeta, transAnnotMappings.transcriptId)
         # package up since so many parameters
         ainfo = AnnotInfo(transPsl=transPsl, annotPsl=annotMapping.annotPsl,
-                          annotRef=annotMapping.annotRef, annot=annot,
+                          annotRef=annotMapping.annotRef, annot=annotMapping.annot,
                           transCategory=transCategory, dataSet=self.dataSet)
         return buildAnnotation(ainfo)
 
     def _createAnnot(self, transAnnotMappings, annotMapping):
         if annotMapping.annotPsl is None:
             return None
-        annot = self.uniprotAnnotTbl.getByAnnotId(annotMapping.annotRef.annotId)
-        if includeAnnot(annot):
-            return self._buildAnnotation(transAnnotMappings, annotMapping, annot)
+        if includeAnnot(annotMapping.annot):
+            return self._buildAnnotation(transAnnotMappings, annotMapping)
         else:
             return None
 
@@ -220,21 +219,23 @@ class AnnotationProcessor:
                 beds.extend(bed)
         return beds
 
-def getFeatType(decoBed):
-    """use to return tuple for collecting feature types that used when defining filters"""
-    return (decoBed.category, decoBed.categoryName, decoBed.featType, decoBed.shortFeatType)
-
 def writeFeatTypes(featTypes, featTypesTsv):
     with fileOps.opengz(featTypesTsv, 'w') as fh:
         fileOps.prRowv(fh, "category", "categoryName", "featType", "shortFeatType")
         for ft in sorted(featTypes):
             fileOps.prRowv(fh, *ft)
 
-def uniprotAnnotsToDecorators(trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, annot2GenomePslFile, annotRefTsv,
+def getFeatType(decoBed):
+    """use to return tuple for collecting feature types that used when defining filters"""
+    return (decoBed.category, decoBed.categoryName, decoBed.featType, decoBed.shortFeatType)
+
+def uniprotAnnotsToDecorators(trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, annot2GenomePslFile, annot2GenomeRefTsv,
                               annotDecoratorBedFile, dataSet, nprocs, batchSize, featTypesTsv):
+
+    uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
     annotProcFunc = partial(AnnotationProcessor, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, dataSet)
 
-    featTypes = buildDecorators(annotProcFunc, getFeatType, annot2GenomePslFile, annotRefTsv,
+    featTypes = buildDecorators(annotProcFunc, getFeatType, annot2GenomePslFile, annot2GenomeRefTsv, uniprotAnnotTbl,
                                 annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
