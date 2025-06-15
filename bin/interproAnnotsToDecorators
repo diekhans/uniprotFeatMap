@@ -4,7 +4,6 @@ import sys
 import os.path as osp
 import argparse
 import multiprocessing as mp
-from functools import partial
 from pycbio.sys import fileOps
 from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock

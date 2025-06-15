@@ -192,15 +192,15 @@ def _analyzePartialDeletion(transPsl, annotPsl):
 def _analyzeFullDeletion():
     raise Exception("_analyzeFullDeletion not implemented yet")
 
-def _featureIndelGen(annot2GenomeRef, transPsl, annotPsl):
-    if annotPsl is None:
+def _featureIndelGen(transPsl, annotMapping):
+    if annotMapping.annotPsl is None:
         yield from _analyzeFullDeletion()
     else:
-        yield from _analyzePartialDeletion(transPsl, annotPsl)
+        yield from _analyzePartialDeletion(transPsl, annotMapping.annotPsl)
 
-def analyzeFeatureMapping(annot2GenomeRef, transPsl, annotPsl):
+def analyzeFeatureMapping(transPsl, annotMapping):
     """product list of feature disruptions, either
     unmapped regions of feature or insertions in
     feature that don't correspond to introns in
     transcripts."""
-    return tuple(_featureIndelGen(annot2GenomeRef, transPsl, annotPsl))
+    return tuple(_featureIndelGen(transPsl, annotMapping))

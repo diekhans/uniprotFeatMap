@@ -63,7 +63,7 @@ class TargetTranscript:
         self.transId = transId
 
 
-def _intersectAnnots(srcAnnot2GenomePsls, targetAnnot2GenomePsls, featurePairings):
+def _intersectAnnots():
     pass
 
 def _annotCmpTransUniprot(srcTrans, targetTrans, featurePairings):
