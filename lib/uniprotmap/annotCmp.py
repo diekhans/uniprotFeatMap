@@ -37,7 +37,7 @@ def targetAnnotSetLoad(targetAnnotConf):
         annotData = interproAnnotsLoad(targetAnnotConf.annotTsv)
     return TargetAnnotSet(targetAnnotConf.annotSet, annotData)
 
-def
+# def
 
     # annotTsv: str    # either uniprotAnnotTsv or interproAnnotTsv output
     # annot2TransPsl: str
@@ -62,8 +62,7 @@ class TargetTranscript:
     def __init__(self, transId):
         self.transId = transId
 
-
-def _intersectAnnots():
+def _intersectAnnots(srcAnnotMappings, targetAnnotMappings):
     pass
 
 def _annotCmpTransUniprot(srcTrans, targetTrans, featurePairings):

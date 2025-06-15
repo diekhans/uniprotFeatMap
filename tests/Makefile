@@ -190,7 +190,7 @@ ifeq (${nproc},1)
 testUniprotAnnotsToDecoratorsError:
 else
 testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
-	! ${uniprotAnnotsToDecorators} --nproc=${nproc} no_gencodePcPsl ${swissprotMeta} ${swissprotAnnots} \
+	! ${uniprotAnnotsToDecorators} --nproc=${nproc} ${gencodePcPsl} no_swissprotMeta ${swissprotAnnots} \
 	    expected/testUniprotAnnotsMapSP.psl expected/testUniprotAnnotsMapSP.ref.tsv \
             output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
 	grep -q 'Exception: Pool initialization failed' output/$@.err 

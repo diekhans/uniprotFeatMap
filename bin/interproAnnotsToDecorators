@@ -13,6 +13,7 @@ from uniprotmap import OutOfSyncError
 from uniprotmap.interproscan import interproAnnotsLoad
 from uniprotmap.interproDecorators import InterproDecoration, AnnotCategory, INTERPRO_COLOR, OTHER_COLOR
 from uniprotmap.metadata import xrefToItemArgs
+from uniprotmap.annotMappings import transAnnotMappingReader
 from uniprotmap.decoratorsBuilder import buildDecorators
 
 def parseArgs():
@@ -99,25 +100,27 @@ class AnnotationProcessor:
                 beds.extend(bed)
         return beds
 
-
-def getFeatType(decoBed):
-    """use to return tuple for collecting feature types that used when defining filters"""
-    return (decoBed.analysis, decoBed.accession, decoBed.description, decoBed.annotCategory)
-
 def writeFeatTypes(featTypes, featTypesTsv):
     with fileOps.opengz(featTypesTsv, 'w') as fh:
         fileOps.prRowv(fh, "analysis", "accession", "description", "annotCategory")
         for ft in sorted(featTypes):
             fileOps.prRowv(fh, *ft)
 
+def getFeatType(decoBed):
+    """use to return tuple for collecting feature types that used when defining filters"""
+    return (decoBed.analysis, decoBed.accession, decoBed.description, decoBed.annotCategory)
+
 def interproAnnotsToDecorators(interproAnnotTsv, annot2GenomePslFile, annot2GenomeRefTsv,
                                annotDecoratorBedFile, nprocs, batchSize, featTypesTsv):
     interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
-    annotProcFunc = AnnotationProcessor
 
-    featTypes = buildDecorators(annotProcFunc, getFeatType,
-                                annot2GenomePslFile, annot2GenomeRefTsv, interproAnnotTbl,
-                                annotDecoratorBedFile, nprocs, batchSize)
+    transAnnotMappingReaderFunc = (
+        transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv,
+                                lambda annotId: interproAnnotTbl.getByAnnotId(annotId))
+    )
+
+    featTypes = buildDecorators(AnnotationProcessor, transAnnotMappingReaderFunc,
+                                getFeatType, annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
 

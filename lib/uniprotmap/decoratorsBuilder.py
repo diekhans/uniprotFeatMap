@@ -5,7 +5,6 @@ generate decorators given PSLs in each subprocess.
 import multiprocessing as mp
 import pipettor
 from pycbio.sys import fileOps
-from uniprotmap.mappingAnalysis import transAnnotMappingReader
 
 # chrom,  chromStart, chromEnd, decoratedItem, name, dataset
 decoratorBedSortOpts = ["-k1,1", "-k2,2n", "-k3,3n", "-k13,13", "-k4,4n", "-k17,17"]
@@ -43,11 +42,11 @@ def _worker(mappingBatch):
         ex2.__cause__ = ex
         return ex
 
-def _transAnnotMappingBatchReader(annot2GenomePslFile, annot2GenomeRefTsv, annotTbl, batchSize):
-    """return list of AnnotMapping"""
+def _transAnnotMappingBatchReader(transAnnotMappingReader, batchSize):
+    """yield lists of AnnotMapping objects"""
     mappingBatch = []
 
-    for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotTbl):
+    for transAnnotMappings in transAnnotMappingReader:
         mappingBatch.append(transAnnotMappings)
         if len(mappingBatch) >= batchSize:
             yield mappingBatch
@@ -74,13 +73,13 @@ def _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile):
                     featTypes.add(featTypeFunc(decoBed))
     return featTypes
 
-def processSingle(annotationProcessorFactory, featTypeFunc,
-                  annot2GenomePslFile, annot2GenomeRefTsv, annotTbl,
+def processSingle(annotationProcessorFactory,
+                  transAnnotMappingReader, featTypeFunc,
                   annotDecoratorBedFile, batchSize):
     # this is easier to debug without mp
     _workerInit(annotationProcessorFactory)
     decoBedsList = []
-    for mappingBatch in _transAnnotMappingBatchReader(annot2GenomePslFile, annot2GenomeRefTsv, annotTbl, batchSize):
+    for mappingBatch in _transAnnotMappingBatchReader(transAnnotMappingReader, batchSize):
         decoBeds = _worker(mappingBatch)
         _checkForWorkerFail(decoBeds)
         decoBedsList.append(decoBeds)
@@ -88,36 +87,39 @@ def processSingle(annotationProcessorFactory, featTypeFunc,
     featTypes = _writeDecoratorBeds(featTypeFunc, decoBedsList, annotDecoratorBedFile)
     return featTypes
 
-def processMulti(annotationProcessorFactory, featTypeFunc,
-                 annot2GenomePslFile, annot2GenomeRefTsv, annotTbl,
+def processMulti(annotationProcessorFactory,
+                 transAnnotMappingReader, featTypeFunc,
                  annotDecoratorBedFile, nprocs, batchSize):
     with mp.Pool(processes=nprocs, initializer=_workerInit,
                  initargs=((annotationProcessorFactory,))) as pool:
         decoBedIters = pool.imap_unordered(_worker,
-                                           _transAnnotMappingBatchReader(annot2GenomePslFile, annot2GenomeRefTsv, annotTbl, batchSize))
+                                           _transAnnotMappingBatchReader(transAnnotMappingReader, batchSize))
         featTypes = _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile)
     return featTypes
 
-def buildDecorators(annotationProcessorFactory, featTypeFunc, annot2GenomePslFile,
-                    annot2GenomeRefTsv, annotTbl, annotDecoratorBedFile, nprocs, batchSize):
+def buildDecorators(annotationProcessorFactory, transAnnotMappingReader,
+                    featTypeFunc, annotDecoratorBedFile, nprocs, batchSize):
     """
-    Used to build decorators using multiple processes.  Special handling
-    for nprocs=1 to build in current process to make debugging easier.
+    Reads mapped annotation alignments and metadata for target transcripts, including
+    those that did not align successfully. Yields TransAnnotMapping objects.
 
-    - annotationProcessorFactory function, usually a partial with arguments,
-      creates an object convert PSLs to decorators.  It should have one function
-        annotationProcessor.create(transAnnotMappings)
-      that either returns a *list* of decorator BED records or None.
-    - featTypeFunc - a function that given a decorate BED returns an tuple
-      that describes features used in the decorates to use in building filters.
-    """
-    # special case one process makes profiling easier
+    Args:
+        annot2GenomePslFile: Path to a PSL file mapping annotations to the genome.
+        annot2GenomeRefTsv: Path to a TSV file with annotation metadata.
+        annotLookupFunc: Callable that takes an annotation ID and returns its data record.
+        transPslLookupFunc: Callable that takes a transcript ID and chromosome,
+            and returns the corresponding alignment information.
+
+    Yields:
+        TransAnnotMapping: An object representing an annotation's genomic mapping.
+        """
+    # special case one process makes debugging & profiling easier
     if nprocs == 1:
-        featTypes = processSingle(annotationProcessorFactory, featTypeFunc,
-                                  annot2GenomePslFile, annot2GenomeRefTsv, annotTbl,
+        featTypes = processSingle(annotationProcessorFactory,
+                                  transAnnotMappingReader, featTypeFunc,
                                   annotDecoratorBedFile, batchSize)
     else:
-        featTypes = processMulti(annotationProcessorFactory, featTypeFunc,
-                                 annot2GenomePslFile, annot2GenomeRefTsv, annotTbl,
+        featTypes = processMulti(annotationProcessorFactory,
+                                 transAnnotMappingReader, featTypeFunc,
                                  annotDecoratorBedFile, nprocs, batchSize)
     return featTypes

@@ -19,6 +19,7 @@ from uniprotmap.uniprotDecorators import (getAnnotColor, getProblemColor, getAnn
 from uniprotmap.geneset import GeneSetData, geneSetLoadAnnotPsl
 from uniprotmap.metadata import xrefToItemArgs
 from uniprotmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
+from uniprotmap.annotMappings import transAnnotMappingReader
 from uniprotmap.decoratorsBuilder import buildDecorators
 
 class HelpColors(argparse.Action):
@@ -170,10 +171,10 @@ def mkBrokenAnnotDecorators(dataSet, transCategory, annotMapping, featIndels):
         disruptIdx += 1
     return decoratorBeds
 
-def buildAnnotation(dataSet, transCategory, transPsl, annotMapping):
+def buildAnnotation(dataSet, transCategory, transAnnotMappings, annotMapping):
     "converts BEDs to strings so this work is distributed"
     decoBeds = []
-    featIndels = analyzeFeatureMapping(transPsl, annotMapping)
+    featIndels = analyzeFeatureMapping(transAnnotMappings, annotMapping)
     decoBeds.append(mkMainAnnotDecorator(dataSet, transCategory, annotMapping, featIndels))
     if len(featIndels) > 0:
         decoBeds.extend(mkBrokenAnnotDecorators(dataSet, transCategory, annotMapping, featIndels))
@@ -185,15 +186,12 @@ class AnnotationProcessor:
 
     def __init__(self, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, dataSet):
         self.dataSet = dataSet
-        self.geneSetData = GeneSetData()
-        geneSetLoadAnnotPsl(self.geneSetData, trans2GenomePslFile)
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
     def _buildAnnotation(self, transAnnotMappings, annotMapping):
         uniprotMeta = self.uniprotMetaTbl.getByAcc(annotMapping.annot.acc)
-        transPsl = self.geneSetData.getAlign(transAnnotMappings.transcriptId, transAnnotMappings.chrom)
         transCategory = calcTransCategory(uniprotMeta, transAnnotMappings.transcriptId)
-        return buildAnnotation(self.dataSet, transCategory, transPsl, annotMapping)
+        return buildAnnotation(self.dataSet, transCategory, transAnnotMappings, annotMapping)
 
     def _createAnnot(self, transAnnotMappings, annotMapping):
         if annotMapping.annotPsl is None:
@@ -225,9 +223,17 @@ def uniprotAnnotsToDecorators(trans2GenomePslFile, uniprotMetaTsv, uniprotAnnots
                               annotDecoratorBedFile, dataSet, nprocs, batchSize, featTypesTsv):
 
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
-    annotProcFunc = partial(AnnotationProcessor, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, dataSet)
+    geneSetData = GeneSetData()
+    geneSetLoadAnnotPsl(geneSetData, trans2GenomePslFile)
 
-    featTypes = buildDecorators(annotProcFunc, getFeatType, annot2GenomePslFile, annot2GenomeRefTsv, uniprotAnnotTbl,
+    mappingReader = (
+        transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv,
+                                lambda annotId: uniprotAnnotTbl.getByAnnotId(annotId),
+                                lambda transId, chrom: geneSetData.getAlign(transId, chrom))
+    )
+
+    annotProcFactory = partial(AnnotationProcessor, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, dataSet)
+    featTypes = buildDecorators(annotProcFactory, mappingReader, getFeatType,
                                 annotDecoratorBedFile, nprocs, batchSize)
     if featTypesTsv is not None:
         writeFeatTypes(featTypes, featTypesTsv)
