@@ -25,80 +25,62 @@ def _workerInit(annotationProcessorFactory):
         _gAnnotationProcessor = Exception("Pool initialization failed")
         _gAnnotationProcessor.__cause__ = ex
 
-def _worker(mappingBatch):
+def _worker(transAnnotMappings):
     """sub-process worker, if an error occurs an exception object is the returned.
     """
     if isinstance(_gAnnotationProcessor, Exception):
         return _gAnnotationProcessor
     try:
-        decoBeds = []
-        for transAnnotMappings in mappingBatch:
-            beds = _gAnnotationProcessor.create(transAnnotMappings)
-            if beds is not None:
-                decoBeds.extend(beds)
-        return decoBeds
+        return _gAnnotationProcessor.create(transAnnotMappings)
     except Exception as ex:
         ex2 = Exception("Worker failed")
         ex2.__cause__ = ex
         return ex
 
-def _transAnnotMappingBatchReader(transAnnotMappingReader, batchSize):
-    """yield lists of AnnotMapping objects"""
-    mappingBatch = []
-
-    for transAnnotMappings in transAnnotMappingReader:
-        mappingBatch.append(transAnnotMappings)
-        if len(mappingBatch) >= batchSize:
-            yield mappingBatch
-            mappingBatch = []
-    if len(mappingBatch) > 0:
-        yield mappingBatch
-
 def _checkForWorkerFail(decoBeds):
     if isinstance(decoBeds, Exception):
         raise Exception("creation of decorator BEDs failed") from decoBeds
 
-def _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile):
-    """write results from multiprocessing task as they come back via an iter
-    over lists of beds, or maybe a list of lists. This also checks for
-    exceptions in the list, since these are combine back asynchronously, we
-    have to way until actually writing."""
-    featTypes = set()
-    with fileOps.AtomicFileCreate(annotDecoratorBedFile) as tmpDecoBed:
-        with pipettor.Popen(["sort"] + decoratorBedSortOpts, 'w', stdout=tmpDecoBed) as decoBedFh:
-            for decoBeds in decoBedIters:
-                _checkForWorkerFail(decoBeds)
-                for decoBed in decoBeds:
-                    decoBed.write(decoBedFh)
-                    featTypes.add(featTypeFunc(decoBed))
-    return featTypes
-
-def processSingle(annotationProcessorFactory,
-                  transAnnotMappingReader, featTypeFunc,
-                  annotDecoratorBedFile, batchSize):
+def _processSingle(annotationProcessorFactory,
+                   transAnnotMappingReader, featTypeFunc,
+                   decoBedFh, featTypes):
     # this is easier to debug without mp
     _workerInit(annotationProcessorFactory)
-    decoBedsList = []
-    for mappingBatch in _transAnnotMappingBatchReader(transAnnotMappingReader, batchSize):
-        decoBeds = _worker(mappingBatch)
+    for transAnnotMappings in transAnnotMappingReader:
+        decoBeds = _worker(transAnnotMappings)
         _checkForWorkerFail(decoBeds)
-        decoBedsList.append(decoBeds)
+        for decoBed in decoBeds:
+            featTypes.add(featTypeFunc(decoBed))
+            decoBed.write(decoBedFh)
 
-    featTypes = _writeDecoratorBeds(featTypeFunc, decoBedsList, annotDecoratorBedFile)
-    return featTypes
-
-def processMulti(annotationProcessorFactory,
-                 transAnnotMappingReader, featTypeFunc,
-                 annotDecoratorBedFile, nprocs, batchSize):
+def _processMulti(annotationProcessorFactory,
+                  transAnnotMappingReader, featTypeFunc, nprocs,
+                  decoBedFh, featTypes):
     with mp.Pool(processes=nprocs, initializer=_workerInit,
                  initargs=((annotationProcessorFactory,))) as pool:
         decoBedIters = pool.imap_unordered(_worker,
-                                           _transAnnotMappingBatchReader(transAnnotMappingReader, batchSize))
-        featTypes = _writeDecoratorBeds(featTypeFunc, decoBedIters, annotDecoratorBedFile)
-    return featTypes
+                                           transAnnotMappingReader)
+        for decoBeds in decoBedIters:
+            _checkForWorkerFail(decoBeds)
+            for decoBed in decoBeds:
+                featTypes.add(featTypeFunc(decoBed))
+                decoBed.write(decoBedFh)
+
+def _processMappings(annotationProcessorFactory, transAnnotMappingReader,
+                     featTypeFunc, nprocs, decoBedFh, featTypes):
+    # special case one process makes debugging & profiling easier
+    if nprocs == 1:
+        _processSingle(annotationProcessorFactory,
+                       transAnnotMappingReader, featTypeFunc,
+                       decoBedFh, featTypes)
+    else:
+        _processMulti(annotationProcessorFactory,
+                      transAnnotMappingReader, featTypeFunc, nprocs,
+                      decoBedFh, featTypes)
+
 
 def buildDecorators(annotationProcessorFactory, transAnnotMappingReader,
-                    featTypeFunc, annotDecoratorBedFile, nprocs, batchSize):
+                    featTypeFunc, annotDecoratorBedFile, nprocs):
     """
     Reads mapped annotation alignments and metadata for target transcripts, including
     those that did not align successfully. Yields TransAnnotMapping objects.
@@ -113,13 +95,9 @@ def buildDecorators(annotationProcessorFactory, transAnnotMappingReader,
     Yields:
         TransAnnotMapping: An object representing an annotation's genomic mapping.
         """
-    # special case one process makes debugging & profiling easier
-    if nprocs == 1:
-        featTypes = processSingle(annotationProcessorFactory,
-                                  transAnnotMappingReader, featTypeFunc,
-                                  annotDecoratorBedFile, batchSize)
-    else:
-        featTypes = processMulti(annotationProcessorFactory,
-                                 transAnnotMappingReader, featTypeFunc,
-                                 annotDecoratorBedFile, nprocs, batchSize)
+    featTypes = set()
+    with fileOps.AtomicFileCreate(annotDecoratorBedFile) as tmpDecoBed:
+        with pipettor.Popen(["sort"] + decoratorBedSortOpts, 'w', stdout=tmpDecoBed) as decoBedFh:
+            _processMappings(annotationProcessorFactory, transAnnotMappingReader, featTypeFunc, nprocs,
+                             decoBedFh, featTypes)
     return featTypes

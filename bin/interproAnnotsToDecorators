@@ -4,7 +4,9 @@ import sys
 import os.path as osp
 import argparse
 import multiprocessing as mp
-from pycbio.sys import fileOps
+import logging
+import pipettor
+from pycbio.sys import fileOps, cmdOps, loggingOps
 from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock
 
@@ -25,8 +27,6 @@ def parseArgs():
     parser = argparse.ArgumentParser(description=desc)
     parser.add_argument("--nprocs", type=int, default=1,
                         help="""number of processers to use""")
-    parser.add_argument("--batchSize", type=int, default=250,
-                        help="""size of batch to sent to task""")
     parser.add_argument("--featTypesTsv",
                         help="""unique category and feature types for constructing track filters (output)""")
     parser.add_argument("interproAnnotTsv",
@@ -39,9 +39,12 @@ def parseArgs():
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
     profiler = Profile(parser)
-    opts = parser.parse_args()
+    loggingOps.addCmdOptions(parser)
+    opts, args = cmdOps.parse(parser)
+    loggingOps.setupFromCmd(opts)
+    pipettor.setDefaultLogger(logging.getLogger())
     profiler.setup(opts)
-    return opts
+    return opts, args
 
 def includeAnnot(annot):
     "filter for desired annotations"
@@ -110,8 +113,8 @@ def getFeatType(decoBed):
     """use to return tuple for collecting feature types that used when defining filters"""
     return (decoBed.analysis, decoBed.accession, decoBed.description, decoBed.annotCategory)
 
-def interproAnnotsToDecorators(interproAnnotTsv, annot2GenomePslFile, annot2GenomeRefTsv,
-                               annotDecoratorBedFile, nprocs, batchSize, featTypesTsv):
+def interproAnnotsToDecorators(opts, interproAnnotTsv, annot2GenomePslFile, annot2GenomeRefTsv,
+                               annotDecoratorBedFile):
     interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
 
     transAnnotMappingReaderFunc = (
@@ -120,15 +123,15 @@ def interproAnnotsToDecorators(interproAnnotTsv, annot2GenomePslFile, annot2Geno
     )
 
     featTypes = buildDecorators(AnnotationProcessor, transAnnotMappingReaderFunc,
-                                getFeatType, annotDecoratorBedFile, nprocs, batchSize)
-    if featTypesTsv is not None:
-        writeFeatTypes(featTypes, featTypesTsv)
+                                getFeatType, annotDecoratorBedFile, opts.nprocs)
+    if opts.featTypesTsv is not None:
+        writeFeatTypes(featTypes, opts.featTypesTsv)
 
-def main(opts):
-    interproAnnotsToDecorators(opts.interproAnnotTsv, opts.annot2GenomePsl, opts.annot2GenomeRefTsv,
-                               opts.annotDecoratorBed, opts.nprocs, opts.batchSize,
-                               opts.featTypesTsv)
+def main():
+    opts, args = parseArgs()
+    interproAnnotsToDecorators(opts, args.interproAnnotTsv, args.annot2GenomePsl, args.annot2GenomeRefTsv,
+                               args.annotDecoratorBed)
 
 if __name__ == '__main__':
-    mp.set_start_method("fork")
-    main(parseArgs())
+    mp.set_start_method("forkserver", force=True)
+    main()

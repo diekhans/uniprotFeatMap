@@ -4,8 +4,10 @@ import sys
 import os.path as osp
 import argparse
 import multiprocessing as mp
+import logging
 from functools import partial
-from pycbio.sys import fileOps
+import pipettor
+from pycbio.sys import fileOps, cmdOps, loggingOps
 from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock, Glyph
 
@@ -52,8 +54,6 @@ def parseArgs():
                         help="""Show description of colors used, mostly for producing documentation""")
     parser.add_argument("--nprocs", type=int, default=1,
                         help="""number of processers to use""")
-    parser.add_argument("--batchSize", type=int, default=250,
-                        help="""size of batch to sent to task""")
     parser.add_argument("--dataset", type=UniProtDataSet, choices=UniProtDataSet, default=UniProtDataSet.SwissProt,
                         help="""Is the UniProt dataset SwissProt or TrEMBL?""")
     parser.add_argument("--featTypesTsv",
@@ -72,9 +72,13 @@ def parseArgs():
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
     profiler = Profile(parser)
-    opts = parser.parse_args()
+    loggingOps.addCmdOptions(parser)
+
+    opts, args = cmdOps.parse(parser)
+    loggingOps.setupFromCmd(opts)
+    pipettor.setDefaultLogger(logging.getLogger())
     profiler.setup(opts)
-    return opts
+    return opts, args
 
 ##
 # shortFeatType to not include in track.
@@ -219,8 +223,8 @@ def getFeatType(decoBed):
     """use to return tuple for collecting feature types that used when defining filters"""
     return (decoBed.category, decoBed.categoryName, decoBed.featType, decoBed.shortFeatType)
 
-def uniprotAnnotsToDecorators(trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, annot2GenomePslFile, annot2GenomeRefTsv,
-                              annotDecoratorBedFile, dataSet, nprocs, batchSize, featTypesTsv):
+def uniprotAnnotsToDecorators(opts, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, annot2GenomePslFile, annot2GenomeRefTsv,
+                              annotDecoratorBedFile):
 
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotsTsv)
     geneSetData = GeneSetData()
@@ -232,18 +236,17 @@ def uniprotAnnotsToDecorators(trans2GenomePslFile, uniprotMetaTsv, uniprotAnnots
                                 lambda transId, chrom: geneSetData.getAlign(transId, chrom))
     )
 
-    annotProcFactory = partial(AnnotationProcessor, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, dataSet)
+    annotProcFactory = partial(AnnotationProcessor, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, opts.dataset)
     featTypes = buildDecorators(annotProcFactory, mappingReader, getFeatType,
-                                annotDecoratorBedFile, nprocs, batchSize)
-    if featTypesTsv is not None:
-        writeFeatTypes(featTypes, featTypesTsv)
+                                annotDecoratorBedFile, opts.nprocs)
+    if opts.featTypesTsv is not None:
+        writeFeatTypes(featTypes, opts.featTypesTsv)
 
-def main(opts):
-    uniprotAnnotsToDecorators(opts.trans2GenomePsl, opts.uniprotMetaTsv, opts.uniprotAnnotsTsv,
-                              opts.annot2GenomePsl, opts.annot2GenomeRefTsv,
-                              opts.annotDecoratorBed, opts.dataset, opts.nprocs, opts.batchSize,
-                              opts.featTypesTsv)
+def main():
+    opts, args = parseArgs()
+    uniprotAnnotsToDecorators(opts, args.trans2GenomePsl, args.uniprotMetaTsv, args.uniprotAnnotsTsv,
+                              args.annot2GenomePsl, args.annot2GenomeRefTsv, args.annotDecoratorBed)
 
 if __name__ == '__main__':
-    mp.set_start_method("fork")
-    main(parseArgs())
+    mp.set_start_method("forkserver", force=True)
+    main()
