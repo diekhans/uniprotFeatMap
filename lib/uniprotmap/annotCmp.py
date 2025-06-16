@@ -2,7 +2,7 @@
 Compares annotations on transcripts from different sources.
 """
 from dataclasses import dataclass
-from typing import List, Union
+from typing import Union
 from pycbio.hgdata.psl import PslTbl
 from uniprotmap.annotCmpConf import AnnotSet
 from uniprotmap.uniprot import UniProtAnnotTbl
@@ -63,6 +63,9 @@ class TargetTranscript:
         self.transId = transId
 
 def _intersectAnnots(srcAnnotMappings, targetAnnotMappings):
+    pass
+
+def _intersectTransAnnots(srcTransAnnotMappings, targetTransAnnotMappings):
     pass
 
 def _annotCmpTransUniprot(srcTrans, targetTrans, featurePairings):

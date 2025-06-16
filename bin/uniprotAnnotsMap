@@ -153,16 +153,16 @@ def splitByUniprotAcc(transA2GMapInfos):
     return byUniprotAcc
 
 def writeMappedRef(transA2GMapInfo, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
-    refWriter.write(transA2GMapInfo.srcQName, transcriptId, transcriptPos,
+    refWriter.write(transA2GMapInfo.srcQName, transA2GMapInfo.srcQSize, transcriptId, transcriptPos,
                     transA2GMapInfo.mappedPslLine, xspeciesSrcTransId)
 
-def writeUnmappedRef(annotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
-    refWriter.write(annotId, transcriptId, transcriptPos, None, xspeciesSrcTransId)
+def writeUnmappedRef(annot, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
+    refWriter.write(annot.annotId, (annot.end - annot.begin) + 1, transcriptId, transcriptPos, None, xspeciesSrcTransId)
 
 def writeUnmappedRange(allAnnots, iAll, mappedAnnotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter):
     # advance all
     while (iAll < len(allAnnots)) and (allAnnots[iAll].annotId != mappedAnnotId):
-        writeUnmappedRef(allAnnots[iAll].annotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
+        writeUnmappedRef(allAnnots[iAll], transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
         iAll += 1
         if iAll >= len(allAnnots):
             raise OutOfSyncError(f"mapped annotations our of order or out of sync with uniprot annotation file for '{transcriptId}' and '{mappedAnnotId}'")
@@ -182,7 +182,7 @@ def doWriteAllTransRefs(allAnnots, transcriptId, transA2GMapInfos, transcriptPos
         iAll += 1
     # remaining unmapped
     for iAll in range(iAll, len(allAnnots)):
-        writeUnmappedRef(allAnnots[iAll].annotId, transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
+        writeUnmappedRef(allAnnots[iAll], transcriptId, transcriptPos, xspeciesSrcTransId, refWriter)
 
 def writeAllTransRefs(canonAcc, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, xspeciesSrcTransId, refWriter):
     try:

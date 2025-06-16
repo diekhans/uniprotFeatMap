@@ -93,12 +93,12 @@ def _analyzePartialDeletion(transPsl, annotPsl):
     yield from _analyzeBlocks(transPsl, annotPsl)
     yield from _analyzeEnd(annotPsl)
 
-def _analyzeFullDeletion():
-    raise Exception("_analyzeFullDeletion not implemented yet")
+def _analyzeFullDeletion(annotRef):
+    yield FeatureIndel(FeatureIndelType.del_full, annotRef.annotSize, 0, 0)
 
 def _featureIndelGen(transPsl, annotMapping):
     if annotMapping.annotPsl is None:
-        yield from _analyzeFullDeletion()
+        yield from _analyzeFullDeletion(annotMapping.annotRef)
     else:
         yield from _analyzePartialDeletion(transPsl, annotMapping.annotPsl)
 

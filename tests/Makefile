@@ -321,8 +321,9 @@ testInterproCat1BlatAlign: mkout
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 
-interproTests: testInterproAnnotsMap testInterproAnnotsToDeco \
-	testInterproCat1AnnotsMap testInterproCat1AnnotsToDeco
+interproTests:  interproMapTests interproAnnotsToDecoratorsTests
+
+interproMapTests: testInterproAnnotsMap testInterproCat1AnnotsMap
 
 testInterproAnnotsMap: mkout
 	${interproAnnotsMap} ${gencodePcPsl} \
@@ -334,14 +335,6 @@ testInterproAnnotsMap: mkout
 	diff expected/$@.annotsTrans.psl output/$@.annotsTrans.psl
 	pslCheck -verbose=0 output/$@.psl
 
-testInterproAnnotsToDeco: mkout
-	${interproAnnotsToDecorators} --nproc=${nproc} ${gencodeInterproTsv} \
-	    expected/testInterproAnnotsMap.psl expected/testInterproAnnotsMap.ref.tsv \
-            output/$@.bed --featTypesTsv=output/$@.types.tsv
-	diff expected/$@.bed output/$@.bed
-	diff expected/$@.types.tsv output/$@.types.tsv
-	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
-
 testInterproCat1AnnotsMap: mkout
 	${interproAnnotsMap} ${ponAbeCat1Psl} \
 	    ${ponAbeCat1InterproTsv} expected/testInterproCat1BlatAlign.psl \
@@ -349,6 +342,16 @@ testInterproCat1AnnotsMap: mkout
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	pslCheck -verbose=0 output/$@.psl
+
+interproAnnotsToDecoratorsTests: testInterproAnnotsToDeco testInterproCat1AnnotsToDeco
+
+testInterproAnnotsToDeco: mkout
+	${interproAnnotsToDecorators} --nproc=${nproc} ${gencodeInterproTsv} \
+	    expected/testInterproAnnotsMap.psl expected/testInterproAnnotsMap.ref.tsv \
+            output/$@.bed --featTypesTsv=output/$@.types.tsv
+	diff expected/$@.bed output/$@.bed
+	diff expected/$@.types.tsv output/$@.types.tsv
+	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
 
 testInterproCat1AnnotsToDeco: mkout
 	${interproAnnotsToDecorators} --nproc=${nproc} ${ponAbeCat1InterproTsv} \

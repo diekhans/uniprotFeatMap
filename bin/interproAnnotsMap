@@ -80,7 +80,7 @@ def convertProtRnaToCdsRna(opts, prot2TransPslFile):
     return prot2TransPairedPslFile
 
 def writeMappedRef(transA2GMapInfo, transcriptId, transcriptPos, refWriter):
-    refWriter.write(transA2GMapInfo.srcQName, transcriptId, transcriptPos,
+    refWriter.write(transA2GMapInfo.srcQName, transA2GMapInfo.srcQSize, transcriptId, transcriptPos,
                     transA2GMapInfo.mappedPslLine, None)
 
 def writeAllTransRefs(protId, allAnnots, transcriptId, transA2GMapInfos, transcriptPos, refWriter):

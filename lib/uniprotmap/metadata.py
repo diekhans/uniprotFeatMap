@@ -12,7 +12,7 @@ from uniprotmap import annotMapIdFmt, annotMapIdToAnnotId
 
 ###
 
-_annot2GenomeRefRowFields = ("annotMapId", "transcriptPos", "transcriptId",
+_annot2GenomeRefRowFields = ("annotMapId", "annotSize", "transcriptPos", "transcriptId",
                              "xspeciesSrcTransId", "alignIdx")
 
 class Annot2GenomeRef(namedtuple("Annot2GenomeRef",
@@ -43,6 +43,7 @@ def _annot2GenomeRefParseRow(reader, row):
     return Annot2GenomeRef(annotId, *values)
 
 _annot2GenomeRefTypeMap = {
+    "annotSize": int,
     "xspeciesSrcTransId": strOrNoneType,
     "alignIdx": intOrNoneType,
     "transcriptPos": Coords.parse,
@@ -72,7 +73,7 @@ class Annot2GenomeRefs:
 
 
 class Annot2GenomeRefWriter:
-    header = ["annotMapId", "transcriptPos", "transcriptId", "xspeciesSrcTransId", "alignIdx"]
+    header = ["annotMapId", "annotSize", "transcriptPos", "transcriptId", "xspeciesSrcTransId", "alignIdx"]
 
     def __init__(self, annot2GenomeRefTsv):
         self.fh = fileOps.opengz(annot2GenomeRefTsv, 'w')
@@ -94,11 +95,11 @@ class Annot2GenomeRefWriter:
         if self.fh is not None:
             self.close()
 
-    def write(self, annotId, transcriptId, transcriptPos, xspeciesSrcTransId, alignIdx):
+    def write(self, annotId, annotSize, transcriptId, transcriptPos, xspeciesSrcTransId, alignIdx):
         """Write record, return assigned annotMapId. Must be grouped and sorted by mapped transcript id"""
         annotMapId = annotMapIdFmt(annotId, self.idxCounter[annotId])
         self.idxCounter[annotId] += 1
-        fileOps.prRowv(self.fh, annotMapId, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)
+        fileOps.prRowv(self.fh, annotMapId, annotSize, transcriptPos, transcriptId, alignIdx, xspeciesSrcTransId)
 
 def xrefToItemArgs(annot2GenomeRef):
     "convert xref into into [name, start, end] for decorator"
