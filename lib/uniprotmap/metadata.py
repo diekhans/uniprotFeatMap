@@ -38,9 +38,9 @@ class Annot2GenomeRef(namedtuple("Annot2GenomeRef",
     __slots__ = ()
 
 def _annot2GenomeRefParseRow(reader, row):
-    values = [row[reader.columnSpecs.columnMap[f]] for f in _annot2GenomeRefRowFields]
-    annotId = annotMapIdToAnnotId(values[0])
-    return Annot2GenomeRef(annotId, *values)
+    fields = dict(((f, row[reader.columnSpecs.columnMap[f]]) for f in _annot2GenomeRefRowFields))
+    fields['annotId'] = annotMapIdToAnnotId(fields['annotMapId'])
+    return Annot2GenomeRef(**fields)
 
 _annot2GenomeRefTypeMap = {
     "annotSize": int,
