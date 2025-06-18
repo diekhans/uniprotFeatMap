@@ -115,7 +115,7 @@ mkDecorators: ${decoratorsBed}
 
 ${decoratorsBed}: ${upannot} ${mapAnnotsPsl}
 	@mkdir -p $(dir $@)
-	${time} ${uniprotAnnotsToDecorators} --dataset=${uniprotDataset} --nprocs=${nprocs} --batchSize=10000 --featTypesTsv=${decoratorsTypesTsv} \
+	${time} ${uniprotAnnotsToDecorators} --dataset=${uniprotDataset} --nprocs=${nprocs} --featTypesTsv=${decoratorsTypesTsv} \
 	     ${gencodePsl} ${uniprotMeta} ${uniprotAnnot} ${mapAnnotsPsl} ${mapAnnotsRefTsv} $@.${tmpext}
 	mv -f $@.${tmpext} $@
 
