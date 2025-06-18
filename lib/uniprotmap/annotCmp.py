@@ -70,3 +70,28 @@ def _intersectTransAnnots(srcTransAnnotMappings, targetTransAnnotMappings):
 
 def _annotCmpTransUniprot(srcTrans, targetTrans, featurePairings):
     pass
+
+class Cursor:
+    """
+    Indexes into annotations are for the current position if
+    overlapping features, other wise before the
+    """
+    def __init__(self, mappedTrans, interproTrans):
+        self.transPsl = mappedTrans.transPsl
+        self.mappedAnnots = mappedTrans.annotMappings
+        self.interproAnnots = interproTrans.annotMappings
+        self.nextPos = self.transPsl.tStart
+        self.endPos = self.transPsl.tEnd
+        self.iMapped = self.iIterpro = 0
+
+    def advance(self):
+        return self.nextPos >= self.endPos
+
+def _cmpMappedIntroproTrans(mappedTrans, interproTrans, annotSelector):
+    """annots should have been filtered for ones of interests"""
+    # walk through transcript in genomic order
+    assert mappedTrans.transPsl.qName == interproTrans.transPsl.qName
+
+    cur = Cursor(mappedTrans, interproTrans)
+    while not cur.atEnd():
+        pass
