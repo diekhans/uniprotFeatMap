@@ -84,8 +84,15 @@ class Cursor:
         self.endPos = self.transPsl.tEnd
         self.iMapped = self.iIterpro = 0
 
-    def advance(self):
-        return self.nextPos >= self.endPos
+    def advance(self, advancePos):
+        """return (mappedAnnot, iterproAnnot) """
+
+
+        return self.nextPos < self.endPos
+
+
+
+
 
 def _cmpMappedIntroproTrans(mappedTrans, interproTrans, annotSelector):
     """annots should have been filtered for ones of interests"""
@@ -93,5 +100,5 @@ def _cmpMappedIntroproTrans(mappedTrans, interproTrans, annotSelector):
     assert mappedTrans.transPsl.qName == interproTrans.transPsl.qName
 
     cur = Cursor(mappedTrans, interproTrans)
-    while not cur.atEnd():
+    while cur.advance():
         pass

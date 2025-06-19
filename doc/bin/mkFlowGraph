@@ -91,8 +91,8 @@ data_trans2TargetTransPsl = "trans2TargetTrans.psl"
 
 data_interproAnnotTsv = "interproAnnot.tsv"
 data_interproAnnot2TransPsl = "interproAnnot2Trans.psl"
-data_interproAnnot2GenomeRefTsv = "interproAnnot2GenomeRef.tsv"
 data_interproAnnot2GenomePsl = "interproAnnot2Genome.psl"
+data_interproAnnot2GenomeRefTsv = "interproAnnot2GenomeRef.tsv"
 data_interproAnnotDecoratorBed = "interproAnnotDecorator.bed"
 
 # more specific src name for xspecics compare

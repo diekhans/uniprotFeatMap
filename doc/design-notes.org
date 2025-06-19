@@ -39,41 +39,36 @@ target genome can find deleted and modified domains; however the do not
 identify novel domains.  Comparison with InterProScan may fine novel insertions.
 
 ** Comparison is done by:
- - Associate each target mRNAs annotation with the TransMap alignment of the
-   source genome mRNAs with the closest similarity.  A given source annotation
- - Compare domain annotation with source and target annotations, reporting
-   changes
- - Mapped SwissProt annotations are more comprehensive than native TrEMBL or
-   InterProScan
+ - Use the pair source and target RNAs used for the mapping
+ - use a selective subset of annotations
+ - Mapped SwissProt annotations are more comprehensive than native or mapped
+   TrEMBL or InterProScan, but could also include native TrEMBL at some point.
+   However, the xspecies assembly needs to be in Ensembl or have to map
+   between assembly versions.
    
 ** Details:
-*** src annotation to src mRNA alignments
-- input from uniprotAnnotsMap
-    - annotTrans.swissprot.src.psl
-    - annotGenome.swissprot.mapped.psl
-*** target annotation to mRNA alignments
-- input from uniprotAnnotsMap native (TrEMBL) and InterProScan
-    - annotTrans.target.psl
-    - annotGenome.target.psl
-
-*** Associate each target mRNA with the most similar src mRNA
-
-*** scan through paired mRNAs and note differences in annotations
-**** mapping via implicit RNA/RNA aligns in target genome
+*** uniprot to xspecies mappings
+- uniprotMetaTsv
+- annot2GenomePsl (xspecies)
+- annot2GenomeRefTsv (xspecies)
+- xspeciesTrans2TransPsl
+*** intropro target annotation to mRNA alignments
+- interproAnnot.tsv
+- interproAnnot2Trans.psl ??? really needed?? 
+- interproAnnot2Genome.psl
+- interproAnnot2GenomeRef.tsv
+  
+*** Logical ling the mappings are
 srcAnnot-srcTrans -> 
 srcTrans-targetGenome <-> targetGenome-targetTrans
 <- targetTrans-targetAnnot
-***** implicit means mapping to the same target genome
-***** src annotation files
-uniprotMetaTsv
-annot2GenomePsl
-annot2GenomeRefTsv
-xspeciesTrans2TransPsl
-***** target annotation files
 
-**** Collect differences based on similarity
-Collection is done based on annotations pairing
-defined in a configuration file.
-For SwissProt mapped, this is the same annotation type,
-for InterProScan, association is needed, which maybe
-one to many.
+
+*** want to report
+**** if mapped is disrupted or deleted
+**** if mapped and interpro conflict or significant disagrees in similarity and bounds
+**** if interpro is is not in mapped
+
+*** for a given target transcript with mappings
+:
+
