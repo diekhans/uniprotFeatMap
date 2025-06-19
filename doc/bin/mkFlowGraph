@@ -102,6 +102,9 @@ data_targetTrans2TargetGenomePsl = "targetTransTargetGenome.psl"
 data_srcAnnot2TargetTransPsl = "srcAnnot2TargetTrans.psl"
 data_srcTrans2TargetTransPsl = "srcTirans2TargetTrans.psl"
 
+data_xspeciesCmpReportTsv = "xspeciesCmpReport.tsv"
+data_xspeciesCmpReportBed = "xspeciesCmpReport.bed"
+
 ##
 # within assemble
 ##
@@ -194,13 +197,12 @@ def _task_xspecies_compare(graph):
     graph.add_task(prog_xspeciesCompare,
                    extins=(data_uniprotAnnotsTsv,
                            data_interproAnnotTsv),
-                   inputs=(data_srcAnnot2SrcTransPsl,
-                           data_srcTrans2TargetGenomePsl,
-                           data_targetTrans2TargetGenomePsl,
-                           data_srcAnnot2TargetTransPsl,
+                   inputs=(data_srcAnnot2TargetTransPsl,
                            data_srcTrans2TargetTransPsl,
                            data_interproAnnot2TransPsl,
-                           data_interproAnnot2GenomePsl,))
+                           data_interproAnnot2GenomePsl,),
+                   outputs=(data_xspeciesCmpReportTsv,
+                            data_xspeciesCmpReportBed))
 
 def _graph_prot_trans_map(graph):
     _task_proten_transcript_align(graph)
