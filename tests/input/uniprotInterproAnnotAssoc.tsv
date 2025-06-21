@@ -1,0 +1,5 @@
+uniprotShortFeatType	uniprotComment	interproAnalysis	interproAcc	description
+zinc finger		ProSitePatterns	IPR013087	Zinc finger C2H2-type
+zinc finger		Pfam	IPR013087	Zinc finger C2H2-type
+domain	KRAB	Pfam	IPR001909	Krueppel-associated box
+domain	KRAB	ProSiteProfiles	IPR001909	Krueppel-associated box

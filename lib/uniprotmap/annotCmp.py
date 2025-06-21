@@ -2,18 +2,22 @@
 Compares annotations on transcripts from different sources.
 """
 from dataclasses import dataclass
+from collections import namedtuple, defaultdict
 from pycbio.hgdata.coords import Coords
-from uniprotmap.geneset import geneSetFactory
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.interproscan import InterproAnnotTbl, interproAnnotsLoad
 from uniprotmap.annotMappings import AnnotMappingsTbl, transAnnotMappingLoader
 from uniprotmap.mappingAnalysis import analyzeFeatureMapping
 
 class AnnotAssoc(namedtuple("AnnotAssoc",
-                             ("uniprotShortFeatType", "interproAnalysis", "interproAcc"))):
+                            ("uniprotShortFeatType", "uniprotComment",
+                             "interproAnalysis", "interproAcc"))):
     """
     Specifies a Uniprot anotation and the match interpro analysis/acc.
+    Uniprot comment is needed to distinguish the type of some domains.
+    If uniprotComment is None, it is not matched.
     """
+    pass
 
 class AnnotAssocs:
     """Takes list of AnnotAssoc objects which are sets that are considered
@@ -23,25 +27,33 @@ class AnnotAssocs:
     """
 
     def __init__(self):
-        self.srcToTargets = defaultdict(list)
+        self.srcToTargets = defaultdict(list)  # by (shortType, comment
         self.targetToSrcs = defaultdict(list)  # by (analysis, acc)
 
-    def add(self, uniprotShortFeatType, interproAnalysis, interproAcc):
-        annotAssoc = AnnotAssoc(uniprotShortFeatType, interproAnalysis, interproAcc)
-        self.srcToTargets[uniprotShortFeatType].add(annotAssoc)
-        self.targetToSrcs[(interproAnalysis, interproAcc)].add(annotAssoc)
+    def add(self, uniprotShortFeatType, uniprotComment, interproAnalysis, interproAcc):
+        annotAssoc = AnnotAssoc(uniprotShortFeatType, uniprotComment,
+                                interproAnalysis, interproAcc)
+        self.srcToTargets[(uniprotShortFeatType, uniprotComment)].append(annotAssoc)
+        self.targetToSrcs[(interproAnalysis, interproAcc)].append(annotAssoc)
 
     def finish(self):
         self.srcToTargets.default_factory = self.targetToSrcs.default_factory = None
 
-    def useSrc(self, uniprotShortFeatType):
-        return uniprotShortFeatType in self.srcToTargets
+    def useSrc(self, uniprotShortFeatType, uniprotComment):
+        # comment is allow to be None in assocations
+        return (((uniprotShortFeatType, uniprotComment) in self.srcToTargets) or
+                ((uniprotShortFeatType, None) in self.srcToTargets))
 
     def useTarget(self, interproAnalysis, interproAcc):
         return (interproAnalysis, interproAcc) in self.targetToSrcs
 
-    def getSrcTargets(self, uniprotShortFeatType):
-        return self.srcToTargets[uniprotShortFeatType]
+    def getSrcTargets(self, uniprotShortFeatType, uniprotComment):
+        targets = self.srcToTargets.get((uniprotShortFeatType, uniprotComment))
+        if targets is None:
+            targets = self.srcToTargets.get((uniprotShortFeatType, None))
+        assert targets is not None
+        return targets
+
 
 @dataclass
 class SrcAnnotSet:
@@ -49,17 +61,17 @@ class SrcAnnotSet:
     uniprotAnnotTbl: UniProtAnnotTbl
     annotMappingsTbl: AnnotMappingsTbl
 
-def srcAnnotSetLoad(srcAnnotConf, annotFilters, targetGeneSet):
+def srcAnnotSetLoad(uniprotAnnotTsv, annot2GenomePsl, annot2GenomeRefTsv, annotAssocs, targetGeneSet):
     def uniprotLookup(annotId):
         annot = uniprotAnnotTbl.getByAnnotId(annotId)
-        return annot if annotFilters.useSrc(annot.shortFeatType) else None
+        return annot if annotAssocs.useSrc(annot.shortFeatType, annot.comment) else None
 
     def pslLookup(transId, chrom):
-        return targetGeneSet.getEntry(transId, chrom).psl
+        return targetGeneSet.data.getAlign(transId, chrom)
 
-    uniprotAnnotTbl = UniProtAnnotTbl(srcAnnotConf.uniprotAnnotTsv)
-    annotMappingsTbl = transAnnotMappingLoader(srcAnnotConf.annot2GenomePsl,
-                                               srcAnnotConf.annot2GenomeRefTsv,
+    uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotTsv)
+    annotMappingsTbl = transAnnotMappingLoader(annot2GenomePsl,
+                                               annot2GenomeRefTsv,
                                                uniprotLookup, pslLookup)
     return SrcAnnotSet(uniprotAnnotTbl, annotMappingsTbl)
 
@@ -129,5 +141,5 @@ def _buildSrcAnnotMappingsCmp(transAnnotMappings):
 def _addTargetAnnotsCmp(targetTransAnnotMappings, transAnnotCmp):
     "add in the target (interpro) annotations"
     iNext = 0
-    for annotMapping in transAnnotMappings.annotMappings:
+    for annotMapping in targetTransAnnotMappings.annotMappings:
         pass

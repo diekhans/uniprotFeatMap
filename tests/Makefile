@@ -19,7 +19,7 @@ all:
 	@exit 1
 
 
-test: uniprotTests interproTests hub
+test: uniprotTests interproTests xspeciesAnalyzeTests hub
 	@echo "==========================================" >&2
 	@echo "Note to test alignments use: make fulltest" >&2
 	@echo "==========================================" >&2
@@ -70,6 +70,9 @@ symSynCat1Bb = output/symSyn-GCA_028878055.2.cat.bb
 symSynTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/878/055/GCA_028878055.2/GCA_028878055.2.2bit
 symSynChains = input/symSyn-GCA_028878055.2.chains
 symSynChromSizes = input/symSyn-GCA_028878055.2.sizes
+
+uniprotInterproAnnotAssocTsv = input/uniprotInterproAnnotAssoc.tsv
+
 
 bigCatAs = input/bigCat.as
 
@@ -307,7 +310,7 @@ testUniprotInfoGeneName:
 # serial due to parasol bug
 interproAlignTests:
 	${MAKE} testInterproBlatAlign
-	${MAKE} testInterproCat1BlatAlign
+	${MAKE} testInterproPonAbeCat1BlatAlign
 
 testInterproBlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
@@ -315,7 +318,7 @@ testInterproBlatAlign: mkout
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 
-testInterproCat1BlatAlign: mkout
+testInterproPonAbeCat1BlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
 	${interproProteinTranscriptAlign} CAT1 ${ponAbeCat1Meta} ${ponAbeCat1RnaFa} ${ponAbeCat1ProtFa} output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
@@ -323,7 +326,7 @@ testInterproCat1BlatAlign: mkout
 
 interproTests:  interproMapTests interproAnnotsToDecoratorsTests
 
-interproMapTests: testInterproAnnotsMap testInterproCat1AnnotsMap
+interproMapTests: testInterproAnnotsMap testInterproPonAbeCat1AnnotsMap
 
 testInterproAnnotsMap: mkout
 	${interproAnnotsMap} ${gencodePcPsl} \
@@ -335,15 +338,15 @@ testInterproAnnotsMap: mkout
 	diff expected/$@.annotsTrans.psl output/$@.annotsTrans.psl
 	pslCheck -verbose=0 output/$@.psl
 
-testInterproCat1AnnotsMap: mkout
+testInterproPonAbeCat1AnnotsMap: mkout
 	${interproAnnotsMap} ${ponAbeCat1Psl} \
-	    ${ponAbeCat1InterproTsv} expected/testInterproCat1BlatAlign.psl \
+	    ${ponAbeCat1InterproTsv} expected/testInterproPonAbeCat1BlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	pslCheck -verbose=0 output/$@.psl
 
-interproAnnotsToDecoratorsTests: testInterproAnnotsToDeco testInterproCat1AnnotsToDeco
+interproAnnotsToDecoratorsTests: testInterproAnnotsToDeco testInterproPonAbeCat1AnnotsToDeco
 
 testInterproAnnotsToDeco: mkout
 	${interproAnnotsToDecorators} --nproc=${nproc} ${gencodeInterproTsv} \
@@ -353,13 +356,28 @@ testInterproAnnotsToDeco: mkout
 	diff expected/$@.types.tsv output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
 
-testInterproCat1AnnotsToDeco: mkout
+testInterproPonAbeCat1AnnotsToDeco: mkout
 	${interproAnnotsToDecorators} --nproc=${nproc} ${ponAbeCat1InterproTsv} \
-	    expected/testInterproCat1AnnotsMap.psl expected/testInterproCat1AnnotsMap.ref.tsv \
+	    expected/testInterproPonAbeCat1AnnotsMap.psl expected/testInterproPonAbeCat1AnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
 	diff expected/$@.types.tsv output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${ponAbeChromSizes} output/$@.bb
+
+##
+# xspecies analysze tests
+## 
+xspeciesAnalyzeTests: testXsAnalyzePonAbe
+
+testXsAnalyzePonAbe: mkout
+	${xspeciesAnalyze} \
+	    ${swissprotAnnots} \
+	    expected/testXsPonAbeUniprotAnnotsMap.psl expected/testXsPonAbeUniprotAnnotsMap.ref.tsv \
+	    CAT1 ${ponAbeCat1Psl} \
+	    ${ponAbeCat1InterproTsv} \
+	    expected/testInterproPonAbeCat1AnnotsMap.psl testInterproPonAbeCat1AnnotsMap.ref.tsv \
+	    ${uniprotInterproAnnotAssocTsv} output/$@.report.tsv
+
 
 ##
 # Gene tracks for hub

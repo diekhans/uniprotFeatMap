@@ -30,6 +30,7 @@ uniprotInfo = ${binDir}/uniprotInfo
 interproProteinTranscriptAlign = ${binDir}/interproProteinTranscriptAlign
 interproAnnotsMap = ${binDir}/interproAnnotsMap
 interproAnnotsToDecorators = ${binDir}/interproAnnotsToDecorators
+xspeciesAnalyze = ${binDir}/xspeciesAnalyze
 
 dataDir = ${root}/data
 

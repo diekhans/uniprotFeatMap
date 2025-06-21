@@ -24,12 +24,13 @@ class TransAnnotMappings(namedtuple("TransAnnotMappings",
     __slots__ = ()
 
 
-class AnnotMappingsTbl:
+class AnnotMappingsTbl(list):
     """Table of TransAnnotMappings, all the mappings annotations to a genome"""
     def __init__(self):
         self.byTransId = defaultdict(list)   # multiple to handle PAR
 
     def add(self, transAnnotMappings):
+        self.append(transAnnotMappings)
         self.byTransId[transAnnotMappings.transcriptId].append(transAnnotMappings)
 
     def finish(self):
@@ -106,7 +107,8 @@ def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookup
     prevAnnotRef = None
     annotMappings = []
     for annot2GenomeRef in annot2GenomeRefReader(annot2GenomeRefTsv):
-        if _differentTranscript(prevAnnotRef, annot2GenomeRef):
+        if (_differentTranscript(prevAnnotRef, annot2GenomeRef) and
+            (len(annotMappings) > 0)):
             yield _makeTransAnnotMapping(annotMappings, transPslLookupFunc)
             annotMappings = []
         annot = annotLookupFunc(annot2GenomeRef.annotId)
@@ -123,6 +125,6 @@ def transAnnotMappingLoader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookup
     annotMappingsTbl = AnnotMappingsTbl()
     for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookupFunc,
                                                       transPslLookupFunc):
-        annotMappingsTbl.dd(transAnnotMappings)
+        annotMappingsTbl.add(transAnnotMappings)
     annotMappingsTbl.finish()
     return annotMappingsTbl

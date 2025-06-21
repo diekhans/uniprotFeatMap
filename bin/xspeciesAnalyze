@@ -5,20 +5,25 @@ import os.path as osp
 import sys
 import argparse
 from pycbio.sys import cmdOps
+from pycbio.tsv import TsvReader, strOrNoneType
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap.clisupport import cliAddGeneSetParameters
+from uniprotmap.geneset import geneSetFactory
+from uniprotmap.annotCmp import AnnotAssocs, srcAnnotSetLoad
 
 def parseArgs():
     desc = """Compare Uniprot map annotations to IntrproScan generate annotations.
     """
 
     parser = argparse.ArgumentParser(description=desc)
-    parser.add_argument("uniprotAnnotsTsv",
+    parser.add_argument("uniprotAnnotTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
     parser.add_argument("uniprotAnnot2GenomePsl",
                         help="""Uniprot annotations mapped to target (xspecies fucntionality) genome from uniprotAnnotsMap (input). """)
     parser.add_argument("uniprotAnnot2GenomeRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
+    cliAddGeneSetParameters(parser, inclTransGenomePsl=True)
     parser.add_argument("interproAnnotTsv",
                         help="""InterProScan TSV results (input)""")
     parser.add_argument("interproAnnot2GenomePsl",
@@ -35,17 +40,31 @@ def parseArgs():
     return cmdOps.parse(parser)
 
 
+def loadAnnotTypeAssoc(annotTypeAssocTsv):
+    typeMap = {"uniprotComment": strOrNoneType}
+    annotAssocs = AnnotAssocs()
+    for row in TsvReader(annotTypeAssocTsv, typeMap=typeMap):
+        annotAssocs.add(row.uniprotShortFeatType, row.uniprotComment,
+                        row.interproAnalysis, row.interproAcc)
+    annotAssocs.finish()
+    return annotAssocs
+
 def xspeciesAnalyze(opts,
-                    uniprotAnnotsTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
+                    uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
+                    targetGeneSet, targetTrans2GenomePsl,
                     interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
                     annotTypeAssocTsv, analysisReportTsv):
-    pass
-
+    annotAssocs = loadAnnotTypeAssoc(annotTypeAssocTsv)
+    targetGeneSet = geneSetFactory(targetGeneSet, trans2GenomePslFile=targetTrans2GenomePsl)
+    srcAnnotSet = srcAnnotSetLoad(uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
+                                  annotAssocs, targetGeneSet)
+    print("@@@", len(srcAnnotSet.uniprotAnnotTbl), len(srcAnnotSet.annotMappingsTbl))
 def main():
     opts, args = parseArgs()
     with cmdOps.ErrorHandler():
         xspeciesAnalyze(opts,
-                        args.uniprotAnnotsTsv, args.uniprotAnnot2GenomePsl, args.uniprotAnnot2GenomeRefTsv,
+                        args.uniprotAnnotTsv, args.uniprotAnnot2GenomePsl, args.uniprotAnnot2GenomeRefTsv,
+                        args.geneSetName, args.trans2GenomePsl,
                         args.interproAnnotTsv, args.interproAnnot2GenomePsl, args.interproAnnot2GenomeRefTsv,
                         args.annotTypeAssocTsv, args.analysisReportTsv)
 
