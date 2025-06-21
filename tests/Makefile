@@ -375,7 +375,7 @@ testXsAnalyzePonAbe: mkout
 	    expected/testXsPonAbeUniprotAnnotsMap.psl expected/testXsPonAbeUniprotAnnotsMap.ref.tsv \
 	    CAT1 ${ponAbeCat1Psl} \
 	    ${ponAbeCat1InterproTsv} \
-	    expected/testInterproPonAbeCat1AnnotsMap.psl testInterproPonAbeCat1AnnotsMap.ref.tsv \
+	    expected/testInterproPonAbeCat1AnnotsMap.psl expected/testInterproPonAbeCat1AnnotsMap.ref.tsv \
 	    ${uniprotInterproAnnotAssocTsv} output/$@.report.tsv
 
 

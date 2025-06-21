@@ -40,7 +40,7 @@ class AnnotAssocs:
         self.srcToTargets.default_factory = self.targetToSrcs.default_factory = None
 
     def useSrc(self, uniprotShortFeatType, uniprotComment):
-        # comment is allow to be None in assocations
+        # comment is allow to be None as wildcard
         return (((uniprotShortFeatType, uniprotComment) in self.srcToTargets) or
                 ((uniprotShortFeatType, None) in self.srcToTargets))
 
@@ -61,29 +61,39 @@ class SrcAnnotSet:
     uniprotAnnotTbl: UniProtAnnotTbl
     annotMappingsTbl: AnnotMappingsTbl
 
-def srcAnnotSetLoad(uniprotAnnotTsv, annot2GenomePsl, annot2GenomeRefTsv, annotAssocs, targetGeneSet):
+def srcAnnotSetLoad(uniprotAnnotTsv, annot2GenomePsl, annot2GenomeRefTsv,
+                    annotAssocs, targetGeneSet):
     def uniprotLookup(annotId):
+        "None if annotation should be skipped"
         annot = uniprotAnnotTbl.getByAnnotId(annotId)
         return annot if annotAssocs.useSrc(annot.shortFeatType, annot.comment) else None
-
-    def pslLookup(transId, chrom):
-        return targetGeneSet.data.getAlign(transId, chrom)
 
     uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotTsv)
     annotMappingsTbl = transAnnotMappingLoader(annot2GenomePsl,
                                                annot2GenomeRefTsv,
-                                               uniprotLookup, pslLookup)
+                                               uniprotLookup,
+                                               targetGeneSet.data.getAlign)
     return SrcAnnotSet(uniprotAnnotTbl, annotMappingsTbl)
 
 @dataclass
 class TargetAnnotSet:
     """Set to evaluate against source"""
-    annotData: InterproAnnotTbl
+    intreproAnnotTbl: InterproAnnotTbl
     annotMappingsTbl: AnnotMappingsTbl
 
-def targetAnnotSetLoad(targetAnnotConf):
-    annotData = interproAnnotsLoad(targetAnnotConf.annotTsv)
-    return TargetAnnotSet(annotData)
+def targetAnnotSetLoad(interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
+                       annotAssocs, targetGeneSet):
+    def interproLookup(annotId):
+        "None if annotation should be skipped"
+        annot = interproAnnotTbl.getByAnnotId(annotId)
+        return annot if annotAssocs.useTarget(annot.analysis, annot.interpro_accession) else None
+
+    interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
+    annotMappingsTbl = transAnnotMappingLoader(interproAnnot2GenomePsl,
+                                               interproAnnot2GenomeRefTsv,
+                                               interproLookup,
+                                               targetGeneSet.data.getAlign)
+    return TargetAnnotSet(interproAnnotTbl, annotMappingsTbl)
 
 
 class AnnotCmpEntry:

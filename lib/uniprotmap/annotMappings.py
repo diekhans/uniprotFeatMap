@@ -123,8 +123,8 @@ def transAnnotMappingLoader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookup
                             transPslLookupFunc=None):
     """load mappings into object AnnotMappingsTbl"""
     annotMappingsTbl = AnnotMappingsTbl()
-    for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookupFunc,
-                                                      transPslLookupFunc):
+    for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv,
+                                                      annotLookupFunc, transPslLookupFunc):
         annotMappingsTbl.add(transAnnotMappings)
     annotMappingsTbl.finish()
     return annotMappingsTbl

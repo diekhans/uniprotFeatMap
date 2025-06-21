@@ -10,7 +10,7 @@ from pycbio.tsv import TsvReader, strOrNoneType
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.clisupport import cliAddGeneSetParameters
 from uniprotmap.geneset import geneSetFactory
-from uniprotmap.annotCmp import AnnotAssocs, srcAnnotSetLoad
+from uniprotmap.annotCmp import AnnotAssocs, srcAnnotSetLoad, targetAnnotSetLoad
 
 def parseArgs():
     desc = """Compare Uniprot map annotations to IntrproScan generate annotations.
@@ -58,7 +58,10 @@ def xspeciesAnalyze(opts,
     targetGeneSet = geneSetFactory(targetGeneSet, trans2GenomePslFile=targetTrans2GenomePsl)
     srcAnnotSet = srcAnnotSetLoad(uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
                                   annotAssocs, targetGeneSet)
-    print("@@@", len(srcAnnotSet.uniprotAnnotTbl), len(srcAnnotSet.annotMappingsTbl))
+    targetAnnotSet = targetAnnotSetLoad(interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
+                                        annotAssocs, targetGeneSet)
+    print("@@@ srcAnnotSet", len(srcAnnotSet.uniprotAnnotTbl), len(srcAnnotSet.annotMappingsTbl))
+    print("@@@ targetAnnotSet", len(targetAnnotSet.intreproAnnotTbl), len(targetAnnotSet.annotMappingsTbl))
 def main():
     opts, args = parseArgs()
     with cmdOps.ErrorHandler():
