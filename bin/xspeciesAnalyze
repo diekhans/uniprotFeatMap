@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+
+# import os
+import os.path as osp
+import sys
+import argparse
+from pycbio.sys import cmdOps
+
+sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+
+def parseArgs():
+    desc = """Compare Uniprot map annotations to IntrproScan generate annotations.
+    """
+
+    parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("uniprotAnnotsTsv",
+                        help="""Uniprot annotations TSV from uniprotToTab (input)""")
+    parser.add_argument("uniprotAnnot2GenomePsl",
+                        help="""Uniprot annotations mapped to target (xspecies fucntionality) genome from uniprotAnnotsMap (input). """)
+    parser.add_argument("uniprotAnnot2GenomeRefTsv",
+                        help="""association of annotations to mapped transcripts (input)""")
+    parser.add_argument("interproAnnotTsv",
+                        help="""InterProScan TSV results (input)""")
+    parser.add_argument("interproAnnot2GenomePsl",
+                        help="""Interpro annotations mapped to genome from interproAnnotsMap (input). For cross-species mapping, this will
+                        be the target species genome.""")
+    parser.add_argument("interproAnnot2GenomeRefTsv",
+                        help="""association of annotations to mapped transcripts (input)""")
+    parser.add_argument("annotTypeAssocTsv",
+                        help="""TSV with uniprotShortFeatType, interproAnalysis, "interproAcc (input)"""
+                        """UniProt annotations maybe not be overlapping. Multiple interpro annotations """
+                        """with the same accession from different analysis may overlap.""")
+    parser.add_argument("analysisReportTsv",
+                        help="""Analysis report (output)""")
+    return cmdOps.parse(parser)
+
+
+def xspeciesAnalyze(opts,
+                    uniprotAnnotsTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
+                    interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
+                    annotTypeAssocTsv, analysisReportTsv):
+    pass
+
+def main():
+    opts, args = parseArgs()
+    with cmdOps.ErrorHandler():
+        xspeciesAnalyze(opts,
+                        args.uniprotAnnotsTsv, args.uniprotAnnot2GenomePsl, args.uniprotAnnot2GenomeRefTsv,
+                        args.interproAnnotTsv, args.interproAnnot2GenomePsl, args.interproAnnot2GenomeRefTsv,
+                        args.annotTypeAssocTsv, args.analysisReportTsv)
+
+main()

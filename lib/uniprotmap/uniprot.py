@@ -61,7 +61,15 @@ def addValuesToMultiIdx(idx, keys, value):
         idx[key].append(value)
 
 class UniProtMeta(TsvRow):
-    "one row record of UniProt metadata"
+    """one row record of UniProt metadata
+
+    acc dataset mainIsoAcc orgName orgCommon taxonId name accList
+    protFullNames protShortNames protAltFullNames protAltShortNames geneName
+    geneSynonyms isoNames geneOrdLocus geneOrf hgncSym hgncId refSeq
+    refSeqProt entrezGene ensemblGene ensemblProt ensemblTrans kegg emblMrna
+    emblMrnaProt emblDna emblDnaProt pdb ec uniGene omimGene omimPhenotype
+    subCellLoc functionText isoIds
+    """
 
     def __init__(self, reader, row):
         super().__init__(reader, row)
@@ -130,6 +138,7 @@ class UniProtMetaTbl(list):
         return self.byGeneName.get(geneName, ())
 
     def isCanonProtTrans(uniprotMetaTbl, transId):
+
         "does any UniProt reference this transcript?"
         return dropVersion(transId) in uniprotMetaTbl.byTranscriptAcc
 
@@ -137,7 +146,11 @@ class UniProtMetaTbl(list):
         return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
 class UniProtAnnotTbl(list):
-    """reads swissprot.9606.annots.tab or trembl.9606.annots.tab"""
+    """reads swissprot.9606.annots.tab or trembl.9606.annots.tab
+
+    acc mainIsoAcc varId featType shortFeatType begin end origAa mutAa dbSnpId
+    disRelated disease disCode pmid longName shortName syns subCellLoc comment
+    """
     def __init__(self, uniprotAnnotsTsv):
         self.byAnnotId = {}
         self.byMainIsoAcc = defaultdict(list)

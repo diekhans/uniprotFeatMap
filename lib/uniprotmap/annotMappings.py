@@ -24,17 +24,16 @@ class TransAnnotMappings(namedtuple("TransAnnotMappings",
     __slots__ = ()
 
 
-class AnnotMappingsTbl(list):
+class AnnotMappingsTbl:
     """Table of TransAnnotMappings, all the mappings annotations to a genome"""
-    # FIXME: still needed?
-    def __init__(self, annot2GenomePslFile, annot2GenomeRefTsv):
-        self.byTransId = defaultdict(list)
-        for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv):
-            self._add(transAnnotMappings)
-        self.byTransId.default_factory = None
+    def __init__(self):
+        self.byTransId = defaultdict(list)   # multiple to handle PAR
 
-    def _add(self, transAnnotMappings):
+    def add(self, transAnnotMappings):
         self.byTransId[transAnnotMappings.transcriptId].append(transAnnotMappings)
+
+    def finish(self):
+        self.byTransId.default_factory = None
 
     def findEntries(self, transId):
         return self.byTransId.get(transId, ())
@@ -95,6 +94,7 @@ def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookup
         annot2GenomePslFile: Path to a PSL file mapping annotations to the genome.
         annot2GenomeRefTsv: Path to a TSV file with annotation metadata.
         annotLookupFunc: Callable that takes an annotation ID and returns its data record.
+            If this returns None, the annotation mapping is disczrded
         transPslLookupFunc: Optional callable that takes a transcript ID and chromosome,
             and returns the corresponding alignment information.
 
@@ -109,8 +109,20 @@ def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookup
         if _differentTranscript(prevAnnotRef, annot2GenomeRef):
             yield _makeTransAnnotMapping(annotMappings, transPslLookupFunc)
             annotMappings = []
-        annotMappings.append(_makeAnnotMapping(annot2GenomeRef, annot2GenomePsls,
-                                               annotLookupFunc(annot2GenomeRef.annotId)))
-        prevAnnotRef = annot2GenomeRef
+        annot = annotLookupFunc(annot2GenomeRef.annotId)
+        if annot is not None:
+            annotMappings.append(_makeAnnotMapping(annot2GenomeRef, annot2GenomePsls, annot))
+            prevAnnotRef = annot2GenomeRef
     if len(annotMappings) > 0:
         yield _makeTransAnnotMapping(annotMappings, transPslLookupFunc)
+
+
+def transAnnotMappingLoader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookupFunc,
+                            transPslLookupFunc=None):
+    """load mappings into object AnnotMappingsTbl"""
+    annotMappingsTbl = AnnotMappingsTbl()
+    for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookupFunc,
+                                                      transPslLookupFunc):
+        annotMappingsTbl.dd(transAnnotMappings)
+    annotMappingsTbl.finish()
+    return annotMappingsTbl
