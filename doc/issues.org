@@ -1,6 +1,12 @@
 #+STARTUP: nologdone
 #+TODO: TODO URGENT | DONE CANCELED
 
+* sqlite3 to store after alignment and mappings
+less convoluted
+
+* geneset meta and data split seems unnecessary
+* add geneset from cli factory
+
 * uniprotAnnotsToDecorators has gotten convoluted.
 Maybe have a processor object per transcript
 
@@ -9,6 +15,7 @@ lib/uniprotmap/mappingAnalysis.py
 this is done for unique ids assign, which could be handled
 by a level of indirection
 but maybe just leave it with reading into memory
+or load from a database
 
 * xspeciesTrans2TransMap is a dumb name
 

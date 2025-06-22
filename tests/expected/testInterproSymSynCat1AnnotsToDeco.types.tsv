@@ -1,0 +1,27 @@
+analysis	accession	description	annotCategory
+CDD	IPR001909	Krueppel-associated box	InterPro
+FunFam	G3DSA:3.30.160.60:FF:000006	Zinc finger protein 184 (Kruppel-like)	other
+FunFam	G3DSA:3.30.160.60:FF:000029	GLI family zinc finger 4	other
+FunFam	G3DSA:3.30.160.60:FF:000139	zinc finger protein 1 homolog	other
+FunFam	G3DSA:3.30.160.60:FF:000320	Zinc finger protein 777	other
+FunFam	G3DSA:3.30.160.60:FF:000478	Zinc finger protein 133	other
+FunFam	G3DSA:3.30.160.60:FF:000688	zinc finger protein 197 isoform X1	other
+FunFam	G3DSA:3.30.160.60:FF:001531	Zinc finger protein 649	other
+FunFam	G3DSA:3.30.160.60:FF:001672	Zinc finger protein 614	other
+FunFam	G3DSA:3.30.160.60:FF:002343	Zinc finger protein 33A	other
+FunFam	G3DSA:3.30.160.60:FF:003149	ZNF649 isoform 1	other
+Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	other
+Gene3D	G3DSA:6.10.140.140		other
+MobiDBLite	mobidb-lite	consensus disorder prediction	other
+PANTHER	IPR050169	Krueppel C2H2-type zinc-finger	InterPro
+PANTHER	IPR050527	Snail/Krueppel C2H2-type Zinc-finger	InterPro
+PANTHER	IPR050758	Zinc finger protein, C2H2-type	InterPro
+Pfam	IPR001909	Krueppel-associated box	InterPro
+Pfam	IPR013087	Zinc finger C2H2-type	InterPro
+ProSitePatterns	IPR013087	Zinc finger C2H2-type	InterPro
+ProSiteProfiles	IPR001909	Krueppel-associated box	InterPro
+ProSiteProfiles	IPR013087	Zinc finger C2H2-type	InterPro
+SMART	IPR001909	Krueppel-associated box	InterPro
+SMART	IPR013087	Zinc finger C2H2-type	InterPro
+SUPERFAMILY	IPR036051	KRAB domain superfamily	InterPro
+SUPERFAMILY	IPR036236	Zinc finger C2H2 superfamily	InterPro

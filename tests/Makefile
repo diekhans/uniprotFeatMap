@@ -67,6 +67,7 @@ symSynCat1RnaFa = input/symSyn-GCA_028878055.2.cat.rna.fa
 symSynCat1ProtFa = input/symSyn-GCA_028878055.2.cat.prot.fa
 symSynCat1Meta = input/symSyn-GCA_028878055.2.cat.meta.tsv
 symSynCat1Bb = output/symSyn-GCA_028878055.2.cat.bb
+symSynCat1InterproTsv = input/symSyn-GCA_028878055.2.interpro.tsv
 symSynTwobit = https://hgdownload.soe.ucsc.edu/hubs/GCA/028/878/055/GCA_028878055.2/GCA_028878055.2.2bit
 symSynChains = input/symSyn-GCA_028878055.2.chains
 symSynChromSizes = input/symSyn-GCA_028878055.2.sizes
@@ -311,6 +312,7 @@ testUniprotInfoGeneName:
 interproAlignTests:
 	${MAKE} testInterproBlatAlign
 	${MAKE} testInterproPonAbeCat1BlatAlign
+	${MAKE} testInterproSymSynCat1BlatAlign
 
 testInterproBlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
@@ -324,9 +326,17 @@ testInterproPonAbeCat1BlatAlign: mkout
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 
+testInterproSymSynCat1BlatAlign: mkout
+	rm -rf output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} CAT1 ${symSynCat1Meta} ${symSynCat1RnaFa} ${symSynCat1ProtFa} output/$@.psl output/$@.work
+	diff expected/$@.psl output/$@.psl
+	pslCheck -verbose=0 output/$@.psl
+
 interproTests:  interproMapTests interproAnnotsToDecoratorsTests
 
-interproMapTests: testInterproAnnotsMap testInterproPonAbeCat1AnnotsMap
+interproMapTests: testInterproAnnotsMap \
+	testInterproPonAbeCat1AnnotsMap \
+	testInterproSymSynCat1AnnotsMap
 
 testInterproAnnotsMap: mkout
 	${interproAnnotsMap} ${gencodePcPsl} \
@@ -346,7 +356,17 @@ testInterproPonAbeCat1AnnotsMap: mkout
 	diff expected/$@.ref.tsv output/$@.ref.tsv
 	pslCheck -verbose=0 output/$@.psl
 
-interproAnnotsToDecoratorsTests: testInterproAnnotsToDeco testInterproPonAbeCat1AnnotsToDeco
+testInterproSymSynCat1AnnotsMap: mkout
+	${interproAnnotsMap} ${symSynCat1Psl} \
+	    ${symSynCat1InterproTsv} expected/testInterproSymSynCat1BlatAlign.psl \
+            output/$@.psl output/$@.ref.tsv
+	diff expected/$@.psl output/$@.psl
+	diff expected/$@.ref.tsv output/$@.ref.tsv
+	pslCheck -verbose=0 output/$@.psl
+
+interproAnnotsToDecoratorsTests: testInterproAnnotsToDeco \
+	testInterproPonAbeCat1AnnotsToDeco \
+	testInterproSymSynCat1AnnotsToDeco
 
 testInterproAnnotsToDeco: mkout
 	${interproAnnotsToDecorators} --nproc=${nproc} ${gencodeInterproTsv} \
@@ -364,19 +384,28 @@ testInterproPonAbeCat1AnnotsToDeco: mkout
 	diff expected/$@.types.tsv output/$@.types.tsv
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${ponAbeChromSizes} output/$@.bb
 
+testInterproSymSynCat1AnnotsToDeco: mkout
+	${interproAnnotsToDecorators} --nproc=${nproc} ${symSynCat1InterproTsv} \
+	    expected/testInterproSymSynCat1AnnotsMap.psl expected/testInterproSymSynCat1AnnotsMap.ref.tsv \
+            output/$@.bed --featTypesTsv=output/$@.types.tsv
+	diff expected/$@.bed output/$@.bed
+	diff expected/$@.types.tsv output/$@.types.tsv
+	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${symSynChromSizes} output/$@.bb
+
 ##
 # xspecies analysze tests
 ## 
-xspeciesAnalyzeTests: testXsAnalyzePonAbe
+xspeciesAnalyzeTests: testXsAnalyzeSymSyn
 
-testXsAnalyzePonAbe: mkout
+testXsAnalyzeSymSyn: mkout
 	${xspeciesAnalyze} \
 	    ${swissprotAnnots} \
-	    expected/testXsPonAbeUniprotAnnotsMap.psl expected/testXsPonAbeUniprotAnnotsMap.ref.tsv \
-	    CAT1 ${ponAbeCat1Psl} \
-	    ${ponAbeCat1InterproTsv} \
-	    expected/testInterproPonAbeCat1AnnotsMap.psl expected/testInterproPonAbeCat1AnnotsMap.ref.tsv \
+	    expected/testXsSymSynUniprotAnnotsMap.psl expected/testXsSymSynUniprotAnnotsMap.ref.tsv \
+	    CAT1 ${symSynCat1Meta} ${symSynCat1Psl} \
+	    ${symSynCat1InterproTsv} \
+	    expected/testInterproSymSynCat1AnnotsMap.psl expected/testInterproSymSynCat1AnnotsMap.ref.tsv \
 	    ${uniprotInterproAnnotAssocTsv} output/$@.report.tsv
+	diff expected/$@.report.tsv output/$@.report.tsv
 
 
 ##

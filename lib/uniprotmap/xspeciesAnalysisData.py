@@ -38,7 +38,7 @@ class AnnotAssocs:
         self.srcToTargets.default_factory = self.targetToSrcs.default_factory = None
 
     def useSrc(self, uniprotShortFeatType, uniprotComment):
-        # comment is allow to be None as wildcard
+        # None comment is a while card
         return (((uniprotShortFeatType, uniprotComment) in self.srcToTargets) or
                 ((uniprotShortFeatType, None) in self.srcToTargets))
 

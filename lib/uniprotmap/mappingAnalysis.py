@@ -103,8 +103,8 @@ def _featureIndelGen(transPsl, annotMapping):
         yield from _analyzePartialDeletion(transPsl, annotMapping.annotPsl)
 
 def analyzeFeatureMapping(transAnnotMapping, annotMapping):
-    """product list of feature disruptions, either
+    """Product list of feature disruptions, either
     unmapped regions of feature or insertions in
     feature that don't correspond to introns in
-    transcripts."""
+    transcripts. Empty list indicates no problems."""
     return tuple(_featureIndelGen(transAnnotMapping.transPsl, annotMapping))

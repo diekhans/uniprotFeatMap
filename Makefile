@@ -8,6 +8,10 @@ all:  lint
 lint:
 	${FLAKE8} --color=never ${pyprogs} lib/uniprotmap
 
+tags: etags
+
+etags:
+	ctags -e lib/uniprotmap/*.py
 test:
 	cd tests && ${MAKE} test
 
@@ -16,7 +20,7 @@ fulltest:
 
 clean:
 	cd tests && ${MAKE} clean
-	rm -rf  lib/uniprotmap/__pycache__
+	rm -rf  lib/uniprotmap/__pycache__ TAGS
 
 savebak:
 	savebak -git uniprotFeatMap

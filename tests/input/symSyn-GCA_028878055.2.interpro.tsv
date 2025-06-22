@@ -1,0 +1,144 @@
+ZNF649-205_prot	7ac6b341f9063e6e6f856f762b041103	43	ProSiteProfiles	PS50805	Krueppel-associated box (KRAB) profile.	4	43	17.906853	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-205_prot	7ac6b341f9063e6e6f856f762b041103	43	CDD	cd07765	KRAB_A-box	4	42	3.45123E-20	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-205_prot	7ac6b341f9063e6e6f856f762b041103	43	SUPERFAMILY	SSF109640	KRAB domain (Kruppel-associated box)	2	43	1.14E-21	T	21-06-2025	IPR036051	KRAB domain superfamily	-	-
+ZNF649-205_prot	7ac6b341f9063e6e6f856f762b041103	43	SMART	SM00349	krabfinus	4	43	1.1E-11	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-205_prot	7ac6b341f9063e6e6f856f762b041103	43	Gene3D	G3DSA:6.10.140.140	-	1	43	3.2E-24	T	21-06-2025	-	-	-	-
+ZNF649-205_prot	7ac6b341f9063e6e6f856f762b041103	43	Pfam	PF01352	KRAB box	3	43	8.0E-23	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-205_prot	7ac6b341f9063e6e6f856f762b041103	43	PANTHER	PTHR23232	KRAB DOMAIN C2H2 ZINC FINGER	2	43	7.8E-19	T	21-06-2025	IPR050169	Krueppel C2H2-type zinc-finger	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	236	256	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:000029	GLI family zinc finger 4	314	340	1.1E-15	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	178	205	17.391615	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:001531	Zinc finger protein 649	397	425	1.0E-19	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	CDD	cd07765	KRAB_A-box	8	46	1.0101E-20	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SUPERFAMILY	SSF109640	KRAB domain (Kruppel-associated box)	2	64	1.07E-25	T	21-06-2025	IPR036051	KRAB domain superfamily	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	287	311	8.9E-13	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:000478	Zinc finger protein 133	259	287	1.5E-15	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF00096	Zinc finger, C2H2 type	262	284	0.0013	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF00096	Zinc finger, C2H2 type	208	228	44.0	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF00096	Zinc finger, C2H2 type	345	367	0.063	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF00096	Zinc finger, C2H2 type	236	256	0.037	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF00096	Zinc finger, C2H2 type	373	394	8.4	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF00096	Zinc finger, C2H2 type	178	200	0.037	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF00096	Zinc finger, C2H2 type	319	339	0.28	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	208	228	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	155	200	1.3E-9	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:000139	zinc finger protein 1 homolog	231	258	6.5E-15	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:000006	Zinc finger protein 184 (Kruppel-like)	370	396	1.2E-11	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50805	Krueppel-associated box (KRAB) profile.	8	79	26.506275	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	369	426	2.64E-17	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00349	krabfinus	8	68	1.5E-35	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	262	289	17.952759	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:001672	Zinc finger protein 614	160	201	1.9E-19	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	MobiDBLite	mobidb-lite	consensus disorder prediction	425	451	-	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	MobiDBLite	mobidb-lite	consensus disorder prediction	435	447	-	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	180	200	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	206	233	15.271738	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	319	339	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	176	202	1.4E-12	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:000320	Zinc finger protein 777	342	369	1.6E-13	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	345	372	15.396437	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Pfam	PF01352	KRAB box	7	48	1.5E-21	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	317	344	15.895231	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:003149	ZNF649 isoform 1	202	230	3.8E-17	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	312	341	1.3E-14	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	400	427	13.983185	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	242	297	4.64E-24	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	234	261	16.851254	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	325	382	1.49E-21	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	371	397	7.1E-13	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	342	370	3.7E-13	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	203	231	4.5E-11	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	398	429	9.6E-12	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	264	284	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	289	319	9.08E-7	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	186	243	3.3E-19	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	260	286	2.8E-17	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	PANTHER	PTHR24388	ZINC FINGER PROTEIN	83	298	6.4E-126	T	21-06-2025	IPR050527	Snail/Krueppel C2H2-type Zinc-finger	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	347	367	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:6.10.140.140	-	2	61	1.9E-25	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	290	316	10.761805	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	232	259	8.9E-16	T	21-06-2025	-	-	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	262	284	5.1E-4	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	206	228	0.081	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	234	256	0.0021	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	345	367	0.0011	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	373	394	5.8	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	290	311	1.3	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	317	339	0.098	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	400	422	0.37	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	SMART	SM00355	c2h2final6	178	200	0.001	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	373	399	12.653067	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	402	422	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-201_prot	ace500e855a9d8d5e973a69fb793e480	477	FunFam	G3DSA:3.30.160.60:FF:000478	Zinc finger protein 133	288	313	5.0E-10	T	21-06-2025	-	-	-	-
+ZNF649-202_prot	3087dcd13a7e70fd5489c38f2ba5fabe	47	SUPERFAMILY	SSF109640	KRAB domain (Kruppel-associated box)	2	47	8.24E-23	T	21-06-2025	IPR036051	KRAB domain superfamily	-	-
+ZNF649-202_prot	3087dcd13a7e70fd5489c38f2ba5fabe	47	SMART	SM00349	krabfinus	8	47	1.1E-11	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-202_prot	3087dcd13a7e70fd5489c38f2ba5fabe	47	Pfam	PF01352	KRAB box	7	47	1.1E-22	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-202_prot	3087dcd13a7e70fd5489c38f2ba5fabe	47	CDD	cd07765	KRAB_A-box	8	46	1.18569E-20	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-202_prot	3087dcd13a7e70fd5489c38f2ba5fabe	47	PANTHER	PTHR23232	KRAB DOMAIN C2H2 ZINC FINGER	4	47	1.5E-19	T	21-06-2025	IPR050169	Krueppel C2H2-type zinc-finger	-	-
+ZNF649-202_prot	3087dcd13a7e70fd5489c38f2ba5fabe	47	Gene3D	G3DSA:6.10.140.140	-	2	47	6.3E-25	T	21-06-2025	-	-	-	-
+ZNF649-202_prot	3087dcd13a7e70fd5489c38f2ba5fabe	47	ProSiteProfiles	PS50805	Krueppel-associated box (KRAB) profile.	8	47	17.906853	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-203_prot	bd7624452ea9a42d2844524614ec0260	41	Gene3D	G3DSA:6.10.140.140	-	1	41	8.9E-23	T	21-06-2025	-	-	-	-
+ZNF649-203_prot	bd7624452ea9a42d2844524614ec0260	41	CDD	cd07765	KRAB_A-box	4	41	2.75574E-19	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-203_prot	bd7624452ea9a42d2844524614ec0260	41	ProSiteProfiles	PS50805	Krueppel-associated box (KRAB) profile.	4	41	17.75456	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-203_prot	bd7624452ea9a42d2844524614ec0260	41	SUPERFAMILY	SSF109640	KRAB domain (Kruppel-associated box)	2	41	1.06E-20	T	21-06-2025	IPR036051	KRAB domain superfamily	-	-
+ZNF649-203_prot	bd7624452ea9a42d2844524614ec0260	41	Pfam	PF01352	KRAB box	3	41	2.0E-21	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-203_prot	bd7624452ea9a42d2844524614ec0260	41	PANTHER	PTHR23232	KRAB DOMAIN C2H2 ZINC FINGER	2	41	1.2E-17	T	21-06-2025	IPR050169	Krueppel C2H2-type zinc-finger	-	-
+ZNF649-203_prot	bd7624452ea9a42d2844524614ec0260	41	SMART	SM00349	krabfinus	4	41	2.3E-10	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	236	256	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	289	316	15.895231	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	PANTHER	PTHR23234	ZNF44 PROTEIN	4	53	9.9E-118	T	21-06-2025	IPR050758	Zinc finger protein, C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	341	398	2.4E-17	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	178	205	17.391615	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:000688	zinc finger protein 197 isoform X1	200	224	1.5E-12	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	317	344	15.396437	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	CDD	cd07765	KRAB_A-box	8	46	8.98463E-21	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:6.10.140.140	-	2	61	1.7E-25	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	231	258	1.3E-17	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	369	400	5.2E-12	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	205	230	1.1E-13	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	314	342	3.3E-13	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	262	288	10.761805	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	372	399	13.983185	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	206	233	16.456375	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	345	371	12.653067	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	208	228	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:002343	Zinc finger protein 33A	225	258	6.3E-16	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	291	311	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:000029	GLI family zinc finger 4	286	312	1.1E-15	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50805	Krueppel-associated box (KRAB) profile.	8	79	26.506275	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00349	krabfinus	8	68	1.5E-35	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	MobiDBLite	mobidb-lite	consensus disorder prediction	397	423	-	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	MobiDBLite	mobidb-lite	consensus disorder prediction	407	419	-	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:000006	Zinc finger protein 184 (Kruppel-like)	342	368	1.1E-11	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	180	200	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	319	339	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	345	366	5.8	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	289	311	0.098	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	262	283	1.3	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	372	394	0.37	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	234	256	5.1E-4	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	178	200	0.001	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	206	228	0.004	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SMART	SM00355	c2h2final6	317	339	0.0011	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSiteProfiles	PS50157	Zinc finger C2H2 type domain profile.	234	261	17.952759	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	286	313	7.0E-15	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	259	285	9.9E-13	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	214	269	1.3E-23	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	261	291	1.09E-6	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	343	368	1.1E-12	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	ProSitePatterns	PS00028	Zinc finger C2H2 type domain signature.	374	394	-	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Gene3D	G3DSA:3.30.160.60	Classic Zinc Finger	176	204	1.6E-12	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:000478	Zinc finger protein 133	259	285	4.9E-10	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:000320	Zinc finger protein 777	314	341	1.5E-13	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	297	354	1.4E-21	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:001531	Zinc finger protein 649	369	397	9.4E-20	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	FunFam	G3DSA:3.30.160.60:FF:001672	Zinc finger protein 614	160	199	1.8E-19	T	21-06-2025	-	-	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SUPERFAMILY	SSF57667	beta-beta-alpha zinc fingers	176	228	5.42E-17	T	21-06-2025	IPR036236	Zinc finger C2H2 superfamily	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Pfam	PF00096	Zinc finger, C2H2 type	234	256	0.0012	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Pfam	PF00096	Zinc finger, C2H2 type	345	366	7.8	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Pfam	PF00096	Zinc finger, C2H2 type	317	339	0.059	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Pfam	PF00096	Zinc finger, C2H2 type	208	228	0.15	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Pfam	PF00096	Zinc finger, C2H2 type	291	311	0.26	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Pfam	PF00096	Zinc finger, C2H2 type	178	200	0.034	T	21-06-2025	IPR013087	Zinc finger C2H2-type	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	Pfam	PF01352	KRAB box	7	48	1.4E-21	T	21-06-2025	IPR001909	Krueppel-associated box	-	-
+ZNF649-207_prot	eda499b68edecb4f472939755bfaa41f	449	SUPERFAMILY	SSF109640	KRAB domain (Kruppel-associated box)	2	64	9.81E-26	T	21-06-2025	IPR036051	KRAB domain superfamily	-	-

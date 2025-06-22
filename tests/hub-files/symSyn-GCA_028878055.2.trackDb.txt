@@ -35,3 +35,15 @@ decorator.default.mouseOver \
    UniProt data set: ${dataSet}<br> \
    comment: ${comment}<br> \
    disease: ${disease}
+   disease: ${disease}
+##
+decorator.interpro.bigDataUrl testInterproSymSynCat1AnnotsToDeco.bb 
+decorator.interpro.filterLabel.annotCategory Annotation category
+decorator.interpro.filterValues.annotCategory InterPro,other
+decorator.interpro.filterLabel.analysis Analysis
+decorator.interpro.filterValues.analysis CDD,Coils,FunFam,Gene3D,MobiDBLite,NCBIfam,PANTHER,PRINTS,Pfam,ProSitePatterns,ProSiteProfiles,SFLD,SMART,SUPERFAMILY
+decorator.interpro.mouseOver \
+   description: ${description}<br> \
+   accession: ${accession}<br> \
+   protein id: ${proteinAcc}<br> \
+   analysis: ${analysis}

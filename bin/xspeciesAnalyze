@@ -4,26 +4,33 @@
 import os.path as osp
 import sys
 import argparse
-from pycbio.sys import cmdOps
+from pycbio.sys import cmdOps, fileOps, loggingOps
 from pycbio.tsv import TsvReader, strOrNoneType
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap import annotMapIdToAnnotId
 from uniprotmap.clisupport import cliAddGeneSetParameters
 from uniprotmap.geneset import geneSetFactory
 from uniprotmap.xspeciesAnalysisData import AnnotAssocs, srcAnnotSetLoad, targetAnnotSetLoad
+from uniprotmap.xspeciesAnalysis import compareTransAnnotations, AnnotMethod, AnnotDiffCategory
+from uniprotmap.mappingAnalysis import FeatureIndelType
 
 def parseArgs():
     desc = """Compare Uniprot map annotations to IntrproScan generate annotations.
     """
 
     parser = argparse.ArgumentParser(description=desc)
+    parser.add_argument("--major-disrupt-threshold", type=float, default=0.02,
+                        help="""number of bases insert of deleted at above this fraction of a annotation's
+                        length are considered a major disruption""")
     parser.add_argument("uniprotAnnotTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
     parser.add_argument("uniprotAnnot2GenomePsl",
                         help="""Uniprot annotations mapped to target (xspecies fucntionality) genome from uniprotAnnotsMap (input). """)
     parser.add_argument("uniprotAnnot2GenomeRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
-    cliAddGeneSetParameters(parser, inclTransGenomePsl=True)
+    cliAddGeneSetParameters(parser, inclMetadata=True, inclTransGenomePsl=True)
+    loggingOps.addCmdOptions(parser)
     parser.add_argument("interproAnnotTsv",
                         help="""InterProScan TSV results (input)""")
     parser.add_argument("interproAnnot2GenomePsl",
@@ -37,9 +44,13 @@ def parseArgs():
                         """with the same accession from different analysis may overlap.""")
     parser.add_argument("analysisReportTsv",
                         help="""Analysis report (output)""")
-    return cmdOps.parse(parser)
+    opts, args = cmdOps.parse(parser)
+    loggingOps.setupFromCmd(opts)
+    return opts, args
 
-
+###
+# setup
+###
 def loadAnnotTypeAssoc(annotTypeAssocTsv):
     typeMap = {"uniprotComment": strOrNoneType}
     annotAssocs = AnnotAssocs()
@@ -49,25 +60,110 @@ def loadAnnotTypeAssoc(annotTypeAssocTsv):
     annotAssocs.finish()
     return annotAssocs
 
+def getAllTransIdChroms(srcAnnotSet, targetAnnotSet):
+    return tuple(sorted(set(
+        [(ann.transcriptId, ann.chrom) for ann in srcAnnotSet.annotMappingsTbl] +
+        [(ann.transcriptId, ann.chrom) for ann in targetAnnotSet.annotMappingsTbl])))
+
+
+###
+# reporting
+###
+def writeReportRow(fh, geneSymbol, geneId, transcriptId, annotMethod, coords, annotMapId,
+                   category, srcSize, insertBases, deleteBases,
+                   annotType, annotDesc):
+    # header god through this function to, rearrange order for easier
+    # human inspection here
+    fileOps.prRowv(fh, geneSymbol, geneId, transcriptId, annotMethod, annotMapId,
+                   annotType, annotDesc, category, srcSize, insertBases, deleteBases,
+                   coords)
+
+def writeReportHeader(fh):
+    writeReportRow(fh, "geneSymbol", "geneId", "transcriptId", "annotMethod", "coords",
+                   "annotMapId", "category", "srcSize", "insertBases", "deleteBases",
+                   "annotType", "annotDesc")
+
+def sumFeatureIndel(featIndels):
+    insertBases = deleteBases = 0
+    for featIndel in featIndels:
+        if featIndel.indelType is FeatureIndelType.insert:
+            insertBases += featIndel.length
+        else:
+            deleteBases += featIndel.length
+    return insertBases, deleteBases
+
+def analyzeFeatureIndels(opts, annotLen, featIndels):
+    "return (category, insertBases, deleteBases)"
+    if len(featIndels) == 0:
+        return (AnnotDiffCategory.complete, 0, 0)
+    elif featIndels[0].indelType == FeatureIndelType.del_full:
+        return (AnnotDiffCategory.deleted, 0, annotLen)
+    else:
+        insertBases, deleteBases = sumFeatureIndel(featIndels)
+        isMajor = ((insertBases * deleteBases) / annotLen) >= opts.major_disrupt_threshold
+        return (AnnotDiffCategory.major_diff if isMajor else AnnotDiffCategory.minor_diff,
+                insertBases, deleteBases)
+
+def reportAnnotDiffSrc(opts, srcAnnotSet, targetGeneSet, transcriptId, annotDiff, reportFh):
+    geneMeta = targetGeneSet.meta.getGeneByTranscriptId(transcriptId)
+    annotRef = annotDiff.srcAnnot.annotRef
+    uniprotAnnot = srcAnnotSet.uniprotAnnotTbl.getByAnnotId(annotMapIdToAnnotId(annotDiff.srcAnnot.annotRef.annotMapId))
+    category, insertBases, deleteBases = analyzeFeatureIndels(opts, annotRef.annotSize, annotDiff.srcFeatureIndels)
+    writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, AnnotMethod.uniprotMap,
+                   annotDiff.coords, annotRef.annotMapId,
+                   category, annotRef.annotSize, insertBases, deleteBases,
+                   uniprotAnnot.shortFeatType, uniprotAnnot.comment)
+
+def reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transIdChrom, annotDiff, reportFh):
+    if annotDiff.srcAnnot is not None:
+        reportAnnotDiffSrc(opts, srcAnnotSet, targetGeneSet, transIdChrom[0], annotDiff, reportFh)
+
+def reportTransAnalysis(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transIdChrom, transAnnotDiffs, reportFh):
+    for annotDiff in transAnnotDiffs:
+        reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transIdChrom, annotDiff, reportFh)
+
+###
+# analysis
+###
+def analyzeTranscript(srcAnnotSet, targetAnnotSet, transIdChrom):
+    srcTransAnnotMappings = srcAnnotSet.annotMappingsTbl.findEntry(*transIdChrom)
+    targetTransAnnotMappings = targetAnnotSet.annotMappingsTbl.findEntry(*transIdChrom)
+    return compareTransAnnotations(srcTransAnnotMappings,
+                                   targetTransAnnotMappings)
+
+
+def analyzeTranscripts(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, reportFh):
+    writeReportHeader(reportFh)
+
+    for transIdChrom in getAllTransIdChroms(srcAnnotSet, targetAnnotSet):
+        transAnnotDiffs = analyzeTranscript(srcAnnotSet, targetAnnotSet, transIdChrom)
+        reportTransAnalysis(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transIdChrom, transAnnotDiffs, reportFh)
+
+###
+# main
+###
 def xspeciesAnalyze(opts,
                     uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
-                    targetGeneSet, targetTrans2GenomePsl,
+                    targetGeneSet, targetGeneMeta, targetTrans2GenomePsl,
                     interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
                     annotTypeAssocTsv, analysisReportTsv):
     annotAssocs = loadAnnotTypeAssoc(annotTypeAssocTsv)
-    targetGeneSet = geneSetFactory(targetGeneSet, trans2GenomePslFile=targetTrans2GenomePsl)
+    targetGeneSet = geneSetFactory(targetGeneSet, geneSetMetadata=targetGeneMeta,
+                                   trans2GenomePslFile=targetTrans2GenomePsl)
     srcAnnotSet = srcAnnotSetLoad(uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
                                   annotAssocs, targetGeneSet)
     targetAnnotSet = targetAnnotSetLoad(interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
                                         annotAssocs, targetGeneSet)
-    print("@@@ srcAnnotSet", len(srcAnnotSet.uniprotAnnotTbl), len(srcAnnotSet.annotMappingsTbl))
-    print("@@@ targetAnnotSet", len(targetAnnotSet.intreproAnnotTbl), len(targetAnnotSet.annotMappingsTbl))
+    with fileOps.opengz(analysisReportTsv, 'w') as reportFh:
+        analyzeTranscripts(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, reportFh)
+
+###
 def main():
     opts, args = parseArgs()
     with cmdOps.ErrorHandler():
         xspeciesAnalyze(opts,
                         args.uniprotAnnotTsv, args.uniprotAnnot2GenomePsl, args.uniprotAnnot2GenomeRefTsv,
-                        args.geneSetName, args.trans2GenomePsl,
+                        args.geneSetName, args.geneSetMetadata, args.trans2GenomePsl,
                         args.interproAnnotTsv, args.interproAnnot2GenomePsl, args.interproAnnot2GenomeRefTsv,
                         args.annotTypeAssocTsv, args.analysisReportTsv)
 

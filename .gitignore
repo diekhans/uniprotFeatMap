@@ -1,5 +1,6 @@
 .emacs.bak/
 __pycache__/
+TAGS
 output/
 bigtest/protTransAln/
 bigtest/protTransMap/

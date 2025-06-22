@@ -132,6 +132,9 @@ class GeneSetMetadata:
         except Exception as ex:
             raise GeneSetError(f"can't find metadata for gene `{geneId}'") from ex
 
+    def getGeneByTranscriptId(self, transId):
+        return self.getTranscript(transId).gene
+
     def getGeneTranscripts(self, geneId):
         try:
             return self.byGeneId[geneId]

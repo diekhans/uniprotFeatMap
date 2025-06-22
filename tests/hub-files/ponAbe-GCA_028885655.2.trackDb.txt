@@ -16,7 +16,7 @@ labelSeperator " / "
 html empty.html
 mouseOver gene: $geneName2 <br> transcript: $name <br> geneId: $geneName <br> type: $type
 ##
-decorator.default.bigDataUrl testXsPonAbeAnnotsToDeco.bb
+decorator.default.bigDataUrl testInterproPonAbeCat1AnnotsToDeco.bb
 decorator.default.filterLabel.annotType Annotation type
 decorator.default.filterValues.annotType feature,disruption
 decorator.default.filterLabel.dataSet Uniprot dataset
@@ -37,7 +37,7 @@ decorator.default.mouseOver \
    disease: ${disease}
 ##
 ##
-decorator.interpro.bigDataUrlt testInterproAnnotsToDeco.bb
+decorator.interpro.bigDataUrl testInterproPonAbeCat1AnnotsToDeco.bb 
 decorator.interpro.filterLabel.annotCategory Annotation category
 decorator.interpro.filterValues.annotCategory InterPro,other
 decorator.interpro.filterLabel.analysis Analysis

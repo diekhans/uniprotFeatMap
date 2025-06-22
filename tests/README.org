@@ -22,10 +22,12 @@ tawk '$2~/^ZNF.*/ && ($6 == "protein_coding") {print $4}' input/gencode.v43.meta
 ./bin/getOrthoData ponAbe-GCA_028885655.2 gencode.ids tmp
 
 
-** additiona CAT xspecies for Gibbon ZNF649 where domains are deleted
+** additional CAT xspecies for Gibbon ZNF649 where domains are deleted
 
 tawk '$2~/^ZNF649/ && ($6 == "protein_coding") {print $4}' input/gencode.v43.metadata.tsv > znf649.ids
 ./bin/getOrthoData symSyn-GCA_028878055.2 znf649.ids  tmp
+
+
 
 ** interproscan test cases
 use latest version of interproscan to match lookup service, don't install from
@@ -34,7 +36,8 @@ need updated java
   mamba install conda-forge::openjdk
 
   
-(time ../pkgs/interproscan-5.72-103.0/interproscan.sh -f TSV -i input/gencode.v43.proteins.fa -b gencode.v43.interproscan) >&ips.log
+(time ../../pkgs/interproscan-5.72-103.0/interproscan.sh -f TSV -i input/gencode.v43.proteins.fa -b gencode.v43.interproscan) >&ips.log
+
 
 * various cases
 
