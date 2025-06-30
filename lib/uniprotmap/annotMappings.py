@@ -3,6 +3,7 @@ Annotation mappings data for analysis
 """
 from collections import namedtuple, defaultdict
 from pycbio.hgdata.psl import PslReader
+from pycbio.hgdata.coords import Coords
 from uniprotmap.metadata import annot2GenomeRefReader
 
 
@@ -16,6 +17,13 @@ class AnnotMapping(namedtuple("AnnotMapping",
     The annot field depends on the type of annotation (UniProt or Interpro).
     """
     __slots__ = ()
+
+    def coords(self):
+        if self.annotPsl is None:
+            return None
+        else:
+            return Coords(self.annotPsl.tName, self.annotPsl.tStart, self.annotPsl.tEnd,
+                          self.annotPsl.tStrand, self.annotPsl.tSize)
 
 
 class TransAnnotMappings(namedtuple("TransAnnotMappings",

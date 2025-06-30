@@ -3,7 +3,7 @@
 # import os
 import os.path as osp
 import sys
-from pycbio.sys import cmdOps, fileOps
+from pycbio.sys import cli, fileOps
 from pycbio.tsv import TsvReader, strOrNoneType
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -18,7 +18,7 @@ def parseArgs():
     desc = """Compare Uniprot map annotations to IntrproScan generate annotations.
     """
 
-    parser = cmdOps.ArgumentParserExtras(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--major-disrupt-threshold", type=float, default=0.02,
                         help="""number of bases insert of deleted at above this fraction of a annotation's
                         length are considered a major disruption""")
@@ -156,7 +156,7 @@ def xspeciesAnalyze(opts,
 ###
 def main():
     opts, args = parseArgs()
-    with cmdOps.ErrorHandler():
+    with cli.ErrorHandler():
         xspeciesAnalyze(opts,
                         args.uniprotAnnotTsv, args.uniprotAnnot2GenomePsl, args.uniprotAnnot2GenomeRefTsv,
                         args.geneSetName, args.geneSetMetadata, args.trans2GenomePsl,

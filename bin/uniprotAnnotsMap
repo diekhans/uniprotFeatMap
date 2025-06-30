@@ -5,7 +5,7 @@ import os.path as osp
 import logging
 from collections import defaultdict
 import pipettor
-from pycbio.sys import fileOps, cmdOps
+from pycbio.sys import fileOps, cli
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import OutOfSyncError, TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
@@ -38,7 +38,7 @@ def parseArgs():
     This maybe also be used to project the mappings to another species by providing
     transcript to transcript alignments.
     """
-    parser = cmdOps.ArgumentParserExtras(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--xspeciesTrans2TransPsl",
                         help="""PSL alignments of soruce transcripts target transcripts in a target genome for cross-species mapping of UniProt features from xspeciesTrans2TransMap""")
     parser.add_argument("--annot2TransPsl",

@@ -3,7 +3,7 @@ import argparse
 import graphlib
 
 from pycbio.sys.symEnum import SymEnum, auto
-from pycbio.sys import cmdOps
+from pycbio.sys import cli
 
 class What(SymEnum):
     prot_trans_map = auto()
@@ -39,7 +39,7 @@ def _parse_args():
     parser.add_argument("what", choices=What, type=What)
     parser.add_argument("outfile",
                         help="output file, extension is .pdf or .png, which determines type")
-    opts, args = cmdOps.parse(parser)
+    opts, args = cli.parse(parser)
     graphlib.check_output_file_type(parser, args.outfile)
     return opts, args
 

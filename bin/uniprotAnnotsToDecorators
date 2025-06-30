@@ -7,7 +7,7 @@ import multiprocessing as mp
 import logging
 from functools import partial
 import pipettor
-from pycbio.sys import fileOps, cmdOps
+from pycbio.sys import fileOps, cli
 from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock, Glyph
 
@@ -49,7 +49,7 @@ def parseArgs():
     to a decorator BED file in uniprotDecoration.as format.  Possibly filtering
     the results.
     """
-    parser = cmdOps.ArgumentParserExtras(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--help-colors", action=HelpColors, nargs=0,
                         help="""Show description of colors used, mostly for producing documentation""")
     parser.add_argument("--nprocs", type=int, default=1,

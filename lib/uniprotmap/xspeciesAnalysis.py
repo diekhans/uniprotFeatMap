@@ -86,11 +86,24 @@ def _buildSrcDiffs(transAnnotDiffs, srcTransAnnotMappings):
         if annotMapping.annotPsl is not None:
             prevMappedTEnd = annotMapping.annotPsl.tEnd
 
+def _findTargetDiffIdx(transAnnotDiffs, annotMapping, iDiffs):
+    """find point of first overlap in diffs lists, or before if no overlap """
+    annotCoords = annotMapping.coords
+    while iDiffs < len(transAnnotDiffs):
+        pass
+
+
+def _addTargetDiff(transAnnotDiffs, annotMapping, iDiffs):
+    pass
+
+
 def _addTargetDiffs(transAnnotDiffs, targetTransAnnotMappings):
     "add in the target (interpro) annotations"
-    iNext = 0
+    iDiffs = 0  # point to start search for overlap or insert
     for annotMapping in targetTransAnnotMappings.annotMappings:
         pass
+        iDiffs = _addTargetDiff(transAnnotDiffs, annotMapping, iDiffs)
+
 
 def compareTransAnnotations(srcTransAnnotMappings,
                             targetTransAnnotMappings):

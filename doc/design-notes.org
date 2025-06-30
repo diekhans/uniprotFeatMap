@@ -77,3 +77,14 @@ initialize with list of mapped or deleted uniprots
 **** scan interpro
 update list
 
+
+* count this be made simpler
+** uniprotAnnotsMap
+- reading into memory and doing lookups is a lot of book keeping
+- harder to paralyzed with pslMap commands
+- could it be simplified by loading everything into a sqlite databases.
+  using that to 
+- parallelize mapping using python pslMap, don't have all the intermediate
+  files
+** other programs as well.
+

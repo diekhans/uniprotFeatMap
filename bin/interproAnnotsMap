@@ -4,7 +4,7 @@ import sys
 import os.path as osp
 import logging
 import pipettor
-from pycbio.sys import fileOps, cmdOps
+from pycbio.sys import fileOps, cli
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
@@ -29,7 +29,7 @@ def parseArgs():
     This maybe also be used to project the mappings to another species by providing
     transcript to transcript alignments.
     """
-    parser = cmdOps.ArgumentParserExtras(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--annot2TransPsl",
                         help="""PSL alignments of interproscan  annotations to transcripts, with protein in codon coordinates. (output)""")
     parser.add_argument("--interPrefix",

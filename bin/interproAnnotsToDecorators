@@ -5,7 +5,7 @@ import os.path as osp
 import multiprocessing as mp
 import logging
 import pipettor
-from pycbio.sys import fileOps, cmdOps
+from pycbio.sys import fileOps, cli
 from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock
 
@@ -23,7 +23,7 @@ def parseArgs():
     to a decorator BED file in interproDecoration.as format.  Possibly filtering
     the results.
     """
-    parser = cmdOps.ArgumentParserExtras(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--nprocs", type=int, default=1,
                         help="""number of processers to use""")
     parser.add_argument("--featTypesTsv",
