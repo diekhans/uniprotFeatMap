@@ -8,7 +8,6 @@ import logging
 from functools import partial
 import pipettor
 from pycbio.sys import fileOps, cli
-from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock, Glyph
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -71,10 +70,8 @@ def parseArgs():
                         help="""association of annotations to mapped transcripts (input)""")
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
-    profiler = Profile(parser)
     opts, args = parser.parse_opts_args()
     pipettor.setDefaultLogger(logging.getLogger())
-    profiler.setup(opts)
     return opts, args
 
 ##

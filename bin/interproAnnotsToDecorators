@@ -6,7 +6,6 @@ import multiprocessing as mp
 import logging
 import pipettor
 from pycbio.sys import fileOps, cli
-from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -37,9 +36,7 @@ def parseArgs():
                         help="""association of annotations to mapped transcripts (input)""")
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
-    profiler = Profile(parser)
     opts, args = parser.parse_opts_args()
-    profiler.setup(opts)
     pipettor.setDefaultLogger(logging.getLogger())
     return opts, args
 
