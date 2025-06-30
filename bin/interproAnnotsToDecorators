@@ -2,11 +2,10 @@
 
 import sys
 import os.path as osp
-import argparse
 import multiprocessing as mp
 import logging
 import pipettor
-from pycbio.sys import fileOps, cmdOps, loggingOps
+from pycbio.sys import fileOps, cmdOps
 from pycbio.sys.profile import Profile
 from pycbio.hgdata.decoration import BedBlock
 
@@ -24,7 +23,7 @@ def parseArgs():
     to a decorator BED file in interproDecoration.as format.  Possibly filtering
     the results.
     """
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cmdOps.ArgumentParserExtras(description=desc)
     parser.add_argument("--nprocs", type=int, default=1,
                         help="""number of processers to use""")
     parser.add_argument("--featTypesTsv",
@@ -39,11 +38,9 @@ def parseArgs():
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
     profiler = Profile(parser)
-    loggingOps.addCmdOptions(parser)
-    opts, args = cmdOps.parse(parser)
-    loggingOps.setupFromCmd(opts)
-    pipettor.setDefaultLogger(logging.getLogger())
+    opts, args = parser.parse_opts_args()
     profiler.setup(opts)
+    pipettor.setDefaultLogger(logging.getLogger())
     return opts, args
 
 def includeAnnot(annot):

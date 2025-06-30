@@ -3,8 +3,7 @@
 # import os
 import os.path as osp
 import sys
-import argparse
-from pycbio.sys import cmdOps, fileOps, loggingOps
+from pycbio.sys import cmdOps, fileOps
 from pycbio.tsv import TsvReader, strOrNoneType
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -19,7 +18,7 @@ def parseArgs():
     desc = """Compare Uniprot map annotations to IntrproScan generate annotations.
     """
 
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cmdOps.ArgumentParserExtras(description=desc)
     parser.add_argument("--major-disrupt-threshold", type=float, default=0.02,
                         help="""number of bases insert of deleted at above this fraction of a annotation's
                         length are considered a major disruption""")
@@ -30,7 +29,6 @@ def parseArgs():
     parser.add_argument("uniprotAnnot2GenomeRefTsv",
                         help="""association of annotations to mapped transcripts (input)""")
     cliAddGeneSetParameters(parser, inclMetadata=True, inclTransGenomePsl=True)
-    loggingOps.addCmdOptions(parser)
     parser.add_argument("interproAnnotTsv",
                         help="""InterProScan TSV results (input)""")
     parser.add_argument("interproAnnot2GenomePsl",
@@ -44,9 +42,7 @@ def parseArgs():
                         """with the same accession from different analysis may overlap.""")
     parser.add_argument("analysisReportTsv",
                         help="""Analysis report (output)""")
-    opts, args = cmdOps.parse(parser)
-    loggingOps.setupFromCmd(opts)
-    return opts, args
+    return parser.parse_opts_args()
 
 ###
 # setup

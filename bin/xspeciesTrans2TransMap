@@ -3,10 +3,9 @@
 import os
 import os.path as osp
 import sys
-import argparse
 import logging
 import pipettor
-from pycbio.sys import fileOps, cmdOps, loggingOps
+from pycbio.sys import fileOps, cmdOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.mapping import pslMapMkCmd
@@ -19,7 +18,7 @@ def parseArgs():
     desc = """Create cross-species source mRNA to target mRNA alignments
     via transmap"""
 
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cmdOps.ArgumentParserExtras(description=desc)
     parser.add_argument("srcTrans2TargetGenomePsl",
                         help="""source mRNA alignments""")
     parser.add_argument("srcTransFa",
@@ -30,9 +29,7 @@ def parseArgs():
                         help="""target assembly mRNA sequences""")
     parser.add_argument("srcTrans2TargetTransPsl",
                         help="""alignments of source to target transcripts """)
-    loggingOps.addCmdOptions(parser)
-    opts, args = cmdOps.parse(parser)
-    loggingOps.setupFromCmd(opts)
+    opts, args = parser.parse_opts_args()
     pipettor.setDefaultLogger(logging.getLogger())
     return opts, args
 

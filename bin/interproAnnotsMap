@@ -2,10 +2,9 @@
 
 import sys
 import os.path as osp
-import argparse
 import logging
 import pipettor
-from pycbio.sys import fileOps, cmdOps, loggingOps
+from pycbio.sys import fileOps, cmdOps
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import TmpOrSaveFile, cleanTmpFiles, annotIdToProtAcc
@@ -30,7 +29,7 @@ def parseArgs():
     This maybe also be used to project the mappings to another species by providing
     transcript to transcript alignments.
     """
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cmdOps.ArgumentParserExtras(description=desc)
     parser.add_argument("--annot2TransPsl",
                         help="""PSL alignments of interproscan  annotations to transcripts, with protein in codon coordinates. (output)""")
     parser.add_argument("--interPrefix",
@@ -45,9 +44,7 @@ def parseArgs():
                         help="""InterProScan annotations mapped to the genome (output)""")
     parser.add_argument("annot2GenomeRefTsv",
                         help="""Association of annotations to mapped transcripts (output)""")
-    loggingOps.addCmdOptions(parser)
-    opts, args = cmdOps.parse(parser)
-    loggingOps.setupFromCmd(opts)
+    opts, args = parser.parse_opts_args()
     pipettor.setDefaultLogger(logging.getLogger())
     return opts, args
 
