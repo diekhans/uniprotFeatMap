@@ -3,8 +3,6 @@
 import sys
 import os.path as osp
 import multiprocessing as mp
-import logging
-import pipettor
 from pycbio.sys import fileOps, cli
 from pycbio.hgdata.decoration import BedBlock
 
@@ -36,9 +34,7 @@ def parseArgs():
                         help="""association of annotations to mapped transcripts (input)""")
     parser.add_argument("annotDecoratorBed",
                         help="""annotation decorator BED file (output)""")
-    opts, args = parser.parse_opts_args()
-    pipettor.setDefaultLogger(logging.getLogger())
-    return opts, args
+    return parser.parse_opts_args()
 
 def includeAnnot(annot):
     "filter for desired annotations"
@@ -123,8 +119,9 @@ def interproAnnotsToDecorators(opts, interproAnnotTsv, annot2GenomePslFile, anno
 
 def main():
     opts, args = parseArgs()
-    interproAnnotsToDecorators(opts, args.interproAnnotTsv, args.annot2GenomePsl, args.annot2GenomeRefTsv,
-                               args.annotDecoratorBed)
+    with cli.ErrorHandler():
+        interproAnnotsToDecorators(opts, args.interproAnnotTsv, args.annot2GenomePsl, args.annot2GenomeRefTsv,
+                                   args.annotDecoratorBed)
 
 if __name__ == '__main__':
     mp.set_start_method("forkserver", force=True)

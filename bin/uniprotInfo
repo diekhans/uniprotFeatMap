@@ -2,8 +2,7 @@
 
 import sys
 import os.path as osp
-import argparse
-from pycbio.sys import fileOps
+from pycbio.sys import fileOps, cli
 from pycbio.sys.symEnum import SymEnum, auto
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -28,14 +27,14 @@ def parseArgs():
     per column of associated data.
     """
 
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("what", type=What,
                         help="""data requested (input)""")
     parser.add_argument("uniprotMetaTsv",
                         help="""Uniprot metadata in TSV format (input)""")
     parser.add_argument("uniprotInfoTsv",
                         help="""Log file of issues that happened (output)""")
-    return parser.parse_args()
+    return parser.parse_opts_args()
 
 BASE_COLS = ("acc", "mainIsoAcc", "taxonId")
 
@@ -59,13 +58,15 @@ def writeTsv(fh, uniprotMetaTbl, dataCol):
     for rec in uniprotMetaTbl:
         writeFunc(fh, rec, dataCol)
 
-def uniprotInfo(what, uniprotMetaTsv, uniprotInfoTsv):
+def uniprotInfo(opts, what, uniprotMetaTsv, uniprotInfoTsv):
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
     dataCol = whatToDataCol[what]
     with fileOps.opengz(uniprotInfoTsv, 'w') as fh:
         writeTsv(fh, uniprotMetaTbl, dataCol)
 
-def main(opts):
-    uniprotInfo(opts.what, opts.uniprotMetaTsv, opts.uniprotInfoTsv)
+def main():
+    opts, args = parseArgs()
+    with cli.ErrorHandler():
+        uniprotInfo(opts, args.what, args.uniprotMetaTsv, args.uniprotInfoTsv)
 
-main(parseArgs())
+main()

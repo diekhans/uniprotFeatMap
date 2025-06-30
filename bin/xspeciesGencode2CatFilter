@@ -2,11 +2,10 @@
 
 import sys
 import os.path as osp
-import argparse
 from collections import defaultdict
 import pipettor
 from pycbio.tsv import TsvReader, strOrNoneType
-from pycbio.sys import fileOps
+from pycbio.sys import fileOps, cli
 from pycbio.hgdata.psl import PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -17,14 +16,14 @@ def parseArgs():
     xspeciesTrans2TransMap.  For transMapped alignments, it Keeps most similar match where source GENCODE
     matches CAT
     """
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("src2TargetTransPsl",
                         help="""alignments of source to target transcripts """)
     parser.add_argument("targetCatBigBed",
                         help="""target genome CAT bigBed, to obtain metadata """)
     parser.add_argument("src2TargetMatchedPsl",
                         help="""filtered PSL""")
-    return parser.parse_args()
+    return parser.parse_opts_args()
 
 
 def loadCatSource(targetCatBigBed):
@@ -74,14 +73,16 @@ def filterAligns(alnsByTarget, catSources, alnFh):
         bestAln = pickBestBySource(alnsByTarget[targetAcc], catSources)
         bestAln.write(alnFh)
 
-def xspeciesGencode2CatFilter(src2TargetTransPslFile, targetCatBigBed, src2TargetMatchedPslFile):
+def xspeciesGencode2CatFilter(opts, src2TargetTransPslFile, targetCatBigBed, src2TargetMatchedPslFile):
     alnsByTarget = loadAlnsByTarget(src2TargetTransPslFile)
     catSources = loadCatSource(targetCatBigBed)
     with fileOps.opengz(src2TargetMatchedPslFile, 'w') as alnFh:
         filterAligns(alnsByTarget, catSources, alnFh)
 
-def main(opts):
-    xspeciesGencode2CatFilter(opts.src2TargetTransPsl, opts.targetCatBigBed, opts.src2TargetMatchedPsl)
+def main():
+    opts, args = parseArgs()
+    with cli.ErrorHandler():
+        xspeciesGencode2CatFilter(opts, args.src2TargetTransPsl, args.targetCatBigBed, args.src2TargetMatchedPsl)
 
 
-main(parseArgs())
+main()

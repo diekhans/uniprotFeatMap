@@ -2,9 +2,7 @@
 
 import sys
 import os.path as osp
-import logging
 from collections import defaultdict
-import pipettor
 from pycbio.sys import fileOps, cli
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -57,9 +55,7 @@ def parseArgs():
                         help="""Association of annotations to mapped transcripts (output)""")
     parser.add_argument("problemLogTsv",
                         help="""Log file of issues that happened (output)""")
-    opts, args = parser.parse_opts_args()
-    pipettor.setDefaultLogger(logging.getLogger())
-    return opts, args
+    return parser.parse_opts_args()
 
 def problemLogOpen(problemLogTsv):
     logFh = open(problemLogTsv, 'w')
@@ -239,7 +235,8 @@ def uniprotAnnotsMap(opts, trans2GenomePslFile, uniprotAnnotsTsv, prot2TransPair
 
 def main():
     opts, args = parseArgs()
-    uniprotAnnotsMap(opts, args.trans2GenomePsl, args.uniprotAnnotsTsv, args.prot2TransPairedPsl,
-                     args.annot2GenomePsl, args.annot2GenomeRefTsv, args.problemLogTsv)
+    with cli.ErrorHandler():
+        uniprotAnnotsMap(opts, args.trans2GenomePsl, args.uniprotAnnotsTsv, args.prot2TransPairedPsl,
+                         args.annot2GenomePsl, args.annot2GenomeRefTsv, args.problemLogTsv)
 
 main()

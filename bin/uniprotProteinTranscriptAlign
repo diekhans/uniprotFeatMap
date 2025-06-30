@@ -2,9 +2,9 @@
 
 import sys
 import os.path as osp
-import argparse
 import re
 import functools
+from pycbio.sys import cli
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.align import proteinTranscriptAlign
@@ -20,7 +20,7 @@ def parseArgs():
     failure is connect and jobs finished, touch ${workdir}/aligns.done and
     rerun this program.
     """
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--algo", choices=("blast", "blat"), default="blat",
                         help="alignment algorithm")
     parser.add_argument("uniprotMetaTsv",
@@ -33,7 +33,7 @@ def parseArgs():
                         help="""alignments of UniProt proteins to their canonical transcripts, sorted by transcript (output)""")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
-    return parser.parse_args()
+    return parser.parse_opts_args()
 
 def queryFaEditFilter(faRec):
     """Select canonical isoform records.  They which have headers like
@@ -51,16 +51,18 @@ def alignFilter(uniprotMetaTbl, psl):
     uniprotMeta = uniprotMetaTbl.getByAcc(dropUniportIsoformModifier(psl.qName))
     return ((psl.qName == uniprotMeta.mainIsoAcc) and uniprotMeta.isCanonProtTrans(psl.tName))
 
-def uniprotProteinTranscriptAlign(uniprotMetaTsv, proteinFa, transFa, prot2CanonTransPslFile, algo, workDir):
+def uniprotProteinTranscriptAlign(opts, uniprotMetaTsv, proteinFa, transFa, prot2CanonTransPslFile, workDir):
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
-    proteinTranscriptAlign(proteinFa, transFa, prot2CanonTransPslFile, algo, workDir,
+    proteinTranscriptAlign(proteinFa, transFa, prot2CanonTransPslFile, opts.algo, workDir,
                            queryFaEditFilterFunc=queryFaEditFilter,
                            targetFaEditFilterFunc=functools.partial(targetFaEditFilter, uniprotMetaTbl),
                            alignFilterFunc=functools.partial(alignFilter, uniprotMetaTbl))
 
-def main(opts):
-    uniprotProteinTranscriptAlign(opts.uniprotMetaTsv, opts.proteinFa, opts.transFa,
-                                  opts.prot2CanonTransPsl, opts.algo, opts.workDir)
+def main():
+    opts, args = parseArgs()
+    with cli.ErrorHandler():
+        uniprotProteinTranscriptAlign(opts, args.uniprotMetaTsv, args.proteinFa, args.transFa,
+                                      args.prot2CanonTransPsl, args.workDir)
 
-main(parseArgs())
+main()

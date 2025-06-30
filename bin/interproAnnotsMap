@@ -2,7 +2,6 @@
 
 import sys
 import os.path as osp
-import logging
 import pipettor
 from pycbio.sys import fileOps, cli
 
@@ -44,9 +43,7 @@ def parseArgs():
                         help="""InterProScan annotations mapped to the genome (output)""")
     parser.add_argument("annot2GenomeRefTsv",
                         help="""Association of annotations to mapped transcripts (output)""")
-    opts, args = parser.parse_opts_args()
-    pipettor.setDefaultLogger(logging.getLogger())
-    return opts, args
+    return parser.parse_opts_args()
 
 def createAnnotPsl(annot):
     # qName will have the annotMapId in the form
@@ -123,7 +120,8 @@ def interproAnnotsMap(opts, interproAnnotTsv, prot2TransPslFile, trans2GenomePsl
 
 def main():
     opts, args = parseArgs()
-    interproAnnotsMap(opts, args.interproAnnotTsv, args.prot2TransPsl, args.trans2GenomePsl,
-                      args.annot2GenomePsl, args.annot2GenomeRefTsv)
+    with cli.ErrorHandler():
+        interproAnnotsMap(opts, args.interproAnnotTsv, args.prot2TransPsl, args.trans2GenomePsl,
+                          args.annot2GenomePsl, args.annot2GenomeRefTsv)
 
 main()

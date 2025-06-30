@@ -2,8 +2,8 @@
 
 import os.path as osp
 import sys
-import argparse
 import pipettor
+from pycbio.sys import cli
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.mapping import pslMapMkCmd
@@ -16,7 +16,7 @@ def parseArgs():
     desc = """Create cross-species source mRNA to target genome transmap alignments.
     """
 
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("srcTrans2GenomePsl",
                         help="""source mRNA alignments""")
     parser.add_argument("srcTransFa",
@@ -27,7 +27,7 @@ def parseArgs():
                         help="""target genome 2bit""")
     parser.add_argument("srcTrans2TargetGenomePsl",
                         help="""alignment source mRNAs to target """)
-    return parser.parse_args()
+    return parser.parse_opts_args()
 
 
 def transMapPipeline(srcTrans2GenomePslFile, srcTransFa, src2TargetChains,
@@ -38,14 +38,16 @@ def transMapPipeline(srcTrans2GenomePslFile, srcTransFa, src2TargetChains,
              ["sort", "-k10,10", "-k12,12n"]])
     pipettor.run(cmds, stdout=srcTrans2TargetGenomePslFile)
 
-def xspeciesTrans2GenomeMap(srcTrans2GenomePslFile, srcTransFa, src2TargetChains,
+def xspeciesTrans2GenomeMap(opts, srcTrans2GenomePslFile, srcTransFa, src2TargetChains,
                             targetGenome2bit, srcTrans2TargetGenomePslFile):
     transMapPipeline(srcTrans2GenomePslFile, srcTransFa, src2TargetChains,
                      targetGenome2bit, srcTrans2TargetGenomePslFile)
 
-def main(args):
-    xspeciesTrans2GenomeMap(args.srcTrans2GenomePsl, args.srcTransFa, args.src2TargetChains,
-                            args.targetGenome2bit, args.srcTrans2TargetGenomePsl)
+def main():
+    opts, args = parseArgs()
+    with cli.ErrorHandler():
+        xspeciesTrans2GenomeMap(opts, args.srcTrans2GenomePsl, args.srcTransFa, args.src2TargetChains,
+                                args.targetGenome2bit, args.srcTrans2TargetGenomePsl)
 
 
-main(parseArgs())
+main()

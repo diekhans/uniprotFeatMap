@@ -2,9 +2,8 @@
 
 import sys
 import os.path as osp
-import argparse
 import pipettor
-from pycbio.sys import fileOps
+from pycbio.sys import fileOps, cli
 from pycbio.hgdata.psl import Psl, PslBlock, PslReader
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
@@ -34,7 +33,7 @@ def parseArgs():
     to other transcript isoforms using the genomic coordinates. Output alignments
     in codon coordinates rather than AA (3x AA base position). """
 
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--interPrefix",
                         help="""save the intermediate files to names starting with ${iterPrefix}.${name}""")
     cliAddGeneSetParameters(parser, inclMetadata=True, inclTransGenomePsl=True, inclTransGenomeGp=True)
@@ -46,7 +45,7 @@ def parseArgs():
                         help="""alignments of protein's CDS to paired transcript, in CDS codon coordinates (output)""")
     parser.add_argument("problemLogTsv",
                         help="""Log file of issues that happened (output)""")
-    return parser.parse_args()
+    return parser.parse_opts_args()
 
 ##
 # data loading and filtering
@@ -224,24 +223,25 @@ def report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAli
         reportUnalignedUniprots(geneSet, uniprotMetaTbl, canonCdsToTransAligns, logFh)
         reportUnpairedNoncanonTranses(geneSet, uniprotMetaTbl, noncanonCdsToTransAligns, logFh)
 
-def proteinTranscriptAlign(geneSetName, geneSetMetadata, trans2GenomePslFile, transGenomeGpFile,
+def proteinTranscriptAlign(opts, geneSetName, geneSetMetadata, trans2GenomePslFile, transGenomeGpFile,
                            uniprotMetaTsv, prot2CanonTransPslFile,
-                           prot2TransPairedPslFile, problemLogTsv, interPrefix):
+                           prot2TransPairedPslFile, problemLogTsv):
     geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, trans2GenomePslFile=trans2GenomePslFile, transGenomeGpFile=transGenomeGpFile)
     uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
     canonCdsToTransAligns = loadConvertCanonProtTransPsls(prot2CanonTransPslFile)
     noncanonCdsToTransAligns = projectUniPortAlignments(geneSet, uniprotMetaTbl,
-                                                        canonCdsToTransAligns, interPrefix)
+                                                        canonCdsToTransAligns, opts.interPrefix)
 
     report(geneSet, uniprotMetaTbl, canonCdsToTransAligns, noncanonCdsToTransAligns, problemLogTsv)
 
     writePsls(canonCdsToTransAligns + noncanonCdsToTransAligns, prot2TransPairedPslFile)
 
-def main(opts):
-    proteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.trans2GenomePsl, opts.transGenomeGp,
-                           opts.uniprotMetaTsv, opts.prot2CanonTransPsl,
-                           opts.prot2TransPairedPsl, opts.problemLogTsv,
-                           opts.interPrefix)
+def main():
+    opts, args = parseArgs()
+    with cli.ErrorHandler():
+        proteinTranscriptAlign(opts, args.geneSetName, args.geneSetMetadata, args.trans2GenomePsl, args.transGenomeGp,
+                               args.uniprotMetaTsv, args.prot2CanonTransPsl,
+                               args.prot2TransPairedPsl, args.problemLogTsv)
 
-main(parseArgs())
+main()

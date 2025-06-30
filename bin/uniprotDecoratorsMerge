@@ -2,9 +2,8 @@
 
 import sys
 import os.path as osp
-import argparse
 import pipettor
-from pycbio.sys import fileOps
+from pycbio.sys import fileOps, cli
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.decoratorsBuilder import decoratorBedSortOpts
@@ -13,19 +12,20 @@ def parseArgs():
     desc = """
     Merge sorted UniProt decorator BEDs.
     """
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--outBed", default="/dev/stdout",
                         help="""merged BED file; that is sorted in genome order sorted (output)""")
     parser.add_argument("inputBeds", nargs="+",
                         help="BED files merge; each must be already be sorted in genome order (input)")
-    return parser.parse_args()
+    return parser.parse_opts_args()
 
-
-def uniprotDecoratorsMerge(inputBeds, outBed):
+def uniprotDecoratorsMerge(opts, inputBeds, outBed):
     with fileOps.AtomicFileCreate(outBed) as tmpDecoBed:
         pipettor.run(["sort", "--merge"] + decoratorBedSortOpts + inputBeds, stdout=tmpDecoBed)
 
-def main(opts):
-    uniprotDecoratorsMerge(opts.inputBeds, opts.outBed)
+def main():
+    opts, args = parseArgs()
+    with cli.ErrorHandler():
+        uniprotDecoratorsMerge(opts, args.inputBeds, args.outBed)
 
-main(parseArgs())
+main()

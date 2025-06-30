@@ -2,14 +2,17 @@
 
 import sys
 import os.path as osp
-import argparse
 import functools
+from pycbio.sys import cli
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap.geneset import GeneSetError, geneSetFactory
 from uniprotmap.clisupport import cliAddGeneSetParameters
 from uniprotmap.interproscan import InterproError
 from uniprotmap.align import updateCompoundFastaHeader, proteinTranscriptAlign
+
+# Using BLAT is overkill, as the protein is a direct translation.
+# However, it was easier to use existing code.
 
 def parseArgs():
     desc = """Align protein sequences annotated by InterProScan to
@@ -21,7 +24,7 @@ def parseArgs():
     failure is connect and jobs finished, touch ${workdir}/aligns.done and
     rerun this program.
     """
-    parser = argparse.ArgumentParser(description=desc)
+    parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--algo", choices=("blast", "blat"), default="blat",
                         help="alignment algorithm")
     cliAddGeneSetParameters(parser, inclMetadata=True, inclTransFa=True)
@@ -31,7 +34,7 @@ def parseArgs():
                         help="""alignments of proteins to their transcripts, sorted by transcript (output)""")
     parser.add_argument("workDir",
                         help="temporary directory used by parasol run")
-    return parser.parse_args()
+    return parser.parse_opts_args()
 
 def queryFaEditFilter(geneSet, faRec):
     updateCompoundFastaHeader(faRec)
@@ -46,14 +49,16 @@ def alignFilter(geneSet, psl):
         raise InterproError(f"transcript id '{psl.tName}' not found in gene set metadata for protein/transcript alignment '{psl.qName}'/'{psl.tName}'") from ex
     return trans.proteinId == psl.qName
 
-def interproProteinTranscriptAlign(geneSetName, geneSetMetadata, transFa, protFa, prot2TransPslFile, algo, workDir):
+def interproProteinTranscriptAlign(opts, geneSetName, geneSetMetadata, transFa, protFa, prot2TransPslFile, workDir):
     geneSet = geneSetFactory(geneSetName, geneSetMetadata=geneSetMetadata, transFa=transFa)
-    proteinTranscriptAlign(protFa, geneSet.transFa, prot2TransPslFile, algo, workDir,
+    proteinTranscriptAlign(protFa, geneSet.transFa, prot2TransPslFile, opts.algo, workDir,
                            queryFaEditFilterFunc=functools.partial(queryFaEditFilter, geneSet),
                            alignFilterFunc=functools.partial(alignFilter, geneSet))
 
-def main(opts):
-    interproProteinTranscriptAlign(opts.geneSetName, opts.geneSetMetadata, opts.transFa,
-                                   opts.protFa, opts.prot2TransPsl, opts.algo, opts.workDir)
+def main():
+    opts, args = parseArgs()
+    with cli.ErrorHandler():
+        interproProteinTranscriptAlign(opts, args.geneSetName, args.geneSetMetadata, args.transFa,
+                                       args.protFa, args.prot2TransPsl, args.workDir)
 
-main(parseArgs())
+main()
