@@ -2,7 +2,6 @@
 Annotation mappings data for analysis
 """
 from collections import namedtuple, defaultdict
-from itertools import islice
 from pycbio.hgdata.psl import PslReader
 from pycbio.hgdata.coords import Coords
 from uniprotmap.metadata import annot2GenomeRefReader
@@ -76,46 +75,23 @@ class AnnotMappingsTbl(list):
 ###
 # Reading annotation mappings
 ###
-def _findNextMapped(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, iAnnot):
-    """find next non-deletion, returning start coords, or end of transcript in no more"""
-    for annot2GenomeRef in islice(transAnnot2GenomeRefs, iAnnot + 1, None):
-        if annot2GenomeRef.alignIdx is not None:
-            return annot2GenomePsls[annot2GenomeRef.alignIdx].tStart
-    return transPsl.tEnd
-
-def _getMappedCoords(annotPsl):
-    return Coords(annotPsl.tName, annotPsl.tStart, annotPsl.tEnd)
-
-def _getUmappedCoords(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, iAnnot, prevMappedTEnd):
-    """gap range between mapped"""
-    return Coords(transPsl.tName, prevMappedTEnd,
-                  _findNextMapped(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, iAnnot))
-
-def _makeAnnotMapping(transAnnot2GenomeRefs, iAnnot, annot2GenomePsls, transPsl, annotLookupFunc, prevMappedTEnd):
-    annot2GenomeRef = transAnnot2GenomeRefs[iAnnot]
+def _makeAnnotMapping(annot2GenomeRef, annot2GenomePsls, annotLookupFunc):
+    annotPsl = coords = None
     if annot2GenomeRef.alignIdx is not None:
         annotPsl = annot2GenomePsls[annot2GenomeRef.alignIdx]
-        coords = _getMappedCoords(annotPsl)
-        prevMappedTEnd = annotPsl.tEnd
-    else:
-        annotPsl = None
-        coords = _getUmappedCoords(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, iAnnot, prevMappedTEnd)
+        coords = Coords(annotPsl.tName, annotPsl.tStart, annotPsl.tEnd)
 
     # this might filter annotation
     annot = annotLookupFunc(annot2GenomeRef.annotId)
     if annot is not None:
-        return AnnotMapping(annot2GenomeRef, annotPsl, annot, coords), prevMappedTEnd
+        return AnnotMapping(annot2GenomeRef, annotPsl, annot, coords)
     else:
-        return None, prevMappedTEnd
+        return None
 
-def _makeAnnotMappings(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, annotLookupFunc):
-    # build initial list of entries, prev/next is use to find location
-    # where a deleted could be
-    prevMappedTEnd = transPsl.tStart
+def _makeAnnotMappings(transAnnot2GenomeRefs, annot2GenomePsls, annotLookupFunc):
     annotMappings = []
-    for iAnnot in range(len(transAnnot2GenomeRefs)):
-        annotMapping, prevMappedTEnd = _makeAnnotMapping(transAnnot2GenomeRefs, iAnnot, annot2GenomePsls,
-                                                         transPsl, annotLookupFunc, prevMappedTEnd)
+    for annot2GenomeRef in transAnnot2GenomeRefs:
+        annotMapping = _makeAnnotMapping(annot2GenomeRef, annot2GenomePsls, annotLookupFunc)
         if annotMapping is not None:
             annotMappings.append(annotMapping)
     return annotMappings
@@ -125,7 +101,7 @@ def _makeTransAnnotMapping(transAnnot2GenomeRefs, annot2GenomePsls, annotLookupF
     annotRef0 = transAnnot2GenomeRefs[0]
     transPsl = transPslLookupFunc(annotRef0.transcriptId,
                                   annotRef0.transcriptPos.name)
-    annotMappings = _makeAnnotMappings(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, annotLookupFunc)
+    annotMappings = _makeAnnotMappings(transAnnot2GenomeRefs, annot2GenomePsls, annotLookupFunc)
     if inTranscriptionOrder and (transPsl.qStrand == '-'):
         annotMappings.reverse()
     return TransAnnotMappings(annotRef0.transcriptId,
@@ -177,7 +153,7 @@ def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookup
 
 
 def transAnnotMappingLoader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookupFunc,
-                            transPslLookupFunc=None, *, inTranscriptionOrder=False):
+                            transPslLookupFunc, *, inTranscriptionOrder=False):
     """load mappings into object AnnotMappingsTbl"""
     annotMappingsTbl = AnnotMappingsTbl()
     for transAnnotMappings in transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv,

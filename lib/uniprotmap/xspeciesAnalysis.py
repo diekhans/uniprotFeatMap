@@ -22,9 +22,9 @@ class AnnotDiffCategory(SymEnum):
 class AnnotDiff:
     """describes diffs this can be one src and overlapping targets """
     def __init__(self, coords):
-        """For deletions, coords covers range of deletion.
+        """For deletions, coords covers range of deletion (NOT IMPLEMENTED).
         """
-        assert coords is not None
+        # FIXME deletion range not implemented
         # this the source, if there is one, otherwise there is a single target
         self.coords = coords
         # not initializes from arguments, as done in two phases
@@ -85,9 +85,14 @@ def _targetDiffNew(annotMapping):
     return diff
 
 def _addTargetDiffOverlap(transAnnotDiffs, annotMapping, iDiffs):
-    while iDiffs < len(transAnnotDiffs) and annotMapping.coords.overlaps(transAnnotDiffs[iDiffs].coords):
-        assert transAnnotDiffs[iDiffs].srcAnnot is not None
-        transAnnotDiffs[iDiffs].targetAnnots.append(annotMapping)
+    # stop when find a mapped, non-overlapping. Unmapped are skipped
+    while iDiffs < len(transAnnotDiffs):
+        if transAnnotDiffs[iDiffs].coords is not None:
+            if annotMapping.coords.overlaps(transAnnotDiffs[iDiffs].coords):
+                assert transAnnotDiffs[iDiffs].srcAnnot is not None
+                transAnnotDiffs[iDiffs].targetAnnots.append(annotMapping)
+            else:
+                break  # no more overlaps
         iDiffs += 1
 
 def _addTargetDiff(transAnnotDiffs, annotMapping, iDiffs):

@@ -9,13 +9,13 @@ from pycbio.sys import fileOps, cli
 from pycbio.hgdata.decoration import BedBlock, Glyph
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
+from uniprotmap.geneset import GeneSetData, geneSetLoadAnnotPsl
 from uniprotmap.uniprot import UniProtMetaTbl, UniProtAnnotTbl, UniProtDataSet, TransCategory
 from uniprotmap.uniprotDecorators import (getAnnotColor, getProblemColor, getAnnotDescriptiveName, getAnnotCategory, calcTransCategory,
                                           getColorUses, makeColorDesc,
                                           UNIPROT_CANON_ISO_OUTLINE_COLOR, UNIPROT_NONCANON_ISO_OUTLINE_COLOR,
                                           FEAT_INSERTION_COLOR, FEAT_DELETION_COLOR, AnnotType, FeatStatus,
                                           UniprotDecoration)
-from uniprotmap.geneset import GeneSetData, geneSetLoadAnnotPsl
 from uniprotmap.metadata import xrefToItemArgs
 from uniprotmap.mappingAnalysis import analyzeFeatureMapping, FeatureIndelType, getFeatureIndelText
 from uniprotmap.annotMappings import transAnnotMappingReader
@@ -178,7 +178,7 @@ class AnnotationProcessor:
     """Class used to generate annotations.  This is used to move most of the
     processing to the pool sub-process"""
 
-    def __init__(self, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, dataSet):
+    def __init__(self, uniprotMetaTsv, uniprotAnnotsTsv, dataSet):
         self.dataSet = dataSet
         self.uniprotMetaTbl = UniProtMetaTbl(uniprotMetaTsv)
 
@@ -220,13 +220,11 @@ def uniprotAnnotsToDecorators(opts, trans2GenomePslFile, uniprotMetaTsv, uniprot
     geneSetData = GeneSetData()
     geneSetLoadAnnotPsl(geneSetData, trans2GenomePslFile)
 
-    mappingReader = (
-        transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv,
-                                lambda annotId: uniprotAnnotTbl.getByAnnotId(annotId),
-                                lambda transId, chrom: geneSetData.getAlign(transId, chrom))
-    )
+    mappingReader = transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv,
+                                            lambda annotId: uniprotAnnotTbl.getByAnnotId(annotId),
+                                            lambda transId, chrom: geneSetData.getAlign(transId, chrom))
 
-    annotProcFactory = partial(AnnotationProcessor, trans2GenomePslFile, uniprotMetaTsv, uniprotAnnotsTsv, opts.dataset)
+    annotProcFactory = partial(AnnotationProcessor, uniprotMetaTsv, uniprotAnnotsTsv, opts.dataset)
     featTypes = buildDecorators(annotProcFactory, mappingReader, getFeatType,
                                 annotDecoratorBedFile, opts.nprocs)
     if opts.featTypesTsv is not None:

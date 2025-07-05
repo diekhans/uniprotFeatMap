@@ -375,7 +375,7 @@ interproAnnotsToDecoratorsTests: testInterproAnnotsToDeco \
 	testInterproSymSynCat1AnnotsToDeco
 
 testInterproAnnotsToDeco: mkout
-	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${gencodeInterproTsv} \
+	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${gencodePcPsl} ${gencodeInterproTsv} \
 	    expected/testInterproAnnotsMap.psl expected/testInterproAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -383,7 +383,7 @@ testInterproAnnotsToDeco: mkout
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
 
 testInterproPonAbeCat1AnnotsToDeco: mkout
-	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${ponAbeCat1InterproTsv} \
+	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${ponAbeCat1Psl} ${ponAbeCat1InterproTsv} \
 	    expected/testInterproPonAbeCat1AnnotsMap.psl expected/testInterproPonAbeCat1AnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -391,7 +391,7 @@ testInterproPonAbeCat1AnnotsToDeco: mkout
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${ponAbeChromSizes} output/$@.bb
 
 testInterproSymSynCat1AnnotsToDeco: mkout
-	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${symSynCat1InterproTsv} \
+	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${symSynCat1Psl} ${symSynCat1InterproTsv} \
 	    expected/testInterproSymSynCat1AnnotsMap.psl expected/testInterproSymSynCat1AnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed

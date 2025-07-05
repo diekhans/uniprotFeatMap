@@ -5,6 +5,7 @@ import os.path as osp
 import sys
 from pycbio.sys import cli, fileOps
 from pycbio.tsv import TsvReader, strOrNoneType
+from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import annotMapIdToAnnotId
@@ -100,15 +101,21 @@ def analyzeFeatureIndels(opts, annotLen, featIndels):
         return (AnnotDiffCategory.major_diff if isMajor else AnnotDiffCategory.minor_diff,
                 insertBases, deleteBases)
 
-def reportAnnotDiffSrc(opts, srcAnnotSet, geneMeta, transcriptId, annotDiff, reportFh):
-    # need to get coords from annotDiff, not srcAnnot, as that include region were
-    # it was not mapped
+def _getSrcCoords(transPsl, annotDiff):
+    # FIXME uses coords of whole transcript when deleted until mapping method figure out
+    if annotDiff.coords is not None:
+        return annotDiff.coords
+    else:
+        return Coords(transPsl.tName, transPsl.tStart, transPsl.tEnd)
+
+def reportAnnotDiffSrc(opts, srcAnnotSet, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
     srcAnnot = annotDiff.srcAnnot
     annotRef = srcAnnot.annotRef
+    coords = _getSrcCoords(transPsl, annotDiff)
     uniprotAnnot = srcAnnotSet.uniprotAnnotTbl.getByAnnotId(annotMapIdToAnnotId(annotRef.annotMapId))
     category, insertBases, deleteBases = analyzeFeatureIndels(opts, annotRef.annotSize, annotDiff.srcFeatureIndels)
     writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, AnnotMethod.uniprotMap,
-                   annotDiff.coords, annotRef.annotMapId,
+                   coords, annotRef.annotMapId,
                    category, annotRef.annotSize, insertBases, deleteBases,
                    uniprotAnnot.shortFeatType, uniprotAnnot.comment)
 
@@ -125,9 +132,9 @@ def reportAnnotDiffsTarget(opts, targetAnnotSet, geneMeta, transcriptId, annotDi
     for targetAnnot in annotDiff.targetAnnots:
         reportAnnotDiffTarget(opts, targetAnnotSet, geneMeta, transcriptId, targetAnnot, reportFh)
 
-def reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, geneMeta, transcriptId, annotDiff, reportFh):
+def reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
     if annotDiff.srcAnnot is not None:
-        reportAnnotDiffSrc(opts, srcAnnotSet, geneMeta, transcriptId, annotDiff, reportFh)
+        reportAnnotDiffSrc(opts, srcAnnotSet, geneMeta, transcriptId, transPsl, annotDiff, reportFh)
     if len(annotDiff.targetAnnots) > 0:
         reportAnnotDiffsTarget(opts, targetAnnotSet, geneMeta, transcriptId, annotDiff, reportFh)
 
@@ -135,7 +142,8 @@ def reportTransAnalysis(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transI
     transcriptId = transIdChrom[0]
     geneMeta = targetGeneSet.meta.getGeneByTranscriptId(transcriptId)
     for annotDiff in transAnnotDiffs:
-        reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, geneMeta, transcriptId, annotDiff, reportFh)
+        reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, geneMeta, transcriptId, transAnnotDiffs.transPsl,
+                        annotDiff, reportFh)
 
 ###
 # analysis
