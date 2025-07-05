@@ -68,7 +68,7 @@ def _checkForOverlapTransAnnot(prevMapping, annotMapping):
 def _checkForOverlapTransAnnots(transAnnotMapping):
     prevMapping = transAnnotMapping.annotMappings[0]
     for annotMapping in islice(transAnnotMapping.annotMappings, 1, None):
-        if (prevMapping.coords is not None) and (annotMapping.coords is not None):
+        if (prevMapping.annotPsl is not None) and (annotMapping.annotPsl is not None):
             _checkForOverlapTransAnnot(prevMapping, annotMapping)
         prevMapping = annotMapping
 

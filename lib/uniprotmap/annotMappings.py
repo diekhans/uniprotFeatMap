@@ -76,13 +76,6 @@ class AnnotMappingsTbl(list):
 ###
 # Reading annotation mappings
 ###
-def _getAnnotPsl(annot2GenomeRef, annot2GenomePsls):
-    "or None if not mapped"
-    if annot2GenomeRef.alignIdx is None:
-        return None
-    else:
-        annot2GenomePsls[annot2GenomeRef.alignIdx]
-
 def _findNextMapped(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, iAnnot):
     """find next non-deletion, returning start coords, or end of transcript in no more"""
     for annot2GenomeRef in islice(transAnnot2GenomeRefs, iAnnot + 1, None):
@@ -100,19 +93,20 @@ def _getUmappedCoords(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, iAnnot,
 
 def _makeAnnotMapping(transAnnot2GenomeRefs, iAnnot, annot2GenomePsls, transPsl, annotLookupFunc, prevMappedTEnd):
     annot2GenomeRef = transAnnot2GenomeRefs[iAnnot]
-    annotPsl = _getAnnotPsl(annot2GenomeRef, annot2GenomePsls)
-    if annotPsl is not None:
+    if annot2GenomeRef.alignIdx is not None:
+        annotPsl = annot2GenomePsls[annot2GenomeRef.alignIdx]
         coords = _getMappedCoords(annotPsl)
         prevMappedTEnd = annotPsl.tEnd
     else:
+        annotPsl = None
         coords = _getUmappedCoords(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, iAnnot, prevMappedTEnd)
 
     # this might filter annotation
     annot = annotLookupFunc(annot2GenomeRef.annotId)
     if annot is not None:
-        return None, prevMappedTEnd
-    else:
         return AnnotMapping(annot2GenomeRef, annotPsl, annot, coords), prevMappedTEnd
+    else:
+        return None, prevMappedTEnd
 
 def _makeAnnotMappings(transAnnot2GenomeRefs, annot2GenomePsls, transPsl, annotLookupFunc):
     # build initial list of entries, prev/next is use to find location
@@ -168,7 +162,7 @@ def transAnnotMappingReader(annot2GenomePslFile, annot2GenomeRefTsv, annotLookup
         annot2GenomeRefTsv: Path to a TSV file with annotation metadata.
         annotLookupFunc: Callable that takes an annotation ID and returns its data record.
             It is also a filter, if it returns None, the annotation mapping is discarded.
-        transPslLookupFunc: Optional callable that takes a transcript ID and chromosome,
+        transPslLookupFunc: Callable that takes a transcript ID and chromosome,
             and returns the corresponding alignment information.
         sortByCoords: If True. then sort by coordinates.  Can not be used on spared mapped
             annotations.

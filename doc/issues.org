@@ -1,6 +1,14 @@
 #+STARTUP: nologdone
 #+TODO: TODO URGENT | DONE CANCELED
 
+* sort order
+- mapping is in genome orientation
+- interprot is in transcription order
+
+* assigning region to a deleted feature
+find prev/next tStart/tEnd doesn't work because of overlapping annotations
+need to look at where it is original annotations and then map
+
 * sqlite3 to store after alignment and mappings
 less convoluted
 

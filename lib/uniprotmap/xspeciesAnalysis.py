@@ -1,7 +1,6 @@
 """
 Compare mapped UniProt annotations to interpro annotations.
 """
-from pycbio.hgdata.coords import Coords
 from pycbio.sys.symEnum import SymEnum, auto
 from uniprotmap.annotMappings import TransAnnotMappings
 from uniprotmap.mappingAnalysis import analyzeFeatureMapping
@@ -58,40 +57,18 @@ class TransAnnotDiffs(list):
         for ad in self:
             ad.dump(fh, self.transPsl.qName, indent + 1)
 
-def _makeSrcAnnotDiff(transAnnotMappings, annotMapping, prevMappedTEnd, nextMappedTStart):
+def _makeSrcAnnotDiff(transAnnotMappings, annotMapping):
     """prevMappedTEnd & nextMappedTStart are use to fill in coords for region"""
     featureIndels = analyzeFeatureMapping(transAnnotMappings, annotMapping)
-    if annotMapping.annotPsl is not None:
-        coords = Coords(annotMapping.annotPsl.tName, annotMapping.annotPsl.tStart, annotMapping.annotPsl.tEnd)
-    else:
-        # range that could contain features
-        coords = Coords(transAnnotMappings.transPsl.tName, prevMappedTEnd, nextMappedTStart)
-    diff = AnnotDiff(coords)
+    diff = AnnotDiff(annotMapping.coords)
     diff.srcAnnot = annotMapping
     diff.srcFeatureIndels = featureIndels
     return diff
 
-def _findNextMapped(transAnnotMappings, iAnnot):
-    """next non-deletion, returning start coords, or end of transcript in no more"""
-    iAnnot += 1
-    while iAnnot < len(transAnnotMappings.annotMappings):
-        annotMapping = transAnnotMappings.annotMappings[iAnnot]
-        if annotMapping.annotPsl is not None:
-            return annotMapping.annotPsl.tStart
-        iAnnot += 1
-    return transAnnotMappings.transPsl.tEnd
-
 def _buildSrcDiffs(transAnnotDiffs, srcTransAnnotMappings):
-    "runs before adding target annots"
-    # build initial list of entries, prev/next is use to find location
-    # where a deleted could be
-    prevMappedTEnd = srcTransAnnotMappings.transPsl.tStart
+    "must runs before adding target annots"
     for iAnnot, annotMapping in enumerate(srcTransAnnotMappings.annotMappings):
-        entry = _makeSrcAnnotDiff(srcTransAnnotMappings, annotMapping, prevMappedTEnd,
-                                  _findNextMapped(srcTransAnnotMappings, iAnnot))
-        transAnnotDiffs.append(entry)
-        if annotMapping.annotPsl is not None:
-            prevMappedTEnd = annotMapping.annotPsl.tEnd
+        transAnnotDiffs.append(_makeSrcAnnotDiff(srcTransAnnotMappings, annotMapping))
 
 def _findTargetDiffIdx(transAnnotDiffs, annotMapping, iDiffs):
     """find point of first overlap in diffs lists, or before if no overlap """
