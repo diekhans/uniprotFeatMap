@@ -3,6 +3,8 @@ Data structure to support xspecies analysis of annotations
 """
 from dataclasses import dataclass
 from collections import namedtuple, defaultdict
+from itertools import islice
+from uniprotmap import DataError
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.interproscan import InterproAnnotTbl, interproAnnotsLoad
 from uniprotmap.annotMappings import AnnotMappingsTbl, transAnnotMappingLoader
@@ -52,6 +54,29 @@ class AnnotAssocs:
         assert targets is not None
         return targets
 
+def _raiseOverlapError(prevMapping, annotMapping, msg):
+    raise DataError(f"{msg}:\n`" + str(prevMapping), "', and `" + str(annotMapping) + "'")
+
+def _checkForOverlapTransAnnot(prevMapping, annotMapping):
+    if annotMapping.coords.overlaps(prevMapping.coords):
+        _raiseOverlapError(prevMapping, annotMapping,
+                           "overlapping annotations not allowed, should be filtered")
+    if annotMapping.coords.start < prevMapping.coords.end:
+        _raiseOverlapError(prevMapping, annotMapping,
+                           "out of order annotations")
+
+def _checkForOverlapTransAnnots(transAnnotMapping):
+    prevMapping = transAnnotMapping.annotMappings[0]
+    for annotMapping in islice(transAnnotMapping.annotMappings, 1, None):
+        if (prevMapping.coords is not None) and (annotMapping.coords is not None):
+            _checkForOverlapTransAnnot(prevMapping, annotMapping)
+        prevMapping = annotMapping
+
+def _checkForOverlapAnnots(annotMappingsTbl):
+    """code doesn't handle overlapping source mapped annotations on a transcript at
+    this point"""
+    for transAnnotMapping in annotMappingsTbl:
+        _checkForOverlapTransAnnots(transAnnotMapping)
 
 @dataclass
 class SrcAnnotSet:
@@ -59,19 +84,26 @@ class SrcAnnotSet:
     uniprotAnnotTbl: UniProtAnnotTbl
     annotMappingsTbl: AnnotMappingsTbl
 
-def srcAnnotSetLoad(uniprotAnnotTsv, annot2GenomePsl, annot2GenomeRefTsv,
+def srcAnnotSetLoad(uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
                     annotAssocs, targetGeneSet):
     def uniprotLookup(annotId):
         "None if annotation should be skipped"
         annot = uniprotAnnotTbl.getByAnnotId(annotId)
         return annot if annotAssocs.useSrc(annot.shortFeatType, annot.comment) else None
 
-    uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotTsv)
-    annotMappingsTbl = transAnnotMappingLoader(annot2GenomePsl,
-                                               annot2GenomeRefTsv,
-                                               uniprotLookup,
-                                               targetGeneSet.data.getAlign)
-    return SrcAnnotSet(uniprotAnnotTbl, annotMappingsTbl)
+    try:
+        uniprotAnnotTbl = UniProtAnnotTbl(uniprotAnnotTsv)
+        annotMappingsTbl = transAnnotMappingLoader(uniprotAnnot2GenomePsl,
+                                                   uniprotAnnot2GenomeRefTsv,
+                                                   uniprotLookup,
+                                                   targetGeneSet.data.getAlign)
+        _checkForOverlapAnnots(annotMappingsTbl)
+        return SrcAnnotSet(uniprotAnnotTbl, annotMappingsTbl)
+    except Exception as ex:
+        raise DataError("problem load mapped source annotations from `" +
+                        uniprotAnnotTsv + "', `" +
+                        uniprotAnnot2GenomePsl + "', and `" +
+                        uniprotAnnot2GenomeRefTsv + "'") from ex
 
 @dataclass
 class TargetAnnotSet:
@@ -85,10 +117,15 @@ def targetAnnotSetLoad(interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2
         "None if annotation should be skipped"
         annot = interproAnnotTbl.getByAnnotId(annotId)
         return annot if annotAssocs.useTarget(annot.analysis, annot.interpro_accession) else None
-
-    interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
-    annotMappingsTbl = transAnnotMappingLoader(interproAnnot2GenomePsl,
-                                               interproAnnot2GenomeRefTsv,
-                                               interproLookup,
-                                               targetGeneSet.data.getAlign)
-    return TargetAnnotSet(interproAnnotTbl, annotMappingsTbl)
+    try:
+        interproAnnotTbl = interproAnnotsLoad(interproAnnotTsv)
+        annotMappingsTbl = transAnnotMappingLoader(interproAnnot2GenomePsl,
+                                                   interproAnnot2GenomeRefTsv,
+                                                   interproLookup, targetGeneSet.data.getAlign,
+                                                   sortByCoords=True)
+        return TargetAnnotSet(interproAnnotTbl, annotMappingsTbl)
+    except Exception as ex:
+        raise DataError("problem load target annotations from `" +
+                        interproAnnotTsv + "', `" +
+                        interproAnnot2GenomePsl + "', and `" +
+                        interproAnnot2GenomeRefTsv + "'") from ex

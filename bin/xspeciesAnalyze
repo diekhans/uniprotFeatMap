@@ -100,8 +100,7 @@ def analyzeFeatureIndels(opts, annotLen, featIndels):
         return (AnnotDiffCategory.major_diff if isMajor else AnnotDiffCategory.minor_diff,
                 insertBases, deleteBases)
 
-def reportAnnotDiffSrc(opts, srcAnnotSet, targetGeneSet, transcriptId, annotDiff, reportFh):
-    geneMeta = targetGeneSet.meta.getGeneByTranscriptId(transcriptId)
+def reportUniprotMappedAnnot(opts, srcAnnotSet, geneMeta, transcriptId, annotDiff, reportFh):
     annotRef = annotDiff.srcAnnot.annotRef
     uniprotAnnot = srcAnnotSet.uniprotAnnotTbl.getByAnnotId(annotMapIdToAnnotId(annotDiff.srcAnnot.annotRef.annotMapId))
     category, insertBases, deleteBases = analyzeFeatureIndels(opts, annotRef.annotSize, annotDiff.srcFeatureIndels)
@@ -109,6 +108,13 @@ def reportAnnotDiffSrc(opts, srcAnnotSet, targetGeneSet, transcriptId, annotDiff
                    annotDiff.coords, annotRef.annotMapId,
                    category, annotRef.annotSize, insertBases, deleteBases,
                    uniprotAnnot.shortFeatType, uniprotAnnot.comment)
+
+def reportTargetAnnots(opts, srcAnnotSet, geneMeta, transcriptId, annotDiff, reportFh):
+    pass
+
+def reportAnnotDiffSrc(opts, srcAnnotSet, targetGeneSet, transcriptId, annotDiff, reportFh):
+    geneMeta = targetGeneSet.meta.getGeneByTranscriptId(transcriptId)
+    reportUniprotMappedAnnot(opts, srcAnnotSet, geneMeta, transcriptId, annotDiff, reportFh)
 
 def reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transIdChrom, annotDiff, reportFh):
     if annotDiff.srcAnnot is not None:

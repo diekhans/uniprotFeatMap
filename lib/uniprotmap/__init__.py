@@ -4,10 +4,15 @@ Library of common functions and other definitions
 
 import sys
 import os
+from pycbio import NoStackError
 from pycbio.sys import fileOps
 
 class OutOfSyncError(Exception):
     "error when files that should be matched are out-of-sync"
+    pass
+
+class DataError(Exception, NoStackError):
+    """error for data problems"""
     pass
 
 def prMsg(msg):

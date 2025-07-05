@@ -26,6 +26,6 @@ def uniprotDecoratorsMerge(opts, inputBeds, outBed):
 def main():
     opts, args = parseArgs()
     with cli.ErrorHandler():
-        uniprotDecoratorsMerge(opts, args.inputBeds, args.outBed)
+        uniprotDecoratorsMerge(opts, args.inputBeds, opts.outBed)
 
 main()
