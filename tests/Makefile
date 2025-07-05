@@ -4,10 +4,16 @@ include ${root}/defs.mk
 # see bin/getTestData for updating test data
 
 
-# used nproc= to change number of processes
+# use nproc= to change number of processes
 ifeq (${nproc},)
   nproc = 8
 endif
+
+# use debug=yes (or any non-empty) to --log-debug
+ifneq (${debug},)
+  logdebug = --log-debug
+endif
+
 
 all:
 	@echo "Note: targets are:"
@@ -98,7 +104,7 @@ protTransAlignTests:
 # $(call runUpAlignments,blat,swissprot)
 define runUpAlignments
 	rm -rf output/$@.psl output/$@.work
-	${uniprotProteinTranscriptAlign} --algo=${1} input/${2}.9606.tab input/${2}.9606.fa ${gencodePcFa} output/$@.psl output/$@.work
+	${uniprotProteinTranscriptAlign} ${logdebug} --algo=${1} input/${2}.9606.tab input/${2}.9606.fa ${gencodePcFa} output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 endef
@@ -124,7 +130,7 @@ uniprotProteinTranscriptMapInterPrefix = --interPrefix=output/$@.inter.
 
 # $call runUniprotProteinTranscriptMap,swissprot,SP)
 define runUniprotProteinTranscriptMap
-	${uniprotProteinTranscriptMap} ${uniprotProteinTranscriptMapInterPrefix} \
+	${uniprotProteinTranscriptMap} ${logdebug} ${uniprotProteinTranscriptMapInterPrefix} \
 		GENCODE ${gencodeMeta} ${gencodePcPsl} ${gencodeGp} \
 		input/${1}.9606.tab expected/testProtTrans${2}BlatAlign.psl \
 		output/$@.psl output/$@.problems.tsv
@@ -145,7 +151,7 @@ uniprotAnnotsMapTests: testUniprotAnnotsMapSP testUniprotAnnotsMapTR
 
 # $(call runMapAnnots,swissprot,SP)
 define runMapAnnots
-	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
+	${uniprotAnnotsMap} ${logdebug} --interPrefix=output/$@.inter. \
 	    --annot2TransPsl=output/$@.annotsTrans.psl \
 	    ${gencodePcPsl} \
 	    input/${1}.9606.annots.tab expected/testUniprotProteinTranscriptMap${2}.psl \
@@ -171,7 +177,7 @@ uniprotAnnotsToDecoratorsTests: testUniprotAnnotsToDecoratorsSP testUniprotAnnot
 
 # $(call runUniprotAnnotsToDecorators,swissprot,SP)
 define runUniprotAnnotsToDecorators
-	${uniprotAnnotsToDecorators} --nproc=${nproc} ${gencodePcPsl} \
+	${uniprotAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${gencodePcPsl} \
 	    input/$(1).9606.tab input/$(1).9606.annots.tab \
 	    expected/testUniprotAnnotsMap$(2).psl expected/testUniprotAnnotsMap$(2).ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
@@ -194,7 +200,7 @@ ifeq (${nproc},1)
 testUniprotAnnotsToDecoratorsError:
 else
 testUniprotAnnotsToDecoratorsError: mkout ${gencodeBb}
-	! ${uniprotAnnotsToDecorators} --nproc=${nproc} ${gencodePcPsl} no_swissprotMeta ${swissprotAnnots} \
+	! ${uniprotAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${gencodePcPsl} no_swissprotMeta ${swissprotAnnots} \
 	    expected/testUniprotAnnotsMapSP.psl expected/testUniprotAnnotsMapSP.ref.tsv \
             output/$@.bed >& output/$@.err || { echo "Error: command should fail"; exit 1; }
 	grep -q 'Exception: Pool initialization failed' output/$@.err 
@@ -204,7 +210,7 @@ endif
 uniprotDecoratorsMergeTests: testUniprotDecoratorsMerge
 
 testUniprotDecoratorsMerge: mkout
-	${uniprotDecoratorsMerge} --outBed=output/$@.bed expected/testUniprotAnnotsToDecoratorsSP.bed expected/testUniprotAnnotsToDecoratorsTR.bed
+	${uniprotDecoratorsMerge} ${logdebug} --outBed=output/$@.bed expected/testUniprotAnnotsToDecoratorsSP.bed expected/testUniprotAnnotsToDecoratorsTR.bed
 	bedToBigBed -type=bed12+ -as=${uniprotDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
 	diff expected/$@.bed output/$@.bed
 
@@ -215,21 +221,21 @@ xspeciesPonAbeTests: testXsPonAbeTransMap testXsPonAbeRnaMap testXsPonAbeGencode
 	testXsPonAbeAnnotsToDeco
 
 testXsPonAbeTransMap: mkout
-	${xspeciesTrans2GenomeMap} ${gencodePcPsl} ${gencodePcFa} \
+	${xspeciesTrans2GenomeMap} ${logdebug} ${gencodePcPsl} ${gencodePcFa} \
 		${ponAbeChains} ${ponAbeTwobit} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXsPonAbeRnaMap: mkout
-	${xspeciesTrans2TransMap} expected/testXsPonAbeTransMap.psl ${gencodePcFa} \
+	${xspeciesTrans2TransMap} ${logdebug} expected/testXsPonAbeTransMap.psl ${gencodePcFa} \
 		${ponAbeCat1Psl} ${ponAbeCat1RnaFa} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXsPonAbeGencodeCatFilter: mkout ${ponAbeCat1Bb}
-	${xspeciesGencode2CatFilter} expected/testXsPonAbeRnaMap.psl ${ponAbeCat1Bb} output/$@.psl
+	${xspeciesGencode2CatFilter} ${logdebug} expected/testXsPonAbeRnaMap.psl ${ponAbeCat1Bb} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXsPonAbeUniprotAnnotsMap: mkout
-	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
+	${uniprotAnnotsMap} ${logdebug} --interPrefix=output/$@.inter. \
 	    --annot2TransPsl=output/$@.annotsTrans.psl \
 	    --xspeciesTrans2TransPsl=expected/testXsPonAbeGencodeCatFilter.psl \
 	    ${ponAbeCat1Psl} ${swissprotAnnots} expected/testUniprotProteinTranscriptMapSP.psl \
@@ -244,7 +250,7 @@ testXsPonAbeUniprotAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 testXsPonAbeAnnotsToDeco: mkout
-	${uniprotAnnotsToDecorators} --nproc=${nproc} ${ponAbeCat1Psl} ${swissprotMeta} ${swissprotAnnots} \
+	${uniprotAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${ponAbeCat1Psl} ${swissprotMeta} ${swissprotAnnots} \
 	    expected/testXsPonAbeUniprotAnnotsMap.psl expected/testXsPonAbeUniprotAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -259,21 +265,21 @@ xspeciesSymSynTests: testXsSymSynTransMap testXsSymSynRnaMap testXsSymSynGencode
 	testXsSymSynAnnotsToDeco
 
 testXsSymSynTransMap: mkout
-	${xspeciesTrans2GenomeMap} ${gencodePcPsl} ${gencodePcFa} \
+	${xspeciesTrans2GenomeMap} ${logdebug} ${gencodePcPsl} ${gencodePcFa} \
 		${symSynChains} ${symSynTwobit} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXsSymSynRnaMap: mkout
-	${xspeciesTrans2TransMap} expected/testXsSymSynTransMap.psl ${gencodePcFa} \
+	${xspeciesTrans2TransMap} ${logdebug} expected/testXsSymSynTransMap.psl ${gencodePcFa} \
 		${symSynCat1Psl} ${symSynCat1RnaFa} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXsSymSynGencodeCatFilter: mkout ${symSynCat1Bb}
-	${xspeciesGencode2CatFilter} expected/testXsSymSynRnaMap.psl ${symSynCat1Bb} output/$@.psl
+	${xspeciesGencode2CatFilter} ${logdebug} expected/testXsSymSynRnaMap.psl ${symSynCat1Bb} output/$@.psl
 	diff expected/$@.psl output/$@.psl
 
 testXsSymSynUniprotAnnotsMap: mkout
-	${uniprotAnnotsMap} --interPrefix=output/$@.inter. \
+	${uniprotAnnotsMap} ${logdebug} --interPrefix=output/$@.inter. \
 	    --annot2TransPsl=output/$@.annotsTrans.psl \
 	    --xspeciesTrans2TransPsl=expected/testXsSymSynGencodeCatFilter.psl \
 	    ${symSynCat1Psl} ${swissprotAnnots} expected/testUniprotProteinTranscriptMapSP.psl \
@@ -288,7 +294,7 @@ testXsSymSynUniprotAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.inter.annotTrans.psl
 
 testXsSymSynAnnotsToDeco: mkout
-	${uniprotAnnotsToDecorators} --nproc=${nproc} ${symSynCat1Psl} ${swissprotMeta} ${swissprotAnnots} \
+	${uniprotAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${symSynCat1Psl} ${swissprotMeta} ${swissprotAnnots} \
 	    expected/testXsSymSynUniprotAnnotsMap.psl expected/testXsSymSynUniprotAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -300,11 +306,11 @@ testXsSymSynAnnotsToDeco: mkout
 uniprotInfoTests: testUniprotInfoEnsTrans testUniprotInfoGeneName
 
 testUniprotInfoEnsTrans: mkout
-	${uniprotInfo} ensemblTransId ${swissprotMeta} output/$@.tsv
+	${uniprotInfo} ${logdebug} ensemblTransId ${swissprotMeta} output/$@.tsv
 	diff expected/$@.tsv output/$@.tsv
 
 testUniprotInfoGeneName:
-	${uniprotInfo} geneName ${swissprotMeta} output/$@.tsv
+	${uniprotInfo} ${logdebug} geneName ${swissprotMeta} output/$@.tsv
 	diff expected/$@.tsv output/$@.tsv
 
 ####
@@ -316,19 +322,19 @@ interproAlignTests:
 
 testInterproBlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
-	${interproProteinTranscriptAlign} GENCODE ${gencodeMeta} ${gencodePcFa} ${gencodeProtFa} output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} ${logdebug} GENCODE ${gencodeMeta} ${gencodePcFa} ${gencodeProtFa} output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 
 testInterproPonAbeCat1BlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
-	${interproProteinTranscriptAlign} CAT1 ${ponAbeCat1Meta} ${ponAbeCat1RnaFa} ${ponAbeCat1ProtFa} output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} ${logdebug} CAT1 ${ponAbeCat1Meta} ${ponAbeCat1RnaFa} ${ponAbeCat1ProtFa} output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 
 testInterproSymSynCat1BlatAlign: mkout
 	rm -rf output/$@.psl output/$@.work
-	${interproProteinTranscriptAlign} CAT1 ${symSynCat1Meta} ${symSynCat1RnaFa} ${symSynCat1ProtFa} output/$@.psl output/$@.work
+	${interproProteinTranscriptAlign} ${logdebug} CAT1 ${symSynCat1Meta} ${symSynCat1RnaFa} ${symSynCat1ProtFa} output/$@.psl output/$@.work
 	diff expected/$@.psl output/$@.psl
 	pslCheck -verbose=0 output/$@.psl
 
@@ -339,7 +345,7 @@ interproMapTests: testInterproAnnotsMap \
 	testInterproSymSynCat1AnnotsMap
 
 testInterproAnnotsMap: mkout
-	${interproAnnotsMap} ${gencodePcPsl} \
+	${interproAnnotsMap} ${logdebug} ${gencodePcPsl} \
 	    --annot2TransPsl=output/$@.annotsTrans.psl \
 	    ${gencodeInterproTsv} expected/testInterproBlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
@@ -349,7 +355,7 @@ testInterproAnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.psl
 
 testInterproPonAbeCat1AnnotsMap: mkout
-	${interproAnnotsMap} ${ponAbeCat1Psl} \
+	${interproAnnotsMap} ${logdebug} ${ponAbeCat1Psl} \
 	    ${ponAbeCat1InterproTsv} expected/testInterproPonAbeCat1BlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
@@ -357,7 +363,7 @@ testInterproPonAbeCat1AnnotsMap: mkout
 	pslCheck -verbose=0 output/$@.psl
 
 testInterproSymSynCat1AnnotsMap: mkout
-	${interproAnnotsMap} ${symSynCat1Psl} \
+	${interproAnnotsMap} ${logdebug} ${symSynCat1Psl} \
 	    ${symSynCat1InterproTsv} expected/testInterproSymSynCat1BlatAlign.psl \
             output/$@.psl output/$@.ref.tsv
 	diff expected/$@.psl output/$@.psl
@@ -369,7 +375,7 @@ interproAnnotsToDecoratorsTests: testInterproAnnotsToDeco \
 	testInterproSymSynCat1AnnotsToDeco
 
 testInterproAnnotsToDeco: mkout
-	${interproAnnotsToDecorators} --nproc=${nproc} ${gencodeInterproTsv} \
+	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${gencodeInterproTsv} \
 	    expected/testInterproAnnotsMap.psl expected/testInterproAnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -377,7 +383,7 @@ testInterproAnnotsToDeco: mkout
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${hg38ChromSizes} output/$@.bb
 
 testInterproPonAbeCat1AnnotsToDeco: mkout
-	${interproAnnotsToDecorators} --nproc=${nproc} ${ponAbeCat1InterproTsv} \
+	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${ponAbeCat1InterproTsv} \
 	    expected/testInterproPonAbeCat1AnnotsMap.psl expected/testInterproPonAbeCat1AnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -385,7 +391,7 @@ testInterproPonAbeCat1AnnotsToDeco: mkout
 	bedToBigBed -type=bed12+ -as=${interproDecoAs} -tab output/$@.bed ${ponAbeChromSizes} output/$@.bb
 
 testInterproSymSynCat1AnnotsToDeco: mkout
-	${interproAnnotsToDecorators} --nproc=${nproc} ${symSynCat1InterproTsv} \
+	${interproAnnotsToDecorators} ${logdebug} --nproc=${nproc} ${symSynCat1InterproTsv} \
 	    expected/testInterproSymSynCat1AnnotsMap.psl expected/testInterproSymSynCat1AnnotsMap.ref.tsv \
             output/$@.bed --featTypesTsv=output/$@.types.tsv
 	diff expected/$@.bed output/$@.bed
@@ -398,7 +404,7 @@ testInterproSymSynCat1AnnotsToDeco: mkout
 xspeciesAnalyzeTests: testXsAnalyzeSymSyn
 
 testXsAnalyzeSymSyn: mkout
-	${xspeciesAnalyze} \
+	${xspeciesAnalyze} ${logdebug} \
 	    ${swissprotAnnots} \
 	    expected/testXsSymSynUniprotAnnotsMap.psl expected/testXsSymSynUniprotAnnotsMap.ref.tsv \
 	    CAT1 ${symSynCat1Meta} ${symSynCat1Psl} \

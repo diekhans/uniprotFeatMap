@@ -26,7 +26,7 @@ class AnnotDiff:
         """For deletions, coords covers range of deletion.
         """
         assert coords is not None
-        # this the source, if there is one, otherwise single target
+        # this the source, if there is one, otherwise there is a single target
         self.coords = coords
         # not initializes from arguments, as done in two phases
         self.srcAnnot = None
@@ -49,7 +49,7 @@ class AnnotDiff:
 
 
 class TransAnnotDiffs(list):
-    """Annotation comparisons differences for a transcript"""
+    """List of annotation comparisons differences for a transcript"""
     def __init__(self, transPsl):
         self.transPsl = transPsl
 
@@ -64,7 +64,7 @@ def _makeSrcAnnotDiff(transAnnotMappings, annotMapping, prevMappedTEnd, nextMapp
     if annotMapping.annotPsl is not None:
         coords = Coords(annotMapping.annotPsl.tName, annotMapping.annotPsl.tStart, annotMapping.annotPsl.tEnd)
     else:
-        # range that could contaion features
+        # range that could contain features
         coords = Coords(transAnnotMappings.transPsl.tName, prevMappedTEnd, nextMappedTStart)
     diff = AnnotDiff(coords)
     diff.srcAnnot = annotMapping
@@ -128,7 +128,6 @@ def _addTargetDiffs(transAnnotDiffs, targetTransAnnotMappings):
     iDiffs = 0  # point to start search for overlap or insert
     for annotMapping in targetTransAnnotMappings.annotMappings:
         iDiffs = _addTargetDiff(transAnnotDiffs, annotMapping, iDiffs)
-
 
 def compareTransAnnotations(srcTransAnnotMappings: TransAnnotMappings,
                             targetTransAnnotMappings: TransAnnotMappings) -> TransAnnotDiffs:

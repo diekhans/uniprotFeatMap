@@ -108,7 +108,7 @@ def srcAnnotSetLoad(uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2Genome
 @dataclass
 class TargetAnnotSet:
     """Set to evaluate against source"""
-    intreproAnnotTbl: InterproAnnotTbl
+    interproAnnotTbl: InterproAnnotTbl
     annotMappingsTbl: AnnotMappingsTbl
 
 def targetAnnotSetLoad(interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
@@ -122,7 +122,7 @@ def targetAnnotSetLoad(interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2
         annotMappingsTbl = transAnnotMappingLoader(interproAnnot2GenomePsl,
                                                    interproAnnot2GenomeRefTsv,
                                                    interproLookup, targetGeneSet.data.getAlign,
-                                                   sortByCoords=True)
+                                                   inTranscriptionOrder=True)
         return TargetAnnotSet(interproAnnotTbl, annotMappingsTbl)
     except Exception as ex:
         raise DataError("problem load target annotations from `" +
