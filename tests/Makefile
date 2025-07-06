@@ -401,12 +401,27 @@ testInterproSymSynCat1AnnotsToDeco: mkout
 ##
 # xspecies analysze tests
 ## 
-xspeciesAnalyzeTests: testXsAnalyzeSymSyn
+xspeciesAnalyzeTests: testXsAnalyzeSymSyn testXsAnalyzeSymSynMod
 
 testXsAnalyzeSymSyn: mkout
 	${xspeciesAnalyze} ${logdebug} \
 	    ${swissprotAnnots} \
 	    expected/testXsSymSynUniprotAnnotsMap.psl expected/testXsSymSynUniprotAnnotsMap.ref.tsv \
+	    CAT1 ${symSynCat1Meta} ${symSynCat1Psl} \
+	    ${symSynCat1InterproTsv} \
+	    expected/testInterproSymSynCat1AnnotsMap.psl expected/testInterproSymSynCat1AnnotsMap.ref.tsv \
+	    ${uniprotInterproAnnotAssocTsv} output/$@.report.tsv
+	diff expected/$@.report.tsv output/$@.report.tsv
+
+# this artifically modifies the uniprot mappings to remove some zinc-finger domains
+# so they are flagged as insert from interpro
+#   drops: Q9BS31|3|0 Q9BS31|4|0 Q9BS31|9|0
+
+testXsAnalyzeSymSynMod: mkout
+	awk '!/Q9BS31\|[3,4,9]\|0/' expected/testXsSymSynUniprotAnnotsMap.ref.tsv > output/$@.uniprotAnnotsMap.edit.ref.tsv
+	${xspeciesAnalyze} ${logdebug} \
+	    ${swissprotAnnots} \
+	    expected/testXsSymSynUniprotAnnotsMap.psl output/$@.uniprotAnnotsMap.edit.ref.tsv \
 	    CAT1 ${symSynCat1Meta} ${symSynCat1Psl} \
 	    ${symSynCat1InterproTsv} \
 	    expected/testInterproSymSynCat1AnnotsMap.psl expected/testInterproSymSynCat1AnnotsMap.ref.tsv \

@@ -95,17 +95,17 @@ def pslTSimilarity(psl1, psl2):
 ###
 # reporting
 ###
-def writeReportRow(fh, geneSymbol, geneId, transcriptId, annotMethod, coords, annotMapId,
+def writeReportRow(fh, geneSymbol, geneId, transcriptId, group, annotMethod, coords, annotMapId,
                    category, srcSize, insertBases, deleteBases,
                    annotType, annotDesc):
     # header god through this function to, rearrange order for easier
     # human inspection here
-    fileOps.prRowv(fh, geneSymbol, geneId, transcriptId, annotMethod, annotMapId,
+    fileOps.prRowv(fh, geneSymbol, geneId, transcriptId, group, annotMethod, annotMapId,
                    annotType, annotDesc, category, srcSize, insertBases, deleteBases,
                    coords)
 
 def writeReportHeader(fh):
-    writeReportRow(fh, "geneSymbol", "geneId", "transcriptId", "annotMethod", "coords",
+    writeReportRow(fh, "geneSymbol", "geneId", "transcriptId", "group", "annotMethod", "coords",
                    "annotMapId", "category", "srcSize", "insertBases", "deleteBases",
                    "annotType", "annotDesc")
 
@@ -137,12 +137,12 @@ def _getSrcCoords(transPsl, annotDiff):
     else:
         return pslTCoords(transPsl)
 
-def reportAnnotDiffSrc(bag, uniprotAnnot, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
+def reportAnnotDiffSrc(bag, uniprotAnnot, geneMeta, transcriptId, group, transPsl, annotDiff, reportFh):
     srcAnnot = annotDiff.srcAnnot
     annotRef = srcAnnot.annotRef
     coords = _getSrcCoords(transPsl, annotDiff)
     category, insertBases, deleteBases = analyzeSrcFeatureIndels(bag.opts, annotRef.annotSize, annotDiff.srcFeatureIndels)
-    writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, AnnotMethod.uniprotMap,
+    writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, group, AnnotMethod.uniprotMap,
                    coords, annotRef.annotMapId,
                    category, annotRef.annotSize, insertBases, deleteBases,
                    uniprotAnnot.shortFeatType, uniprotAnnot.comment)
@@ -158,32 +158,32 @@ def analyzeTargetFeatureOverlap(opts, annotDiff, targetAnnot, uniprotAnnot):
     else:
         return AnnotDiffCategory.minor_overlap
 
-def reportAnnotDiffTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, targetAnnot, reportFh):
+def reportAnnotDiffTarget(bag, geneMeta, transcriptId, group, annotDiff, uniprotAnnot, targetAnnot, reportFh):
     annotRef = targetAnnot.annotRef
     interproAnnot = bag.getInterproAnnot(annotRef.annotMapId)
     category = analyzeTargetFeatureOverlap(bag.opts, annotDiff, targetAnnot, uniprotAnnot)
-    writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, AnnotMethod.interpro,
+    writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, group, AnnotMethod.interpro,
                    targetAnnot.coords, annotRef.annotMapId,
                    category, annotRef.annotSize, 0, 0,
                    interproAnnot.interpro_accession, interproAnnot.interpro_description)
 
-def reportAnnotDiffsTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, reportFh):
+def reportAnnotDiffsTarget(bag, geneMeta, transcriptId, group, annotDiff, uniprotAnnot, reportFh):
     for targetAnnot in annotDiff.targetAnnots:
-        reportAnnotDiffTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, targetAnnot, reportFh)
+        reportAnnotDiffTarget(bag, geneMeta, transcriptId, group, annotDiff, uniprotAnnot, targetAnnot, reportFh)
 
-def reportAnnotDiff(bag, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
+def reportAnnotDiff(bag, geneMeta, transcriptId, group, transPsl, annotDiff, reportFh):
     uniprotAnnot = None
     if annotDiff.srcAnnot is not None:
         uniprotAnnot = bag.getUniprotAnnot(annotDiff.srcAnnot.annotRef.annotMapId)
-        reportAnnotDiffSrc(bag, uniprotAnnot, geneMeta, transcriptId, transPsl, annotDiff, reportFh)
+        reportAnnotDiffSrc(bag, uniprotAnnot, geneMeta, transcriptId, group, transPsl, annotDiff, reportFh)
     if len(annotDiff.targetAnnots) > 0:
-        reportAnnotDiffsTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, reportFh)
+        reportAnnotDiffsTarget(bag, geneMeta, transcriptId, group, annotDiff, uniprotAnnot, reportFh)
 
 def reportTransAnalysis(bag, transIdChrom, transAnnotDiffs, reportFh):
     transcriptId = transIdChrom[0]
     geneMeta = bag.targetGeneSet.meta.getGeneByTranscriptId(transcriptId)
-    for annotDiff in transAnnotDiffs:
-        reportAnnotDiff(bag, geneMeta, transcriptId, transAnnotDiffs.transPsl,
+    for group, annotDiff in enumerate(transAnnotDiffs):
+        reportAnnotDiff(bag, geneMeta, transcriptId, group, transAnnotDiffs.transPsl,
                         annotDiff, reportFh)
 
 ###
@@ -201,8 +201,9 @@ def analyzeTranscripts(bag, reportFh):
 
     for transIdChrom in bag.getAllTransIdChroms():
         transAnnotDiffs = analyzeTranscript(bag, transIdChrom)
-        print(64 * '=')
-        transAnnotDiffs.dump(sys.stdout)
+        if False:  # FIXME: tmp debugging
+            print(64 * '=')
+            transAnnotDiffs.dump(sys.stdout)
         reportTransAnalysis(bag, transIdChrom, transAnnotDiffs, reportFh)
 
 ###
