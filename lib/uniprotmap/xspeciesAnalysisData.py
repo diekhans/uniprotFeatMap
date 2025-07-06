@@ -66,7 +66,7 @@ def annotAssocLoad(annotTypeAssocTsv):
 
 
 def _raiseOverlapError(prevMapping, annotMapping, msg):
-    raise DataError(f"{msg}:\n`" + str(prevMapping), "', and `" + str(annotMapping) + "'")
+    raise DataError(f"{msg}:\n`" + str(prevMapping) + "', and `" + str(annotMapping) + "'")
 
 def _checkForOverlapTransAnnot(prevMapping, annotMapping):
     if annotMapping.coords.overlaps(prevMapping.coords):

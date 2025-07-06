@@ -37,7 +37,14 @@ class AnnotDiff:
         self.srcFeatureIndels = None
         self.targetAnnots = []
 
-    def dump(self, fh, transcriptId, indent=0):
+    def short(self):
+        desc = (f"AnnotDiff {self.coords}: src=" +
+                (self.srcAnnot.short() if self.srcAnnot is not None else "None"))
+        for iAnnot, tarAnnot in enumerate(self.targetAnnots):
+            desc += f'\n       tar{iAnnot}=' + tarAnnot.short()
+        return desc
+
+    def dump(self, fh, transcriptId, *, indent=0):
         pre = indent * "  "
         pre2 = 2 * pre
         pre3 = 3 * pre
@@ -57,10 +64,10 @@ class TransAnnotDiffs(list):
     def __init__(self, transPsl):
         self.transPsl = transPsl
 
-    def dump(self, fh, indent=0):
+    def dump(self, fh, *, indent=0):
         print(f"TransAnnotDiffs: {self.transPsl.qName}", file=fh)
         for ad in self:
-            ad.dump(fh, self.transPsl.qName, indent + 1)
+            ad.dump(fh, self.transPsl.qName, indent=-indent + 1)
 
 def _makeSrcAnnotDiff(transAnnotMappings, annotMapping):
     """prevMappedTEnd & nextMappedTStart are use to fill in coords for region"""
@@ -76,7 +83,10 @@ def _buildSrcDiffs(transAnnotDiffs, srcTransAnnotMappings):
         transAnnotDiffs.append(_makeSrcAnnotDiff(srcTransAnnotMappings, annotMapping))
 
 def _findTargetDiffIdx(transAnnotDiffs, annotMapping, iDiffs):
-    """find point of first overlap in diffs lists, or before if no overlap """
+    """find point of first overlap with a source in diffs lists, or entryr before if no overlap """
+    # FIXME: for now, start over.  For multiple overlaps, this was going past the overlap point.
+    # and creating new entries.
+    iDiffs = 0
     while iDiffs < len(transAnnotDiffs):
         if annotMapping.coords.start < transAnnotDiffs[iDiffs].coords.end:
             if transAnnotDiffs[iDiffs].srcAnnot is not None:
@@ -121,5 +131,15 @@ def compareTransAnnotations(srcTransAnnotMappings: TransAnnotMappings,
     """build comparison of src to target domain annotations.  Inputs must be sorted"""
     transAnnotDiffs = TransAnnotDiffs(srcTransAnnotMappings.transPsl)
     _buildSrcDiffs(transAnnotDiffs, srcTransAnnotMappings)
+    # FIXME: tmp debug for insertion point
+    if False:
+        print(64 * '=')
+        print(srcTransAnnotMappings.transcriptId)
+        for d in transAnnotDiffs:
+            print(d.short())
     _addTargetDiffs(transAnnotDiffs, targetTransAnnotMappings)
+    if False:
+        print(64 * "-")
+        for d in transAnnotDiffs:
+            print(d.short())
     return transAnnotDiffs

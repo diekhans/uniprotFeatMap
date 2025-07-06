@@ -29,6 +29,9 @@ class AnnotMapping(namedtuple("AnnotMapping",
                             annotPsl.tStrand, annotPsl.tSize)
         return super(AnnotMapping, cls).__new__(cls, annotRef, annotPsl, annot, coords)
 
+    def short(self):
+        return f"{self.annotRef.annotId}/{self.annotRef.annotId}/{self.annotRef.annotMapId}: {self.annot.short()} {self.coords}"
+
 
 class TransAnnotMappings(namedtuple("TransAnnotMappings",
                                     ("transcriptId", "chrom", "transPsl", "annotMappings",))):

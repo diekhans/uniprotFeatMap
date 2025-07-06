@@ -2,7 +2,7 @@
 Access to interproscan results in JSON format.
 """
 from collections import defaultdict
-from pycbio.tsv import TsvReader
+from pycbio.tsv import TsvReader, TsvRow
 from uniprotmap import annotIdFmt
 
 class InterproError(Exception):
@@ -10,7 +10,7 @@ class InterproError(Exception):
 
 def _parse_none_if_minus(val):
     "parse fields that use '-' if there is no value"
-    return None if val == '-' else val
+    return None if val in ('-', '') else val.strip()
 
 def _parse_status(val):
     "convert status to a boolean"
@@ -31,6 +31,17 @@ _tsvTypeMap = {"sequence_length": int,
                "interpro_description": _parse_none_if_minus,
                "go": _parse_none_if_minus,
                "pathways": _parse_none_if_minus}
+
+class InterproAnnot(TsvRow):
+    """one interpro annotation record"""
+
+    def short(self):
+        desc = f"{self.protein_accession}/{self.analysis}:"
+        if self.interpro_accession is not None:
+            return f"{desc}: {self.interpro_accession}/{self.interpro_description}"
+        else:
+            return f"{desc}: {self.signature_description}"
+
 
 class InterproAnnotTbl(list):
     """InterProScan analysis results from TSV output.
@@ -69,7 +80,8 @@ def interproAnnotsLoad(interproTsv):
     """Load interproscan results TSV """
 
     interproTbl = InterproAnnotTbl()
-    for row in TsvReader(interproTsv, columns=_tsvColumns, typeMap=_tsvTypeMap):
+    for row in TsvReader(interproTsv, columns=_tsvColumns, typeMap=_tsvTypeMap,
+                         rowClass=InterproAnnot):
         interproTbl.add(row)
     interproTbl.finish()
     return interproTbl

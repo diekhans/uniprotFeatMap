@@ -145,6 +145,17 @@ class UniProtMetaTbl(list):
     def getCanonEnsemblAccSet(self):
         return frozenset([dropVersion(transId) for transId in self.byTranscriptAcc.keys()])
 
+
+class UniprotAnnot(TsvRow):
+    """one interpro annotation record"""
+
+    def short(self):
+        desc = f"{self.acc}: {self.shortFeatType}"
+        if self.comment is not None:
+            desc += f"/{self.comment}"
+        return desc
+
+
 class UniProtAnnotTbl(list):
     """reads swissprot.9606.annots.tab or trembl.9606.annots.tab
 
@@ -155,7 +166,8 @@ class UniProtAnnotTbl(list):
         self.byAnnotId = {}
         self.byMainIsoAcc = defaultdict(list)
         nextFeatId = defaultdict(int)
-        for row in TsvReader(uniprotAnnotsTsv, typeMap={"begin": int, "end": int}):
+        for row in TsvReader(uniprotAnnotsTsv, typeMap={"begin": int, "end": int},
+                             rowClass=UniprotAnnot):
             self._readRow(row, nextFeatId)
 
     def _readRow(self, row, nextFeatId):

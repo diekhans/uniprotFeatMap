@@ -201,6 +201,8 @@ def analyzeTranscripts(bag, reportFh):
 
     for transIdChrom in bag.getAllTransIdChroms():
         transAnnotDiffs = analyzeTranscript(bag, transIdChrom)
+        print(64 * '=')
+        transAnnotDiffs.dump(sys.stdout)
         reportTransAnalysis(bag, transIdChrom, transAnnotDiffs, reportFh)
 
 ###
