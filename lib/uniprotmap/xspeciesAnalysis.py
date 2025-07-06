@@ -12,11 +12,15 @@ class AnnotMethod(SymEnum):
 
 class AnnotDiffCategory(SymEnum):
     """Summary of the AnnotDiff, not all valid for both src and target"""
+    # for source
     complete = auto()
     deleted = auto()
-    inserted = auto()   # for inserts by target
     minor_diff = auto()
     major_diff = auto()
+    # for target compared to source
+    inserted = auto()
+    minor_overlap = auto()
+    major_overlap = auto()
 
 
 class AnnotDiff:
@@ -24,8 +28,9 @@ class AnnotDiff:
     def __init__(self, coords):
         """For deletions, coords covers range of deletion (NOT IMPLEMENTED).
         """
-        # FIXME deletion range not implemented
-        # this the source, if there is one, otherwise there is a single target
+        # FIXME deletion possible range not implemented
+        # if there is a  source, there can be multiple overlaps,
+        # otherwise target just one target.
         self.coords = coords
         # not initializes from arguments, as done in two phases
         self.srcAnnot = None

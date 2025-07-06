@@ -3,15 +3,17 @@
 # import os
 import os.path as osp
 import sys
+from dataclasses import dataclass
 from pycbio.sys import cli, fileOps
-from pycbio.tsv import TsvReader, strOrNoneType
 from pycbio.hgdata.coords import Coords
 
 sys.path.insert(0, osp.normpath(osp.join(osp.dirname(__file__), "../lib")))
 from uniprotmap import annotMapIdToAnnotId
 from uniprotmap.clisupport import cliAddGeneSetParameters
-from uniprotmap.geneset import geneSetFactory
-from uniprotmap.xspeciesAnalysisData import AnnotAssocs, srcAnnotSetLoad, targetAnnotSetLoad
+from uniprotmap.geneset import GeneSet, geneSetFactory
+from uniprotmap.xspeciesAnalysisData import (AnnotAssocs, annotAssocLoad,
+                                             SrcAnnotSet, srcAnnotSetLoad,
+                                             TargetAnnotSet, targetAnnotSetLoad)
 from uniprotmap.xspeciesAnalysis import compareTransAnnotations, AnnotMethod, AnnotDiffCategory
 from uniprotmap.mappingAnalysis import FeatureIndelType
 
@@ -21,8 +23,11 @@ def parseArgs():
 
     parser = cli.ArgumentParserExtras(description=desc)
     parser.add_argument("--major-disrupt-threshold", type=float, default=0.02,
-                        help="""number of bases insert of deleted at above this fraction of a annotation's
-                        length are considered a major disruption""")
+                        help="""fraction of bases of an annotation insert of deleted "
+                        "that is considered a major disruption""")
+    parser.add_argument("--major-overlap-threshold", type=float, default=0.80,
+                        help="""similar threshold  of for source and target overlap
+                        being considered a major""")
     parser.add_argument("uniprotAnnotTsv",
                         help="""Uniprot annotations TSV from uniprotToTab (input)""")
     parser.add_argument("uniprotAnnot2GenomePsl",
@@ -46,22 +51,46 @@ def parseArgs():
     return parser.parse_opts_args()
 
 ###
-# setup
+# basic stuff
 ###
-def loadAnnotTypeAssoc(annotTypeAssocTsv):
-    typeMap = {"uniprotComment": strOrNoneType}
-    annotAssocs = AnnotAssocs()
-    for row in TsvReader(annotTypeAssocTsv, typeMap=typeMap):
-        annotAssocs.add(row.uniprotShortFeatType, row.uniprotComment,
-                        row.interproAnalysis, row.interproAcc)
-    annotAssocs.finish()
-    return annotAssocs
+@dataclass
+class DataBag:
+    """Common data.  Maybe below could be methods on a class, but it
+    started out a bunch of functions and it seems like a weird class."""
 
-def getAllTransIdChroms(srcAnnotSet, targetAnnotSet):
-    return tuple(sorted(set(
-        [(ann.transcriptId, ann.chrom) for ann in srcAnnotSet.annotMappingsTbl] +
-        [(ann.transcriptId, ann.chrom) for ann in targetAnnotSet.annotMappingsTbl])))
+    opts: cli.ObjDict
+    annotAssocs: AnnotAssocs
+    targetGeneSet: GeneSet
+    srcAnnotSet: SrcAnnotSet
+    targetAnnotSet: TargetAnnotSet
 
+    def getUniprotAnnot(self, annotMapId):
+        return self.srcAnnotSet.uniprotAnnotTbl.getByAnnotId(annotMapIdToAnnotId(annotMapId))
+
+    def getInterproAnnot(self, annotMapId):
+        return self.targetAnnotSet.interproAnnotTbl.getByAnnotId(annotMapIdToAnnotId(annotMapId))
+
+    def getAllTransIdChroms(self):
+        return tuple(sorted(set(
+            [(ann.transcriptId, ann.chrom) for ann in self.srcAnnotSet.annotMappingsTbl] +
+            [(ann.transcriptId, ann.chrom) for ann in self.targetAnnotSet.annotMappingsTbl])))
+
+def pslTCoords(psl):
+    return Coords(psl.tName, psl.tStart, psl.tEnd)
+
+def _countOverlap(psl1, psl2):
+    overlapCnt = 0
+    for blk1 in psl1.blocks:
+        for blk2 in psl2.blocks:
+            maxStart = max(blk1.tStart, blk2.tStart)
+            minEnd = min(blk1.tEnd, blk2.tEnd)
+            if maxStart < minEnd:
+                overlapCnt += minEnd - maxStart
+    return overlapCnt
+
+def pslTSimilarity(psl1, psl2):
+    assert psl1.tStrand == psl2.tStrand
+    return (2 * _countOverlap(psl1, psl2)) / (psl1.basesAligned() + psl2.basesAligned())
 
 ###
 # reporting
@@ -89,7 +118,7 @@ def sumFeatureIndel(featIndels):
             deleteBases += featIndel.length
     return insertBases, deleteBases
 
-def analyzeFeatureIndels(opts, annotLen, featIndels):
+def analyzeSrcFeatureIndels(opts, annotLen, featIndels):
     "return (category, insertBases, deleteBases)"
     if len(featIndels) == 0:
         return (AnnotDiffCategory.complete, 0, 0)
@@ -106,61 +135,73 @@ def _getSrcCoords(transPsl, annotDiff):
     if annotDiff.coords is not None:
         return annotDiff.coords
     else:
-        return Coords(transPsl.tName, transPsl.tStart, transPsl.tEnd)
+        return pslTCoords(transPsl)
 
-def reportAnnotDiffSrc(opts, srcAnnotSet, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
+def reportAnnotDiffSrc(bag, uniprotAnnot, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
     srcAnnot = annotDiff.srcAnnot
     annotRef = srcAnnot.annotRef
     coords = _getSrcCoords(transPsl, annotDiff)
-    uniprotAnnot = srcAnnotSet.uniprotAnnotTbl.getByAnnotId(annotMapIdToAnnotId(annotRef.annotMapId))
-    category, insertBases, deleteBases = analyzeFeatureIndels(opts, annotRef.annotSize, annotDiff.srcFeatureIndels)
+    category, insertBases, deleteBases = analyzeSrcFeatureIndels(bag.opts, annotRef.annotSize, annotDiff.srcFeatureIndels)
     writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, AnnotMethod.uniprotMap,
                    coords, annotRef.annotMapId,
                    category, annotRef.annotSize, insertBases, deleteBases,
                    uniprotAnnot.shortFeatType, uniprotAnnot.comment)
 
-def reportAnnotDiffTarget(opts, targetAnnotSet, geneMeta, transcriptId, targetAnnot, reportFh):
+def analyzeTargetFeatureOverlap(opts, annotDiff, targetAnnot, uniprotAnnot):
+    "return category"
+    if annotDiff.srcAnnot is None:
+        return AnnotDiffCategory.inserted
+    sim = pslTSimilarity(targetAnnot.annotPsl, annotDiff.srcAnnot.annotPsl)
+    assert sim > 0.0
+    if sim >= opts.major_overlap_threshold:
+        return AnnotDiffCategory.major_overlap
+    else:
+        return AnnotDiffCategory.minor_overlap
+
+def reportAnnotDiffTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, targetAnnot, reportFh):
     annotRef = targetAnnot.annotRef
-    interproAnnot = targetAnnotSet.interproAnnotTbl.getByAnnotId(annotMapIdToAnnotId(annotRef.annotMapId))
-    category = "wtf"
+    interproAnnot = bag.getInterproAnnot(annotRef.annotMapId)
+    category = analyzeTargetFeatureOverlap(bag.opts, annotDiff, targetAnnot, uniprotAnnot)
     writeReportRow(reportFh, geneMeta.geneSymbol, geneMeta.geneId, transcriptId, AnnotMethod.interpro,
                    targetAnnot.coords, annotRef.annotMapId,
                    category, annotRef.annotSize, 0, 0,
                    interproAnnot.interpro_accession, interproAnnot.interpro_description)
 
-def reportAnnotDiffsTarget(opts, targetAnnotSet, geneMeta, transcriptId, annotDiff, reportFh):
+def reportAnnotDiffsTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, reportFh):
     for targetAnnot in annotDiff.targetAnnots:
-        reportAnnotDiffTarget(opts, targetAnnotSet, geneMeta, transcriptId, targetAnnot, reportFh)
+        reportAnnotDiffTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, targetAnnot, reportFh)
 
-def reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
+def reportAnnotDiff(bag, geneMeta, transcriptId, transPsl, annotDiff, reportFh):
+    uniprotAnnot = None
     if annotDiff.srcAnnot is not None:
-        reportAnnotDiffSrc(opts, srcAnnotSet, geneMeta, transcriptId, transPsl, annotDiff, reportFh)
+        uniprotAnnot = bag.getUniprotAnnot(annotDiff.srcAnnot.annotRef.annotMapId)
+        reportAnnotDiffSrc(bag, uniprotAnnot, geneMeta, transcriptId, transPsl, annotDiff, reportFh)
     if len(annotDiff.targetAnnots) > 0:
-        reportAnnotDiffsTarget(opts, targetAnnotSet, geneMeta, transcriptId, annotDiff, reportFh)
+        reportAnnotDiffsTarget(bag, geneMeta, transcriptId, annotDiff, uniprotAnnot, reportFh)
 
-def reportTransAnalysis(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transIdChrom, transAnnotDiffs, reportFh):
+def reportTransAnalysis(bag, transIdChrom, transAnnotDiffs, reportFh):
     transcriptId = transIdChrom[0]
-    geneMeta = targetGeneSet.meta.getGeneByTranscriptId(transcriptId)
+    geneMeta = bag.targetGeneSet.meta.getGeneByTranscriptId(transcriptId)
     for annotDiff in transAnnotDiffs:
-        reportAnnotDiff(opts, srcAnnotSet, targetAnnotSet, geneMeta, transcriptId, transAnnotDiffs.transPsl,
+        reportAnnotDiff(bag, geneMeta, transcriptId, transAnnotDiffs.transPsl,
                         annotDiff, reportFh)
 
 ###
 # analysis
 ###
-def analyzeTranscript(srcAnnotSet, targetAnnotSet, transIdChrom):
-    srcTransAnnotMappings = srcAnnotSet.annotMappingsTbl.findEntry(*transIdChrom)
-    targetTransAnnotMappings = targetAnnotSet.annotMappingsTbl.findEntry(*transIdChrom)
+def analyzeTranscript(bag, transIdChrom):
+    srcTransAnnotMappings = bag.srcAnnotSet.annotMappingsTbl.findEntry(*transIdChrom)
+    targetTransAnnotMappings = bag.targetAnnotSet.annotMappingsTbl.findEntry(*transIdChrom)
     return compareTransAnnotations(srcTransAnnotMappings,
                                    targetTransAnnotMappings)
 
 
-def analyzeTranscripts(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, reportFh):
+def analyzeTranscripts(bag, reportFh):
     writeReportHeader(reportFh)
 
-    for transIdChrom in getAllTransIdChroms(srcAnnotSet, targetAnnotSet):
-        transAnnotDiffs = analyzeTranscript(srcAnnotSet, targetAnnotSet, transIdChrom)
-        reportTransAnalysis(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, transIdChrom, transAnnotDiffs, reportFh)
+    for transIdChrom in bag.getAllTransIdChroms():
+        transAnnotDiffs = analyzeTranscript(bag, transIdChrom)
+        reportTransAnalysis(bag, transIdChrom, transAnnotDiffs, reportFh)
 
 ###
 # main
@@ -170,15 +211,18 @@ def xspeciesAnalyze(opts,
                     targetGeneSet, targetGeneMeta, targetTrans2GenomePsl,
                     interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
                     annotTypeAssocTsv, analysisReportTsv):
-    annotAssocs = loadAnnotTypeAssoc(annotTypeAssocTsv)
+    annotAssocs = annotAssocLoad(annotTypeAssocTsv)
     targetGeneSet = geneSetFactory(targetGeneSet, geneSetMetadata=targetGeneMeta,
                                    trans2GenomePslFile=targetTrans2GenomePsl)
     srcAnnotSet = srcAnnotSetLoad(uniprotAnnotTsv, uniprotAnnot2GenomePsl, uniprotAnnot2GenomeRefTsv,
                                   annotAssocs, targetGeneSet)
     targetAnnotSet = targetAnnotSetLoad(interproAnnotTsv, interproAnnot2GenomePsl, interproAnnot2GenomeRefTsv,
                                         annotAssocs, targetGeneSet)
+    bag = DataBag(opts=opts, annotAssocs=annotAssocs,
+                  targetGeneSet=targetGeneSet, srcAnnotSet=srcAnnotSet,
+                  targetAnnotSet=targetAnnotSet)
     with fileOps.opengz(analysisReportTsv, 'w') as reportFh:
-        analyzeTranscripts(opts, srcAnnotSet, targetAnnotSet, targetGeneSet, reportFh)
+        analyzeTranscripts(bag, reportFh)
 
 ###
 def main():

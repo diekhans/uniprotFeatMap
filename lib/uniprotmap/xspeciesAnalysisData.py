@@ -4,6 +4,7 @@ Data structure to support xspecies analysis of annotations
 from dataclasses import dataclass
 from collections import namedtuple, defaultdict
 from itertools import islice
+from pycbio.tsv import TsvReader, strOrNoneType
 from uniprotmap import DataError
 from uniprotmap.uniprot import UniProtAnnotTbl
 from uniprotmap.interproscan import InterproAnnotTbl, interproAnnotsLoad
@@ -27,14 +28,14 @@ class AnnotAssocs:
     """
 
     def __init__(self):
-        self.srcToTargets = defaultdict(list)  # by (shortType, comment
-        self.targetToSrcs = defaultdict(list)  # by (analysis, acc)
+        self.srcToTargets = defaultdict(set)  # by (shortType, comment)
+        self.targetToSrcs = defaultdict(set)  # by (analysis, acc)
 
     def add(self, uniprotShortFeatType, uniprotComment, interproAnalysis, interproAcc):
         annotAssoc = AnnotAssoc(uniprotShortFeatType, uniprotComment,
                                 interproAnalysis, interproAcc)
-        self.srcToTargets[(uniprotShortFeatType, uniprotComment)].append(annotAssoc)
-        self.targetToSrcs[(interproAnalysis, interproAcc)].append(annotAssoc)
+        self.srcToTargets[(uniprotShortFeatType, uniprotComment)].add(annotAssoc)
+        self.targetToSrcs[(interproAnalysis, interproAcc)].add(annotAssoc)
 
     def finish(self):
         self.srcToTargets.default_factory = self.targetToSrcs.default_factory = None
@@ -53,6 +54,16 @@ class AnnotAssocs:
             targets = self.srcToTargets.get((uniprotShortFeatType, None))
         assert targets is not None
         return targets
+
+def annotAssocLoad(annotTypeAssocTsv):
+    typeMap = {"uniprotComment": strOrNoneType}
+    annotAssocs = AnnotAssocs()
+    for row in TsvReader(annotTypeAssocTsv, typeMap=typeMap):
+        annotAssocs.add(row.uniprotShortFeatType, row.uniprotComment,
+                        row.interproAnalysis, row.interproAcc)
+    annotAssocs.finish()
+    return annotAssocs
+
 
 def _raiseOverlapError(prevMapping, annotMapping, msg):
     raise DataError(f"{msg}:\n`" + str(prevMapping), "', and `" + str(annotMapping) + "'")
